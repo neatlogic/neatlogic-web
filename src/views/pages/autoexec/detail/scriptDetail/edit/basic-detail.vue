@@ -1,6 +1,10 @@
 
 <template>
-  <div v-if="config" class="basic-detail">
+  <div
+    v-if="config"
+    class="basic-detail"
+    :class="{'without-execrtool-authority': !showExecrtoolAuthority}"
+  >
     <div class="information-box">
       <div class="information bg-op padding radius-lg">
         <div class="information-title h4">
@@ -17,7 +21,7 @@
     </div>
     <component
       :is="autoexecScriptExecrtoolAuthorityComponent"
-      v-if="autoexecScriptExecrtoolAuthorityComponent"
+      v-if="autoexecScriptExecrtoolAuthorityComponent && showExecrtoolAuthority"
       :config="config"
     ></component>
     <div v-if="config.referenceCount > 0" class="action-list bg-op padding radius-lg">
@@ -53,6 +57,10 @@ export default {
     operationType: { //工具类型
       type: String,
       default: 'script'
+    },
+    showExecrtoolAuthority: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -227,6 +235,17 @@ export default {
 </script>
 <style lang="less" scoped>
 .basic-detail{
+  // 直接执行入口收起到顶部后，基本信息随内容自然撑开，避免卡片内部出现独立滚动条。
+  &.without-execrtool-authority {
+    .information {
+      height: auto;
+      overflow-y: visible;
+    }
+    .action-list {
+      height: auto;
+      overflow-y: visible;
+    }
+  }
   .information-box{
     padding-bottom: @space-normal;
   }

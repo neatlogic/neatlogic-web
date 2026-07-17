@@ -64,8 +64,7 @@ export default {
     operateType: String,
     resourceId: Number,
     resourceIdList: Array,
-    accountList: Array,
-    accountslist: Object
+    accountList: Array
   },
   data() {
     let _this = this;

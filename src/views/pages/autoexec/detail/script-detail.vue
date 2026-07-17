@@ -34,7 +34,7 @@
       </template>
       <template v-slot:topRight>
         <template v-if="!isEdit">
-          <div v-if="versionOperateList && versionOperateList.length" class="div-btn-contain action-group text-right no-line">
+          <div v-if="(versionOperateList && versionOperateList.length) || isExecrtoolActionVisible" class="div-btn-contain action-group text-right no-line">
             <span
               v-for="operate in versionOperateList"
               :key="operate.value"
@@ -43,6 +43,35 @@
               :title="operate.disabledReason"
               @click.stop="doAction(operate.value, operate)"
             >{{ operate.text }}</span>
+            <span v-if="isExecrtoolActionVisible" class="action-item">
+              <Dropdown trigger="hover" placement="bottom-end" transfer>
+                <span class="tsfont-option-horizontal"></span>
+                <DropdownMenu slot="list">
+                  <DropdownItem @click.native="openDirectExecuteAuthority">
+                    <Tooltip
+                      :content="$t('term.autoexec.directexecuteauthoritytip')"
+                      placement="left"
+                      theme="light"
+                      transfer
+                      max-width="320"
+                    >
+                      <div class="tsfont-edit">{{ $t('term.autoexec.directexecuteauthority') }}</div>
+                    </Tooltip>
+                  </DropdownItem>
+                  <DropdownItem @click.native="openDirectExecuteAudit">
+                    <Tooltip
+                      :content="$t('term.autoexec.directexecuteaudittip')"
+                      placement="left"
+                      theme="light"
+                      transfer
+                      max-width="320"
+                    >
+                      <div class="tsfont-time">{{ $t('term.autoexec.directexecuteaudit') }}</div>
+                    </Tooltip>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </span>
           </div>
         </template>
         <template v-else>
@@ -75,6 +104,7 @@
       <template v-slot:right>
         <BasicDetail
           :config="scriptConfig"
+          :showExecrtoolAuthority="false"
           @updetaScriptName="updetaScriptName"
           @updateIsLib="updateIsLib"
         >
@@ -132,6 +162,14 @@
       :scriptConfig="scriptConfig"
       :getContext="getAiAssistantContext"
       @replace-code="replaceAiAssistantCode"
+    ></component>
+    <component
+      :is="autoexecScriptExecrtoolAuthorityComponent"
+      v-if="autoexecScriptExecrtoolAuthorityComponent"
+      ref="execrtoolAuthority"
+      :config="scriptConfig"
+      :showCard="false"
+      @visible-change="handleExecrtoolVisibleChange"
     ></component>
   </div>
 </template>
@@ -232,6 +270,7 @@ export default {
       isTipShow: false,
       typeDialog: 'delete',
       tipText: null,
+      isExecrtoolActionVisible: false,
       formConfig: {
         version: {
           type: 'text',
@@ -266,6 +305,21 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleExecrtoolVisibleChange(isVisible) {
+      this.isExecrtoolActionVisible = isVisible;
+    },
+    openDirectExecuteAuthority() {
+      const authority = this.$refs.execrtoolAuthority;
+      if (authority && authority.editExecrtoolAuthority) {
+        authority.editExecrtoolAuthority();
+      }
+    },
+    openDirectExecuteAudit() {
+      const authority = this.$refs.execrtoolAuthority;
+      if (authority && authority.showExecrtoolAuditDialog) {
+        authority.showExecrtoolAuditDialog();
+      }
+    },
     async okDialog() {
       if (!this.$refs.versionForm.valid()) {
         return false;
@@ -352,6 +406,7 @@ export default {
           path: '/test-detail',
           query: {
             id: this.versionId,
+            scriptId: this.scriptId,
             type: 'script',
             execMode: this.scriptConfig.execMode
           }
@@ -554,6 +609,7 @@ export default {
           path: '/test-detail',
           query: {
             id: this.versionId,
+            scriptId: this.scriptId,
             execMode: this.scriptConfig.execMode,
             type: 'script'
           }
@@ -723,6 +779,9 @@ export default {
   computed: {
     autoexecScriptAiAssistantComponent() {
       return ImportComponent && ImportComponent.autoexecScriptAiAssistant ? ImportComponent.autoexecScriptAiAssistant : null;
+    },
+    autoexecScriptExecrtoolAuthorityComponent() {
+      return ImportComponent && ImportComponent.autoexecScriptExecrtoolAuthority ? ImportComponent.autoexecScriptExecrtoolAuthority : null;
     },
     getIcon() {
       return function(type, item) {

@@ -47,15 +47,16 @@
       </template>
       <template v-slot:sider>
         <div>
-          <span v-if="$utils.isEmpty(resourceList)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
-          <Tree
-            v-else
-            :data="resourceList"
-            :render="renderTree"
-            :multiple="false"
-            class="ts-tree"
-            @on-select-change="selectTreeNode"
-          ></Tree>
+          <ResourceTypeTree
+            v-model="searchParam.typeId"
+            class="resource-type-tree"
+            @load="handleResourceTypeLoad"
+            @change="handleResourceTypeChange"
+          >
+            <template v-slot:empty>
+              <span class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
+            </template>
+          </ResourceTypeTree>
         </div>
       </template>
       <template v-slot:content>
@@ -160,6 +161,7 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     InspectionScheduleDialog: () => import('./inspection-schedule-dialog.vue'),
     ScriptEditDialog: () => import('./components/script-edit-dialog'), // 脚本管理
+    ResourceTypeTree: () => import('@/resources/components/ResourceTypeTree'),
     RuleOfThresholdDialog: () => import('@/views/pages/inspect/application/threshold/rule-of-threshold-dialog.vue')
   },
   filters: {},
@@ -168,7 +170,6 @@ export default {
   data() {
     return {
       downloadLoading: false,
-      currentTypeId: null,
       isShowRuleThresholdDialog: false,
       appSystemId: null,
       ruleRsourceId: null,
@@ -253,36 +254,11 @@ export default {
       selectedTreeName: '', // 左侧选中树名称
       currentCiEntityId: null,
       timmer: null,
-      //old
       loadingShow: false,
-      selectList: [],
       isScriptEdit: false, // 是否是脚本编辑
-      ciEntityId: '',
-      ciEntityList: [],
-      isSiderHide: false,
-      accountslist: [],
-      isAddAccountShow: false,
-      selectType: {
-        typeId: ''
-      },
-      showDialog: {
-        type: 'modal',
-        title: '',
-        maskClose: false,
-        isShow: false,
-        width: 'medium'
-      },
-      id: null,
       resourceId: 0,
-      resourceIdList: [],
-      tagList: [],
-      loading: false,
       resourceList: [],
       flattenResourceMap: {},
-      disabled: false,
-      visible: true,
-      operateType: '',
-      accountList: [],
       searchFieldRadioDataList: [
         {
           value: 'ip',
@@ -427,58 +403,6 @@ export default {
           }
         ]
       },
-      settingConfig: {
-        tagList: []
-      },
-      settingForm: {
-        id: {
-          type: 'text',
-          name: 'id',
-          isHidden: true
-        },
-        tagList: {
-          type: 'slot',
-          name: 'tagList',
-          label: this.$t('page.tag'),
-          transfer: true,
-          multiple: true,
-          tagList: [],
-          search: true,
-          allowCreate: true,
-          dynamicUrl: 'api/rest/resourcecenter/tag/name/list/forselect',
-          rootName: 'tbodyList'
-          //datalist: [],
-          // textName: 'name',
-          // valueName: 'id',
-          // validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.tag')}) }, 'name-special']
-        }
-      },
-      delSettingForm: {
-        id: {
-          type: 'text',
-          name: 'id',
-          isHidden: true
-        },
-        tagList: {
-          type: 'slot',
-          name: 'tagList',
-          label: this.$t('page.tag'),
-          transfer: true,
-          multiple: true,
-          tagList: [],
-          search: true,
-          allowCreate: true,
-          dynamicUrl: 'api/rest/resourcecenter/tag/list/forselect',
-          rootName: 'tbodyList',
-          // datalist: [],
-          textName: 'name',
-          valueName: 'id',
-          validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.tag')}) }, 'name-special']
-        }
-      },
-      dynamicUrl: '',
-      implementName: '',
-      contentHeight: '100',
       scheduleId: null
     };
   },
@@ -492,12 +416,7 @@ export default {
     }
   },
   beforeMount() {},
-  async mounted() {
-    await this.getResourceList();
-    if (this.resourceList && this.resourceList.length > 0) {
-      this.searchInspectionReport(1);
-    }
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -553,16 +472,11 @@ export default {
         this.currentCiEntityId = row.id;
       }
     },
-    renderTree(h, { root, node, data }) {
-      //渲染树的lable名称
-      return h('span', {
-        staticClass: '',
-        domProps: {
-          innerHTML: data.label
-        }
-      });
-    },
     searchInspectionReport(currentPage) {
+      if (!this.searchParam.typeId) {
+        this.clearReportData();
+        return;
+      }
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
@@ -628,11 +542,33 @@ export default {
           }
         });
     },
-    selectTreeNode(nodeList, node) {
-      //选中类型
-      this.$set(this.searchParam, 'typeId', node.id);
+    handleResourceTypeLoad({ treeData = [] } = {}) {
+      this.resourceList = treeData || [];
+      this.flattenResourceMap = {};
+      this.flattenResourceList(this.resourceList);
+      if (!this.resourceList.length) {
+        this.clearReportData();
+      }
+    },
+    handleResourceTypeChange({ selectedId, node, selected } = {}) {
+      if (!selected || !selectedId) {
+        this.$set(this.searchParam, 'typeId', null);
+        this.selectedTreeName = '';
+        this.clearReportData();
+        return;
+      }
+      this.$set(this.searchParam, 'typeId', selectedId);
+      this.selectedTreeName = node && node.name ? node.name : '';
       this.searchInspectionReport(1);
-      this.selectedTreeName = node.name;
+    },
+    clearReportData() {
+      this.reportData = {
+        ...this.reportData,
+        tbodyList: [],
+        currentPage: 1,
+        rowNum: 0
+      };
+      this.loadingShow = false;
     },
     changePageSize(pageSize) {
       this.searchParam.pageSize = pageSize;
@@ -650,10 +586,7 @@ export default {
       let resourceList = children || this.resourceList;
       if (resourceList && resourceList.length > 0) {
         resourceList.forEach(resource => {
-          const { id, label, name } = resource;
-          const param = { id, label, name };
-          //returnList.push(resource);
-          this.flattenResourceMap[id] = resource;
+          this.flattenResourceMap[resource.id] = resource;
           if (resource.children) {
             this.flattenResourceList(resource.children);
           }
@@ -668,43 +601,6 @@ export default {
         this.searchValue = historyData['searchValue'];
       }
     },
-    async getResourceList() {
-      await this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        this.resourceList = res.Return.tbodyList;
-        //由于iview的Tree组件对数据做了二次处理，因此需要等下一个事件周期才能进行选中展开等处理
-        this.$nextTick(() => {
-          //对数据进行扁平化处理
-          this.flattenResourceList();
-          if (this.searchParam.typeId) {
-            //返回时自动选中原来树节点
-            this.selectResource(this.searchParam.typeId);
-          } else {
-            if (this.resourceList.length > 0) {
-              this.$set(this.searchParam, 'typeId', this.resourceList[0].id);
-              this.$set(this.resourceList[0], 'selected', true);
-              this.$set(this.resourceList[0], 'expand', true);
-            }
-          }
-        });
-      });
-    },
-    selectResource(id) {
-      const resource = this.flattenResourceMap[id];
-      if (resource) {
-        this.$set(resource, 'selected', true);
-        this.$set(resource, 'expand', true);
-        let parentId = resource.parentId;
-        while (parentId) {
-          const pr = this.flattenResourceMap[parentId];
-          if (pr) {
-            this.$set(pr, 'expand', true);
-            parentId = pr.parentId;
-          } else {
-            parentId = null;
-          }
-        }
-      }
-    },
     openInspectionScheduleDialog() {
       this.isShowInspectionScheduleDialog = true;
     },
@@ -714,16 +610,6 @@ export default {
         data = Date.parse(new Date()) - time;
       }
       return data;
-    },
-    //old
-
-    getText(obj, name) {
-      // obj 对象，name获取对象的名称
-      if (obj && obj.hasOwnProperty(name)) {
-        return obj[name];
-      } else {
-        return '';
-      }
     },
     gotoDetails(row) {
       this.$router.push({ path: './assets-detail-' + row.id });

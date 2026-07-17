@@ -18,7 +18,6 @@
           <TsFormSelect
             v-model="settingConfig.tagList"
             v-bind="settingForm.tagList"
-            @on-change="change"
           >
           </TsFormSelect>
         </template>
@@ -32,7 +31,7 @@
         label-position="right"
       >
         <template v-slot:tagList>
-          <TsFormSelect v-model="settingConfig.tagList" v-bind="delSettingForm.tagList" @on-change="change">
+          <TsFormSelect v-model="settingConfig.tagList" v-bind="delSettingForm.tagList">
           </TsFormSelect>
         </template>
       </TsForm>
@@ -50,15 +49,13 @@ export default {
     operateType: String,
     title: String,
     resourceIdList: Array,
-    settingForm: Object,
     settingConfig: Object
   },
   data() {
-    let _this = this;
     return {
       showDialog: {
         type: 'modal',
-        title: _this.title,
+        title: this.title,
         maskClose: false,
         isShow: true
       },
@@ -79,17 +76,33 @@ export default {
           allowCreate: true,
           dynamicUrl: 'api/rest/resourcecenter/tag/list/forselect',
           rootName: 'tbodyList',
-          // datalist: [],
           textName: 'name',
           valueName: 'id',
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.tag')}) }, 'name-special']
+        }
+      },
+      settingForm: {
+        id: {
+          type: 'text',
+          name: 'id',
+          isHidden: true
+        },
+        tagList: {
+          type: 'slot',
+          name: 'tagList',
+          label: this.$t('page.tag'),
+          transfer: true,
+          multiple: true,
+          search: true,
+          allowCreate: true,
+          dynamicUrl: 'api/rest/resourcecenter/tag/name/list/forselect',
+          rootName: 'tbodyList'
         }
       }
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -99,13 +112,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    change(val) {
-      val = val.map(item => {
-        return item;
-      });
-    },
     close() {
-      this.showDialog.isShow = false;
       this.$emit('close');
     },
     save() {
@@ -121,7 +128,6 @@ export default {
           resourceIdList: newResourceIdList,
           tagList: this.settingConfig.tagList
         };
-        let _this = this;
         if (this.operateType == 'tagEdit') {
           if (this.resourceIdList && this.resourceIdList.length > 0) {
             let data = {
@@ -131,7 +137,9 @@ export default {
             };
             this.$api.cmdb.asset.saveSingleTag(data).then(res => {
               if (res.Status == 'OK') {
-                _this.$parent.success(this.$t('message.savesuccess'));
+                this.$emit('success', {
+                  msg: this.$t('message.savesuccess')
+                });
               }
             });
           } else {
@@ -141,21 +149,24 @@ export default {
         } else if (this.operateType == 'addTag') {
           this.$api.cmdb.asset.batchAddTag(batchData).then(res => {
             if (res.Status == 'OK') {
-              _this.$parent.success(this.$t('term.cmdb.tagaddsuccess'));
+              this.$emit('success', {
+                msg: this.$t('term.cmdb.tagaddsuccess')
+              });
             }
           });
         } else if (this.operateType == 'delTag') {
           this.$api.cmdb.asset.batchDelTag(batchData).then(res => {
             if (res.Status == 'OK') {
-              _this.$parent.success(this.$t('message.deletesuccess'));
+              this.$emit('success', {
+                msg: this.$t('message.deletesuccess')
+              });
             }
           });
         }
-        this.showDialog.isShow = false;
       }
     },
     refreshTagList() {
-      this.$emit('refreshTagList');
+      this.$Message.success(this.$t('message.refreshsuccess'));
     },
     editTag() {
       window.open(HOME + '/cmdb.html#/tag-manage', '_blank');
