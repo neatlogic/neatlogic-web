@@ -50,6 +50,8 @@
                   type="primary"
                   size="small"
                   style="margin:0;"
+                  :loading="isBatchUpdatingWorker"
+                  :disabled="isBatchUpdatingWorker"
                   @click="changeAllUser"
                 >{{ $t('page.confirm') }}</Button>
               </div>
@@ -363,7 +365,8 @@ export default {
       editingCommentIdMap: {},
       completingStepIdMap: {},
       startingStepIdMap: {},
-      isUpdatingChangeStep: false
+      isUpdatingChangeStep: false,
+      isBatchUpdatingWorker: false
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -457,24 +460,28 @@ export default {
       }
     },
     changeAllUser() {
-      if (this.$refs.worker.valid()) {
-        this.newChangeStepList.forEach(i => {
-          i.worker = this.worker;
-          this.$set(i, 'workerVo', this.allWorkerVo);
-        });
-        this.visible = false;
-        let data = {
-          processTaskStepId: this.processTaskStepId,
-          changeId: this.handlerStepInfo.id,
-          worker: this.worker
-        };
-        this.$api.process.processtask.changeStepWorker(data).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.executesuccess'));
-            this.$emit('updateStepActive');
-          }
-        });
+      if (this.isBatchUpdatingWorker || !this.$refs.worker.valid()) {
+        return;
       }
+      this.newChangeStepList.forEach(i => {
+        i.worker = this.worker;
+        this.$set(i, 'workerVo', this.allWorkerVo);
+      });
+      let data = {
+        processTaskStepId: this.processTaskStepId,
+        changeId: this.handlerStepInfo.id,
+        worker: this.worker
+      };
+      this.isBatchUpdatingWorker = true;
+      this.$api.process.processtask.changeStepWorker(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.$emit('updateStepActive');
+          this.visible = false;
+        }
+      }).finally(() => {
+        this.isBatchUpdatingWorker = false;
+      });
     },
     saveChangeStepData() {
       //保存步骤数据
