@@ -256,7 +256,12 @@
                           @remove="res => handleSuccess(res, comment)"
                         ></TsUpLoad>
                         <div class="comment-btn">
-                          <Button size="small" @click="completeComment(comment, cd)">{{ $t('page.complete') }}</Button>
+                          <Button
+                            size="small"
+                            :loading="isEditingComment(comment.id)"
+                            :disabled="isEditingComment(comment.id)"
+                            @click="completeComment(comment, cd)"
+                          >{{ $t('page.complete') }}</Button>
                           <Button size="small" @click="cancelComment(comment)">{{ $t('page.cancel') }}</Button>
                         </div>
                       </div>
@@ -352,7 +357,8 @@ export default {
       cur: 0,
       uploadMultiple: true,
       commentingStepIdMap: {},
-      deletingCommentIdMap: {}
+      deletingCommentIdMap: {},
+      editingCommentIdMap: {}
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -602,6 +608,9 @@ export default {
       this.$set(obj, 'editContent', true);
     },
     completeComment(obj, cd) {
+      if (this.isEditingComment(obj.id)) {
+        return;
+      }
       let _this = this;
       if (this.$refs[`comment${obj.id}`][0].currentValue) {
         let content = this.$refs[`comment${obj.id}`][0].currentValue;
@@ -618,13 +627,19 @@ export default {
         } else if (obj.fileIdList && obj.fileIdList.length > 0) {
           this.$set(data, 'fileIdList', obj.fileIdList);
         }
-        this.$set(obj, 'editContent', false);
+        this.$set(this.editingCommentIdMap, obj.id, true);
         this.$api.process.processtask.editchangeStepComment(data).then(res => {
           if (res.Status == 'OK') {
             _this.getCommentList(cd);
+            this.$set(obj, 'editContent', false);
           }
+        }).finally(() => {
+          this.$set(this.editingCommentIdMap, obj.id, false);
         });
       }
+    },
+    isEditingComment(commentId) {
+      return this.editingCommentIdMap[commentId] === true;
     },
     cancelComment(obj) {
       this.$set(obj, 'editContent', false);
