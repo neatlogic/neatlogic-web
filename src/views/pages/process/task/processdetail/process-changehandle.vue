@@ -483,6 +483,8 @@
       :isShow.sync="pausechangeModal"
       :className="stepDialogClass"
       :title="$t('term.process.changesuspension')"
+      :loading="changeDisableConfig.pausing"
+      :okBtnDisable="changeDisableConfig.pausing"
       @on-ok="okPausechange"
     >
       <template>
