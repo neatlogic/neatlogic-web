@@ -28,10 +28,16 @@
               <!-- 处理_start -->
               <span
                 v-if="actionStepconfig.startchange"
-                :class="{disable: changeDisableConfig.starting}"
-                class="tsfont-play-o action-item"
+                :class="{disable: changeDisableConfig.starting, 'tsfont-play-o': !changeDisableConfig.starting}"
+                class="action-item"
                 @click="startchange"
-              >{{ actionStepconfig.startchange }}</span>
+              >
+                <Icon
+                  v-if="changeDisableConfig.starting"
+                  type="ios-loading"
+                  size="14"
+                  class="loading"
+                ></Icon>{{ actionStepconfig.startchange }}</span>
               <span
                 v-if="actionStepconfig.pausechange && isDetailReady"
                 :class="{disable: changeDisableConfig.pausing}"
