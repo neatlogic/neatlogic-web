@@ -51,13 +51,16 @@
               class="mr-xs"
               type="primary"
               ghost
+              :loading="isCompleting"
+              :disabled="isCompleting"
               @click="comment(btn)"
             >{{ btn.name }}</Button>
           </template>
           <Button
             v-else
             type="primary"
-            :disabled="isDisableCommet"
+            :loading="isCompleting"
+            :disabled="isDisableCommet || isCompleting"
             :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
             @click="comment()"
           >{{ $t('page.reply') }}</Button>
@@ -82,6 +85,7 @@ export default {
       fileList: [],
       content: '',
       isDisableCommet: false,
+      isCompleting: false,
       validMesage: ''
     };
   },
@@ -130,6 +134,9 @@ export default {
       this.validMesage = '';
     },
     comment(btn) {
+      if (this.isCompleting) {
+        return;
+      }
       let data = {
         id: this.config.id,
         content: this.content
@@ -145,9 +152,12 @@ export default {
         this.validMesage = this.$t('form.placeholder.pleaseinput', {target: this.$t('page.content')});
         return;
       }
+      this.isCompleting = true;
       this.$api.process.process.completeTask(data).then(res => {
         this.$Message.success(this.$t('message.executesuccess'));
         this.$emit('close', true);
+      }).finally(() => {
+        this.isCompleting = false;
       });
     },
     closeDialog() {

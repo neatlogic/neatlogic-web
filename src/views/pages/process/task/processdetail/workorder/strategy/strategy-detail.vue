@@ -111,13 +111,16 @@
                 class="mr-xs"
                 type="primary"
                 ghost
+                :loading="isCompleting(item)"
+                :disabled="isCompleting(item)"
                 @click="comment(item, btn)"
               >{{ btn.name }}</Button>
             </template>
             <Button
               v-else
               type="primary"
-              :disabled="isDisableCommet"
+              :loading="isCompleting(item)"
+              :disabled="isDisableCommet || isCompleting(item)"
               :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
               @click="comment(item)"
             >{{ $t('page.reply') }}</Button>
@@ -227,6 +230,7 @@ export default {
         content: null
       },
       isDisableCommet: false,
+      completingTaskId: null,
       editType: 'add',
       customButtonList: [], //策略：自定义按钮列表
       isShowReplyDialog: false,
@@ -244,6 +248,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    isCompleting(item) {
+      return this.completingTaskId === item.id;
+    },
     initData(val) {
       this.stepConfig = this.$utils.deepClone(val);
       this.taskConfigId = this.stepConfig.id;
@@ -414,6 +421,9 @@ export default {
       this.isShowReplyDialog = true;
     },
     comment(item, btn) {
+      if (this.isCompleting(item)) {
+        return;
+      }
       let data = {
         id: item.id,
         content: item.CkeditorContent
@@ -435,10 +445,13 @@ export default {
         });
         return;
       }
+      this.completingTaskId = item.id;
       this.$api.process.process.completeTask(data).then(res => {
         this.isShow = false;
         this.$Message.success(this.$t('message.executesuccess'));
         this.getListTask();
+      }).finally(() => {
+        this.completingTaskId = null;
       });
     },
     getFileList(fileId, item) {
