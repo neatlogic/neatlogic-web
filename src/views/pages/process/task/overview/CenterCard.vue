@@ -201,6 +201,11 @@ export default {
           content: this.$t('dialog.content.tipconfirm', {target: data.text, name: this.$t('term.process.task')}),
           btnType: 'error',
           'on-ok': vnode => {
+            if (vnode.loading) {
+              return;
+            }
+            vnode.loading = true;
+            vnode.okBtnDisable = true;
             this.$api.process.processtask
               .cancelTaskDetail({
                 processTaskId: data.config.taskid
@@ -209,7 +214,12 @@ export default {
                 if (res.Status === 'OK') {
                   this.$Message.success(this.$t('message.executesuccess'));
                   this.tbodyList.splice(bindex, 1);
+                  vnode.isShow = false;
                 }
+              })
+              .finally(() => {
+                vnode.loading = false;
+                vnode.okBtnDisable = false;
               });
           }
         });
