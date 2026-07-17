@@ -139,10 +139,10 @@
                   <span
                     v-for="(action, cindex) in cd.actionList"
                     :key="cindex"
-                    :class="{ disable: action.value === 'completechangestep' && isCompleting(cd.id) }"
+                    :class="{ disable: (action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id)) }"
                     class="action-item"
                     @click.stop="stepFunction(action.value, cd)"
-                  ><Icon v-if="action.value === 'completechangestep' && isCompleting(cd.id)" type="ios-loading" class="loading"></Icon>{{ action.text }}</span>
+                  ><Icon v-if="(action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id))" type="ios-loading" class="loading"></Icon>{{ action.text }}</span>
                 </div>
               </template>
             </div>
@@ -360,7 +360,8 @@ export default {
       commentingStepIdMap: {},
       deletingCommentIdMap: {},
       editingCommentIdMap: {},
-      completingStepIdMap: {}
+      completingStepIdMap: {},
+      startingStepIdMap: {}
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -516,17 +517,26 @@ export default {
       });
     },
     startchangestep(obj) {
+      if (this.isStarting(obj.id)) {
+        return;
+      }
       //开始
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.startingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepStart(data).then(res => {
         if (res.Status == 'OK') {
           this.getChangeStart(obj.id);
           this.$emit('updateStepActive'); //只更新活动和步骤
           // this.toTask(); //刷新页面
         }
+      }).finally(() => {
+        this.$set(this.startingStepIdMap, obj.id, false);
       });
+    },
+    isStarting(changeStepId) {
+      return this.startingStepIdMap[changeStepId] === true;
     },
     completechangestep(obj) {
       if (this.isCompleting(obj.id)) {

@@ -53,10 +53,10 @@
               <li
                 v-for="(action,cindex) in cd.actionList"
                 :key="cindex"
-                :class="{ disable: (action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id)) }"
+                :class="{ disable: (action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id)) }"
                 class="action-item"
                 @click.stop="stepFunction(action.value,cd)"
-              ><Icon v-if="(action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id))" type="ios-loading" class="loading"></Icon>{{ action.text }}</li>
+              ><Icon v-if="(action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id))" type="ios-loading" class="loading"></Icon>{{ action.text }}</li>
             </ul>
           </div>
         </div>
@@ -184,7 +184,8 @@ export default {
       cur: 0,
       uploadMultiple: true,
       abortingStepIdMap: {},
-      completingStepIdMap: {}
+      completingStepIdMap: {},
+      startingStepIdMap: {}
     };
   },
   beforeCreate() {},
@@ -210,15 +211,24 @@ export default {
       this[methods](obj);
     },
     startchangestep(obj) {
+      if (this.isStarting(obj.id)) {
+        return;
+      }
       //开始
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.startingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepStart(data).then(res => {
         if (res.Status == 'OK') {
           // alert(res);
         }
+      }).finally(() => {
+        this.$set(this.startingStepIdMap, obj.id, false);
       });
+    },
+    isStarting(changeStepId) {
+      return this.startingStepIdMap[changeStepId] === true;
     },
     completechangestep(obj) {
       if (this.isCompleting(obj.id)) {
