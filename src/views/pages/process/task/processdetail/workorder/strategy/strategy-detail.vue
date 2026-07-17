@@ -335,6 +335,11 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.task')}),
         btnType: 'error',
         'on-ok': vnode => {
+          if (vnode.okBtnDisable) {
+            return;
+          }
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           this.$api.process.process
             .deleteTask({processTaskStepTaskId: item.id})
             .then(res => {
@@ -342,6 +347,10 @@ export default {
               vnode.isShow = false;
               this.processTaskStepTaskList.splice(index, 1);
               this.getListTask();
+            })
+            .finally(() => {
+              vnode.loading = false;
+              vnode.okBtnDisable = false;
             });
         }
       });
