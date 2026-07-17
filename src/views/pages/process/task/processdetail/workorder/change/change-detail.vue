@@ -351,7 +351,8 @@ export default {
       ],
       cur: 0,
       uploadMultiple: true,
-      commentingStepIdMap: {}
+      commentingStepIdMap: {},
+      deletingCommentIdMap: {}
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -631,6 +632,9 @@ export default {
       this.$refs[`comment${obj.id}`][0].currentValue = obj.content;
     },
     delStepComment(obj, cd) {
+      if (this.isDeletingComment(obj.id)) {
+        return;
+      }
       let _this = this;
       let data = {
         id: obj.id
@@ -640,20 +644,34 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.replycontent')}),
         btnType: 'error',
         'on-ok': vnode => {
+          if (this.isDeletingComment(obj.id)) {
+            return;
+          }
+          this.$set(this.deletingCommentIdMap, obj.id, true);
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           this.$api.process.processtask
             .delchangeStepComment(data)
             .then(res => {
               if (res.Status == 'OK') {
                 _this.getCommentList(cd);
+                vnode.isShow = false;
               }
             })
-            .catch(error => {});
-          vnode.isShow = false;
+            .catch(error => {})
+            .finally(() => {
+              this.$set(this.deletingCommentIdMap, obj.id, false);
+              vnode.loading = false;
+              vnode.okBtnDisable = false;
+            });
         },
         'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });
+    },
+    isDeletingComment(commentId) {
+      return this.deletingCommentIdMap[commentId] === true;
     }
   },
   filter: {},
