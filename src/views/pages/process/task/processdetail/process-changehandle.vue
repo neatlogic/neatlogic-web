@@ -40,10 +40,16 @@
               >{{ actionStepconfig.pausechange }}</span>
               <span
                 v-if="actionStepconfig.recoverchange"
-                :class="{disable: changeDisableConfig.recoverring}"
-                class="action-item tsfont-play-o"
+                :class="{disable: changeDisableConfig.recoverring, 'tsfont-play-o': !changeDisableConfig.recoverring}"
+                class="action-item"
                 @click="recoverchange"
-              >{{ actionStepconfig.recoverchange }}</span>
+              >
+                <Icon
+                  v-if="changeDisableConfig.recoverring"
+                  type="ios-loading"
+                  size="14"
+                  class="loading"
+                ></Icon>{{ actionStepconfig.recoverchange }}</span>
               <span
                 v-if="actionStepconfig.restartchange"
                 :class="{disable: changeDisableConfig.restarting}"
