@@ -20,10 +20,17 @@
         v-if="row.rowClassName != 'hide-task' && row.status.value !='draft'"
         slot="header"
         slot-scope="{row}"
-        :style="{cursor: 'pointer'}"
+        :class="{ disable: isFocusing(row.id) }"
+        :style="{cursor: isFocusing(row.id) ? 'not-allowed' : 'pointer'}"
         @click.stop="updateFocus(row)"
       >
-        <i v-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'tsfont-heart-s']" :title="$t('term.process.notfocustask')"></i>
+        <Icon
+          v-if="isFocusing(row.id)"
+          type="ios-loading"
+          size="14"
+          class="loading"
+        ></Icon>
+        <i v-else-if="row.focususers && row.focususers.isCurrentUserFocus" :class="['text-danger', 'tsfont-heart-s']" :title="$t('term.process.notfocustask')"></i>
         <i v-else :class="['text-danger', 'tsfont-heart-o', 'not-focus']" :title="$t('term.process.focustask')"></i>
       </div>
       <div
@@ -124,7 +131,8 @@ export default {
         draft: require('@/resources/assets/images/itsm/draft.png'),
         failed: require('@/resources/assets/images/itsm/failed.png'),
         hidden: require('@/resources/assets/images/itsm/hidden.png')
-      }
+      },
+      focusingTaskIdMap: {}
     };
   },
   mounted() {
@@ -254,6 +262,9 @@ export default {
       this.$emit('changePageSize', page);
     },
     updateFocus(row) {
+      if (this.isFocusing(row.id)) {
+        return;
+      }
       // 工单关注
       let isFocus = 0;
       if (row.focususers.isCurrentUserFocus === 1) {
@@ -265,6 +276,7 @@ export default {
         processTaskId: row.id,
         isFocus: isFocus
       };
+      this.$set(this.focusingTaskIdMap, row.id, true);
       this.$api.process.processtask
         .updateFocus(params)
         .then(res => {
@@ -276,7 +288,13 @@ export default {
         })
         .catch(error => {
           // row.focususers.isCurrentUserFocus = row.focususers.isCurrentUserFocus ? 0 : 1;
+        })
+        .finally(() => {
+          this.$set(this.focusingTaskIdMap, row.id, false);
         });
+    },
+    isFocusing(processTaskId) {
+      return this.focusingTaskIdMap[processTaskId] === true;
     },
     getSelected() {
       let selectList = [];
