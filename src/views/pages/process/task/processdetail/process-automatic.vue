@@ -96,7 +96,13 @@
                         </div>
                         <AutoDetail :defaultStepData="processTaskStepConfig.processTaskStepData.requestAudit" :isShowFailed="processTaskStepConfig.processTaskStepData.requestAudit.status.value == 'failed' ? true : false" type="requestAudit"></AutoDetail>
                         <div v-if="processTaskStepConfig.processTaskStepData.requestAudit.isRetry" class="retry-btn">
-                          <Button type="primary" ghost @click="autoRetry()">{{ $t('page.retry') }}</Button>
+                          <Button
+                            type="primary"
+                            ghost
+                            :loading="isRetrying"
+                            :disabled="isRetrying"
+                            @click="autoRetry()"
+                          >{{ $t('page.retry') }}</Button>
                         </div>
                       </div>
                       <div v-if="processTaskStepConfig.processTaskStepData.callbackAudit && JSON.stringify(processTaskStepConfig.processTaskStepData.callbackAudit) != '{}'" class="callback-audit border-color">
@@ -111,7 +117,13 @@
                         </div>
                         <AutoDetail :defaultStepData="processTaskStepConfig.processTaskStepData.callbackAudit" :isShowFailed="processTaskStepConfig.processTaskStepData.callbackAudit.status.value == 'failed' ? true : false" type="callbackAudit">></AutoDetail>
                         <div v-if="processTaskStepConfig.processTaskStepData.callbackAudit.isRetry" class="retry-btn">
-                          <Button type="primary" ghost @click="autoRetry()">{{ $t('page.retry') }}</Button>
+                          <Button
+                            type="primary"
+                            ghost
+                            :loading="isRetrying"
+                            :disabled="isRetrying"
+                            @click="autoRetry()"
+                          >{{ $t('page.retry') }}</Button>
                         </div>
                       </div>
                     </div>
@@ -370,6 +382,7 @@ export default {
       redoModel: false, //评分工单回退
       transferStepList: [], //转交步骤列表
       transferId: null,
+      isRetrying: false,
       taskAlertHeight: 0 // taskAlert高度
       // taskForm: null, //工单表单查看权限
     };
@@ -501,9 +514,13 @@ export default {
     },
     //auto
     autoRetry() {
+      if (this.isRetrying) {
+        return;
+      }
       let data = {
         processTaskStepId: this.processTaskStepId
       };
+      this.isRetrying = true;
       this.$api.process.processtask.retryAuto(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
@@ -515,6 +532,8 @@ export default {
             }
           });
         }
+      }).finally(() => {
+        this.isRetrying = false;
       });
     }
   },
