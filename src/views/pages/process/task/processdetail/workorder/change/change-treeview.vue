@@ -53,9 +53,10 @@
               <li
                 v-for="(action,cindex) in cd.actionList"
                 :key="cindex"
+                :class="{ disable: action.value === 'abortchangestep' && isAborting(cd.id) }"
                 class="action-item"
                 @click.stop="stepFunction(action.value,cd)"
-              >{{ action.text }}</li>
+              ><Icon v-if="action.value === 'abortchangestep' && isAborting(cd.id)" type="ios-loading" class="loading"></Icon>{{ action.text }}</li>
             </ul>
           </div>
         </div>
@@ -181,7 +182,8 @@ export default {
         }
       ],
       cur: 0,
-      uploadMultiple: true
+      uploadMultiple: true,
+      abortingStepIdMap: {}
     };
   },
   beforeCreate() {},
@@ -230,14 +232,23 @@ export default {
     },
     abortchangestep(obj) {
       //取消
+      if (this.isAborting(obj.id)) {
+        return;
+      }
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.abortingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepAbort(data).then(res => {
         if (res.Status == 'OK') {
           // alert(res);
         }
+      }).finally(() => {
+        this.$set(this.abortingStepIdMap, obj.id, false);
       });
+    },
+    isAborting(changeStepId) {
+      return this.abortingStepIdMap[changeStepId] === true;
     },
     commentchangestep(obj) {
       this.$set(obj, 'cur', 1);
