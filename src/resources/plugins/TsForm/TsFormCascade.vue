@@ -198,6 +198,10 @@ export default {
       type: Boolean,
       default: false
     },
+    allowParentCheckLevelList: {
+      type: Array,
+      default: null
+    },
     onChange: Function
   },
   data() {
@@ -248,7 +252,16 @@ export default {
       return !!(node && node[this.childrenKey] && node[this.childrenKey].length);
     },
     isNodeSelectable(node) {
-      return this.allowParentCheck || !this.hasChildren(node);
+      if (!this.hasChildren(node)) {
+        return true;
+      }
+      if (!this.allowParentCheck) {
+        return false;
+      }
+      if (Array.isArray(this.allowParentCheckLevelList)) {
+        return this.allowParentCheckLevelList.includes((node._pathValueList || []).length - 1);
+      }
+      return true;
     },
     ensureActivePath() {
       if (this.activeValueList.length && this.getNodeByValue(this.activeValueList[this.activeValueList.length - 1])) {
