@@ -3,6 +3,8 @@
     <TsDialog
       type="modal"
       :isShow.sync="stepDialog"
+      :loading="isAborting"
+      :okBtnDisable="isAborting"
       @on-ok="okStep"
       @on-cancel="cancleSetp"
       @on-close="close"
@@ -76,7 +78,8 @@ export default {
           }
         }
       ],
-      actionType: 'abortchangestep'
+      actionType: 'abortchangestep',
+      isAborting: false
     };
   },
   beforeCreate() {},
@@ -104,7 +107,7 @@ export default {
       });
     },
     okStep() {
-      if (!this.$refs.stepDialogForm.valid()) {
+      if (this.isAborting || !this.$refs.stepDialogForm.valid()) {
         return;
       }
       let formData = this.$refs.stepDialogForm.getFormValue();
@@ -113,12 +116,14 @@ export default {
         content: formData.content,
         changeAction: this.actionType
       };
+      this.isAborting = true;
       this.$api.process.processtask.changeStepAbort(data).then(res => {
         if (res.Status == 'OK') {
           this.toTask();
         }
+      }).finally(() => {
+        this.isAborting = false;
       });
-      this.stepDialog = false;
     },
     cancleSetp() {
       this.stepDialog = false;

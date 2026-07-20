@@ -109,6 +109,8 @@
       type="slider"
       v-bind="dataDialog"
       :isShow.sync="isShow"
+      :loading="isUpdatingChange"
+      :okBtnDisable="isUpdatingChange"
       @on-close="close()"
       @on-ok="save()"
     >
@@ -304,6 +306,7 @@ export default {
         planStartEndTime: true,
         ownerChange: true
       },
+      isUpdatingChange: false,
       changeId: null //变更id
     };
   },
@@ -471,7 +474,7 @@ export default {
       });
     },
     save() {
-      if (this.$refs.form && !this.$refs.form.valid()) {
+      if (this.isUpdatingChange || (this.$refs.form && !this.$refs.form.valid())) {
         return;
       }
       if (this.startHandler == 'changecreate') {
@@ -480,7 +483,11 @@ export default {
         if (this.handler == 'changecreate') {
           this.$emit('saveTaskD');
         } else {
-          this.updateChange();
+          this.isUpdatingChange = true;
+          this.updateChange().finally(() => {
+            this.isUpdatingChange = false;
+          });
+          return;
         }
       } else {
         Object.assign(this.dataConfig, this.omnipotentConfig);

@@ -4,6 +4,8 @@
       type="modal"
       :isShow.sync="isShowModal"
       :title="getDialogTitle"
+      :loading="isRedoing"
+      :okBtnDisable="isRedoing"
       @on-ok="repoOk"
       @on-close="close"
     >
@@ -50,6 +52,7 @@ export default {
   data() {
     return {
       isShowModal: false,
+      isRedoing: false,
       formList: [
         //回退回复
         {
@@ -88,6 +91,9 @@ export default {
       this.selectConfig = obj;
     },
     repoOk() {
+      if (this.isRedoing) {
+        return;
+      }
       let repoForm = this.$refs.repoForm;
       if (repoForm.valid()) {
         let data = {
@@ -95,12 +101,15 @@ export default {
           processTaskStepId: this.selectConfig.id,
           content: repoForm.getFormValue().content
         };
+        this.isRedoing = true;
         this.$api.process.processtask.redoTask(data).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.executesuccess'));
             this.$emit('update:isShow', false);
             this.toTask(this.processTaskConfig.id);
           }
+        }).finally(() => {
+          this.isRedoing = false;
         });
       }
     },
