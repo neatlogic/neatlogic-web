@@ -1,7 +1,18 @@
 <template>
   <div>
-    <div v-if="rowData.rowClassName != 'hide-task' && rowData.status.value != 'draft'" :style="{ cursor: 'pointer' }" @click.stop="updateFocus(rowData)">
-      <i v-if="rowData[headerKey] && rowData[headerKey].isCurrentUserFocus" :class="['text-danger', 'tsfont-heart-s']" :title="$t('term.process.notfocustask')"></i>
+    <div
+      v-if="rowData.rowClassName != 'hide-task' && rowData.status.value != 'draft'"
+      :class="{ disable: isFocusing }"
+      :style="{ cursor: isFocusing ? 'not-allowed' : 'pointer' }"
+      @click.stop="updateFocus(rowData)"
+    >
+      <Icon
+        v-if="isFocusing"
+        type="ios-loading"
+        size="14"
+        class="loading"
+      ></Icon>
+      <i v-else-if="rowData[headerKey] && rowData[headerKey].isCurrentUserFocus" :class="['text-danger', 'tsfont-heart-s']" :title="$t('term.process.notfocustask')"></i>
       <i v-else :class="['text-danger', 'tsfont-heart-o', 'not-focus']" :title="$t('term.process.focustask')"></i>
     </div>
   </div>
@@ -10,8 +21,17 @@
 import mixin from './mixin';
 export default {
   mixins: [mixin],
+  data() {
+    return {
+      isFocusing: false
+    };
+  },
   methods: {
     updateFocus(rowData) {
+      if (this.isFocusing) {
+        return;
+      }
+      this.isFocusing = true;
       // 工单关注
       rowData.focususers.isCurrentUserFocus = rowData.focususers.isCurrentUserFocus ? 0 : 1;
       const params = {
@@ -29,6 +49,9 @@ export default {
         })
         .catch(error => {
           rowData.focususers.isCurrentUserFocus = rowData.focususers.isCurrentUserFocus ? 0 : 1;
+        })
+        .finally(() => {
+          this.isFocusing = false;
         });
     }
   }

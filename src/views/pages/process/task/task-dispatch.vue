@@ -28,7 +28,12 @@
             <span class="tsfont-save" @click="save()">{{ $t('term.process.savedraft') }}</span>
           </div>
           <div class="action-item">
-            <Button :disable="disabledConfig.submiting" type="primary" @click="submitForm()">{{ $t('page.submit') }}</Button>
+            <Button
+              :loading="disabledConfig.submiting"
+              :disabled="disabledConfig.submiting"
+              type="primary"
+              @click="submitForm()"
+            >{{ $t('page.submit') }}</Button>
           </div>
         </div>
       </template>
@@ -88,6 +93,7 @@
     <AssignDialog
       v-if="assignModal"
       :nextstepList="nextstepList"
+      :loading="disabledConfig.submiting"
       @selectStep="selectStep"
       @saveStep="saveStep"
       @close="assignModal = false"
@@ -509,7 +515,7 @@ export default {
               }
             }
           })
-          .catch(e => {
+          .finally(() => {
             this.disabledConfig.submiting = false;
             this.disabledConfig.saving = false;
           });

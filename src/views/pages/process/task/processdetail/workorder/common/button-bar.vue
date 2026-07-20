@@ -127,6 +127,8 @@
     <span v-if="actionConfig.reapproval && isDetailReady" class="action-item">
       <Button
         icon="tsfont tsfont-rotate-right"
+        :loading="disabledConfig.reapproval"
+        :disabled="disabledConfig.reapproval"
         @click="doBtnBarAction('reapprovalTask')"
       >{{ actionConfig.reapproval }}</Button>
     </span>

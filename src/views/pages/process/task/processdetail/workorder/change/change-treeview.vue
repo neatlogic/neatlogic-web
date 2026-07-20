@@ -53,9 +53,10 @@
               <li
                 v-for="(action,cindex) in cd.actionList"
                 :key="cindex"
+                :class="{ disable: (action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id)) }"
                 class="action-item"
                 @click.stop="stepFunction(action.value,cd)"
-              >{{ action.text }}</li>
+              ><Icon v-if="(action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'abortchangestep' && isAborting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id))" type="ios-loading" class="loading"></Icon>{{ action.text }}</li>
             </ul>
           </div>
         </div>
@@ -181,7 +182,10 @@ export default {
         }
       ],
       cur: 0,
-      uploadMultiple: true
+      uploadMultiple: true,
+      abortingStepIdMap: {},
+      completingStepIdMap: {},
+      startingStepIdMap: {}
     };
   },
   beforeCreate() {},
@@ -207,37 +211,64 @@ export default {
       this[methods](obj);
     },
     startchangestep(obj) {
+      if (this.isStarting(obj.id)) {
+        return;
+      }
       //开始
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.startingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepStart(data).then(res => {
         if (res.Status == 'OK') {
           // alert(res);
         }
+      }).finally(() => {
+        this.$set(this.startingStepIdMap, obj.id, false);
       });
     },
+    isStarting(changeStepId) {
+      return this.startingStepIdMap[changeStepId] === true;
+    },
     completechangestep(obj) {
+      if (this.isCompleting(obj.id)) {
+        return;
+      }
       //完成
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.completingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepComplete(data).then(res => {
         if (res.Status == 'OK') {
           // alert(res);
         }
+      }).finally(() => {
+        this.$set(this.completingStepIdMap, obj.id, false);
       });
+    },
+    isCompleting(changeStepId) {
+      return this.completingStepIdMap[changeStepId] === true;
     },
     abortchangestep(obj) {
       //取消
+      if (this.isAborting(obj.id)) {
+        return;
+      }
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.abortingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepAbort(data).then(res => {
         if (res.Status == 'OK') {
           // alert(res);
         }
+      }).finally(() => {
+        this.$set(this.abortingStepIdMap, obj.id, false);
       });
+    },
+    isAborting(changeStepId) {
+      return this.abortingStepIdMap[changeStepId] === true;
     },
     commentchangestep(obj) {
       this.$set(obj, 'cur', 1);
