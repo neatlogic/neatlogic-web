@@ -30,15 +30,49 @@
             <i v-if="canEdit && operationType=='combop'" class="item-sort tsfont-bar"></i>
             <i class="item-index text-tip">#{{ sindex+1 }}</i>
             <span class="item-actionIcon" @click.stop>
-              <i
-                v-if="isToolUsageAiVisible(step)"
-                class="item-ai tsfont-ai text-tip"
-                :title="$t('term.autoexec.toolusageaiassistant')"
-                @click="openToolUsageAiAssistant(step)"
-              ></i>
-              <i v-if="canEdit && operationType=='combop'" class="item-copy tsfont-copy text-tip" @click="copyScript(step)"></i>
-              <i v-if="canEdit && operationType=='combop'" class="item-delete tsfont-close text-tip" @click="deleteScript(step,sindex)"></i>
-              <i class="item-toggle tsfont text-tip" @click="toggleshow(step)"></i>
+              <Tooltip
+                v-if="isToolHelpVisible(step)"
+                placement="top"
+                :transfer="true"
+                :content="$t('page.help')"
+              >
+                <i
+                  class="item-help tsfont-question-o text-tip"
+                  @click="openToolHelpDialog(step)"
+                ></i>
+              </Tooltip>
+              <Tooltip
+                v-if="canEdit && operationType=='combop'"
+                placement="top"
+                :transfer="true"
+                :content="$t('page.copy')"
+              >
+                <i
+                  class="item-copy tsfont-copy text-tip"
+                  @click="copyScript(step)"
+                ></i>
+              </Tooltip>
+              <Tooltip
+                v-if="canEdit && operationType=='combop'"
+                placement="top"
+                :transfer="true"
+                :content="$t('page.delete')"
+              >
+                <i
+                  class="item-delete tsfont-close text-tip"
+                  @click="deleteScript(step,sindex)"
+                ></i>
+              </Tooltip>
+              <Tooltip
+                placement="top"
+                :transfer="true"
+                :content="phaseShowMap[step.uuid] ? $t('page.packup') : $t('page.expand')"
+              >
+                <i
+                  class="item-toggle tsfont text-tip"
+                  @click="toggleshow(step)"
+                ></i>
+              </Tooltip>
             </span>
           </div>
           <item
@@ -70,7 +104,17 @@
             <i v-if="canEdit && operationType=='combop'" class="item-sort tsfont-bar"></i>
             <i class="item-index text-tip">#{{ sindex+1 }}</i>
             <span class="item-actionIcon">
-              <i v-if="canEdit && operationType=='combop'" class="item-delete tsfont-close text-tip" @click="deleteScript(step,sindex)"></i>
+              <Tooltip
+                v-if="canEdit && operationType=='combop'"
+                placement="top"
+                :transfer="true"
+                :content="$t('page.delete')"
+              >
+                <i
+                  class="item-delete tsfont-close text-tip"
+                  @click="deleteScript(step,sindex)"
+                ></i>
+              </Tooltip>
             </span>
           </div>
         </div>
@@ -92,6 +136,82 @@
         </div>
       </template>
     </TsDialog>
+    <TsDialog
+      v-if="isToolHelpShow && helpStep"
+      :isShow.sync="isToolHelpShow"
+      :title="$t('term.autoexec.toolhelptitle', {target: helpStep.operationName})"
+      type="slider"
+      width="large"
+      @on-close="closeToolHelpDialog"
+    >
+      <template v-slot>
+        <div class="tool-help-content">
+          <Loading :loadingShow="helpLoading" type="fix"></Loading>
+          <DocumentonlineContent
+            v-if="onlineHelpContent"
+            :content="onlineHelpContent"
+          ></DocumentonlineContent>
+          <template v-else-if="!helpLoading">
+            <div class="tool-help-overview bg-op padding radius-lg mb-md">
+              <div class="tool-help-overview-item">
+                <div class="text-tip">{{ $t('page.description') }}</div>
+                <div>{{ helpStep.description || helpOperation.description || '-' }}</div>
+              </div>
+              <div class="tool-help-overview-item">
+                <div class="text-tip">{{ $t('page.executionmode') }}</div>
+                <div>{{ helpOperation.execModeText || helpOperation.execMode || execMode || '-' }}</div>
+              </div>
+              <div class="tool-help-overview-item">
+                <div class="text-tip">{{ $t('term.autoexec.risklevel') }}</div>
+                <div>{{ helpRiskName }}</div>
+              </div>
+            </div>
+            <div class="item-list">
+              <div class="h4 pb-md">{{ $t('page.inputparam') }}</div>
+              <div v-if="!helpInputParamList.length" class="text-tip">{{ $t('page.notarget', {target: $t('page.inputparam')}) }}</div>
+              <ParamsReadonly
+                v-for="(item, index) in helpInputParamList"
+                :key="`help-input-${index}`"
+                :typeList="paramsTypeList"
+                :config="item"
+              ></ParamsReadonly>
+            </div>
+            <div v-if="helpOperation.argument" class="item-list">
+              <div class="h4 pb-md">{{ $t('term.autoexec.freeparameter') }}</div>
+              <ParamsReadonly :typeList="paramsTypeList" :config="helpOperation.argument"></ParamsReadonly>
+            </div>
+            <div class="item-list">
+              <div class="h4 pb-md">{{ $t('page.outputparam') }}</div>
+              <div v-if="!helpOutputParamList.length" class="text-tip">{{ $t('page.notarget', {target: $t('page.outputparam')}) }}</div>
+              <ParamsReadonly
+                v-for="(item, index) in helpOutputParamList"
+                :key="`help-output-${index}`"
+                :config="item"
+              ></ParamsReadonly>
+            </div>
+          </template>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <Button @click="closeToolHelpDialog">{{ $t('page.close') }}</Button>
+        <Button
+          v-if="onlineHelpContent"
+          :disabled="helpLoading"
+          @click="downloadOnlineHelp"
+        >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
+        <Button
+          v-else
+          v-download="helpExportWord"
+          v-download:prevent="helpLoading || downloadLoading"
+          :loading="helpLoading || downloadLoading"
+        >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
+        <Button
+          v-if="autoexecToolUsageAiAssistantComponent"
+          type="primary"
+          @click="openToolUsageAiFromHelp"
+        >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+      </template>
+    </TsDialog>
     <component
       :is="autoexecToolUsageAiAssistantComponent"
       v-if="autoexecToolUsageAiAssistantComponent"
@@ -105,6 +225,9 @@ import item from '@/views/pages/autoexec/components/script/item/index.js';
 import RiskItem from '@/views/pages/autoexec/components/risk-item.vue';
 import { storeScript, mutationsScript } from './script-state.js';
 import ImportComponent from '@/views/components/import-component.js';
+import ParamsReadonly from '@/views/pages/autoexec/components/param/params-readonly.vue';
+import download from '@/resources/directives/download.js';
+import { downloadBlobFile } from '@/resources/assets/js/downloadUtil.js';
 export default {
   name: '',
   inject: {
@@ -116,10 +239,13 @@ export default {
     draggable,
     ...item,
     RiskItem,
+    ParamsReadonly,
+    DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   filters: {},
+  directives: { download },
   props: {
     canEdit: {
       //是否可以编辑 ，允许改变顺序、编辑修改、新增
@@ -194,7 +320,13 @@ export default {
       showDialog: false,
       currentStep: null,
       description: '',
-      isUpdateSort: false //是否更新排序
+      isUpdateSort: false, //是否更新排序
+      isToolHelpShow: false,
+      helpStep: null,
+      helpLoading: false,
+      onlineHelpContent: '',
+      downloadLoading: false,
+      helpRequestId: 0
     };
   },
   beforeCreate() {},
@@ -205,7 +337,9 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.helpRequestId += 1;
+  },
   destroyed() {},
   methods: {
     changeDragStatus(type) {
@@ -390,10 +524,8 @@ export default {
         });
       }
     },
-    isToolUsageAiVisible(step) {
+    isToolHelpVisible(step) {
       return !!(
-        this.autoexecToolUsageAiAssistantComponent &&
-        this.canEdit &&
         this.operationType == 'combop' &&
         step &&
         step.operation &&
@@ -402,14 +534,77 @@ export default {
         step.operationName != 'native/LOOP-Block'
       );
     },
-    openToolUsageAiAssistant(step) {
+    openToolHelpDialog(step) {
+      this.helpStep = step;
+      this.onlineHelpContent = '';
+      this.isToolHelpShow = true;
+      this.loadOnlineToolHelp();
+    },
+    closeToolHelpDialog() {
+      this.helpRequestId += 1;
+      this.helpLoading = false;
+      this.isToolHelpShow = false;
+      this.helpStep = null;
+      this.onlineHelpContent = '';
+    },
+    async loadOnlineToolHelp() {
+      // 商业在线文档按完整工具路径精确匹配，失败时展示工具自身的结构化帮助。
+      const toolName = this.helpStep && this.helpStep.operationName;
+      if (!toolName) {
+        return;
+      }
+      const requestId = ++this.helpRequestId;
+      const toolNameList = toolName.split('/');
+      const keyword = toolNameList[toolNameList.length - 1];
+      const silentRequestConfig = {headers: {unConsole: 1}};
+      this.helpLoading = true;
+      try {
+        const searchRes = await this.$api.documentonline.searchDocument({keyword: keyword, pageSize: 100}, silentRequestConfig);
+        const documentList = searchRes.Status === 'OK' && searchRes.Return ? searchRes.Return.tbodyList || [] : [];
+        const expectedPathSuffix = `/${toolName}.md`;
+        const document = documentList.find(item => item.filePath && item.filePath.endsWith(expectedPathSuffix));
+        if (!document) {
+          return;
+        }
+        const detailRes = await this.$api.documentonline.getDocumentDetail({filePath: document.filePath}, silentRequestConfig);
+        if (requestId === this.helpRequestId && detailRes.Status === 'OK' && detailRes.Return && detailRes.Return.content) {
+          this.onlineHelpContent = detailRes.Return.content;
+        }
+      } catch (error) {
+        // 在线文档是可选能力，异常时不阻断工具帮助和 AI 辅助入口。
+      } finally {
+        if (requestId === this.helpRequestId) {
+          this.helpLoading = false;
+        }
+      }
+    },
+    downloadOnlineHelp() {
+      if (!this.onlineHelpContent || !this.helpStep) {
+        return;
+      }
+      const toolNameList = this.helpStep.operationName.split('/');
+      const fileName = toolNameList[toolNameList.length - 1] || 'tool';
+      downloadBlobFile(this.onlineHelpContent, {
+        defaultFileName: `[${fileName}]帮助.md`,
+        type: 'text/markdown;charset=utf-8'
+      });
+    },
+    openToolUsageAiFromHelp() {
+      const step = this.helpStep;
+      const documentContent = this.onlineHelpContent;
+      this.closeToolHelpDialog();
+      this.$nextTick(() => {
+        this.openToolUsageAiAssistant(step, documentContent);
+      });
+    },
+    openToolUsageAiAssistant(step, documentContent = '') {
       const assistant = this.$refs.toolUsageAiAssistant;
-      if (!assistant || !assistant.openDialog) {
+      if (!step || !assistant || !assistant.openDialog) {
         return;
       }
       assistant.openDialog({
-        question: this.$t('term.autoexec.defaulttoolusageaiquestion'),
-        toolContext: this.buildToolUsageContext(step)
+        toolContext: this.buildToolUsageContext(step),
+        documentContent: documentContent
       });
     },
     buildToolUsageContext(step) {
@@ -513,6 +708,33 @@ export default {
   computed: {
     autoexecToolUsageAiAssistantComponent() {
       return ImportComponent && ImportComponent.autoexecToolUsageAiAssistant ? ImportComponent.autoexecToolUsageAiAssistant : null;
+    },
+    helpOperation() {
+      return this.helpStep && this.helpStep.operation ? this.helpStep.operation : {};
+    },
+    helpRiskName() {
+      const riskVo = this.helpOperation.riskVo || {};
+      return riskVo.name || this.helpOperation.riskName || '-';
+    },
+    helpInputParamList() {
+      return this.helpOperation.inputParamList || [];
+    },
+    helpOutputParamList() {
+      return this.helpOperation.outputParamList || [];
+    },
+    helpExportWord() {
+      return {
+        url: '/api/binary/autoexec/tool/param/export',
+        method: 'post',
+        params: {toolId: this.helpStep && this.helpStep.operationId, isAll: 0},
+        changeStatus: status => {
+          if (status === 'start') {
+            this.downloadLoading = true;
+          } else if (status === 'success' || status === 'error') {
+            this.downloadLoading = false;
+          }
+        }
+      };
     },
     phaseShowMap() {
       return storeScript.phaseShowMap || {};
@@ -730,7 +952,7 @@ export default {
     margin-right: 4px;
     font-size: 120%;
   }
-  .item-delete,.item-copy,.item-ai{
+  .item-delete,.item-copy,.item-help{
     cursor: pointer;
     width: 16px;
     text-align: center;
@@ -754,6 +976,26 @@ export default {
     .edit-des{
       position: absolute;
       right: 0;
+    }
+  }
+}
+.tool-help-content {
+  min-height: 300px;
+  position: relative;
+
+  .item-list {
+    padding-bottom: 16px;
+  }
+}
+.tool-help-overview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+
+  .tool-help-overview-item {
+    > div:last-child {
+      padding-top: 6px;
+      word-break: break-word;
     }
   }
 }

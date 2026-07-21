@@ -5,6 +5,8 @@
     v-bind="dialogConfig"
     :className="stepDialogClass"
     :title="actionConfig.complete"
+    :loading="disabledConfig.retreating"
+    :okBtnDisable="disabledConfig.retreating"
     @on-ok="retreatOk"
   >
     <template>
@@ -102,13 +104,12 @@ export default {
           this.$api.process.processtask
             .retreatTask(formList)
             .then(res => {
-              this.disabledConfig.retreating = false;
               if (res.Status == 'OK') {
                 this.toTask(this.processTaskId);
                 this.close();
               }
             })
-            .catch(error => {
+            .finally(() => {
               this.disabledConfig.retreating = false;
             });
         }

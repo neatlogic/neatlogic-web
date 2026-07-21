@@ -110,8 +110,9 @@
     <Button
       v-if="actionConfig.comment && isDetailReady"
       type="primary"
-      :disabled="isDisableCommet"
-      :title="isDisableCommet ? $t('term.process.disablecommettip') : null"
+      :loading="isCommenting"
+      :disabled="isDisableCommet || isCommenting"
+      :title="isDisableCommet || isCommenting ? $t('term.process.disablecommettip') : null"
       @click="comment"
     >{{ actionConfig.comment }}</Button>
   </div>
@@ -226,6 +227,9 @@ export default {
   computed: {
     isDetailReady() {
       return processStore.isDetailReady;
+    },
+    isCommenting() {
+      return processStore.isCommenting;
     },
     getBackText() {
       // 获取回退文案

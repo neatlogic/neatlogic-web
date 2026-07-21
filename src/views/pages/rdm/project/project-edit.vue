@@ -11,6 +11,9 @@
           <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'projectinfo' }" @click="currentTab = 'projectinfo'">
             <span>{{ $t('page.basicinfo') }}</span>
           </li>
+          <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'projectnotify' }" @click="currentTab = 'projectnotify'">
+            <span>{{ $t('term.rdm.projectnotification') }}</span>
+          </li>
           <!-- <li class="text-default overflow radius-sm cursor padding-xs" :class="{ 'bg-selected': currentTab === 'projectstatus' }" @click="currentTab = 'projectstatus'">
             <span>{{ $t('term.rdm.statussets') }}</span>
           </li>-->
@@ -72,6 +75,7 @@
     </template>
     <template v-slot:content>
       <div v-if="currentTab === 'projectinfo'"><ProjectEdit :id="projectId"></ProjectEdit></div>
+      <NotifyPolicySetting v-else-if="currentTab === 'projectnotify'" targetType="project" :targetId="projectId"></NotifyPolicySetting>
       <div v-else-if="currentTab === 'projectstatus'"><ProjectStatus :projectId="projectId"></ProjectStatus></div>
       <div v-else-if="currentTab.startsWith('app_') && appId">
         <AppEditor :projectId="projectId" :appId="appId"></AppEditor>
@@ -100,7 +104,8 @@ export default {
     ProjectEdit: () => import('./edittab/project-edit.vue'),
     AppEditor: () => import('./edittab/app-editor.vue'),
     MoreEdit: () => import('./edittab/more-edit.vue'),
-    ProjectStatus: () => import('./edittab/project-status-edit.vue')
+    ProjectStatus: () => import('./edittab/project-status-edit.vue'),
+    NotifyPolicySetting: () => import('./edittab/components/notify-policy-setting.vue')
   },
   data() {
     return {
@@ -122,6 +127,9 @@ export default {
   beforeCreate() {},
   created() {
     this.projectId = Math.floor(this.$route.params['projectId']);
+    if (this.$route.query.notifyTargetType === 'project') {
+      this.currentTab = 'projectnotify';
+    }
     this.getProjectById();
     this.getAppByProjectId();
     this.getAllAppTypeList();
@@ -174,7 +182,22 @@ export default {
       if (this.projectId) {
         this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1 }).then(res => {
           this.selectedAppList = res.Return;
+          this.openNotifyTarget();
         });
+      }
+    },
+    openNotifyTarget() {
+      if (this.$route.query.notifyTargetType !== 'app' || !this.$route.query.notifyTargetId) {
+        return;
+      }
+      const targetId = Number(this.$route.query.notifyTargetId);
+      const targetApp = this.selectedAppList.find(item => item.id === targetId);
+      if (targetApp) {
+        this.currentTab = 'app_' + targetApp.name;
+        this.appId = targetApp.id;
+      } else {
+        this.currentTab = 'app_notify_target';
+        this.appId = targetId;
       }
     },
     getAllAppTypeList() {

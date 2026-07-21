@@ -86,6 +86,36 @@ export default {
         searchList: [
           {
             type: 'select',
+            name: 'moduleId',
+            label: this.$t('term.framework.belongmodule'),
+            url: '/api/rest/module/list',
+            valueName: 'value',
+            textName: 'text',
+            transfer: true
+          },
+          {
+            type: 'select',
+            name: 'jobHandler',
+            label: this.$t('term.autoexec.jobmodule'),
+            search: true,
+            dynamicUrl: '/api/rest/job/class/all/search',
+            rootName: 'tbodyList',
+            valueName: 'className',
+            textName: 'name',
+            transfer: true
+          },
+          {
+            type: 'text',
+            name: 'jobGroupName',
+            label: this.$t('page.jobgroupname')
+          },
+          {
+            type: 'text',
+            name: 'keyword',
+            label: this.$t('page.jobname')
+          },
+          {
+            type: 'select',
             name: 'status',
             label: this.$t('page.status'),
             transfer: true,
@@ -102,6 +132,9 @@ export default {
       searchParam: {
         keyword: '',
         jobUuid: this.jobUuid,
+        moduleId: '',
+        jobHandler: '',
+        jobGroupName: '',
         status: '',
         currentPage: 1,
         pageSize: 20

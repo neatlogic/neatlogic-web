@@ -111,13 +111,16 @@
                 class="mr-xs"
                 type="primary"
                 ghost
+                :loading="isCompleting(item)"
+                :disabled="isCompleting(item)"
                 @click="comment(item, btn)"
               >{{ btn.name }}</Button>
             </template>
             <Button
               v-else
               type="primary"
-              :disabled="isDisableCommet"
+              :loading="isCompleting(item)"
+              :disabled="isDisableCommet || isCompleting(item)"
               :title="isDisableCommet ? $t('term.process.replycanclicktip') : null"
               @click="comment(item)"
             >{{ $t('page.reply') }}</Button>
@@ -130,6 +133,8 @@
       :isShow.sync="isShow"
       class="vertical-center-modal"
       :title="subTaskContentTitle"
+      :loading="isSavingTask"
+      :okBtnDisable="isSavingTask"
       @on-close="closeDialog"
       @on-ok="saveStrategy"
     >
@@ -227,6 +232,8 @@ export default {
         content: null
       },
       isDisableCommet: false,
+      completingTaskId: null,
+      isSavingTask: false,
       editType: 'add',
       customButtonList: [], //策略：自定义按钮列表
       isShowReplyDialog: false,
@@ -244,6 +251,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    isCompleting(item) {
+      return this.completingTaskId === item.id;
+    },
     initData(val) {
       this.stepConfig = this.$utils.deepClone(val);
       this.taskConfigId = this.stepConfig.id;
@@ -328,6 +338,11 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.task')}),
         btnType: 'error',
         'on-ok': vnode => {
+          if (vnode.okBtnDisable) {
+            return;
+          }
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           this.$api.process.process
             .deleteTask({processTaskStepTaskId: item.id})
             .then(res => {
@@ -335,6 +350,10 @@ export default {
               vnode.isShow = false;
               this.processTaskStepTaskList.splice(index, 1);
               this.getListTask();
+            })
+            .finally(() => {
+              vnode.loading = false;
+              vnode.okBtnDisable = false;
             });
         }
       });
@@ -359,6 +378,9 @@ export default {
       this.isShow = false;
     },
     saveStrategy() {
+      if (this.isSavingTask) {
+        return;
+      }
       if (this.$refs.subTaskContent.valid()) {
         let data = {
           id: this.processTaskStepTaskId,
@@ -396,10 +418,13 @@ export default {
           }
         });
         this.$set(data, 'stepTaskUserVoList', stepTaskUserVoList);
+        this.isSavingTask = true;
         this.$api.process.process.saveTask(data).then(res => {
           this.isShow = false;
           this.$Message.success(this.$t('message.executesuccess'));
           this.getListTask();
+        }).finally(() => {
+          this.isSavingTask = false;
         });
       }
     },
@@ -414,6 +439,9 @@ export default {
       this.isShowReplyDialog = true;
     },
     comment(item, btn) {
+      if (this.isCompleting(item)) {
+        return;
+      }
       let data = {
         id: item.id,
         content: item.CkeditorContent
@@ -435,10 +463,13 @@ export default {
         });
         return;
       }
+      this.completingTaskId = item.id;
       this.$api.process.process.completeTask(data).then(res => {
         this.isShow = false;
         this.$Message.success(this.$t('message.executesuccess'));
         this.getListTask();
+      }).finally(() => {
+        this.completingTaskId = null;
       });
     },
     getFileList(fileId, item) {

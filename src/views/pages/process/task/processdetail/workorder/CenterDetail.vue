@@ -1327,6 +1327,10 @@ export default {
     submitComment() {
       //回复
       return new Promise((resolve, reject) => {
+        if (store.isCommenting) {
+          resolve(false);
+          return;
+        }
         let data = {
           processTaskId: this.processTaskId,
           processTaskStepId: this.processTaskStepId,
@@ -1341,6 +1345,7 @@ export default {
           });
           this.$set(data, 'fileIdList', fileIdList);
         }
+        mutations.setCommenting(true);
         this.$api.process.processtask.commentTask(data).then(res => {
           if (res.Status == 'OK') {
             let commentList = (res.Return && res.Return.commentList) || [];
@@ -1354,6 +1359,8 @@ export default {
             this.isDisableCommet = true;
             resolve(this.isDisableCommet);
           }
+        }).finally(() => {
+          mutations.setCommenting(false);
         });
       });
     },

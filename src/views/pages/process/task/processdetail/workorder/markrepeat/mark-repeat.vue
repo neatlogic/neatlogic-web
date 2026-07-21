@@ -35,7 +35,8 @@
       type="slider"
       width="large"
       :title="$t('term.process.repeatedevent')"
-      :okBtnDisable="okBtnDisable"
+      :loading="isSavingRepeat"
+      :okBtnDisable="okBtnDisable || isSavingRepeat"
       @on-ok="saveData()"
       @on-close="close()"
     >
@@ -84,6 +85,8 @@
       width="medium"
       :title="$t('term.process.repeatedevent')"
       :fixedHeader="false"
+      :loading="isSavingRepeat"
+      :okBtnDisable="isSavingRepeat"
       @on-ok="saveOk"
     >
       <div class="dialog-box">
@@ -160,7 +163,8 @@ export default {
       selectedlist: [],
       validRepeatList: [], //校验返回重复事件
       validDialog: false,
-      okBtnDisable: false
+      okBtnDisable: false,
+      isSavingRepeat: false
     };
   },
   beforeCreate() {},
@@ -208,6 +212,11 @@ export default {
         content: _this.$t('dialog.content.unbindconfirm'),
         btnType: 'error',
         'on-ok': function(vnode) {
+          if (vnode.okBtnDisable) {
+            return;
+          }
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           let data = {
             processTaskId: _this.processTaskId,
             repeatProcessTaskId: item.id
@@ -216,6 +225,9 @@ export default {
             _this.$Message.success(_this.$t('message.executesuccess'));
             vnode.isShow = false;
             _this.getRepeatList();
+          }).finally(() => {
+            vnode.loading = false;
+            vnode.okBtnDisable = false;
           });
         }
       });
@@ -245,10 +257,14 @@ export default {
       this.searchDataList(1);
     },
     saveData(list) { //保存重复事件：若被勾选的工单，已被标记过为重复工单，需二次弹窗提示
+      if (this.isSavingRepeat) {
+        return;
+      }
       let data = {
         processTaskId: this.processTaskId,
         repeatProcessTaskIdList: list || this.selectedlist
       };
+      this.isSavingRepeat = true;
       this.$api.process.processtask.saveRepeat(data).then(res => {
         if (res.Status == 'OK') {
           this.validRepeatList = res.Return || [];
@@ -259,15 +275,16 @@ export default {
             });
           } else {
             this.showDialog = false;
+            this.validDialog = false;
             this.getRepeatList();
           }
         }
+      }).finally(() => {
+        this.isSavingRepeat = false;
       });
     },
     saveOk() { //被勾选的工单，已被标记过为重复工单，二次弹窗保存
       this.saveData(this.repeatProcessTaskIdList);
-      this.validDialog = false;
-      this.showDialog = false;
     },
     clipboardSuc() {
       this.$Message.success(this.$t('message.executesuccess'));

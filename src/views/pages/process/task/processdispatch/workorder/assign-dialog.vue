@@ -4,6 +4,8 @@
       :isShow="true"
       :title="assignableWorkerStepList.length > 0 ? $t('term.process.assigntitle') : $t('term.process.selectflowpath')"
       class="vertical-center-modal"
+      :loading="loading"
+      :okBtnDisable="loading"
       @on-ok="save()"
       @on-close="$emit('close')"
     >
@@ -36,6 +38,10 @@ export default {
     nextstepList: {
       type: Array,
       default: () => []
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -89,6 +95,9 @@ export default {
       }
     },
     save() {
+      if (this.loading) {
+        return;
+      }
       this.$emit('selectStep', this.nextStepId);
       let assignWorkerList = [];
       if (this.nextstepList.length > 1 && !this.nextStepId) {

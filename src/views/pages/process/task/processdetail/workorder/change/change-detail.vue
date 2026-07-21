@@ -50,6 +50,8 @@
                   type="primary"
                   size="small"
                   style="margin:0;"
+                  :loading="isBatchUpdatingWorker"
+                  :disabled="isBatchUpdatingWorker"
                   @click="changeAllUser"
                 >{{ $t('page.confirm') }}</Button>
               </div>
@@ -139,9 +141,10 @@
                   <span
                     v-for="(action, cindex) in cd.actionList"
                     :key="cindex"
+                    :class="{ disable: (action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id)) }"
                     class="action-item"
                     @click.stop="stepFunction(action.value, cd)"
-                  >{{ action.text }}</span>
+                  ><Icon v-if="(action.value === 'startchangestep' && isStarting(cd.id)) || (action.value === 'completechangestep' && isCompleting(cd.id))" type="ios-loading" class="loading"></Icon>{{ action.text }}</span>
                 </div>
               </template>
             </div>
@@ -200,7 +203,12 @@
                   :multiple="uploadMultiple"
                 ></TsUpLoad>
                 <div class="comment-click">
-                  <Button type="primary" @click="commentOk(cd, index)">{{ $t('page.reply') }}</Button>
+                  <Button
+                    type="primary"
+                    :loading="isCommenting(cd.id)"
+                    :disabled="isCommenting(cd.id)"
+                    @click="commentOk(cd, index)"
+                  >{{ $t('page.reply') }}</Button>
                 </div>
               </div>
               <div v-if="cd.commentList && cd.commentList.length > 0" class="order-list bg-block" stype="margin:0;">
@@ -251,7 +259,12 @@
                           @remove="res => handleSuccess(res, comment)"
                         ></TsUpLoad>
                         <div class="comment-btn">
-                          <Button size="small" @click="completeComment(comment, cd)">{{ $t('page.complete') }}</Button>
+                          <Button
+                            size="small"
+                            :loading="isEditingComment(comment.id)"
+                            :disabled="isEditingComment(comment.id)"
+                            @click="completeComment(comment, cd)"
+                          >{{ $t('page.complete') }}</Button>
                           <Button size="small" @click="cancelComment(comment)">{{ $t('page.cancel') }}</Button>
                         </div>
                       </div>
@@ -271,6 +284,7 @@
         :is="stepdialogType"
         :isShow="stepDialog"
         :config="stepConfig"
+        :isSaving="isUpdatingChangeStep"
         :defaultProcessTaskStepId="processTaskStepId"
         @close="closeDialog"
         @save="saveStepObj"
@@ -345,7 +359,14 @@ export default {
         }
       ],
       cur: 0,
-      uploadMultiple: true
+      uploadMultiple: true,
+      commentingStepIdMap: {},
+      deletingCommentIdMap: {},
+      editingCommentIdMap: {},
+      completingStepIdMap: {},
+      startingStepIdMap: {},
+      isUpdatingChangeStep: false,
+      isBatchUpdatingWorker: false
       //   editchangestep: null, //编辑
       //   startchangestep: null, //开始
       //   completechangestep: null, //完成
@@ -386,6 +407,9 @@ export default {
       });
     },
     saveStepObj(obj) {
+      if (this.isUpdatingChangeStep) {
+        return;
+      }
       if (obj) {
         let select = this.newChangeStepList.find(c => c.uuid === obj.uuid);
         if (select) {
@@ -401,12 +425,16 @@ export default {
             endTimeWindow: select.endTimeWindow,
             worker: select.worker
           };
+          this.isUpdatingChangeStep = true;
           this.$api.process.processtask.updateChangeStep(data).then(res => {
             if (res.Status == 'OK') {
               this.getChangeStart(obj.id);
               this.$Message.success(this.$t('message.executesuccess'));
               this.$emit('updateStepActive');
+              this.stepDialog = false;
             }
+          }).finally(() => {
+            this.isUpdatingChangeStep = false;
           });
         }
       }
@@ -432,24 +460,28 @@ export default {
       }
     },
     changeAllUser() {
-      if (this.$refs.worker.valid()) {
-        this.newChangeStepList.forEach(i => {
-          i.worker = this.worker;
-          this.$set(i, 'workerVo', this.allWorkerVo);
-        });
-        this.visible = false;
-        let data = {
-          processTaskStepId: this.processTaskStepId,
-          changeId: this.handlerStepInfo.id,
-          worker: this.worker
-        };
-        this.$api.process.processtask.changeStepWorker(data).then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.executesuccess'));
-            this.$emit('updateStepActive');
-          }
-        });
+      if (this.isBatchUpdatingWorker || !this.$refs.worker.valid()) {
+        return;
       }
+      this.newChangeStepList.forEach(i => {
+        i.worker = this.worker;
+        this.$set(i, 'workerVo', this.allWorkerVo);
+      });
+      let data = {
+        processTaskStepId: this.processTaskStepId,
+        changeId: this.handlerStepInfo.id,
+        worker: this.worker
+      };
+      this.isBatchUpdatingWorker = true;
+      this.$api.process.processtask.changeStepWorker(data).then(res => {
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.executesuccess'));
+          this.$emit('updateStepActive');
+          this.visible = false;
+        }
+      }).finally(() => {
+        this.isBatchUpdatingWorker = false;
+      });
     },
     saveChangeStepData() {
       //保存步骤数据
@@ -501,28 +533,46 @@ export default {
       });
     },
     startchangestep(obj) {
+      if (this.isStarting(obj.id)) {
+        return;
+      }
       //开始
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.startingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepStart(data).then(res => {
         if (res.Status == 'OK') {
           this.getChangeStart(obj.id);
           this.$emit('updateStepActive'); //只更新活动和步骤
           // this.toTask(); //刷新页面
         }
+      }).finally(() => {
+        this.$set(this.startingStepIdMap, obj.id, false);
       });
     },
+    isStarting(changeStepId) {
+      return this.startingStepIdMap[changeStepId] === true;
+    },
     completechangestep(obj) {
+      if (this.isCompleting(obj.id)) {
+        return;
+      }
       //完成
       let data = {
         changeStepId: obj.id
       };
+      this.$set(this.completingStepIdMap, obj.id, true);
       this.$api.process.processtask.changeStepComplete(data).then(res => {
         if (res.Status == 'OK') {
           this.toTask();
         }
+      }).finally(() => {
+        this.$set(this.completingStepIdMap, obj.id, false);
       });
+    },
+    isCompleting(changeStepId) {
+      return this.completingStepIdMap[changeStepId] === true;
     },
     abortchangestep(obj) {
       //取消
@@ -537,6 +587,9 @@ export default {
     },
     commentOk(cd, index) {
       //回复
+      if (this.isCommenting(cd.id)) {
+        return;
+      }
       let obj = cd;
       let _this = this;
       if (this.$refs[`commentChangeStep${index}`][0].currentValue || this.$refs[`uploadFile${index}`][0].uploadList.length > 0) {
@@ -554,6 +607,7 @@ export default {
           });
           this.$set(data, 'fileIdList', fileIdList);
         }
+        this.$set(this.commentingStepIdMap, cd.id, true);
         this.$api.process.processtask.commentChangeStep(data).then(res => {
           if (res.Status == 'OK') {
             _this.getCommentList(obj);
@@ -561,8 +615,13 @@ export default {
             _this.$refs[`uploadFile${index}`][0].handleClearFiles();
             this.$emit('updateStepActive');
           }
+        }).finally(() => {
+          this.$set(this.commentingStepIdMap, cd.id, false);
         });
       }
+    },
+    isCommenting(changeStepId) {
+      return this.commentingStepIdMap[changeStepId] === true;
     },
     getCommentList(cd) {
       let data = {
@@ -586,6 +645,9 @@ export default {
       this.$set(obj, 'editContent', true);
     },
     completeComment(obj, cd) {
+      if (this.isEditingComment(obj.id)) {
+        return;
+      }
       let _this = this;
       if (this.$refs[`comment${obj.id}`][0].currentValue) {
         let content = this.$refs[`comment${obj.id}`][0].currentValue;
@@ -602,13 +664,19 @@ export default {
         } else if (obj.fileIdList && obj.fileIdList.length > 0) {
           this.$set(data, 'fileIdList', obj.fileIdList);
         }
-        this.$set(obj, 'editContent', false);
+        this.$set(this.editingCommentIdMap, obj.id, true);
         this.$api.process.processtask.editchangeStepComment(data).then(res => {
           if (res.Status == 'OK') {
             _this.getCommentList(cd);
+            this.$set(obj, 'editContent', false);
           }
+        }).finally(() => {
+          this.$set(this.editingCommentIdMap, obj.id, false);
         });
       }
+    },
+    isEditingComment(commentId) {
+      return this.editingCommentIdMap[commentId] === true;
     },
     cancelComment(obj) {
       this.$set(obj, 'editContent', false);
@@ -616,6 +684,9 @@ export default {
       this.$refs[`comment${obj.id}`][0].currentValue = obj.content;
     },
     delStepComment(obj, cd) {
+      if (this.isDeletingComment(obj.id)) {
+        return;
+      }
       let _this = this;
       let data = {
         id: obj.id
@@ -625,20 +696,34 @@ export default {
         content: this.$t('dialog.content.deleteconfirm', {target: this.$t('page.replycontent')}),
         btnType: 'error',
         'on-ok': vnode => {
+          if (this.isDeletingComment(obj.id)) {
+            return;
+          }
+          this.$set(this.deletingCommentIdMap, obj.id, true);
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           this.$api.process.processtask
             .delchangeStepComment(data)
             .then(res => {
               if (res.Status == 'OK') {
                 _this.getCommentList(cd);
+                vnode.isShow = false;
               }
             })
-            .catch(error => {});
-          vnode.isShow = false;
+            .catch(error => {})
+            .finally(() => {
+              this.$set(this.deletingCommentIdMap, obj.id, false);
+              vnode.loading = false;
+              vnode.okBtnDisable = false;
+            });
         },
         'on-cancel': vnode => {
           vnode.isShow = false;
         }
       });
+    },
+    isDeletingComment(commentId) {
+      return this.deletingCommentIdMap[commentId] === true;
     }
   },
   filter: {},
