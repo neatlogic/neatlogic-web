@@ -4,6 +4,7 @@
       type="modal"
       :isShow.sync="isShowModal"
       :title="$t('page.transfer')"
+      :loading="disabledTransferring"
       :okBtnDisable="disabledTransferring"
       className="task-step"
       @on-close="closeTransferModal"
@@ -24,7 +25,13 @@
       </template>
       <template v-slot:footer>
         <Button @click="closeTransferModal()">{{ $t('page.cancel') }}</Button>
-        <Button type="primary" ghost @click="transferOk()">{{ $t('page.transfer') }}</Button>
+        <Button
+          type="primary"
+          ghost
+          :loading="disabledTransferring"
+          :disabled="disabledTransferring"
+          @click="transferOk()"
+        >{{ $t('page.transfer') }}</Button>
         <Button v-if="actionConfig.save" type="primary" @click="saveTransfer()">
           <Tooltip placement="top-end" :content="$t('term.process.savetransfertip')" transfer>
             {{ $t('term.process.savetransfer') }}

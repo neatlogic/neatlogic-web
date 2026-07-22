@@ -28,10 +28,16 @@
               <!-- 处理_start -->
               <span
                 v-if="actionStepconfig.startchange"
-                :class="{disable: changeDisableConfig.starting}"
-                class="tsfont-play-o action-item"
+                :class="{disable: changeDisableConfig.starting, 'tsfont-play-o': !changeDisableConfig.starting}"
+                class="action-item"
                 @click="startchange"
-              >{{ actionStepconfig.startchange }}</span>
+              >
+                <Icon
+                  v-if="changeDisableConfig.starting"
+                  type="ios-loading"
+                  size="14"
+                  class="loading"
+                ></Icon>{{ actionStepconfig.startchange }}</span>
               <span
                 v-if="actionStepconfig.pausechange && isDetailReady"
                 :class="{disable: changeDisableConfig.pausing}"
@@ -40,16 +46,28 @@
               >{{ actionStepconfig.pausechange }}</span>
               <span
                 v-if="actionStepconfig.recoverchange"
-                :class="{disable: changeDisableConfig.recoverring}"
-                class="action-item tsfont-play-o"
+                :class="{disable: changeDisableConfig.recoverring, 'tsfont-play-o': !changeDisableConfig.recoverring}"
+                class="action-item"
                 @click="recoverchange"
-              >{{ actionStepconfig.recoverchange }}</span>
+              >
+                <Icon
+                  v-if="changeDisableConfig.recoverring"
+                  type="ios-loading"
+                  size="14"
+                  class="loading"
+                ></Icon>{{ actionStepconfig.recoverchange }}</span>
               <span
                 v-if="actionStepconfig.restartchange"
-                :class="{disable: changeDisableConfig.restarting}"
-                class="tsfont-play-o action-item"
+                :class="{disable: changeDisableConfig.restarting, 'tsfont-play-o': !changeDisableConfig.restarting}"
+                class="action-item"
                 @click="restartchange"
-              >{{ actionStepconfig.restartchange }}</span>
+              >
+                <Icon
+                  v-if="changeDisableConfig.restarting"
+                  type="ios-loading"
+                  size="14"
+                  class="loading"
+                ></Icon>{{ actionStepconfig.restartchange }}</span>
               <!-- 处理_end -->
               <!-- 开始_start -->
               <span
@@ -397,6 +415,8 @@
       :isShow.sync="retreatModal"
       :title="actionConfig.retreat"
       :className="stepDialogClass"
+      :loading="disabledConfig.retreating"
+      :okBtnDisable="disabledConfig.retreating"
       @on-ok="retreatOk"
     >
       <template>
@@ -483,6 +503,8 @@
       :isShow.sync="pausechangeModal"
       :className="stepDialogClass"
       :title="$t('term.process.changesuspension')"
+      :loading="changeDisableConfig.pausing"
+      :okBtnDisable="changeDisableConfig.pausing"
       @on-ok="okPausechange"
     >
       <template>
@@ -859,7 +881,7 @@ export default {
           changeId: this.changeId
         };
         this.$api.process.processtask.changeRestart(data).then(res => {
-          this.changeDisableConfig.restarting = true;
+          this.changeDisableConfig.restarting = false;
           if (res.Status == 'OK') {
             this.toTask(this.processTaskId, this.processTaskStepId);
           }

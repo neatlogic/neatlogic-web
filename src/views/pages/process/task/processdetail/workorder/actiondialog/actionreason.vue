@@ -4,6 +4,7 @@
       :title="title"
       type="modal"
       :isShow.sync="isShowModal"
+      :loading="okBtnDisable"
       :okBtnDisable="okBtnDisable"
       @on-ok="okDialog"
       @on-close="closeDialog"
@@ -67,6 +68,9 @@ export default {
   methods: {
     okDialog() {
       let formConfig = this.$refs.formConfig;
+      if (this.okBtnDisable) {
+        return;
+      }
       if (formConfig.valid()) {
         this.okBtnDisable = true;
         let data = {

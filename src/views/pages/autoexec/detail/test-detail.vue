@@ -273,29 +273,39 @@ export default {
   methods: {
     async getInitData() {
       await this.getJobData();
+      await this.initScriptId();
       this.getData();
       this.getArgument();
       this.setTestTagId();
+    },
+    async initScriptId() {
+      // 输入参数接口使用脚本ID，测试执行和自由参数接口仍使用脚本版本ID，两者缺一时通过脚本详情补齐。
+      if (this.type !== 'script' || (this.id && this.scriptId)) {
+        return;
+      }
+      let param = this.scriptId ? { id: this.scriptId, status: 'passed' } : { versionId: this.id };
+      await this.$api.autoexec.script.getScriptDetail(param).then(res => {
+        if (res.Status == 'OK' && res.Return && res.Return.script) {
+          const script = res.Return.script;
+          this.scriptId = script.id;
+          this.id = script.versionVo && script.versionVo.id;
+        }
+      });
     },
     getData() {
       //根据id获取详情
       if (!this.id && !this.scriptId) {
         return;
       }
-      let param = { type: this.type };
-      if (this.id) {
-        param.id = this.id;
-      } else if (this.scriptId) {
-        param.scriptId = this.scriptId;
-      }
+      let param = {
+        operationId: this.type === 'script' ? this.scriptId : this.id,
+        operationType: this.type
+      };
       this.$api.autoexec.script.getTestDetail(param).then(res => {
         if (res.Status == 'OK' && res.Return) {
           this.dataConfig = res.Return;
           if (!this.jobId) {
             this.nameForm.itemList.name.value = this.dataConfig.name;
-          }
-          if (!this.id) {
-            this.id = this.dataConfig.id;
           }
         }
       });

@@ -5,6 +5,8 @@
       type="slider"
       width="large"
       :isShow="true"
+      :loading="isUpdating"
+      :okBtnDisable="isUpdating"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
@@ -42,7 +44,8 @@ export default {
       defaultPriorityUuid: '',
       priorityList: [],
       priorityUuid: '',
-      formSceneUuid: ''
+      formSceneUuid: '',
+      isUpdating: false
     };
   },
   beforeCreate() {},
@@ -78,22 +81,27 @@ export default {
       this.isReady = true;
     },
     async okDialog() {
-      let errorMap = null;
-      if (this.$refs.formSheet) {
-        errorMap = await this.$refs.formSheet.validData();
-      }
-      if (!this.$utils.isEmpty(errorMap)) {
+      if (this.isUpdating) {
         return;
       }
-      let data = {
-        processTaskId: this.processTaskConfig.id,
-        formAttributeDataList: this.$refs.formSheet.getFormData(),
-        formExtendAttributeDataList: this.$refs.formSheet.getFormExtendData()
-      };
-      if (this.priorityUuid) {
-        data.priorityUuid = this.priorityUuid;
-      }
-      this.$api.process.processtask.updateProcessForm(data).then(res => {
+      this.isUpdating = true;
+      try {
+        let errorMap = null;
+        if (this.$refs.formSheet) {
+          errorMap = await this.$refs.formSheet.validData();
+        }
+        if (!this.$utils.isEmpty(errorMap)) {
+          return;
+        }
+        let data = {
+          processTaskId: this.processTaskConfig.id,
+          formAttributeDataList: this.$refs.formSheet.getFormData(),
+          formExtendAttributeDataList: this.$refs.formSheet.getFormExtendData()
+        };
+        if (this.priorityUuid) {
+          data.priorityUuid = this.priorityUuid;
+        }
+        let res = await this.$api.process.processtask.updateProcessForm(data);
         if (res.Status === 'OK') {
           //刷新页面
           this.$skipHistory();
@@ -105,7 +113,9 @@ export default {
             }
           });
         }
-      });
+      } finally {
+        this.isUpdating = false;
+      }
     },
     closeDialog() {
       this.$emit('close');

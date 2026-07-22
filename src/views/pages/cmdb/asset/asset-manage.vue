@@ -92,14 +92,18 @@
         </div>
       </template>
       <template v-slot:sider>
-        <span v-if="$utils.isEmpty(rootCiName) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
-        <Tree
-          v-if="!$utils.isEmpty(treeData)"
-          :data="treeData"
-          :render="renderContent"
-          class="ts-tree"
-          @on-select-change="selectTreeNode"
-        ></Tree>
+        <ResourceTypeTree
+          :key="resourceTypeTreeKey"
+          v-model="selectType.typeId"
+          class="resource-type-tree"
+          @load="handleResourceTypeLoad"
+          @change="handleResourceTypeChange"
+        >
+          <template v-slot:empty="{ rootCiName: slotRootCiName }">
+            <span v-if="$utils.isEmpty(slotRootCiName) && $AuthUtils.hasRole('RESOURCECENTER_MODIFY')" class="text-href" @click="editTree()">{{ $t('term.cmdb.resourcetypetreesettingdesc') }}</span>
+            <span v-else>{{ $t('page.nodata') }}</span>
+          </template>
+        </ResourceTypeTree>
       </template>
       <template v-slot:content>
         <TsTable
@@ -190,13 +194,11 @@
     <TagEdit
       v-if="isMangeShow"
       :operateType="operateType"
-      :settingForm="settingForm"
       :title="showDialog.title"
       :resourceIdList="resourceIdList"
       :settingConfig="settingConfig"
-      @success="success"
+      @success="tagSuccess"
       @close="close"
-      @refreshTagList="refreshTagList"
     ></TagEdit>
     <AcountEdit
       v-if="isAddAccountShow"
@@ -204,8 +206,7 @@
       :resourceId="resourceId"
       :resourceIdList="resourceIdList"
       :accountList="accountList"
-      :accountslist="accountslist"
-      @success="success"
+      @success="accountSuccess"
       @closeDialog="closeAddAccount"
     ></AcountEdit>
     <AccountEditDialog v-if="isShowAccountEditDialog" :resourceId="resourceId" @close="closeAccountEditDialog"></AccountEditDialog>
@@ -253,6 +254,7 @@ export default {
     TreeEdit: () => import('./components/tree-edit'),
     ExportAsset: () => import('./export-asset-dialog.vue'),
     AccountEditDialog: () => import('./components/account-edit-dialog'),
+    ResourceTypeTree: () => import('@/resources/components/ResourceTypeTree'),
     AdvancedModeSearch: () => import('./advanced-mode-search') // 高级模式搜索
   },
   filters: {},
@@ -271,7 +273,6 @@ export default {
       selectedCiEntityList: [], // 选中的配置项列表
       ciData: {}, //当前配置项模型数据
       isSiderHide: false,
-      accountslist: [],
       isAddAccountShow: false,
       selectType: {
         typeId: ''
@@ -472,29 +473,14 @@ export default {
       settingConfig: {
         tagList: []
       },
-      settingForm: {
-        id: {
-          type: 'text',
-          name: 'id',
-          isHidden: true
-        },
-        tagList: {
-          type: 'slot',
-          name: 'tagList',
-          label: this.$t('page.tag'),
-          transfer: true,
-          multiple: true,
-          tagList: [],
-          search: true,
-          allowCreate: true,
-          dynamicUrl: 'api/rest/resourcecenter/tag/name/list/forselect',
-          rootName: 'tbodyList'
-        }
-      },
       implementName: '',
       isExportAssetDialog: false,
       defaultValue: [],
+      pendingResourceId: null,
+      assetTheadReady: false,
+      assetDataInitialized: false,
       isShowTreeEdit: false,
+      resourceTypeTreeKey: 0,
       treeTypeRootCiId: null,
       searchList: [
         {
@@ -631,14 +617,10 @@ export default {
   async mounted() {
     let { resourceId = '' } = this.$route.query || {};
     this.defaultValue = resourceId ? [parseInt(resourceId)] : [];
-    await this.getTreeType();
+    this.pendingResourceId = resourceId ? parseInt(resourceId) : null;
     await this.initAssetTheadSetting();
-    await this.initData();
-    if (resourceId) {
-      if (this.tableConfig.tbodyList && this.tableConfig.tbodyList.some(item => item.id == resourceId)) {
-        this.editAccount({ id: parseInt(resourceId) });
-      }
-    }
+    this.assetTheadReady = true;
+    await this.loadAssetDataByType({ initial: true });
   },
   beforeUpdate() {},
   updated() {},
@@ -858,8 +840,6 @@ export default {
     },
     async initData() {
       await this.searchAssetData();
-      await this.listForselect();
-      await this.listAccount();
       if (this.$route.query && this.$route.query.isAddAccountShow) {
         let assetIpList = sessionStorage.getItem('assetIpList');
         assetIpList && (this.resourceIdList = JSON.parse(assetIpList));
@@ -875,9 +855,9 @@ export default {
     changeCurrent(currentPage = 1) {
       this.tableConfig.currentPage = currentPage;
       if (this.isSimpleMode) {
-        this.searchAssetData();
+        return this.searchAssetData();
       } else {
-        this.advancedModeSearch(this.searchVal);
+        return this.advancedModeSearch(this.searchVal);
       }
     },
     changePageSize(pageSize) {
@@ -903,19 +883,6 @@ export default {
       } else {
         return '';
       }
-    },
-    async listForselect() {
-      await this.$api.cmdb.asset.listTag({}).then(res => {
-        let resdata = res.Return || {};
-        this.settingForm.tagList.tagList = resdata;
-      });
-    },
-    async listAccount() {
-      await this.$api.cmdb.asset.searchAccount({}).then(res => {
-        let resdata = res.Return || {};
-        this.accountslist = resdata;
-        this.loadingShow = false;
-      });
     },
     closeDeleteDialog(needRefresh) {
       this.isDeleteDialogShow = false;
@@ -949,6 +916,59 @@ export default {
         this.treeData = data;
       });
     },
+    handleResourceTypeLoad({ rootCiName = '', rootNode = null } = {}) {
+      this.rootCiName = rootCiName;
+      this.treeTypeRootCiId = rootNode && rootNode.id ? rootNode.id : null;
+      if (!rootNode) {
+        this.clearAssetTable();
+      }
+    },
+    async handleResourceTypeChange({ selectedId, node, selected } = {}) {
+      if (!selected || !selectedId) {
+        this.selectType = { typeId: null };
+        this.implementName = '';
+        this.ciData = {};
+        this.clearAssetTable();
+        return;
+      }
+      this.selectType = {
+        typeId: selectedId
+      };
+      this.implementName = node ? (node.label + '(' + node.name + ')' + this.$t('term.inspect.inspect')) : '';
+      this.getCiById(selectedId);
+      await this.loadAssetDataByType({ initial: true });
+    },
+    async loadAssetDataByType({ initial = false } = {}) {
+      if (!this.assetTheadReady || !this.selectType.typeId) {
+        return;
+      }
+      if (initial && !this.assetDataInitialized) {
+        this.assetDataInitialized = true;
+        await this.initData();
+      } else if (this.isSimpleMode) {
+        await this.changeCurrent();
+      } else {
+        await this.advancedModeSearch(this.searchVal);
+      }
+      if (this.pendingResourceId && this.tableConfig.tbodyList && this.tableConfig.tbodyList.some(item => item.id == this.pendingResourceId)) {
+        this.editAccount({ id: this.pendingResourceId });
+        this.pendingResourceId = null;
+      }
+    },
+    clearAssetTable() {
+      this.tableConfig = {
+        ...this.tableConfig,
+        tbodyList: [],
+        currentPage: 1,
+        rowNum: 0
+      };
+      this.resourceIdList = [];
+      this.selectedCiEntityList = [];
+      this.selectList = [];
+      this.selectedRemain = false;
+      this.loading = false;
+      this.loadingShow = false;
+    },
     setTreeDataSelect(typeId, data, parentData) {
       if (data && data.length > 0) {
         data.forEach(d => {
@@ -973,6 +993,7 @@ export default {
     searchAssetData(isEmptySelected) {
       //获取表格数据
       if (!this.selectType.typeId) {
+        this.clearAssetTable();
         return;
       }
       if (this.tableConfig.currentPage == 1) {
@@ -1011,6 +1032,7 @@ export default {
         .finally(() => {
           this.loading = false;
           this.selectedCiEntityList = [];
+          this.loadingShow = false;
         });
     },
     renderContent(h, { root, node, data }) {
@@ -1098,12 +1120,22 @@ export default {
       this.ciEntityId = null;
       this.isDeleteDialogShow = true;
     },
-    async success(msg) {
+    async handleOperateSuccess(params) {
+      const { msg = '' } = params || {};
       await this.searchAssetData(true);
-      this.$Message.success(msg);
+      if (msg) {
+        this.$Message.success(msg);
+      }
       this.resourceIdList = [];
       this.selectList = [];
       this.selectedRemain = true;
+    },
+    async tagSuccess(params) {
+      await this.handleOperateSuccess(params);
+      this.isMangeShow = false;
+    },
+    async accountSuccess(params) {
+      await this.handleOperateSuccess(params);
       this.isAddAccountShow = false;
     },
     gotoDetails(row) {
@@ -1145,11 +1177,6 @@ export default {
     delAccount() {
       this.accountAction(this.$t('dialog.title.batchdeletetarget', { target: this.$t('page.account') }), 'delAccount');
     },
-    // 刷新标签列表
-    refreshTagList() {
-      this.listForselect();
-      this.$Message.success(this.$t('message.refreshsuccess'));
-    },
     close() {
       this.isMangeShow = false;
     },
@@ -1184,8 +1211,7 @@ export default {
       if (action == 'refresh') {
         this.treeTypeRootCiId = null;
         this.selectType.typeId = null;
-        await this.getTreeType();
-        await this.initData();
+        this.resourceTypeTreeKey += 1;
       }
     },
     switchMode() {
@@ -1211,7 +1237,7 @@ export default {
         ...searchVal
       };
       this.loadingShow = true;
-      this.$api.autoexec.action
+      return this.$api.autoexec.action
         .getNodeList(params)
         .then(res => {
           if (res.Status == 'OK') {

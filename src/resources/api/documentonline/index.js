@@ -8,14 +8,14 @@ const documentonline = {
   getDirectory() { //在线帮助文档目录
     return axios.post('/api/rest/documentonline/directory');
   },
-  getDocumentDetail(data) { //获取单个在线帮助文档
-    return axios.post('/api/rest/documentonline/get', data);
+  getDocumentDetail(data, config) { //获取单个在线帮助文档
+    return axios.post('/api/rest/documentonline/get', data, config);
   },
   getDocumentList(data) { //查询在线帮助文档列表
     return axios.post('/api/rest/documentonline/list', data);
   },
-  searchDocument(data) { //全局搜索文档
-    return axios.post('/api/rest/documentonline/search', data);
+  searchDocument(data, config) { //全局搜索文档
+    return axios.post('/api/rest/documentonline/search', data, config);
   },
   getUnclassifiedList(data) { //未分类文档列表
     return axios.post('/api/rest/documentonline/unclassified/list', data);

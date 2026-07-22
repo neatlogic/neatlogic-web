@@ -38,7 +38,12 @@
       ></TsCkeditor>
     </div>
     <div class="score-btn">
-      <Button type="primary" @click="submit">{{ $t('page.submit') }}</Button>
+      <Button
+        type="primary"
+        :loading="isSubmitting"
+        :disabled="isSubmitting"
+        @click="submit"
+      >{{ $t('page.submit') }}</Button>
       <Button v-if="getRedoText" @click="redoTask">{{ getRedoText }}</Button>
     </div>
   </div>
@@ -68,19 +73,24 @@ export default {
       scoreTemplateId: null,
       content: '',
       dimensionList: [],
-      scoreTemplateVo: null
+      scoreTemplateVo: null,
+      isSubmitting: false
     };
   },
   created() {
   },
   methods: {
     submit() {
+      if (this.isSubmitting) {
+        return;
+      }
       const params = {
         processTaskId: this.processTaskId,
         scoreTemplateId: this.scoreTemplateId,
         scoreDimensionList: this.dimensionList,
         content: this.content
       };
+      this.isSubmitting = true;
       this.$api.process.scoreTemplate
         .submitScore(params)
         .then(res => {
@@ -90,6 +100,9 @@ export default {
               name: 'refresh', replace: true, query: { path: 'task-detail?processTaskId=' + this.processTaskId }
             });
           }
+        })
+        .finally(() => {
+          this.isSubmitting = false;
         });
     },
     redoTask() { //工单回退

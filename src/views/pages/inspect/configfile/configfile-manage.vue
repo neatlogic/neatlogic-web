@@ -47,15 +47,16 @@
       </template>
       <template v-slot:sider>
         <div>
-          <span v-if="$utils.isEmpty(resourceList)" class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
-          <Tree
-            v-else
-            :data="resourceList"
-            :render="renderTree"
-            :multiple="false"
-            class="ts-tree"
-            @on-select-change="selectTreeNode"
-          ></Tree>
+          <ResourceTypeTree
+            v-model="searchParam.typeId"
+            class="resource-type-tree"
+            @load="handleResourceTypeLoad"
+            @change="handleResourceTypeChange"
+          >
+            <template v-slot:empty>
+              <span class="text-href" @click="gotoAssetManagePage()">{{ $t('term.cmdb.gotoresourcetypetreesetting') }}</span>
+            </template>
+          </ResourceTypeTree>
         </div>
       </template>
       <template v-slot:content>
@@ -132,7 +133,8 @@ export default {
     EditFilePath: () => import('./components/edit-file-path.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
-    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    ResourceTypeTree: () => import('@/resources/components/ResourceTypeTree')
 
   },
   props: {},
@@ -346,12 +348,10 @@ export default {
         }
       ],
       reportData: {},
-      resourceList: [],
       timmer: null,
       isEditDialog: false,
       editTitle: '',
       editType: '',
-      flattenResourceMap: {},
       searchText: {},
       typeName: '',
       conditionConfig: {}, //批量添加条件
@@ -365,10 +365,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  async mounted() {
-    await this.getResourceList();
-    this.searchConfigFileList();
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -405,66 +402,35 @@ export default {
       });
       return columlist;
     },
-    getResourceList() {
-      return this.$api.cmdb.asset.getResourceTreeType().then(res => {
-        this.resourceList = res.Return.tbodyList;
-        this.$nextTick(() => {
-          this.flattenResourceList();
-          if (this.searchParam.typeId) {
-            this.selectResource(this.searchParam.typeId);
-          } else {
-            if (this.resourceList.length > 0) {
-              this.$set(this.searchParam, 'typeId', this.resourceList[0].id);
-              this.$set(this.resourceList[0], 'selected', true);
-              this.$set(this.resourceList[0], 'expand', true);
-              this.typeName = this.resourceList[0].label;
-            }
-          }
-        });
-      });
-    },
-    //扁平化资源数据，变成一个id为key的map
-    flattenResourceList(children) {
-      let resourceList = children || this.resourceList;
-      if (resourceList && resourceList.length > 0) {
-        resourceList.forEach(resource => {
-          this.flattenResourceMap[resource.id] = resource;
-          if (resource.children) {
-            this.flattenResourceList(resource.children);
-          }
-        });
+    handleResourceTypeLoad({ treeData = [] } = {}) {
+      if (!treeData.length) {
+        this.clearConfigFileData();
       }
     },
-    selectTreeNode(nodeList, node) {
-      //选中类型
-      this.$set(this.searchParam, 'typeId', node.id);
-      this.typeName = node.label;
+    handleResourceTypeChange({ selectedId, node, selected } = {}) {
+      if (!selected || !selectedId) {
+        this.$set(this.searchParam, 'typeId', null);
+        this.typeName = '';
+        this.clearConfigFileData();
+        return;
+      }
+      this.$set(this.searchParam, 'typeId', selectedId);
+      this.typeName = node && node.label ? node.label : '';
       this.searchConfigFileList(1);
     },
-    renderTree(h, { root, node, data }) {
-      return h('span', data.label);
-    },
-    selectResource(id) {
-      const resource = this.flattenResourceMap[id];
-      if (resource) {
-        this.typeName = resource.label;
-        this.$set(resource, 'selected', true);
-        this.$set(resource, 'expand', true);
-        let parentId = resource.parentId;
-        while (parentId) {
-          const pr = this.flattenResourceMap[parentId];
-          if (pr) {
-            this.$set(pr, 'expand', true);
-            parentId = pr.parentId;
-          } else {
-            parentId = null;
-          }
-        }
-      }
+    clearConfigFileData() {
+      this.reportData = {
+        ...this.reportData,
+        tbodyList: [],
+        currentPage: 1,
+        rowNum: 0
+      };
+      this.selectList = [];
+      this.loadingShow = false;
     },
     searchConfigFileList(currentPage) {
       if (!this.searchParam.typeId) {
-        this.loadingShow = false;
+        this.clearConfigFileData();
         return;
       }
       this.loadingShow = true;
@@ -490,8 +456,8 @@ export default {
               }
             });
             if (idList.length > 0) {
-              setTimeout(() => {
-                this.refresh(idList);
+              this.timmer = setTimeout(() => {
+                this.refreshConfigList(idList);
               }, 3000);
             }
           }
@@ -534,7 +500,7 @@ export default {
             this.$refs['reportTable'] && this.$refs['reportTable'].$forceUpdate();//状态层次太深，需要强制刷新
             if (newIdList.length > 0) {
               this.timmer = setTimeout(() => {
-                this.refresh(newIdList);
+                this.refreshConfigList(newIdList);
               }, 5000);
             }
           }
@@ -619,8 +585,7 @@ export default {
     }
   },
   filter: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 };
 </script>

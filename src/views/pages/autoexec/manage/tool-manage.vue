@@ -14,13 +14,24 @@
       </div>
     </template>
     <template v-slot:topRight>
-      <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getPage(1)"></CombineSearcher>
+      <div class="view-search-wrap">
+        <RadioGroup v-model="showMode" type="button" @on-change="changeShowMode">
+          <Radio label="card"><i class="tsfont-blocklist"></i></Radio>
+          <Radio label="table"><i class="tsfont-list"></i></Radio>
+        </RadioGroup>
+        <CombineSearcher
+          v-model="searchVal"
+          v-bind="searchConfig"
+          class="searcher"
+          @change="getPage(1)"
+        ></CombineSearcher>
+      </div>
     </template>
     <template v-slot:content>
-      <Loading :loadingShow="showLoading" type="fix"></Loading>
-      <div>
+      <Loading v-if="showMode === 'card'" :loadingShow="showLoading" type="fix"></Loading>
+      <div v-if="showMode === 'card'">
         <TsCard
-          v-bind="cardData"
+          v-bind="toolData"
           :padding="false"
           :fixBtn="true"
           :boxShadow="false"
@@ -65,6 +76,64 @@
           </template>
         </TsCard>
       </div>
+      <div v-else>
+        <TsTable
+          v-bind="toolData"
+          :theadList="theadList"
+          :loading="showLoading"
+          @changeCurrent="getPage"
+          @changePageSize="changePageSize"
+        >
+          <template v-slot:name="{ row }">
+            <span class="text-href" @click.stop="gotoDetail(row)">{{ row.name }}</span>
+          </template>
+          <template v-slot:riskVo="{ row }">
+            <RiskItem v-if="row.riskVo" :text="row.riskVo.name" :color="row.riskVo.color"></RiskItem>
+            <span v-else>-</span>
+          </template>
+          <template v-slot:description="{ row }">
+            <div class="overflow description" :title="row.description">{{ row.description }}</div>
+          </template>
+          <template
+            v-for="extension in operationListExtensionList"
+            :slot="extension.column.key"
+            slot-scope="{ row }"
+          >
+            <component
+              :is="extension.component"
+              :key="extension.column.key"
+              :row="row"
+            ></component>
+          </template>
+          <template v-slot:isActive="{ row }">
+            <TsFormSwitch
+              v-if="getIsActive(row.operateList)"
+              v-model="row.isActive"
+              :true-value="1"
+              :false-value="0"
+              :disabled="getIsActive(row.operateList).disabled ? true : false"
+              :title="getIsActive(row.operateList).disabledReason"
+              @on-change="toggleAction(row)"
+            ></TsFormSwitch>
+            <span v-else>-</span>
+          </template>
+          <template v-slot:action="{ row }">
+            <div class="tstable-action">
+              <ul class="tstable-action-ul">
+                <template v-for="operate in row.operateList">
+                  <li
+                    v-if="operate.value != 'active'"
+                    :key="operate.value"
+                    :class="getIcon(operate.value, operate)"
+                    :title="operate.disabledReason"
+                    @click.stop="doAction(row, operate.value)"
+                  >{{ operate.text }}</li>
+                </template>
+              </ul>
+            </div>
+          </template>
+        </TsTable>
+      </div>
 
       <TsDialog
         v-if="isShow"
@@ -88,12 +157,14 @@
 import download from '@/resources/directives/download.js';
 import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
 import RiskItem from '../components/risk-item.vue';
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: 'ToolManage',
   components: {
     CombineSearcher,
     RiskItem,
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
   },
@@ -101,12 +172,42 @@ export default {
   directives: { download },
   props: {},
   data() {
+    const showMode = this.$localStore.get('autoexecToolManageShowMode') || 'table';
+    const pageSize = showMode === 'table' ? 20 : 24;
     return {
       downloadLoading: false,
       showLoading: true,
+      showMode: showMode,
       searchVal: {},
-      searchParam: { pageSize: 24, currentPage: 1 },
-      cardData: {},
+      searchParam: { pageSize: pageSize, currentPage: 1 },
+      toolData: {},
+      theadList: [
+        {
+          key: 'name',
+          title: this.$t('page.name')
+        },
+        {
+          key: 'riskVo',
+          title: this.$t('term.autoexec.operationlevel')
+        },
+        {
+          key: 'typeName',
+          title: this.$t('term.autoexec.toolclassification')
+        },
+        {
+          key: 'execModeText',
+          title: this.$t('page.executionmode')
+        },
+        {
+          key: 'description',
+          title: this.$t('page.description')
+        },
+        {
+          key: 'isActive',
+          title: this.$t('page.status')
+        },
+        { key: 'action' }
+      ],
       statusConfig: {
         'true-value': 1,
         'false-value': 0
@@ -221,11 +322,14 @@ export default {
         }
       ],
       operationId: null,
-      pageSize: 24
+      pageSize: pageSize,
+      operationListExtensionList: []
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.initOperationListExtension('tool', this.theadList);
+  },
   beforeMount() {},
   mounted() {
     if (this.$route.query.typeId) {
@@ -241,25 +345,53 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    initOperationListExtension(operationType, theadList) {
+      const extensionMap = ComponentManager.getComponent('autoexecOperationListExtension') || {};
+      const translate = key => this.$t(key);
+      this.operationListExtensionList = Object.keys(extensionMap)
+        .map(key => extensionMap[key])
+        .filter(extension => extension.operationTypeList && extension.operationTypeList.includes(operationType))
+        .map(extension => ({...extension, column: extension.getColumn(translate)}));
+      this.operationListExtensionList.forEach(extension => {
+        const columnIndex = theadList.findIndex(item => item.key === extension.beforeColumnKey);
+        columnIndex >= 0 ? theadList.splice(columnIndex, 0, extension.column) : theadList.push(extension.column);
+        this.searchConfig.searchList.push(...extension.getSearchList(translate));
+      });
+    },
+    normalizeOperationListSearchParam(searchParam) {
+      return this.operationListExtensionList.reduce((param, extension) => {
+        return extension.normalizeSearchParam ? extension.normalizeSearchParam(param) : param;
+      }, {...searchParam});
+    },
     restoreHistory(historyData) {
-      this.searchParam = historyData['searchParam'];
-      this.searchVal = historyData['searchVal'];
+      if (historyData['searchParam']) {
+        this.searchParam = historyData['searchParam'];
+        this.pageSize = this.searchParam.pageSize || this.pageSize;
+      }
+      if (historyData['searchVal']) {
+        this.searchVal = historyData['searchVal'];
+      }
+      if (historyData['showMode']) {
+        this.showMode = historyData['showMode'];
+      }
     },
     searchTools(currentPage) {
+      this.showLoading = true;
       this.searchParam = { pageSize: this.pageSize };
       if (currentPage) {
         this.searchParam.currentPage = currentPage;
       }
       if (this.searchVal && Object.keys(this.searchVal).length) {
-        Object.assign(this.searchParam, this.searchVal);
+        const searchParam = this.normalizeOperationListSearchParam(this.searchVal);
+        Object.assign(this.searchParam, searchParam);
       }
       this.$addHistoryData('searchParam', this.searchParam);
       this.$addHistoryData('searchVal', this.searchVal);
       this.$api.autoexec.tool
         .getToolList(this.searchParam)
         .then(res => {
-          if (res && res.Status == 'OK' && Object.keys(res.Return).length) {
-            this.cardData = res.Return;
+          if (res && res.Status == 'OK') {
+            this.toolData = res.Return || {};
           }
         })
         .finally(res => {
@@ -270,6 +402,17 @@ export default {
       if (page) {
         this.searchTools(page);
       }
+    },
+    changePageSize(pageSize) {
+      this.pageSize = pageSize;
+      this.searchTools(1);
+    },
+    changeShowMode(showMode) {
+      // 表格与卡片的信息密度不同，切换时恢复各自适合的每页数量。
+      this.pageSize = showMode === 'table' ? 20 : 24;
+      this.$localStore.set('autoexecToolManageShowMode', showMode);
+      this.$addHistoryData('showMode', showMode);
+      this.searchTools(1);
     },
     doAction(row, type) {
       if (!type) {
@@ -382,7 +525,7 @@ export default {
     },
     getIsActive() {
       return function(val) {
-        let obj = val.find(item => {
+        let obj = (val || []).find(item => {
           return item.value == 'active';
         });
         return obj;
@@ -408,6 +551,15 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.view-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  .searcher {
+    flex: 1;
+    min-width: 0;
+  }
+}
 .name-title {
   padding-right: 30px;
   &:before {
