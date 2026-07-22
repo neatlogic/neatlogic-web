@@ -26,6 +26,8 @@ var GLOBAL_LOGINTITLE = '';
 var ISAUTODIRECT = false; // 是否需要自动跳转
 var REDIRECTURL = ''; // 重定向url
 var PWD_EXPIRED_DIRECT_URL = ''; // 密码过期后直接跳转的url
+var MATRIX_COLUMN_DATA_SEARCH_FORBATCH_INPUT_PARAM_SEARCH_PARAM_LIST_SIZE = 50; // 矩阵批量查询每次请求的参数数量
+var MATRIX_COLUMN_DATA_SEARCH_FORBATCH_REQUEST_CONCURRENCY = 1; // 矩阵批量查询并发请求数量
 
 function setCookie(name, value, time) {
   // 设置cookie为name的值为value，期限是time(如果是数字，单位为天；如果是字符串，直接赋值结束时间)
@@ -58,6 +60,10 @@ function getCookie(name) {
 
 function removeCookie(name) {
   setCookie(name, ' ', new Date(0).toUTCString());
+}
+function getPositiveInteger(value, defaultValue) {
+  const numberValue = Number(value);
+  return Number.isInteger(numberValue) && numberValue > 0 ? numberValue : defaultValue;
 }
 function handleUrl(url, httpresponsestatuscode) {
   // 处理url是否带有参数
@@ -163,6 +169,8 @@ async function getSsoTokenKey() {
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
         ISNEEDAUTH = responseText.isNeedAuth || false;
+        MATRIX_COLUMN_DATA_SEARCH_FORBATCH_INPUT_PARAM_SEARCH_PARAM_LIST_SIZE = getPositiveInteger(responseText.matrixColumnDataSearchForbatchInputParamSearchParamListSize, MATRIX_COLUMN_DATA_SEARCH_FORBATCH_INPUT_PARAM_SEARCH_PARAM_LIST_SIZE);
+        MATRIX_COLUMN_DATA_SEARCH_FORBATCH_REQUEST_CONCURRENCY = getPositiveInteger(responseText.matrixColumnDataSearchForbatchRequestConcurrency, MATRIX_COLUMN_DATA_SEARCH_FORBATCH_REQUEST_CONCURRENCY);
         if (responseText.commercialModuleSet && responseText.commercialModuleSet.length > 0) {
           COMMERCIAL_MODULES.push(...responseText.commercialModuleSet);
         }
