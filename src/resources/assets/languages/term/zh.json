@@ -4059,7 +4059,7 @@
     "atleastonerule": "请至少添加一条规则",
     "atleastoneschedule": "至少添加一个调度配置",
     "addschedule": "添加调度",
-    "autorefreshcountdown": "自动刷新倒计时：{target}秒",
+    "autorefreshcountdown": "自动刷新倒计时：{second}秒",
     "attachment": "附件",
     "attributelist": "属性列表",
     "conversionresult": "转换结果",

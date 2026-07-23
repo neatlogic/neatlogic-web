@@ -4062,7 +4062,7 @@
     "atleastonerule": "Please add at least one rule",
     "atleastoneschedule": "Add At Least One Schedule Configuration",
     "addschedule": "Add Schedule",
-    "autorefreshcountdown": "Auto Refresh Countdown: {target} Seconds",
+    "autorefreshcountdown": "Auto Refresh Countdown: {second} Seconds",
     "attachment": "Attachment",
     "attributelist": "Attribute List",
     "conversionresult": "Conversion Result",
