@@ -6,6 +6,8 @@
       :title="$t('term.process.reltask')"
       width="medium"
       height="500px"
+      :loading="isSavingRelation"
+      :okBtnDisable="isSavingRelation"
       @on-ok="relatedTaskOk"
       @on-close="close"
     >
@@ -106,6 +108,7 @@ export default {
   data() {
     return {
       loadingShow: true,
+      isSavingRelation: false,
       relatedTaskModal: false,
       keyword: null,
       channelTypeRelationId: null, //选中的关联关系
@@ -240,17 +243,23 @@ export default {
       });
     },
     relatedTaskOk() {
+      if (this.isSavingRelation) {
+        return;
+      }
       //确认关联
       let data = {
         processTaskId: this.processTaskId,
         channelTypeRelationId: this.channelTypeRelationId,
         relationProcessTaskIdList: this.relationProcessTaskIdList
       };
+      this.isSavingRelation = true;
       this.$api.process.relation.saveTaskRelation(data).then(res => {
         if (res.Status == 'OK') {
           this.relatedTaskModal = false;
           this.$emit('updateRelation');
         }
+      }).finally(() => {
+        this.isSavingRelation = false;
       });
     },
     close(needRefresh) {

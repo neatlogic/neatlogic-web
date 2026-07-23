@@ -8,6 +8,8 @@ export default {
       isShowExportExcel: true,
       isShowExportExcelTemplate: true,
       isImportOperationLoading: false,
+      matrixSearchParamBatchSize: MATRIX_COLUMN_DATA_SEARCH_FORBATCH_INPUT_PARAM_SEARCH_PARAM_LIST_SIZE,
+      matrixSearchRequestConcurrency: MATRIX_COLUMN_DATA_SEARCH_FORBATCH_REQUEST_CONCURRENCY,
       dataValidateFormList: ['formselect', 'formradio', 'formcheckbox'] // 用于导出表格下拉列表数据有效性设置的组件列表：下拉框、单选框、多选框
     };
   },
@@ -173,7 +175,7 @@ export default {
         });
         allRows.push(rowData);
       }
-      // matrix 一次性接口请求
+      // matrix 分批接口请求，根据并发配置控制请求数量，全部返回后再统一更新表格数据
       const matrixResultList = await this._searchMatrixColumnData(matrixSearchParamMap);
       const matrixResultMap = {};
       for (const item of matrixResultList) {
@@ -291,25 +293,46 @@ export default {
         this.isImportOperationLoading = false;
         return configList;
       }
-      await this.$api.framework.form
-        .searchMatrixColumnData({
-          searchParamList: list
-        })
-        .then(res => {
-          const { Status = '', Return = {} } = res || {};
-          const { tbodyList = [] } = Return || {};
-          if (Status == 'OK') {
-            tbodyList.forEach((item, index) => {
-              if (item && item.dataList && item.dataList.length > 0) {
-                configList[index].list = item.dataList;
+      const batchSize = this.matrixSearchParamBatchSize;
+      const requestConcurrency = this.matrixSearchRequestConcurrency;
+      const requestList = this._generateMatrixSearchRequestList({ list, batchSize });
+      await this._searchMatrixColumnDataByBatch({ requestList, requestConcurrency, configList }).finally(() => {
+        this.isImportOperationLoading = false;
+      });
+      return configList;
+    },
+    _generateMatrixSearchRequestList({ list = [], batchSize = 50 } = {}) {
+      let requestList = [];
+      for (let index = 0; index < list.length; index += batchSize) {
+        requestList.push({
+          startIndex: index,
+          searchParamList: list.slice(index, index + batchSize)
+        });
+      }
+      return requestList;
+    },
+    async _searchMatrixColumnDataByBatch({ requestList = [], requestConcurrency = 1, configList = [] } = {}) {
+      let currentIndex = 0;
+      const request = async() => {
+        while (currentIndex < requestList.length) {
+          const { startIndex, searchParamList } = requestList[currentIndex++] || {};
+          if (searchParamList && searchParamList.length > 0) {
+            await this.$api.framework.form.searchMatrixColumnData({ searchParamList }).then(res => {
+              const { Status = '', Return = {} } = res || {};
+              const { tbodyList = [] } = Return || {};
+              if (Status == 'OK') {
+                tbodyList.forEach((item, index) => {
+                  if (item && item.dataList && item.dataList.length > 0 && configList[startIndex + index]) {
+                    configList[startIndex + index].list = item.dataList;
+                  }
+                });
               }
             });
           }
-        })
-        .finally(() => {
-          this.isImportOperationLoading = false;
-        });
-      return configList;
+        }
+      };
+      const workerCount = Math.min(requestConcurrency, requestList.length);
+      await Promise.all(Array.from({ length: workerCount }, () => request()));
     },
     _getRowCount(sheet) {
       // 获取非空行的数量

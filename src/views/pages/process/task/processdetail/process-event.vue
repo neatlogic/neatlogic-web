@@ -209,6 +209,8 @@
       :isShow.sync="retreatModal"
       :title="actionConfig.retreat"
       :className="stepDialogClass"
+      :loading="disabledConfig.retreating"
+      :okBtnDisable="disabledConfig.retreating"
       @on-ok="retreatOk"
     >
       <template>

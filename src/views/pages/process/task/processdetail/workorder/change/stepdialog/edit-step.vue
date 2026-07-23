@@ -3,6 +3,8 @@
     <TsDialog
       type="modal"
       :isShow.sync="stepDialog"
+      :loading="isSaving"
+      :okBtnDisable="isSaving"
       @on-ok="okStep"
       @on-cancel="cancleSetp"
       @on-close="close"
@@ -58,6 +60,10 @@ export default {
     config: {
       type: Object,
       default: null
+    },
+    isSaving: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -122,7 +128,7 @@ export default {
   destroyed() {},
   methods: {
     okStep() {
-      if (!this.$refs.stepDialogForm.valid()) {
+      if (this.isSaving || !this.$refs.stepDialogForm.valid()) {
         return;
       }
       let data = this.$refs.stepDialogForm.getFormValue();
@@ -131,9 +137,6 @@ export default {
       this.$set(this.dataConfig, 'workerName', this.workerName);
       this.$set(this.dataConfig, 'startTimeWindow', this.startTimeWindow);
       this.$set(this.dataConfig, 'endTimeWindow', this.endTimeWindow);
-
-      this.stepDialog = false;
-      // this.cancleForm();
 
       this.$emit('save', this.dataConfig);
     },

@@ -1036,7 +1036,7 @@ export default {
                 this.toTask(this.processTaskId);
               }
             })
-            .catch(error => {
+            .finally(() => {
               this.disabledConfig.reapproval = false;
             });
         }

@@ -4,6 +4,7 @@
       :title="$t('page.transfer')"
       type="modal"
       :isShow="true"
+      :loading="isSubmitting"
       @on-ok="saveTransferablestep"
       @on-close="closeDialog"
     >
@@ -74,7 +75,8 @@ export default {
         }
       ],
       stepList: [],
-      eoaStepId: null
+      eoaStepId: null,
+      isSubmitting: false
     };
   },
   beforeCreate() {},
@@ -102,6 +104,9 @@ export default {
       this.eoaStepId = item.eoaStepId;
     },
     saveTransferablestep() {
+      if (this.isSubmitting) {
+        return;
+      }
       const transferForm = this.$refs.transferForm;
       if (transferForm.valid()) {
         const formList = transferForm.getFormValue();
@@ -110,19 +115,24 @@ export default {
           workerList: formList.workerList,
           content: formList.content
         };
-        this.$api.process.process.saveTransferablestep(data).then(res => {
-          if (res.Status == 'OK') {
-            //刷新页面
-            this.$skipHistory();
-            this.$router.push({
-              path: '/task-detail',
-              query: {
-                processTaskId: this.processTaskId,
-                type: Date.now()
-              }
-            });
-          }
-        });
+        this.isSubmitting = true;
+        this.$api.process.process.saveTransferablestep(data)
+          .then(res => {
+            if (res.Status == 'OK') {
+              //刷新页面
+              this.$skipHistory();
+              this.$router.push({
+                path: '/task-detail',
+                query: {
+                  processTaskId: this.processTaskId,
+                  type: Date.now()
+                }
+              });
+            }
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
       }
     },
     closeDialog() {

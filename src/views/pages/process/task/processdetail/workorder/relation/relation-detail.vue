@@ -128,6 +128,11 @@ export default {
         content: this.$t('dialog.content.disassociatedialog'),
         btnType: 'error',
         'on-ok': function(vnode) {
+          if (vnode.okBtnDisable) {
+            return;
+          }
+          vnode.loading = true;
+          vnode.okBtnDisable = true;
           let data = {
             processTaskRelationId: obj.id
           };
@@ -136,6 +141,9 @@ export default {
             vnode.isShow = false;
             _this.getTaskRelationList();
             _this.$emit('upActivityList');
+          }).finally(() => {
+            vnode.loading = false;
+            vnode.okBtnDisable = false;
           });
         }
       });
