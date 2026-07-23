@@ -51,7 +51,7 @@
         <Sider
           v-if="$slots.sider"
           v-model="siderHide"
-          :width="siderWidth"
+          :width="resolvedSiderWidth"
           collapsible
           :collapsed-width="0"
           hide-trigger
@@ -106,6 +106,9 @@ export default {
     navHeaderBottom: { type: String, default: 'none' }, //头部布局下面是否有底部边框分割
     hideHeader: { type: Boolean, default: false }, //是否隐藏头部
     siderWidth: { type: Number, default: 200 }, //slider的宽度
+    siderWidthRatio: { type: Number, default: null }, //slider宽度占容器宽度的比例
+    siderMinWidth: { type: Number, default: null }, //slider最小宽度
+    siderMaxWidth: { type: Number, default: null }, //slider最大宽度
     siderPosition: { type: String, default: 'left' }, // left, right
     isBackgroung: { type: Boolean, default: true }, // 背景色默认为灰色，如果传的话就白色
     clearStyle: { type: Boolean, default: false }, //是否需要清除侧边栏的样式（背景色、圆角，不包含右侧固定高度）
@@ -121,7 +124,9 @@ export default {
       dragWidth: null,
       siderHide: this.isSiderHide,
       rightSiderHide: !!this.isRightSiderHide,
-      containHeight: '100%'
+      containHeight: '100%',
+      containerWidth: 0,
+      resizeObserver: null
     };
   },
   mounted() {
@@ -130,13 +135,29 @@ export default {
     //   value === 'false' ? this.siderHide = false : value === 'true' ? this.siderHide = true : '';
     // }
     this.handleContainHeight();
+    this.updateContainerWidth();
+    if (window.ResizeObserver && this.$refs.contain) {
+      this.resizeObserver = new ResizeObserver(this.updateContainerWidth);
+      this.resizeObserver.observe(this.$refs.contain);
+    }
+    window.addEventListener('resize', this.updateContainerWidth);
   },
   beforeDestroy() {
     this.sessionName && localStorage.removeItem(this.sessionName + '_tsContainSider'); //删除缓存，之前遗留问题
     // this.sessionName && localStorage.setItem(this.sessionName + '_tsContainSider', this.siderHide);
     this.initSetTime && clearTimeout(this.initSetTime);
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
+    }
+    window.removeEventListener('resize', this.updateContainerWidth);
   },
   methods: {
+    updateContainerWidth() {
+      this.$nextTick(() => {
+        this.containerWidth = this.$refs.contain ? this.$refs.contain.clientWidth : 0;
+      });
+    },
     verticals() {
       this.$emit('verticals');
     },
@@ -145,7 +166,7 @@ export default {
         let width = this.dragWidth;
         value = parseFloat(value) || this.dragWidth;
         let clientWidth = this.$refs.contain.clientWidth;
-        let siderWidth = this.$slots.sider ? this.siderWidth : this.siderPosition == 'left' ? this.siderWidth : this.rightWidth;
+        let siderWidth = this.$slots.sider ? this.resolvedSiderWidth : this.siderPosition == 'left' ? this.resolvedSiderWidth : this.rightWidth;
         this.maxSplit = (siderWidth * 2) / clientWidth;
         this.minSplit = siderWidth / clientWidth;
         !value && (width = this.minSplit);
@@ -212,6 +233,19 @@ export default {
     }
   },
   computed: {
+    resolvedSiderWidth() {
+      if (this.siderWidthRatio > 0 && this.containerWidth > 0) {
+        let width = Math.floor(this.containerWidth * this.siderWidthRatio);
+        if (this.siderMinWidth != null) {
+          width = Math.max(width, this.siderMinWidth);
+        }
+        if (this.siderMaxWidth != null) {
+          width = Math.min(width, this.siderMaxWidth);
+        }
+        return width;
+      }
+      return this.siderWidth;
+    },
     handleBodyHeight() {
       if (this.mode === 'dialog') {
         if (this.hideHeader) {
