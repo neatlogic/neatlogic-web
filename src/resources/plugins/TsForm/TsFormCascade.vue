@@ -252,6 +252,9 @@ export default {
       return !!(node && node[this.childrenKey] && node[this.childrenKey].length);
     },
     isNodeSelectable(node) {
+      if (node && node.disabled) {
+        return false;
+      }
       if (!this.hasChildren(node)) {
         return true;
       }
@@ -299,6 +302,10 @@ export default {
       return false;
     },
     handleNodeClick(node) {
+      this.$emit('node-click', node);
+      if (node && node.disabled) {
+        return;
+      }
       if (this.hasChildren(node)) {
         this.activeValueList = node._pathValueList;
       } else {
