@@ -1,4 +1,12 @@
 import axios from '../http';
+
+function withCurrentModuleGroup(data = {}) {
+  return {
+    ...data,
+    moduleGroup: MODULEID
+  };
+}
+
 const common = {
   getModule(data) {
     return axios.post('/api/rest/module/list', data);
@@ -187,6 +195,44 @@ const common = {
   getCurrentUser() {
     // 仅用于刷新页面获取用户基本信息，以及权限信息
     return axios.get('/api/rest/user/current/get');
+  },
+  searchWorkbenchList(data = {}) {
+    // 工作台列表查询接口
+    return axios.post('/api/rest/portal/list', withCurrentModuleGroup(data));
+  },
+  getWorkbenchDetail(id) {
+    // 工作台详情查询接口
+    return axios.post('/api/rest/portal/get', withCurrentModuleGroup({ id }));
+  },
+  saveWorkbench(data = {}) {
+    return axios.post('/api/rest/portal/save', withCurrentModuleGroup(data));
+  },
+  deleteWorkbench(id) {
+    return axios.post('/api/rest/portal/delete', withCurrentModuleGroup({ id }));
+  },
+  moveWorkbench(id, sort) {
+    return axios.post('/api/rest/portal/move', withCurrentModuleGroup({ id, sort }));
+  },
+  updateWorkbenchActive(id, isActive) {
+    return axios.post('/api/rest/portal/toggleactive', withCurrentModuleGroup({ id, isActive }));
+  },
+  searchWorkbenchWidgetManageList(data = {}) {
+    return axios.post('/api/rest/portal/widget/list/manage', withCurrentModuleGroup(data));
+  },
+  searchAvailableWorkbenchWidgetList(data = {}) {
+    return axios.post('/api/rest/portal/widget/list/hasauthority', withCurrentModuleGroup(data));
+  },
+  getWorkbenchWidget(name) {
+    return axios.post('/api/rest/portal/widget/get', { name });
+  },
+  saveWorkbenchWidgetAuthority(name, authorityList = []) {
+    return axios.post('/api/rest/portal/widget/save', { name, authorityList });
+  },
+  batchSaveWorkbenchWidgetAuthority(nameList = [], authorityList = []) {
+    return axios.post('/api/rest/portal/widget/authority/batchsave', { nameList, authorityList });
+  },
+  searchWorkbenchWidgetData(data = {}) {
+    return axios.post('/api/rest/portal/widget/data/search', data);
   }
 };
 
