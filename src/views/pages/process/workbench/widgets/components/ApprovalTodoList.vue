@@ -34,7 +34,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { title: '变更方案审批', owner: '王工', time: '10分钟前', status: '待审批' }
+      ]
     };
   },
   computed: {

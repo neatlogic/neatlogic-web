@@ -40,7 +40,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { name: '事件工单', value: 24, percent: '100%', color: 'var(--primary-color)' }
+      ]
     };
   },
   computed: {

@@ -36,7 +36,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { name: '提交工单', icon: 'tsfont-plus', path: '/task-dispatch' }
+      ]
     };
   },
   methods: {

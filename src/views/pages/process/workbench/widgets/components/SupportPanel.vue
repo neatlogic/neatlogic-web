@@ -31,7 +31,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { name: '使用指南', icon: 'tsfont-question-o' }
+      ]
     };
   },
   computed: {

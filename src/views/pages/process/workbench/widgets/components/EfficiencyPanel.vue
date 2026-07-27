@@ -31,7 +31,10 @@ export default {
       loading: false,
       error: '',
       panelData: {
-        list: []
+        // 案例数据，后续接入接口后替换
+        list: [
+          { name: '平均响应', value: '8分钟', tone: 'blue' }
+        ]
       }
     };
   },

@@ -57,8 +57,15 @@ export default {
       loading: false,
       error: '',
       chartData: {
-        labels: [],
-        series: []
+        labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+        // 案例数据，后续接入接口后替换
+        series: [
+          {
+            name: '新建工单',
+            color: 'var(--primary-color)',
+            values: [12, 18, 15, 22, 19, 14, 20]
+          }
+        ]
       }
     };
   },

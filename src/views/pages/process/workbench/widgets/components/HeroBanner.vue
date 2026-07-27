@@ -38,7 +38,13 @@ export default {
     return {
       loading: false,
       error: '',
-      summary: null
+      // 案例数据，后续接入接口后替换
+      summary: {
+        userName: '服务台用户',
+        subtitle: '欢迎使用 IT 服务工作台',
+        normalCount: 12,
+        alertCount: 1
+      }
     };
   },
   computed: {

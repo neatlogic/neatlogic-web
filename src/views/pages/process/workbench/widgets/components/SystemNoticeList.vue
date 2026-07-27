@@ -34,7 +34,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { type: '系统', text: '服务台将在今晚进行例行维护', time: '今天 09:30' }
+      ]
     };
   },
   computed: {

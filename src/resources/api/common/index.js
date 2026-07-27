@@ -233,6 +233,10 @@ const common = {
   },
   searchWorkbenchWidgetData(data = {}) {
     return axios.post('/api/rest/portal/widget/data/search', data);
+  },
+  getCurrentUserPortal() {
+    // 获取当前用户可用的工作台
+    return axios.post('/api/rest/portal/currentuser/get', withCurrentModuleGroup());
   }
 };
 

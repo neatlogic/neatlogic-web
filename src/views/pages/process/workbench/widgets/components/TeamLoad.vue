@@ -35,7 +35,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { name: '一线服务台', total: 12, busy: '60%', color: 'var(--primary-color)' }
+      ]
     };
   },
   computed: {

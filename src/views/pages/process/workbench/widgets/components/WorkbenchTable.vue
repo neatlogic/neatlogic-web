@@ -59,7 +59,16 @@ export default {
       error: '',
       tableHeight: 160,
       resizeObserver: null,
-      sourceList: [],
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        {
+          name: '统一身份认证服务',
+          status: '运行中',
+          health: 98,
+          env: '生产环境',
+          duration: '36天'
+        }
+      ],
       sourceTheadList: [
         { key: 'name', title: '服务名称'},
         { key: 'status', title: '状态' },

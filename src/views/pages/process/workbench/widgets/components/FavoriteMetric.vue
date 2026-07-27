@@ -22,7 +22,12 @@ export default {
     showTitle: { type: Boolean, default: true }
   },
   data() {
-    return { loading: false, error: '', metric: null };
+    return {
+      loading: false,
+      error: '',
+      // 案例数据，后续接入接口后替换
+      metric: { value: 6, trend: '本周新增 1 项', tone: 'orange', icon: 'tsfont-star' }
+    };
   }
 };
 </script>

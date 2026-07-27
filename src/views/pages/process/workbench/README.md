@@ -24,7 +24,7 @@ IT 服务只维护本模块的工作台路由页、组件定义、展示组件�
 3. 通用配置类型由 `widget-config.vue` 渲染；复杂配置可在 `widgets/configs` 中增加模块专属配置组件。
 4. 组件业务接口、参数转换和加载状态留在展示组件内，不进入公共工作台。
 
-新建工作台使用空白画布，不提供整套预置布局。尚未接入业务接口的组件保留空数据并显示空状态。`favoritedServices` 初始化时直接调用 Widget Data 接口，请求参数为 `handler: 'process.favoritedServiceList'`、`portalWidgetName: 'favoritedServices'` 和空的 `param`。
+新建工作台使用空白画布，不提供整套预置布局。尚未接入业务接口的业务组件在组件内部保留一组最小案例数据，并统一标注为后续接口替换点。`favoritedServices` 已在初始化时直接调用 Widget Data 接口，请求参数为 `handler: 'process.favoritedServiceList'`、`portalWidgetName: 'favoritedServices'` 和空的 `param`。
 
 读取存量模板时会过滤已删除类型、重复标识和无效布局组件，保留其余有效组件继续展示；只有用户主动保存模板时，过滤结果才会写回后端。
 

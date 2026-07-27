@@ -34,7 +34,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { level: '高', title: '核心业务系统访问异常', remain: '25分钟' }
+      ]
     };
   },
   computed: {

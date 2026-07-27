@@ -23,7 +23,14 @@ export default {
     showTitle: { type: Boolean, default: true }
   },
   data() {
-    return { loading: false, error: '', sourceList: [] };
+    return {
+      loading: false,
+      error: '',
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { name: '我的待办', icon: 'tsfont-task', path: '/task-overview-1' }
+      ]
+    };
   },
   methods: {
     handleSelect(item) {

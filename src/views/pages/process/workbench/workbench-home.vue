@@ -49,28 +49,11 @@ export default {
     reloadWorkbench() {
       this.loadingShow = true;
       this.loadError = '';
-      this.$api.common.searchWorkbenchList({
-        isActive: 1,
-        currentPage: 1,
-        pageSize: 1
-      }).then(res => {
+      this.$api.common.getCurrentUserPortal().then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '工作台加载失败');
         }
-        const currentWorkbench = res.Return &&
-          res.Return.tbodyList &&
-          res.Return.tbodyList[0];
-        return currentWorkbench
-          ? this.$api.common.getWorkbenchDetail(currentWorkbench.id)
-          : null;
-      }).then(res => {
-        let workbench = null;
-        if (res) {
-          if (res.Status !== 'OK') {
-            throw new Error(res.Message || '工作台加载失败');
-          }
-          workbench = res.Return || null;
-        }
+        const workbench = res.Return || null;
         const widgetList = filterValidWorkbenchWidgetList(workbench && workbench.config && workbench.config.widgetList, WORKBENCH_WIDGETS);
         this.workbench = workbench &&
           widgetList.length > 0

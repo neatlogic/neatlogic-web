@@ -23,7 +23,14 @@ export default {
     showTitle: { type: Boolean, default: true }
   },
   data() {
-    return { loading: false, error: '', sourceList: [] };
+    return {
+      loading: false,
+      error: '',
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { name: '服务目录', icon: 'tsfont-star', path: '/catalog-overview' }
+      ]
+    };
   },
   methods: {
     handleSelect(item) {

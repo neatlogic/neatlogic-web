@@ -39,7 +39,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { no: 'INC202607270001', title: '办公网络间歇性中断', progress: '65%', tone: 'orange' }
+      ]
     };
   },
   methods: {

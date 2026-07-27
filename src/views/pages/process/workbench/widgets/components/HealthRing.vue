@@ -41,8 +41,11 @@ export default {
       loading: false,
       error: '',
       healthData: {
-        percent: null,
-        list: []
+        percent: 96,
+        // 案例数据，后续接入接口后替换
+        list: [
+          { name: '正常', value: 48, percent: '96%', color: 'var(--success-color)' }
+        ]
       }
     };
   },

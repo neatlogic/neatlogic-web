@@ -34,7 +34,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { user: '张工', action: '更新了工单 INC202607270001', time: '5分钟前' }
+      ]
     };
   },
   computed: {

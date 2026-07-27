@@ -27,7 +27,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { title: '常见网络故障排查指南', category: '故障处理', count: 256 }
+      ]
     };
   },
   methods: {

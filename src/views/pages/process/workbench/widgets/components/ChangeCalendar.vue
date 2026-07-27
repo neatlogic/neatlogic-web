@@ -34,7 +34,10 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: []
+      // 案例数据，后续接入接口后替换
+      sourceList: [
+        { date: '07/30', title: '核心网络变更', window: '22:00-23:00', tone: 'blue' }
+      ]
     };
   },
   methods: {
