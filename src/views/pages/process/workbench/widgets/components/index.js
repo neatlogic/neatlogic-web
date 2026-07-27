@@ -12,6 +12,7 @@ import HeroBanner from './HeroBanner.vue';
 import KnowledgeHelp from './KnowledgeHelp.vue';
 import MyTodoEntry from './MyTodoEntry.vue';
 import OverdueMetric from './OverdueMetric.vue';
+import ProcessingOfMineProcessTask from './ProcessingOfMineProcessTask.vue';
 import QuickActionGrid from './QuickActionGrid.vue';
 import RecentOperationList from './RecentOperationList.vue';
 import RecentTaskList from './RecentTaskList.vue';
@@ -28,6 +29,7 @@ import TrendPanel from './TrendPanel.vue';
 import WorkbenchTable from './WorkbenchTable.vue';
 
 export const WORKBENCH_WIDGET_COMPONENT_MAP = Object.freeze({
+  processingOfMineProcessTask: ProcessingOfMineProcessTask,
   recentTaskList: RecentTaskList,
   approvalTodoList: ApprovalTodoList,
   focusTaskList: FocusTaskList,

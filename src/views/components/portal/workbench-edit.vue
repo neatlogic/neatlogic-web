@@ -62,7 +62,7 @@
                 <div slot="content">
                   <div
                     v-for="definition in group.widgetList"
-                    :key="definition.type"
+                    :key="definition.name"
                     class="widget-option radius-sm bg-op bg-hover-grey text-default border-base padding-xs mb-sm cursor-pointer"
                     draggable="true"
                     @dragstart="startDrag($event, definition)"
@@ -70,7 +70,7 @@
                   >
                     <i :class="[definition.icon, 'widget-option-icon flex-center radius-md bg-selected text-primary']"></i>
                     <div class="widget-option-main">
-                      <div class="widget-option-title overflow">{{ definition.title }}</div>
+                      <div class="widget-option-title overflow">{{ definition.label }}</div>
                       <div class="widget-option-desc overflow text-grey mt-xs">{{ definition.description }}</div>
                     </div>
                   </div>
@@ -124,7 +124,7 @@
                   <slot
                     name="widget"
                     :widget="slotWidget"
-                    :definition="getWidgetByType(slotWidget.type)"
+                    :definition="getWidgetByName(slotWidget.type)"
                     mode="edit"
                   ></slot>
                 </template>
@@ -278,17 +278,19 @@ export default {
     };
   },
   methods: {
-    getWidgetByType(type) {
-      return this.widgetDefinitions.find(item => item.type === type) || null;
+    getWidgetByName(name) {
+      return this.widgetDefinitions.find(item => item.name === name) || null;
     },
     startDrag(event, definition) {
       this.draggingWidget = definition;
-      event.dataTransfer.setData('type', definition.type);
+      event.dataTransfer.setData('widgetName', definition.name);
     },
     dropWidget(event) {
-      const type = event.dataTransfer.getData('type') || (this.draggingWidget && this.draggingWidget.type);
-      const isAvailable = this.availableWidgetList.some(item => item && item.name === type);
-      const definition = isAvailable ? this.getWidgetByType(type) : null;
+      const name = event.dataTransfer.getData('widgetName') || (this.draggingWidget && this.draggingWidget.name);
+      const isAvailable = this.availableWidgetList.some(item => item && item.name === name);
+      const definition = isAvailable && this.draggingWidget && this.draggingWidget.name === name
+        ? this.draggingWidget
+        : (isAvailable ? this.getWidgetByName(name) : null);
       if (definition) {
         this.addWidget(definition);
       }
@@ -319,7 +321,7 @@ export default {
       this.currentWidgetId = widget ? widget.i : null;
     },
     ensureWidgetConfig(widget) {
-      const definition = this.getWidgetByType(widget.type);
+      const definition = this.getWidgetByName(widget.type);
       const defaultConfig = (definition && definition.config) || {};
       this.$set(widget, 'config', widget.config || {});
       Object.keys(defaultConfig).forEach(name => {
@@ -405,11 +407,16 @@ export default {
         }
       });
       this.widgetDefinitions.forEach((definition, definitionIndex) => {
-        const availableWidget = availableMap.get(definition.type);
+        const availableWidget = availableMap.get(definition.name);
         if (!availableWidget) {
           return;
         }
-        const text = ((definition.title || '') + ' ' + (definition.description || '')).toLowerCase();
+        const availableDefinition = {
+          ...definition,
+          label: availableWidget.label || definition.label,
+          description: availableWidget.description || definition.description
+        };
+        const text = ((availableDefinition.label || '') + ' ' + (availableDefinition.description || '')).toLowerCase();
         if (keyword && text.indexOf(keyword) === -1) {
           return;
         }
@@ -435,7 +442,7 @@ export default {
         group.sort = Math.min(group.sort, groupSort);
         group.fallbackSort = Math.min(group.fallbackSort, definitionIndex);
         group.widgetList.push({
-          definition,
+          definition: availableDefinition,
           sort: getSortValue(availableWidget.sort, LAST_GROUP_SORT),
           fallbackSort: definitionIndex
         });
@@ -458,7 +465,7 @@ export default {
       return this.widgetList.find(item => item.i === this.currentWidgetId) || null;
     },
     currentWidgetDefinition() {
-      return this.currentWidget ? this.getWidgetByType(this.currentWidget.type) : null;
+      return this.currentWidget ? this.getWidgetByName(this.currentWidget.type) : null;
     }
   }
 };

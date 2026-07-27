@@ -6,21 +6,21 @@ IT 服务只维护本模块的工作台路由页、组件定义、展示组件�
 
 - `workbench-home.vue`：加载当前启用模板，并通过公共只读工作台展示组件。
 - `workbench-edit.vue`：加载和保存模板，组装公共编辑框架的展示、配置插槽。
-- `widget-definition.js`：维护组件类型、初始尺寸、默认配置和配置 schema。
+- `widget-definition.js`：维护前端组件 `name`、兜底文案、初始尺寸、默认配置和配置 schema。
 - `widgets/components`：维护组件展示、业务数据请求和交互。
 - `widgets/configs/widget-config.vue`：根据 schema 渲染统一配置表单。
-- `widgets/widget-renderer.vue`：将组件类型映射到展示组件。
+- `widgets/widget-renderer.vue`：将模板组件的 `type` 映射到同名的前端组件定义。
 
 ## 组件授权
 
 组件管理列表和当前用户可添加的组件均由公共 Portal Widget 接口返回。组件管理列表一次加载当前模块的全部组件，点击“授权”后再加载该组件的授权详情。
 
-编辑页只在左侧组件库中过滤未授权组件，不影响首页或模板中已经存在的组件。接口返回的 `name` 必须与模块组件定义的 `type` 一致。分类使用嵌套的 `group.name/group.label/group.sort`，组内使用组件行的 `sort`；没有分组的组件统一显示在最后的“未分组”中。
+编辑页只在左侧组件库中过滤未授权组件，不影响首页或模板中已经存在的组件。接口返回的 `name` 必须与模块组件定义的 `name` 一致，组件库名称和说明优先采用接口返回的 `label/description`。分类使用嵌套的 `group.name/group.label/group.sort`，组内使用组件行的 `sort`；没有分组的组件统一显示在最后的“未分组”中。
 
 ## 扩展组件
 
-1. 在 `widgets/components` 新增展示组件，并在该目录的 `index.js` 导出。
-2. 在 `widget-definition.js` 注册组件类型、展示组件名、初始尺寸和配置 schema。
+1. 在 `widgets/components` 新增展示组件，并在该目录的 `index.js` 按组件 `name` 注册。
+2. 在 `widget-definition.js` 注册同名定义、兜底文案、初始尺寸和配置 schema。
 3. 通用配置类型由 `widget-config.vue` 渲染；复杂配置可在 `widgets/configs` 中增加模块专属配置组件。
 4. 组件业务接口、参数转换和加载状态留在展示组件内，不进入公共工作台。
 

@@ -6,8 +6,8 @@ export function createWorkbenchWidget(definition, option = {}) {
   return {
     uuid: i,
     i,
-    type: definition ? definition.type : option.type,
-    name: option.name || (definition && definition.title) || '',
+    type: definition ? definition.name : option.type,
+    name: option.name || (definition && definition.label) || '',
     x: getNumber(option.x, defaultLayout.x, 0),
     y: getNumber(option.y, defaultLayout.y, 0),
     w: Math.max(getNumber(option.w, defaultLayout.w, 4), minW),
@@ -63,7 +63,7 @@ export function isWorkbenchWidgetListComplete(widgetList, widgetDefinitions = []
   if (!Array.isArray(widgetList)) {
     return false;
   }
-  const typeSet = new Set((widgetDefinitions || []).map(item => item.type));
+  const typeSet = new Set((widgetDefinitions || []).map(item => item.name));
   const uuidSet = new Set();
   return widgetList.every(widget => {
     if (!isWorkbenchWidgetComplete(widget, typeSet) || uuidSet.has(widget.uuid)) {
@@ -78,7 +78,7 @@ export function filterValidWorkbenchWidgetList(widgetList, widgetDefinitions = [
   if (!Array.isArray(widgetList)) {
     return [];
   }
-  const typeSet = new Set((widgetDefinitions || []).map(item => item.type));
+  const typeSet = new Set((widgetDefinitions || []).map(item => item.name));
   const uuidSet = new Set();
   return widgetList.filter(widget => {
     if (!isWorkbenchWidgetComplete(widget, typeSet) || uuidSet.has(widget.uuid)) {

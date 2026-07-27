@@ -14,7 +14,7 @@
 
 <script>
 import { WORKBENCH_WIDGET_COMPONENT_MAP } from './components/index.js';
-import { getWidgetByType } from '../widget-definition.js';
+import { getWidgetByName } from '../widget-definition.js';
 
 export default {
   name: 'WidgetRenderer',
@@ -23,10 +23,10 @@ export default {
   },
   computed: {
     widgetMeta() {
-      return this.widget && this.widget.type ? getWidgetByType(this.widget.type) : null;
+      return this.widget && this.widget.type ? getWidgetByName(this.widget.type) : null;
     },
     widgetComponent() {
-      return this.widgetMeta ? WORKBENCH_WIDGET_COMPONENT_MAP[this.widgetMeta.type] : null;
+      return this.widgetMeta ? WORKBENCH_WIDGET_COMPONENT_MAP[this.widgetMeta.name] : null;
     },
     componentConfig() {
       return {
@@ -35,7 +35,7 @@ export default {
       };
     },
     displayTitle() {
-      return (this.widget && this.widget.name) || (this.widgetMeta && this.widgetMeta.title) || '';
+      return (this.widget && this.widget.name) || (this.widgetMeta && this.widgetMeta.label) || '';
     },
     isTitleVisible() {
       return !this.widget || this.widget.showTitle !== 0;
