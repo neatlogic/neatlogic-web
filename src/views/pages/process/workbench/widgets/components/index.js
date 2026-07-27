@@ -2,6 +2,7 @@ import AnnouncementPanel from './AnnouncementPanel.vue';
 import ApprovalTodoList from './ApprovalTodoList.vue';
 import ChangeCalendar from './ChangeCalendar.vue';
 import DoneMetric from './DoneMetric.vue';
+import DraftProcessTask from './DraftProcessTask.vue';
 import EfficiencyPanel from './EfficiencyPanel.vue';
 import FaqList from './FaqList.vue';
 import FavoriteMetric from './FavoriteMetric.vue';
@@ -30,6 +31,7 @@ import WorkbenchTable from './WorkbenchTable.vue';
 
 export const WORKBENCH_WIDGET_COMPONENT_MAP = {
   processingOfMineProcessTask: ProcessingOfMineProcessTask,
+  draftProcessTask: DraftProcessTask,
   recentTaskList: RecentTaskList,
   approvalTodoList: ApprovalTodoList,
   focusTaskList: FocusTaskList,

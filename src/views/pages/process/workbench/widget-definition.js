@@ -45,6 +45,14 @@ export const WORKBENCH_WIDGETS = Object.freeze([
     configSchema: TODO_LIST_SCHEMA
   }),
   defineWidget({
+    name: 'draftProcessTask',
+    label: '我的草稿',
+    description: '当前登录用户尚未提交的工单草稿',
+    icon: 'tsfont-edit',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: TODO_LIST_SCHEMA
+  }),
+  defineWidget({
     name: 'recentTaskList',
     label: '最近工单',
     description: '最近创建或处理过的工单',
