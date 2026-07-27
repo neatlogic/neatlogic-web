@@ -752,6 +752,28 @@ li {
   }
 }
 
+.module-base {
+  &.hidden-topnav {
+    padding-top: 0;
+
+    .centermain {
+      height: 100vh;
+    }
+
+    .leftmenu {
+      top: 0;
+      height: 100vh;
+    }
+  }
+
+  &.hidden-leftmenu {
+    padding-left: 0;
+  }
+
+  &.hidden-topnav-leftmenu {
+    min-width: 0;
+  }
+}
 .centermain {
   position: relative;
   z-index: 1;

@@ -1,60 +1,16 @@
-﻿<template>
-  <div v-if="hasAuthorization" class="home" :class="{ 'menu-min': !isMenuExpanded }">
-    <TopNav></TopNav>
-    <LeftMenu @menuToggle="menuToggle">
+<template>
+  <ModuleBaseLayout>
+    <template #leftMenu>
       <InspectResultMenu></InspectResultMenu>
-    </LeftMenu>
-    <div class="centermain">
-      <div>
-        <router-view
-          v-if="isRouterAlive"
-          :key="$route.fullPath"
-          ref="root"
-          style="height:100%;overflow: auto;"
-        ></router-view>
-      </div>
-    </div>
-    <LicenseValidator></LicenseValidator>
-  </div>
+    </template>
+  </ModuleBaseLayout>
 </template>
 <script>
 export default {
   name: 'Home',
-  provide() {
-    return {
-      reloadRouter: this.reloadRouter
-    };
-  },
   components: {
-    TopNav: () => import('@/views/components/topnav/topnav.vue'),
-    LicenseValidator: () => import('@/views/components/license/license-validator.vue'),
-    LeftMenu: () => import('@/views/components/leftmenu/leftmenu.vue'),
-    InspectResultMenu: () => import('./leftmenu/inspect-result-menu') // 巡检结果菜单
-  },
-  data() {
-    return {
-      isMenuExpanded: false, //左侧菜单是否展开
-      hasAuthorization: true,
-      isRouterAlive: true
-    };
-  },
-  created() {},
-  mounted() {},
-  beforeDestroy() {},
-  methods: {
-    //菜单显示隐藏
-    menuToggle(isMenuExpanded) {
-      this.isMenuExpanded = isMenuExpanded;
-    },
-    reloadRouter() { //切换多语言时，刷新路由
-      this.isRouterAlive = false;
-      this.$store.dispatch('getModuleList');
-      this.$nextTick(() => {
-        this.isRouterAlive = true;
-        location.reload();
-      });
-    }
-  },
-  watch: {}
+    ModuleBaseLayout: () => import('@/views/components/layout/module-base-layout.vue'),
+    InspectResultMenu: () => import('./leftmenu/inspect-result-menu')
+  }
 };
 </script>
