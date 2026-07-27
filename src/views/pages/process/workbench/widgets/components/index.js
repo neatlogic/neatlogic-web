@@ -28,7 +28,7 @@ import TodoMetric from './TodoMetric.vue';
 import TrendPanel from './TrendPanel.vue';
 import WorkbenchTable from './WorkbenchTable.vue';
 
-export const WORKBENCH_WIDGET_COMPONENT_MAP = Object.freeze({
+export const WORKBENCH_WIDGET_COMPONENT_MAP = {
   processingOfMineProcessTask: ProcessingOfMineProcessTask,
   recentTaskList: RecentTaskList,
   approvalTodoList: ApprovalTodoList,
@@ -58,4 +58,4 @@ export const WORKBENCH_WIDGET_COMPONENT_MAP = Object.freeze({
   metricOverdue: OverdueMetric,
   metricDone: DoneMetric,
   metricSatisfaction: SatisfactionMetric
-});
+};
