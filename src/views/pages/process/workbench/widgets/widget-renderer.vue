@@ -1,8 +1,8 @@
 <template>
   <div class="portal-widget-preview radius-lg">
     <component
-      :is="componentName"
-      v-if="componentName"
+      :is="widgetComponent"
+      v-if="widgetComponent"
       :widget="widget"
       :config="componentConfig"
       :title="displayTitle"
@@ -13,14 +13,11 @@
 </template>
 
 <script>
-import * as portalWidgets from './components/index.js';
+import { WORKBENCH_WIDGET_COMPONENT_MAP } from './components/index.js';
 import { getWidgetByType } from '../widget-definition.js';
 
 export default {
   name: 'WidgetRenderer',
-  components: {
-    ...portalWidgets
-  },
   props: {
     widget: { type: Object }
   },
@@ -28,8 +25,8 @@ export default {
     widgetMeta() {
       return this.widget && this.widget.type ? getWidgetByType(this.widget.type) : null;
     },
-    componentName() {
-      return this.widgetMeta && this.widgetMeta.componentName;
+    widgetComponent() {
+      return this.widgetMeta ? WORKBENCH_WIDGET_COMPONENT_MAP[this.widgetMeta.type] : null;
     },
     componentConfig() {
       return {

@@ -29,50 +29,239 @@ const QUICK_SCHEMA = [
   { name: 'showCustom', label: '显示自定义入口', type: 'switch', defaultValue: 1 }
 ];
 
-export const WORKBENCH_WIDGETS = [
-  createDefine('recentTaskList', '最近工单', '最近创建或处理过的工单', 'tsfont-history', 'RecentTaskList', { x: 0, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, STATUS_MORE_LIST_SCHEMA),
-  createDefine('approvalTodoList', '审批待办', '需要当前登录人确认的审批项', 'tsfont-check-square', 'ApprovalTodoList', { x: 4, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, STATUS_MORE_LIST_SCHEMA),
-  createDefine('focusTaskList', '我的关注', '关注中的重点工单进度', 'tsfont-focus', 'FocusTaskList', { x: 8, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),
-  createDefine('recentOperationList', '最近操作', '团队近期关键操作记录', 'tsfont-time', 'RecentOperationList', { x: 4, y: 54, w: 4, h: 8, minW: 3, minH: 6 }, {}, LIMIT_SCHEMA),
-  createDefine('quickMyTodo', '我的待办入口', '快速进入我的待办视图', 'tsfont-task', 'MyTodoEntry', { x: 8, y: 54, w: 4, h: 7, minW: 3, minH: 5 }, {}, QUICK_SCHEMA),
+export const WORKBENCH_WIDGETS = Object.freeze([
+  defineWidget({
+    type: 'recentTaskList',
+    title: '最近工单',
+    description: '最近创建或处理过的工单',
+    icon: 'tsfont-history',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: STATUS_MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'approvalTodoList',
+    title: '审批待办',
+    description: '需要当前登录人确认的审批项',
+    icon: 'tsfont-check-square',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: STATUS_MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'focusTaskList',
+    title: '我的关注',
+    description: '关注中的重点工单进度',
+    icon: 'tsfont-focus',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'recentOperationList',
+    title: '最近操作',
+    description: '团队近期关键操作记录',
+    icon: 'tsfont-time',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: LIMIT_SCHEMA
+  }),
+  defineWidget({
+    type: 'quickMyTodo',
+    title: '我的待办入口',
+    description: '快速进入我的待办视图',
+    icon: 'tsfont-task',
+    defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
+    configSchema: QUICK_SCHEMA
+  }),
+  defineWidget({
+    type: 'trendPanel',
+    title: '工单趋势',
+    description: '按时间查看工单变化趋势',
+    icon: 'tsfont-chart-line',
+    defaultLayout: { w: 5, h: 8, minW: 5, minH: 7 }
+  }),
+  defineWidget({
+    type: 'workbenchTable',
+    title: '服务概览',
+    description: '关键服务运行状态表格',
+    icon: 'tsfont-list',
+    defaultLayout: { w: 8, h: 8, minW: 7, minH: 7 },
+    configSchema: TABLE_SCHEMA
+  }),
+  defineWidget({
+    type: 'taskTypeDistribution',
+    title: '工单类型分布',
+    description: '按事件、请求、变更统计工单',
+    icon: 'tsfont-chart-pie',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 }
+  }),
+  defineWidget({
+    type: 'slaRiskList',
+    title: 'SLA 风险',
+    description: '临近超时和高风险工单提醒',
+    icon: 'tsfont-warning',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: STATUS_MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'efficiencyPanel',
+    title: '处理效率',
+    description: '响应、处理和自动关闭效率',
+    icon: 'tsfont-dashboard',
+    defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 }
+  }),
+  defineWidget({
+    type: 'metricFavorite',
+    title: '服务收藏',
+    description: '当前登录人收藏的常用服务数',
+    icon: 'tsfont-star',
+    defaultLayout: { w: 3, h: 4, minW: 2, minH: 4 },
+    configSchema: METRIC_SCHEMA
+  }),
+  defineWidget({
+    type: 'favoritedServices',
+    title: '收藏服务',
+    description: '当前登录人收藏的常用服务',
+    icon: 'tsfont-star',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'serviceDistribution',
+    title: '服务分布',
+    description: '按服务类型统计占比',
+    icon: 'tsfont-pie-chart',
+    defaultLayout: { w: 4, h: 8, minW: 4, minH: 6 }
+  }),
+  defineWidget({
+    type: 'quickActionGrid',
+    title: '快捷操作',
+    description: '提交工单、服务目录等常用入口',
+    icon: 'tsfont-bolt',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: QUICK_SCHEMA
+  }),
+  defineWidget({
+    type: 'serviceCatalogEntry',
+    title: '服务目录入口',
+    description: '常用服务目录快捷入口',
+    icon: 'tsfont-star',
+    defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
+    configSchema: QUICK_SCHEMA
+  }),
+  defineWidget({
+    type: 'healthRing',
+    title: '健康状态',
+    description: '整体工单和服务健康度',
+    icon: 'tsfont-heart',
+    defaultLayout: { w: 5, h: 8, minW: 5, minH: 7 }
+  }),
+  defineWidget({
+    type: 'teamLoad',
+    title: '团队负载',
+    description: '各处理组当前工作负载',
+    icon: 'tsfont-team',
+    defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
+    configSchema: LIMIT_SCHEMA
+  }),
+  defineWidget({
+    type: 'changeCalendar',
+    title: '变更日历',
+    description: '近期计划变更窗口',
+    icon: 'tsfont-calendar',
+    defaultLayout: { w: 4, h: 9, minW: 3, minH: 6 },
+    configSchema: MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'systemNoticeList',
+    title: '系统通知',
+    description: '平台消息和维护通知',
+    icon: 'tsfont-notice',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: LIMIT_SCHEMA
+  }),
+  defineWidget({
+    type: 'knowledgeHelp',
+    title: '知识帮助',
+    description: '排障指南和知识库文章',
+    icon: 'tsfont-book',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'announcementPanel',
+    title: '公告栏',
+    description: '平台公告和维护消息',
+    icon: 'tsfont-volume',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'supportPanel',
+    title: '帮助支持',
+    description: '帮助文档、教程和联系入口',
+    icon: 'tsfont-question-o',
+    defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
+    configSchema: QUICK_SCHEMA
+  }),
+  defineWidget({
+    type: 'faqList',
+    title: '常见问题',
+    description: '工单服务常见问题集合',
+    icon: 'tsfont-question-o',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: MORE_LIST_SCHEMA
+  }),
+  defineWidget({
+    type: 'heroBanner',
+    title: '首页横幅',
+    description: '当前登录人的欢迎和摘要信息',
+    icon: 'tsfont-home',
+    defaultLayout: { w: 12, h: 4, minW: 8, minH: 4 }
+  }),
+  defineWidget({
+    type: 'metricTodo',
+    title: '待办指标',
+    description: '当前待处理工单数量',
+    icon: 'tsfont-task',
+    defaultLayout: { w: 3, h: 4, minW: 2, minH: 4 },
+    configSchema: METRIC_SCHEMA
+  }),
+  defineWidget({
+    type: 'metricOverdue',
+    title: '超时指标',
+    description: '即将超时和超时风险数量',
+    icon: 'tsfont-sla',
+    defaultLayout: { w: 3, h: 4, minW: 2, minH: 4 },
+    configSchema: METRIC_SCHEMA
+  }),
+  defineWidget({
+    type: 'metricDone',
+    title: '今日完成',
+    description: '今日完成工单数量',
+    icon: 'tsfont-check',
+    defaultLayout: { w: 3, h: 4, minW: 2, minH: 4 },
+    configSchema: METRIC_SCHEMA
+  }),
+  defineWidget({
+    type: 'metricSatisfaction',
+    title: '满意度',
+    description: '当前服务满意度指标',
+    icon: 'tsfont-stars',
+    defaultLayout: { w: 3, h: 4, minW: 2, minH: 4 },
+    configSchema: METRIC_SCHEMA
+  })
+]);
 
-  createDefine('trendPanel', '工单趋势', '按时间查看工单变化趋势', 'tsfont-chart-line', 'TrendPanel', { x: 5, y: 30, w: 5, h: 8, minW: 5, minH: 7 }),
-  createDefine('workbenchTable', '服务概览', '关键服务运行状态表格', 'tsfont-list', 'WorkbenchTable', { x: 0, y: 21, w: 8, h: 8, minW: 7, minH: 7 }, {}, TABLE_SCHEMA),
-  createDefine('taskTypeDistribution', '工单类型分布', '按事件、请求、变更统计工单', 'tsfont-chart-pie', 'TaskTypeDistribution', { x: 8, y: 38, w: 4, h: 8, minW: 3, minH: 6 }),
-  createDefine('slaRiskList', 'SLA 风险', '临近超时和高风险工单提醒', 'tsfont-warning', 'SlaRiskList', { x: 8, y: 46, w: 4, h: 8, minW: 3, minH: 6 }, {}, STATUS_MORE_LIST_SCHEMA),
-  createDefine('efficiencyPanel', '处理效率', '响应、处理和自动关闭效率', 'tsfont-dashboard', 'EfficiencyPanel', { x: 0, y: 46, w: 4, h: 7, minW: 3, minH: 5 }),
+const WORKBENCH_WIDGET_MAP = Object.freeze(WORKBENCH_WIDGETS.reduce((map, widget) => {
+  map[widget.type] = widget;
+  return map;
+}, {}));
 
-  createDefine('metricFavorite', '服务收藏', '当前登录人收藏的常用服务数', 'tsfont-star', 'FavoriteMetric', { x: 9, y: 6, w: 3, h: 4, minW: 2, minH: 4 }, {}, METRIC_SCHEMA),
-  createDefine('favoritedServices', '收藏服务', '当前登录人收藏的常用服务', 'tsfont-star', 'FavoritedServices', { x: 0, y: 54, w: 4, h: 8, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),
-  createDefine('serviceDistribution', '服务分布', '按服务类型统计占比', 'tsfont-pie-chart', 'ServiceDistribution', { x: 4, y: 38, w: 4, h: 8, minW: 4, minH: 6 }),
-  createDefine('quickActionGrid', '快捷操作', '提交工单、服务目录等常用入口', 'tsfont-bolt', 'QuickActionGrid', { x: 8, y: 46, w: 4, h: 8, minW: 3, minH: 6 }, {}, QUICK_SCHEMA),
-  createDefine('serviceCatalogEntry', '服务目录入口', '常用服务目录快捷入口', 'tsfont-star', 'ServiceCatalogEntry', { x: 0, y: 62, w: 4, h: 7, minW: 3, minH: 5 }, {}, QUICK_SCHEMA),
-
-  createDefine('healthRing', '健康状态', '整体工单和服务健康度', 'tsfont-heart', 'HealthRing', { x: 0, y: 30, w: 5, h: 8, minW: 5, minH: 7 }),
-  createDefine('teamLoad', '团队负载', '各处理组当前工作负载', 'tsfont-team', 'TeamLoad', { x: 4, y: 46, w: 4, h: 7, minW: 3, minH: 5 }, {}, LIMIT_SCHEMA),
-  createDefine('changeCalendar', '变更日历', '近期计划变更窗口', 'tsfont-calendar', 'ChangeCalendar', { x: 8, y: 21, w: 4, h: 9, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),
-  createDefine('systemNoticeList', '系统通知', '平台消息和维护通知', 'tsfont-notice', 'SystemNoticeList', { x: 8, y: 54, w: 4, h: 8, minW: 3, minH: 6 }, {}, LIMIT_SCHEMA),
-
-  createDefine('knowledgeHelp', '知识帮助', '排障指南和知识库文章', 'tsfont-book', 'KnowledgeHelp', { x: 4, y: 62, w: 4, h: 8, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),
-  createDefine('announcementPanel', '公告栏', '平台公告和维护消息', 'tsfont-volume', 'AnnouncementPanel', { x: 8, y: 62, w: 4, h: 8, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),
-  createDefine('supportPanel', '帮助支持', '帮助文档、教程和联系入口', 'tsfont-question-o', 'SupportPanel', { x: 0, y: 62, w: 4, h: 7, minW: 3, minH: 5 }, {}, QUICK_SCHEMA),
-  createDefine('faqList', '常见问题', '工单服务常见问题集合', 'tsfont-question-o', 'FaqList', { x: 4, y: 70, w: 4, h: 8, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),
-
-  createDefine('heroBanner', '首页横幅', '当前登录人的欢迎和摘要信息', 'tsfont-home', 'HeroBanner', { x: 0, y: 0, w: 12, h: 4, minW: 8, minH: 4 }),
-  createDefine('metricTodo', '待办指标', '当前待处理工单数量', 'tsfont-task', 'TodoMetric', { x: 0, y: 6, w: 3, h: 4, minW: 2, minH: 4 }, {}, METRIC_SCHEMA),
-  createDefine('metricOverdue', '超时指标', '即将超时和超时风险数量', 'tsfont-sla', 'OverdueMetric', { x: 3, y: 6, w: 3, h: 4, minW: 2, minH: 4 }, {}, METRIC_SCHEMA),
-  createDefine('metricDone', '今日完成', '今日完成工单数量', 'tsfont-check', 'DoneMetric', { x: 6, y: 6, w: 3, h: 4, minW: 2, minH: 4 }, {}, METRIC_SCHEMA),
-  createDefine('metricSatisfaction', '满意度', '当前服务满意度指标', 'tsfont-stars', 'SatisfactionMetric', { x: 0, y: 10, w: 3, h: 4, minW: 2, minH: 4 }, {}, METRIC_SCHEMA)
-];
-
-function createDefine(type, title, description, icon, componentName, defaultLayout, config = {}, configSchema = []) {
+function defineWidget({ type, title, description, icon, defaultLayout, config = {}, configSchema = [] }) {
   const schema = configSchema || [];
   return {
     type,
     title,
     description,
     icon,
-    componentName,
     defaultLayout,
     config: {
       ...getSchemaDefaultConfig(schema),
@@ -93,5 +282,5 @@ function getSchemaDefaultConfig(schema) {
 }
 
 export function getWidgetByType(type) {
-  return WORKBENCH_WIDGETS.find(item => item.type === type);
+  return WORKBENCH_WIDGET_MAP[type] || null;
 }
