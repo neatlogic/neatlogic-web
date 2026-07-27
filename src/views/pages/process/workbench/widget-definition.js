@@ -37,6 +37,14 @@ const QUICK_SCHEMA = [
 
 export const WORKBENCH_WIDGETS = Object.freeze([
   defineWidget({
+    name: 'doneOfMineProcessTask',
+    label: '我的已办',
+    description: '当前登录用户已处理的工单',
+    icon: 'tsfont-check-circle',
+    defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
+    configSchema: TODO_LIST_SCHEMA
+  }),
+  defineWidget({
     name: 'processingOfMineProcessTask',
     label: '我的待办',
     description: '当前登录用户可处理的未完成工单',
