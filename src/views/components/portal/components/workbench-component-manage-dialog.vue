@@ -114,12 +114,11 @@ export default {
         const result = res.Return || {};
         this.componentList = result.tbodyList || [];
         this.tableConfig = {
-          tbodyList: this.componentList,
-          loading: false
+          tbodyList: this.componentList
         };
       }).catch(error => {
         this.componentList = [];
-        this.tableConfig = { tbodyList: [], loading: false };
+        this.tableConfig = { tbodyList: [] };
         this.errorMessage = (error && (error.Message || error.message)) || '组件列表加载失败';
       }).finally(() => {
         this.$set(this.tableConfig, 'loading', false);

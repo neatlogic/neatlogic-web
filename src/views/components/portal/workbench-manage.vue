@@ -110,12 +110,11 @@ export default {
           rowNum: 0,
           currentPage: this.currentPage,
           pageSize: this.pageSize,
-          ...result,
-          loading: false
+          ...result
         };
         this.oldList = (this.tableConfig.tbodyList || []).slice();
       }).catch(error => {
-        this.tableConfig = { tbodyList: [], loading: false };
+        this.tableConfig = { tbodyList: [] };
         this.oldList = [];
         this.$Message.error((error && (error.Message || error.message)) || '工作台模板加载失败');
       }).finally(() => {

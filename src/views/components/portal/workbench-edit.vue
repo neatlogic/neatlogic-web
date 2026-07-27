@@ -279,7 +279,7 @@ export default {
   },
   methods: {
     getWidgetByName(name) {
-      return this.widgetDefinitions.find(item => item.name === name) || null;
+      return this.widgetDefinitionMap.get(name) || null;
     },
     startDrag(event, definition) {
       this.draggingWidget = definition;
@@ -399,24 +399,14 @@ export default {
     },
     visibleGroups() {
       const keyword = this.widgetKeyword.trim().toLowerCase();
-      const availableMap = new Map();
       const groupMap = new Map();
-      this.availableWidgetList.forEach(item => {
-        if (item && item.name && !availableMap.has(item.name)) {
-          availableMap.set(item.name, item);
-        }
-      });
       this.widgetDefinitions.forEach((definition, definitionIndex) => {
-        const availableWidget = availableMap.get(definition.name);
+        const availableWidget = this.availableWidgetMap.get(definition.name);
         if (!availableWidget) {
           return;
         }
-        const availableDefinition = {
-          ...definition,
-          label: availableWidget.label || definition.label,
-          description: availableWidget.description || definition.description
-        };
-        const text = ((availableDefinition.label || '') + ' ' + (availableDefinition.description || '')).toLowerCase();
+        const mergedDefinition = this.widgetDefinitionMap.get(definition.name);
+        const text = ((mergedDefinition.label || '') + ' ' + (mergedDefinition.description || '')).toLowerCase();
         if (keyword && text.indexOf(keyword) === -1) {
           return;
         }
@@ -442,7 +432,7 @@ export default {
         group.sort = Math.min(group.sort, groupSort);
         group.fallbackSort = Math.min(group.fallbackSort, definitionIndex);
         group.widgetList.push({
-          definition: availableDefinition,
+          definition: mergedDefinition,
           sort: getSortValue(availableWidget.sort, LAST_GROUP_SORT),
           fallbackSort: definitionIndex
         });
@@ -460,6 +450,31 @@ export default {
           }
           return a.sort - b.sort || a.fallbackSort - b.fallbackSort;
         });
+    },
+    availableWidgetMap() {
+      // 可用组件由后端按当前用户权限返回，建立索引供分组和定义合并复用。
+      const availableWidgetMap = new Map();
+      this.availableWidgetList.forEach(widget => {
+        if (widget && widget.name && !availableWidgetMap.has(widget.name)) {
+          availableWidgetMap.set(widget.name, widget);
+        }
+      });
+      return availableWidgetMap;
+    },
+    widgetDefinitionMap() {
+      // 保留全部前端定义以支持存量模板；已授权组件优先使用后端最新文案。
+      const widgetDefinitionMap = new Map();
+      this.widgetDefinitions.forEach(definition => {
+        const availableWidget = this.availableWidgetMap.get(definition.name);
+        widgetDefinitionMap.set(definition.name, availableWidget
+          ? {
+            ...definition,
+            label: availableWidget.label || definition.label,
+            description: availableWidget.description || definition.description
+          }
+          : definition);
+      });
+      return widgetDefinitionMap;
     },
     currentWidget() {
       return this.widgetList.find(item => item.i === this.currentWidgetId) || null;

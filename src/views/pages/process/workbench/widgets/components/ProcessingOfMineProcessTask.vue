@@ -57,7 +57,9 @@ export default {
       error: '',
       sourceList: [],
       tableHeight: 160,
-      resizeObserver: null
+      resizeObserver: null,
+      reloadTimer: null,
+      requestSequence: 0
     };
   },
   created() {
@@ -70,10 +72,28 @@ export default {
     });
   },
   beforeDestroy() {
+    if (this.reloadTimer) {
+      clearTimeout(this.reloadTimer);
+      this.reloadTimer = null;
+    }
+    this.requestSequence += 1;
     this.unbindResize();
   },
   methods: {
+    scheduleLoadData() {
+      // 配置滑块会连续触发更新，先让当前请求失效，再合并为最后一次查询。
+      this.requestSequence += 1;
+      if (this.reloadTimer) {
+        clearTimeout(this.reloadTimer);
+      }
+      this.reloadTimer = setTimeout(() => {
+        this.reloadTimer = null;
+        this.loadData();
+      }, 200);
+    },
     loadData() {
+      // 仅允许最后发起的请求更新状态，避免旧响应覆盖新配置对应的数据。
+      const requestSequence = ++this.requestSequence;
       this.loading = true;
       this.error = '';
       this.$api.common.searchWorkbenchWidgetData({
@@ -84,15 +104,24 @@ export default {
           needPage: false
         }
       }).then(res => {
+        if (requestSequence !== this.requestSequence) {
+          return;
+        }
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '我的待办加载失败');
         }
         const result = res.Return || {};
         this.sourceList = Array.isArray(result.tbodyList) ? result.tbodyList : [];
       }).catch(error => {
+        if (requestSequence !== this.requestSequence) {
+          return;
+        }
         this.sourceList = [];
         this.error = (error && (error.Message || error.message)) || '我的待办加载失败';
       }).finally(() => {
+        if (requestSequence !== this.requestSequence) {
+          return;
+        }
         this.loading = false;
         this.$nextTick(() => {
           this.updateTableHeight();
@@ -182,7 +211,7 @@ export default {
   },
   watch: {
     limit() {
-      this.loadData();
+      this.scheduleLoadData();
     }
   }
 };

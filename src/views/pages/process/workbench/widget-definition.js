@@ -264,10 +264,11 @@ export const WORKBENCH_WIDGETS = Object.freeze([
   })
 ]);
 
-const WORKBENCH_WIDGET_MAP = Object.freeze(WORKBENCH_WIDGETS.reduce((map, widget) => {
+// 模块内部的静态定义索引，避免渲染每个组件时重复遍历定义列表。
+const WORKBENCH_WIDGET_MAP = WORKBENCH_WIDGETS.reduce((map, widget) => {
   map[widget.name] = widget;
   return map;
-}, {}));
+}, {});
 
 function defineWidget({ name, label, description, icon, defaultLayout, config = {}, configSchema = [] }) {
   const schema = configSchema || [];
