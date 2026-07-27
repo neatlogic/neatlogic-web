@@ -12,6 +12,12 @@ const STATUS_MORE_LIST_SCHEMA = [
   { name: 'showStatus', label: '显示状态', type: 'switch', defaultValue: 1 }
 ];
 
+const TODO_LIST_SCHEMA = [
+  { name: 'limit', label: '显示条数', type: 'slider', min: 2, max: 8, step: 1, defaultValue: 5 },
+  { name: 'showMore', label: '显示更多入口', type: 'switch', defaultValue: 1 },
+  { name: 'showStatus', label: '显示状态', type: 'switch', defaultValue: 1 }
+];
+
 const TABLE_SCHEMA = [
   { name: 'limit', label: '显示条数', type: 'slider', min: 2, max: 10, step: 1, defaultValue: 10 },
   { name: 'showStatus', label: '显示状态列', type: 'switch', defaultValue: 1 },
@@ -30,6 +36,7 @@ const QUICK_SCHEMA = [
 ];
 
 export const WORKBENCH_WIDGETS = [
+  createDefine('processingOfMineProcessTask', '我的待办', '当前登录用户可处理的未完成工单', 'tsfont-task', 'ProcessingOfMineProcessTask', { x: 0, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, TODO_LIST_SCHEMA),
   createDefine('recentTaskList', '最近工单', '最近创建或处理过的工单', 'tsfont-history', 'RecentTaskList', { x: 0, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, STATUS_MORE_LIST_SCHEMA),
   createDefine('approvalTodoList', '审批待办', '需要当前登录人确认的审批项', 'tsfont-check-square', 'ApprovalTodoList', { x: 4, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, STATUS_MORE_LIST_SCHEMA),
   createDefine('focusTaskList', '我的关注', '关注中的重点工单进度', 'tsfont-focus', 'FocusTaskList', { x: 8, y: 13, w: 4, h: 8, minW: 3, minH: 6 }, {}, MORE_LIST_SCHEMA),

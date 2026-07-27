@@ -12,6 +12,7 @@ export { default as HeroBanner } from './HeroBanner.vue';
 export { default as KnowledgeHelp } from './KnowledgeHelp.vue';
 export { default as MyTodoEntry } from './MyTodoEntry.vue';
 export { default as OverdueMetric } from './OverdueMetric.vue';
+export { default as ProcessingOfMineProcessTask } from './ProcessingOfMineProcessTask.vue';
 export { default as QuickActionGrid } from './QuickActionGrid.vue';
 export { default as RecentOperationList } from './RecentOperationList.vue';
 export { default as RecentTaskList } from './RecentTaskList.vue';
