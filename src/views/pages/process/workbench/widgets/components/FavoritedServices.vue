@@ -14,7 +14,7 @@
         :show-pager="false"
       >
         <template v-slot:name="{ row }">
-          <span class="service-name align-center">
+          <span class="service-name align-center text-href" @click.stop="toCatalog(row)">
             <i :class="[row.icon || 'tsfont-ip-list', 'service-icon text-primary mr-sm']"></i>
             <span class="overflow">{{ row.name }}</span>
           </span>
@@ -68,6 +68,15 @@ export default {
     this.unbindResize();
   },
   methods: {
+    toCatalog(row) {
+      const catalogId = row.id || row.uuid || row.channelUuid;
+      const path = catalogId ? `/catalog-overview?catalogId=${catalogId}` : '/catalog-overview';
+      if (MODULEID === 'process') {
+        this.$router.push(path);
+      } else {
+        window.location.href = `${HOME}/process.html#${path}`;
+      }
+    },
     loadData() {
       this.loading = true;
       this.error = '';

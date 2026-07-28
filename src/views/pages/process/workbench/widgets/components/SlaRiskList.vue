@@ -4,26 +4,35 @@
     :loading="loading"
     :error="error"
     :empty="isEmpty"
+    icon="tsfont-sla"
+    tone="danger"
+    subtitle="即将超时和已经超时的工单"
   >
-    <template v-if="config.showMore !== 0" v-slot:action>优先处理</template>
-    <div class="portal-mini-list">
-      <div v-for="item in list" :key="item.title" class="risk-row mb-sm">
-        <Tag v-if="config.showStatus !== 0">{{ item.level }}</Tag>
-        <div class="row-main">
-          <div class="row-title overflow">{{ item.title }}</div>
-          <div class="row-sub text-grey mt-xs">剩余 {{ item.remain }}</div>
-        </div>
-      </div>
-    </div>
+    <template v-if="config.showMore !== 0" v-slot:action>
+      <a :href="workcenterHref" class="text-action">优先处理</a>
+    </template>
+    <WorkbenchSummary :summary="summary" class="mb-sm"></WorkbenchSummary>
+    <WorkbenchActionList
+      :items="list"
+      :showStatus="config.showStatus !== 0"
+      dense
+      @select="toDetail"
+    ></WorkbenchActionList>
   </PortalCard>
 </template>
 
 <script>
+import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
+import WorkbenchSummary from '@/views/components/portal/components/display/WorkbenchSummary.vue';
 import PortalCard from './PortalCard.vue';
 
 export default {
   name: 'SlaRiskList',
-  components: { PortalCard },
+  components: {
+    PortalCard,
+    WorkbenchActionList,
+    WorkbenchSummary
+  },
   props: {
     widget: { type: Object },
     title: { type: String, default: 'SLA 风险' },
@@ -34,31 +43,55 @@ export default {
     return {
       loading: false,
       error: '',
-      // 案例数据，后续接入接口后替换
       sourceList: [
-        { level: '高', title: '核心业务系统访问异常', remain: '25分钟' }
+        { id: 'mock-sla-1', level: '超时', title: '核心业务系统访问异常', remain: '已超时 18 分钟', remainMinutes: -18 },
+        { id: 'mock-sla-2', level: '高', title: '生产账号权限申请', remain: '25 分钟', remainMinutes: 25 },
+        { id: 'mock-sla-3', level: '中', title: '办公网络连接不稳定', remain: '55 分钟', remainMinutes: 55 }
       ]
     };
   },
+  methods: {
+    toDetail(item) {
+      const path = `/task-detail?processTaskId=${item.id}`;
+      if (MODULEID === 'process') {
+        this.$router.push(path);
+      } else {
+        window.location.href = `${HOME}/process.html#${path}`;
+      }
+    }
+  },
   computed: {
+    summary() {
+      const overdueCount = this.list.filter(item => item.remainMinutes < 0).length;
+      return {
+        value: this.list.length,
+        label: '单存在SLA风险',
+        description: overdueCount ? `${overdueCount} 单已经超时` : '请按剩余时间优先处理',
+        tone: overdueCount ? 'danger' : 'warning',
+        icon: 'tsfont-sla'
+      };
+    },
     isEmpty() {
       return !this.list.length;
     },
     list() {
       const limit = Number(this.config.limit) || this.sourceList.length;
-      return this.sourceList.slice(0, limit);
+      const warnMinutes = Number(this.config.warnMinutes) || 60;
+      return this.sourceList
+        .filter(item => item.remainMinutes <= warnMinutes)
+        .sort((a, b) => a.remainMinutes - b.remainMinutes)
+        .slice(0, limit)
+        .map(item => ({
+          ...item,
+          description: `剩余 ${item.remain}`,
+          status: item.level,
+          tone: item.remainMinutes < 0 ? 'danger' : 'warning',
+          icon: item.remainMinutes < 0 ? 'tsfont-close-o' : 'tsfont-time'
+        }));
+    },
+    workcenterHref() {
+      return `${HOME}/process.html#/task-overview-processingOfMineProcessTask`;
     }
   }
 };
 </script>
-
-<style lang="less" scoped>
-@import './portal-list.less';
-.risk-row {
-  min-height: 46px;
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr);
-  gap: 10px;
-  align-items: center;
-}
-</style>

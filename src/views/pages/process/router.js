@@ -1,6 +1,6 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
 const noAuthority = () => import('@/views/pages/common/no-authority.vue');
-const welcome = () => import('./workbench/workbench-home.vue');
+const welcome = () => import('@/views/pages/common/welcome.vue');
 //const taskOverview = () => import('./task/task-overview.vue');
 const catalogOverview = () => import('./catalog/catalog-overview.vue');
 const catalogManage = () => import('./catalog/catalog-manage.vue');
@@ -26,8 +26,6 @@ const flowEditNew = () => import('@/views/pages/process/flow/flow-edit-new.vue')
 const flowDemo = () => import('./flowdemo/flow-demo.vue');
 const replyManage = () => import('./replytemplate/reply-manage.vue');
 const ProcessTaskManage = () => import('./task/processtask-manage.vue');
-const workbenchManage = () => import('@/views/components/portal/workbench-manage.vue');
-const workbenchEdit = () => import('./workbench/workbench-edit.vue');
 
 import { $t } from '@/resources/init.js';
 import { config } from './config.js';
@@ -72,7 +70,7 @@ let routerList = [
     name: 'welcome',
     component: welcome,
     meta: {
-      title: '工单工作台',
+      title: 'IT 服务',
       authority: 'PROCESS_BASE',
       type: 'task'
     }
@@ -353,30 +351,6 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-modules',
       authority: 'PROCESS_BASE',
-      type: 'others'
-    }
-  },
-  {
-    path: '/workbench-manage',
-    name: 'workbench-manage',
-    component: workbenchManage,
-    meta: {
-      title: '工作台配置',
-      ismenu: true,
-      icon: 'tsfont-m-dashboard',
-      authority: 'PROCESS_MODIFY',
-      type: 'others'
-    }
-  },
-  {
-    path: '/workbench-edit/:id?',
-    name: 'workbench-edit',
-    component: workbenchEdit,
-    meta: {
-      title: '工作台配置编辑',
-      ismenu: false,
-      icon: 'tsfont-m-dashboard',
-      authority: 'PROCESS_MODIFY',
       type: 'others'
     }
   }

@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { WORKBENCH_TYPE_GLOBAL } from '../workbench-constants.js';
+
 export default {
   name: 'PortalWorkbenchComponentBatchAuthDialog',
   components: {
@@ -45,7 +47,9 @@ export default {
     componentList: {
       type: Array,
       default: () => []
-    }
+    },
+    moduleGroup: { type: String, default: '' },
+    workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL }
   },
   data() {
     return {
@@ -81,7 +85,9 @@ export default {
       this.saveError = '';
       this.$api.common.batchSaveWorkbenchWidgetAuthority(
         this.componentNameList,
-        this.authorityList
+        this.authorityList,
+        this.moduleGroup,
+        this.workbenchType
       ).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '组件批量授权保存失败');

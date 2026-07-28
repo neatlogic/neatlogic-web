@@ -7,6 +7,7 @@ export function createWorkbenchWidget(definition, option = {}) {
     uuid: i,
     i,
     type: definition ? definition.name : option.type,
+    configVersion: (definition && Number(definition.version)) || 1,
     name: option.name || (definition && definition.label) || '',
     x: getNumber(option.x, defaultLayout.x, 0),
     y: getNumber(option.y, defaultLayout.y, 0),
@@ -89,7 +90,7 @@ export function filterValidWorkbenchWidgetList(widgetList, widgetDefinitions = [
   });
 }
 
-export function isWorkbenchWidgetComplete(widget, typeSet) {
+function isWorkbenchWidgetComplete(widget, typeSet) {
   if (!widget || !widget.i || !widget.uuid || widget.i !== widget.uuid) {
     return false;
   }

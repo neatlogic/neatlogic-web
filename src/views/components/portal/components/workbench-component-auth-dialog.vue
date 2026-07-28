@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import { WORKBENCH_TYPE_GLOBAL } from '../workbench-constants.js';
+
 export default {
   name: 'PortalWorkbenchComponentAuthDialog',
   components: {
@@ -50,7 +52,9 @@ export default {
     componentData: {
       type: Object,
       default: () => ({})
-    }
+    },
+    moduleGroup: { type: String, default: '' },
+    workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL }
   },
   data() {
     return {
@@ -71,7 +75,11 @@ export default {
     loadComponentDetail() {
       this.loading = true;
       this.detailError = '';
-      this.$api.common.getWorkbenchWidget(this.componentData.name).then(res => {
+      this.$api.common.getWorkbenchWidget(
+        this.componentData.name,
+        this.moduleGroup,
+        this.workbenchType
+      ).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '组件授权信息加载失败');
         }
@@ -91,7 +99,9 @@ export default {
       this.saveError = '';
       this.$api.common.saveWorkbenchWidgetAuthority(
         this.componentData.name,
-        this.authorityList
+        this.authorityList,
+        this.moduleGroup,
+        this.workbenchType
       ).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '组件授权保存失败');

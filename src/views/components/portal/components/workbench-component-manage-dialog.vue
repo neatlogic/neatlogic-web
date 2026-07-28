@@ -54,11 +54,15 @@
       <WorkbenchComponentAuthDialog
         v-if="currentComponent"
         :componentData="currentComponent"
+        :moduleGroup="moduleGroup"
+        :workbenchType="workbenchType"
         @close="closeAuthDialog"
       ></WorkbenchComponentAuthDialog>
       <WorkbenchComponentBatchAuthDialog
         v-if="showBatchAuthDialog"
         :componentList="selectedComponentList"
+        :moduleGroup="moduleGroup"
+        :workbenchType="workbenchType"
         @close="closeBatchAuthDialog"
       ></WorkbenchComponentBatchAuthDialog>
     </div>
@@ -66,6 +70,8 @@
 </template>
 
 <script>
+import { WORKBENCH_TYPE_GLOBAL } from '../workbench-constants.js';
+
 export default {
   name: 'PortalWorkbenchComponentManageDialog',
   components: {
@@ -75,11 +81,17 @@ export default {
     WorkbenchComponentAuthDialog: () => import('./workbench-component-auth-dialog.vue'),
     WorkbenchComponentBatchAuthDialog: () => import('./workbench-component-batch-auth-dialog.vue')
   },
+  props: {
+    moduleGroup: { type: String, default: '' },
+    workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL },
+    widgetDefinitions: { type: Array, default: () => [] }
+  },
   data() {
     return {
       theadList: [
         { key: 'selection', multiple: true },
         { title: '组件名称', key: 'label' },
+        { title: '所属模块', key: 'ownerModuleName' },
         { title: '权限', key: 'authorityVoList' },
         { key: 'action' }
       ],
@@ -106,13 +118,25 @@ export default {
       this.$set(this.tableConfig, 'loading', true);
       this.$api.common.searchWorkbenchWidgetManageList({
         currentPage: 1,
-        pageSize: 1000
+        pageSize: 1000,
+        moduleGroup: this.moduleGroup,
+        type: this.workbenchType
       }).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '组件列表加载失败');
         }
         const result = res.Return || {};
-        this.componentList = result.tbodyList || [];
+        const apiComponentList = result.tbodyList || [];
+        const apiComponentMap = new Map(apiComponentList.map(item => [item.name, item]));
+        this.componentList = this.widgetDefinitions.map(definition => ({
+          ...definition,
+          ...(apiComponentMap.get(definition.name) || {})
+        }));
+        apiComponentList.forEach(item => {
+          if (!this.componentList.some(component => component.name === item.name)) {
+            this.componentList.push(item);
+          }
+        });
         this.tableConfig = {
           tbodyList: this.componentList
         };

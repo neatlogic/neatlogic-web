@@ -1,9 +1,16 @@
 import axios from '../http';
 
-function withCurrentModuleGroup(data = {}) {
+function withCurrentModuleGroup(data = {}, moduleGroup) {
   return {
     ...data,
-    moduleGroup: MODULEID
+    moduleGroup: moduleGroup || data.moduleGroup || MODULEID
+  };
+}
+
+function withWorkbenchType(data = {}, type = 'global') {
+  return {
+    ...data,
+    type: data.type || type
   };
 }
 
@@ -198,45 +205,45 @@ const common = {
   },
   searchWorkbenchList(data = {}) {
     // 工作台列表查询接口
-    return axios.post('/api/rest/portal/list', withCurrentModuleGroup(data));
+    return axios.post('/api/rest/portal/list', withCurrentModuleGroup(withWorkbenchType(data)));
   },
-  getWorkbenchDetail(id) {
+  getWorkbenchDetail(id, moduleGroup, type = 'global') {
     // 工作台详情查询接口
-    return axios.post('/api/rest/portal/get', withCurrentModuleGroup({ id }));
+    return axios.post('/api/rest/portal/get', withCurrentModuleGroup(withWorkbenchType({ id }, type), moduleGroup));
   },
   saveWorkbench(data = {}) {
-    return axios.post('/api/rest/portal/save', withCurrentModuleGroup(data));
+    return axios.post('/api/rest/portal/save', withCurrentModuleGroup(withWorkbenchType(data)));
   },
-  deleteWorkbench(id) {
-    return axios.post('/api/rest/portal/delete', withCurrentModuleGroup({ id }));
+  deleteWorkbench(id, moduleGroup, type = 'global') {
+    return axios.post('/api/rest/portal/delete', withCurrentModuleGroup(withWorkbenchType({ id }, type), moduleGroup));
   },
-  moveWorkbench(id, sort) {
-    return axios.post('/api/rest/portal/move', withCurrentModuleGroup({ id, sort }));
+  moveWorkbench(id, sort, moduleGroup, type = 'global') {
+    return axios.post('/api/rest/portal/move', withCurrentModuleGroup(withWorkbenchType({ id, sort }, type), moduleGroup));
   },
-  updateWorkbenchActive(id, isActive) {
-    return axios.post('/api/rest/portal/toggleactive', withCurrentModuleGroup({ id, isActive }));
+  updateWorkbenchActive(id, isActive, moduleGroup, type = 'global') {
+    return axios.post('/api/rest/portal/toggleactive', withCurrentModuleGroup(withWorkbenchType({ id, isActive }, type), moduleGroup));
   },
   searchWorkbenchWidgetManageList(data = {}) {
-    return axios.post('/api/rest/portal/widget/list/manage', withCurrentModuleGroup(data));
+    return axios.post('/api/rest/portal/widget/list/manage', withCurrentModuleGroup(withWorkbenchType(data)));
   },
   searchAvailableWorkbenchWidgetList(data = {}) {
-    return axios.post('/api/rest/portal/widget/list/hasauthority', withCurrentModuleGroup(data));
+    return axios.post('/api/rest/portal/widget/list/hasauthority', withCurrentModuleGroup(withWorkbenchType(data)));
   },
-  getWorkbenchWidget(name) {
-    return axios.post('/api/rest/portal/widget/get', { name });
+  getWorkbenchWidget(name, moduleGroup, type = 'global') {
+    return axios.post('/api/rest/portal/widget/get', withCurrentModuleGroup(withWorkbenchType({ name }, type), moduleGroup));
   },
-  saveWorkbenchWidgetAuthority(name, authorityList = []) {
-    return axios.post('/api/rest/portal/widget/save', { name, authorityList });
+  saveWorkbenchWidgetAuthority(name, authorityList = [], moduleGroup, type = 'global') {
+    return axios.post('/api/rest/portal/widget/save', withCurrentModuleGroup(withWorkbenchType({ name, authorityList }, type), moduleGroup));
   },
-  batchSaveWorkbenchWidgetAuthority(nameList = [], authorityList = []) {
-    return axios.post('/api/rest/portal/widget/authority/batchsave', { nameList, authorityList });
+  batchSaveWorkbenchWidgetAuthority(nameList = [], authorityList = [], moduleGroup, type = 'global') {
+    return axios.post('/api/rest/portal/widget/authority/batchsave', withCurrentModuleGroup(withWorkbenchType({ nameList, authorityList }, type), moduleGroup));
   },
   searchWorkbenchWidgetData(data = {}) {
     return axios.post('/api/rest/portal/widget/data/search', data);
   },
-  getCurrentUserPortal() {
+  getCurrentUserPortal(moduleGroup) {
     // 获取当前用户可用的工作台
-    return axios.post('/api/rest/portal/currentuser/get', withCurrentModuleGroup());
+    return axios.post('/api/rest/portal/currentuser/get', withCurrentModuleGroup({}, moduleGroup));
   }
 };
 

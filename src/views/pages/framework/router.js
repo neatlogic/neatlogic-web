@@ -65,6 +65,9 @@ const serverManage = () => import('./server/server-manage.vue'); // 服务器管
 const extramenuManage = () => import('./extramenu/extramenu-manage.vue'); //菜单管理
 const regionManage = () => import('./region/region-manage.vue'); //地域管理
 const homepageManage = () => import('./homepage/homepage-manage.vue'); //首页管理
+const globalWorkbenchManage = () => import('./homepage/global-workbench-manage.vue'); //工作台管理
+const globalWorkbenchEdit = () => import('./homepage/global-workbench-edit.vue'); //工作台编辑
+const personalWorkbenchEdit = () => import('./homepage/personal-workbench-edit.vue'); //个人工作台编辑
 const changelogAuditManage = () => import('./changelogaudit/changelogaudit-manage.vue'); //数据库变更记录
 const logManage = () => import('./log/log-manage.vue'); //查看日志
 
@@ -788,6 +791,42 @@ let routerList = [
       icon: 'tsfont-home',
       authority: 'HOME_PAGE_MODIFY',
       type: 'others'
+    }
+  },
+  {
+    path: '/global-workbench-manage',
+    name: 'global-workbench-manage',
+    component: globalWorkbenchManage,
+    meta: {
+      title: '工作台管理',
+      ismenu: true,
+      icon: 'tsfont-m-dashboard',
+      authority: 'HOME_PAGE_MODIFY',
+      type: 'others'
+    }
+  },
+  {
+    path: '/global-workbench-edit/:id?',
+    name: 'global-workbench-edit',
+    component: globalWorkbenchEdit,
+    meta: {
+      title: '工作台配置',
+      ismenu: false,
+      icon: 'tsfont-m-dashboard',
+      authority: 'HOME_PAGE_MODIFY',
+      type: 'others'
+    }
+  },
+  {
+    path: '/personal-workbench-edit/:id?',
+    name: 'personal-workbench-edit',
+    component: personalWorkbenchEdit,
+    meta: {
+      title: '个人工作台配置',
+      ismenu: false,
+      icon: 'tsfont-m-dashboard',
+      authority: '',
+      type: 'user'
     }
   },
   {

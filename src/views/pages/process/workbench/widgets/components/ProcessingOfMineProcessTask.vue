@@ -4,9 +4,24 @@
     :loading="loading"
     :error="error"
     :empty="isEmpty"
+    icon="tsfont-task"
+    tone="primary"
+    subtitle="当前可直接处理的服务工单"
   >
-    <template v-if="showMore" v-slot:action>
-      <span class="text-action" @click="toWorkcenter">更多</span>
+    <template v-slot:action>
+      <span
+        :class="['todo-filter', { 'text-primary': activeFilter === 'all' }]"
+        @click="activeFilter = 'all'"
+      >
+        全部
+      </span>
+      <span
+        :class="['todo-filter', { 'text-danger': activeFilter === 'urgent' }]"
+        @click="activeFilter = 'urgent'"
+      >
+        紧急
+      </span>
+      <span v-if="showMore" class="text-action ml-sm" @click="toWorkcenter">更多</span>
     </template>
     <div ref="tableWrap" class="todo-table">
       <TsTable
@@ -59,7 +74,8 @@ export default {
       tableHeight: 160,
       resizeObserver: null,
       reloadTimer: null,
-      requestSequence: 0
+      requestSequence: 0,
+      activeFilter: 'all'
     };
   },
   created() {
@@ -169,14 +185,29 @@ export default {
     getTaskId(item) {
       return item.taskid || item.id || (item.route && item.route.taskid);
     },
+    isUrgentTask(item) {
+      const status = this.getText(item.statusName || item.status);
+      const priority = this.getText(item.priority);
+      return /超时|风险|紧急|urgent|high/i.test(`${status} ${priority}`);
+    },
     toDetail(item) {
       const processTaskId = this.getTaskId(item);
       if (processTaskId) {
-        this.$router.push({ path: '/task-detail', query: { processTaskId } });
+        const path = `/task-detail?processTaskId=${processTaskId}`;
+        if (MODULEID === 'process') {
+          this.$router.push({ path: '/task-detail', query: { processTaskId } });
+        } else {
+          window.location.href = `${HOME}/process.html#${path}`;
+        }
       }
     },
     toWorkcenter() {
-      this.$router.push({ path: '/task-overview-processingOfMineProcessTask' });
+      const path = '/task-overview-processingOfMineProcessTask';
+      if (MODULEID === 'process') {
+        this.$router.push({ path });
+      } else {
+        window.location.href = `${HOME}/process.html#${path}`;
+      }
     }
   },
   computed: {
@@ -203,7 +234,10 @@ export default {
       return theadList;
     },
     list() {
-      return this.sourceList.slice(0, this.limit);
+      const sourceList = this.activeFilter === 'urgent'
+        ? this.sourceList.filter(this.isUrgentTask)
+        : this.sourceList;
+      return sourceList.slice(0, this.limit);
     },
     isEmpty() {
       return !this.list.length;
@@ -222,5 +256,9 @@ export default {
   height: 100%;
   min-height: 0;
   overflow: hidden;
+}
+.todo-filter {
+  margin-left: 8px;
+  cursor: pointer;
 }
 </style>

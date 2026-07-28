@@ -3,8 +3,12 @@
     <TsContain :hideHeader="true">
       <template v-slot:content>
         <div class="user_content">
-          <Tabs v-model="paneName">
-            <TabPane :label="$t('page.basicinfo')" name="usersetting">
+          <Tabs
+            v-model="paneName"
+            name="userSettingTabs"
+            @on-click="changePane"
+          >
+            <TabPane :label="$t('page.basicinfo')" name="usersetting" tab="userSettingTabs">
               <TsForm ref="usersetting" v-model="formValue" :itemList="formSetting">
                 <template v-slot:avatar>
                   <AvatarSetting class="avatar-upload">
@@ -62,10 +66,10 @@
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
             </TabPane>
-            <TabPane :label="$t('term.framework.modifypwd')" name="password">
+            <TabPane :label="$t('term.framework.modifypwd')" name="password" tab="userSettingTabs">
               <PasswordSetting></PasswordSetting>
             </TabPane>
-            <TabPane :label="$t('term.framework.custom')" name="convenience">
+            <TabPane :label="$t('term.framework.custom')" name="convenience" tab="userSettingTabs">
               <div v-show="paneName === 'convenience'">
                 <div class="convenience">
                   <p class="title">{{ $t('term.framework.popupalert') }}</p>
@@ -150,7 +154,15 @@
                 <DefaultpageManage />
               </div>
             </TabPane>
-            <TabPane v-if="canShow" :label="$t('term.framework.missionauth')" name="task">
+            <TabPane label="工作台设置" name="workbench" tab="userSettingTabs">
+              <UserSettingWorkbenchManage v-if="paneName === 'workbench'"></UserSettingWorkbenchManage>
+            </TabPane>
+            <TabPane
+              v-if="canShow"
+              :label="$t('term.framework.missionauth')"
+              name="task"
+              tab="userSettingTabs"
+            >
               <TaskAuthorization></TaskAuthorization>
             </TabPane>
           </Tabs>
@@ -177,7 +189,8 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsAvatar,
     ViewAuthorizationDialog: () => import('./user-setting-view-authorization-dialog.vue'),
-    PasswordSetting: () => import('./user-setting-password.vue')
+    PasswordSetting: () => import('./user-setting-password.vue'),
+    UserSettingWorkbenchManage: () => import('./user-setting-workbench-manage.vue')
   },
   props: [''],
   data() {
@@ -321,6 +334,18 @@ export default {
     this.getUserInfo();
   },
   methods: {
+    changePane(paneName) {
+      if (this.$route.query.paneName === paneName) {
+        return;
+      }
+      this.$router.push({
+        name: 'user-setting',
+        query: {
+          ...this.$route.query,
+          paneName
+        }
+      });
+    },
     resetCurrentUserToken() {
       this.$api.framework.user.resetCurrentUserToken().then(res => {
         if (res.Status == 'OK') {
@@ -467,7 +492,14 @@ export default {
       return this.$store.state.userInfo?.userAuthList || [];
     }
   },
-  watch: {}
+  watch: {
+    '$route.query.paneName'(paneName) {
+      const targetPaneName = paneName || 'usersetting';
+      if (targetPaneName !== this.paneName) {
+        this.paneName = targetPaneName;
+      }
+    }
+  }
 };
 </script>
 <style lang="less">
