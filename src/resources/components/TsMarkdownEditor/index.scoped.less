@@ -1,0 +1,19 @@
+.ts-markdown-editor {
+  position: relative;
+  min-height: 120px;
+
+  &-content {
+    width: 100%;
+    height: 100%;
+  }
+
+  ::v-deep .cherry {
+    height: 100%;
+  }
+
+  ::v-deep .cherry-markdown pre[class*='language-'] > code[class*='language-'] {
+    display: block !important;
+    height: auto !important;
+    padding-bottom: 10px !important;
+  }
+}
