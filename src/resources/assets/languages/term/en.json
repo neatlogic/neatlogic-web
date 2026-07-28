@@ -1430,6 +1430,7 @@
     "blocked": "Blocked",
     "notexists": "Does Not Exist",
     "executionrecord": "Execution Record",
+    "jartime": "Jar Time",
     "threaddump": "Thread Snapshot",
     "timecostsort": "Descending by time spent",
     "monitorlist": "Monitoring statement list",

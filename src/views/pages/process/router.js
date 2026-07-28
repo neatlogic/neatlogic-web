@@ -80,7 +80,6 @@ let routerList = [
       icon: 'tsfont-task',
       authority: 'PROCESS_BASE',
       type: 'task',
-      keepAlive: false,
       isBack: false,
       istitle: true
     }
@@ -95,7 +94,6 @@ let routerList = [
       icon: 'tsfont-task',
       authority: 'PROCESS_BASE',
       type: 'task',
-      keepAlive: false,
       isBack: false,
       istitle: true
     }

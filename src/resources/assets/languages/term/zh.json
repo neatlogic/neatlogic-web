@@ -1429,6 +1429,7 @@
     "blocked": "阻塞",
     "notexists": "不存在",
     "executionrecord": "执行记录",
+    "jartime": "Jar时间",
     "threaddump": "线程快照",
     "timecostsort": "按耗时降序",
     "monitorlist": "监控语句列表",

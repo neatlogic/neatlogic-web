@@ -205,17 +205,25 @@
           v-download:prevent="helpLoading || downloadLoading"
           :loading="helpLoading || downloadLoading"
         >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
-        <Button
+        <Tooltip
           v-if="autoexecToolUsageAiAssistantComponent"
-          type="primary"
-          @click="openToolUsageAiFromHelp"
-        >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+          :content="aiAssistantDisabledReason"
+          :disabled="!aiAssistantDisabledReason"
+          transfer
+        >
+          <Button
+            type="primary"
+            :disabled="!aiAssistantEnabled"
+            @click="openToolUsageAiFromHelp"
+          >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+        </Tooltip>
       </template>
     </TsDialog>
     <component
       :is="autoexecToolUsageAiAssistantComponent"
       v-if="autoexecToolUsageAiAssistantComponent"
       ref="toolUsageAiAssistant"
+      @availability-change="handleAiAssistantAvailability"
     ></component>
   </div>
 </template>
@@ -326,7 +334,9 @@ export default {
       helpLoading: false,
       onlineHelpContent: '',
       downloadLoading: false,
-      helpRequestId: 0
+      helpRequestId: 0,
+      aiAssistantEnabled: false,
+      aiAssistantDisabledReason: ''
     };
   },
   beforeCreate() {},
@@ -598,6 +608,9 @@ export default {
       });
     },
     openToolUsageAiAssistant(step, documentContent = '') {
+      if (!this.aiAssistantEnabled) {
+        return;
+      }
       const assistant = this.$refs.toolUsageAiAssistant;
       if (!step || !assistant || !assistant.openDialog) {
         return;
@@ -606,6 +619,10 @@ export default {
         toolContext: this.buildToolUsageContext(step),
         documentContent: documentContent
       });
+    },
+    handleAiAssistantAvailability({ enabled, disabledReason }) {
+      this.aiAssistantEnabled = enabled;
+      this.aiAssistantDisabledReason = disabledReason || '';
     },
     buildToolUsageContext(step) {
       // 这里只收集当前工具卡片上下文，避免助手被误用成组合工具整体评估入口。

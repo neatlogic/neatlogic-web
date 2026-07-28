@@ -79,8 +79,15 @@
             <span
               v-if="autoexecScriptAiAssistantComponent"
               class="action-item btn-icon tsfont-ai"
+              :class="{ disable: !aiAssistantEnabled }"
               @click.stop="openAiAssistant"
-            >{{ $t('term.autoexec.writescript') }}</span>
+            >
+              <Tooltip
+                :content="aiAssistantDisabledReason"
+                :disabled="!aiAssistantDisabledReason"
+                transfer
+              >{{ $t('term.autoexec.writescript') }}</Tooltip>
+            </span>
             <span
               v-for="operate in editBtnList"
               :key="operate.value"
@@ -162,6 +169,7 @@
       :scriptConfig="scriptConfig"
       :getContext="getAiAssistantContext"
       @replace-code="replaceAiAssistantCode"
+      @availability-change="handleAiAssistantAvailability"
     ></component>
     <component
       :is="autoexecScriptExecrtoolAuthorityComponent"
@@ -271,6 +279,8 @@ export default {
       typeDialog: 'delete',
       tipText: null,
       isExecrtoolActionVisible: false,
+      aiAssistantEnabled: false,
+      aiAssistantDisabledReason: '',
       formConfig: {
         version: {
           type: 'text',
@@ -675,9 +685,16 @@ export default {
       }
     },
     openAiAssistant() {
+      if (!this.aiAssistantEnabled) {
+        return;
+      }
       if (this.$refs.aiAssistant && this.$refs.aiAssistant.openDialog) {
         this.$refs.aiAssistant.openDialog();
       }
+    },
+    handleAiAssistantAvailability({ enabled, disabledReason }) {
+      this.aiAssistantEnabled = enabled;
+      this.aiAssistantDisabledReason = disabledReason || '';
     },
     getAiAssistantContext() {
       const detailContext = this.$refs.versionDetail && this.$refs.versionDetail.getAiAssistantContext ? this.$refs.versionDetail.getAiAssistantContext() : {};
