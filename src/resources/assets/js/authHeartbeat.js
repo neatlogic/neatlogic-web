@@ -11,15 +11,19 @@ let titleBeforeCountdown = '';
 let countdownTitle = null;
 let storageHandler = null;
 let countdownVisibilityHandler = null;
+let currentTokenHash = null;
+let isCountdownRenewing = false;
 
 // 需要保持引用，避免 removeEventListener 失效
 let throttledHandler = null;
+let activeHandler = null;
 
 /**
  * 用户活跃标记
  */
 function markUserActive() {
   dirty = true;
+  renewCountdownSession();
 }
 
 /**
@@ -110,6 +114,13 @@ function scheduleCountdown() {
   }
 }
 
+function renewCountdownSession() {
+  if (countdownTitle === null || isCountdownRenewing || !currentTokenHash || document.hidden) return;
+  isCountdownRenewing = true;
+  // 倒计时已出现时，用户操作应尽快向服务端续期；标题恢复仍等待心跳返回的权威时间。
+  sendHeartbeat(currentTokenHash, true);
+}
+
 function updateSessionExpireAt(expireAt, isSync = false) {
   if (!Number.isFinite(expireAt) || expireAt <= Date.now()) return;
   sessionExpireAt = expireAt;
@@ -124,7 +135,7 @@ function updateSessionExpireAt(expireAt, isSync = false) {
 }
 
 function handleHeartbeatResponse(xhr) {
-  if (xhr.status < 200 || xhr.status >= 300 || !xhr.responseText) return;
+  if (xhr.status < 200 || xhr.status >= 300 || !xhr.responseText) return false;
   try {
     const response = JSON.parse(xhr.responseText);
     const data = response && response.Return;
@@ -134,10 +145,12 @@ function handleHeartbeatResponse(xhr) {
     const remainingTime = expireTime - serverTime;
     if (Number.isFinite(remainingTime) && remainingTime > 0) {
       updateSessionExpireAt(Date.now() + remainingTime, true);
+      return true;
     }
   } catch (e) {
     // 兼容未返回会话时间的旧后端，继续保留原心跳能力。
   }
+  return false;
 }
 
 function initCountdownListener() {
@@ -175,36 +188,40 @@ function removeCountdownListener() {
 }
 
 function initActiveListener() {
-  if (throttledHandler) return; // 避免重复注册
+  if (activeHandler) return; // 避免重复注册
 
   throttledHandler = utils.throttle(markUserActive, 5000);
+  activeHandler = () => {
+    if (countdownTitle !== null) {
+      markUserActive();
+    } else {
+      throttledHandler();
+    }
+  };
 
   ACTIVE_EVENTS.forEach(evt => {
-    window.addEventListener(evt, throttledHandler, ACTIVE_EVENT_OPTIONS);
+    window.addEventListener(evt, activeHandler, ACTIVE_EVENT_OPTIONS);
   });
 
-  // 页面加载 & 激活 都算活跃
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) markUserActive();
-  });
-
+  // 页面启动时标记一次活跃；浏览器 Tab 切回只校准倒计时，不作为用户操作续期。
   markUserActive();
 }
 
 function removeActiveListener() {
-  if (!throttledHandler) return;
+  if (!activeHandler) return;
 
   ACTIVE_EVENTS.forEach(evt => {
-    window.removeEventListener(evt, throttledHandler, ACTIVE_EVENT_OPTIONS);
+    window.removeEventListener(evt, activeHandler, ACTIVE_EVENT_OPTIONS);
   });
 
+  activeHandler = null;
   throttledHandler = null;
 }
 
 /**
  * 发送心跳
  */
-function sendHeartbeat(tokenHash) {
+function sendHeartbeat(tokenHash, isCountdownRenewal = false) {
   if (!tokenHash) {
     console.error('tokenHash不存在');
     return;
@@ -212,7 +229,20 @@ function sendHeartbeat(tokenHash) {
   const xhr = new XMLHttpRequest();
   xhr.open('POST', BASEURLPREFIX + '/api/rest/heartbeat', true);
   xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.onload = () => handleHeartbeatResponse(xhr);
+  xhr.onload = () => {
+    if (currentTokenHash !== tokenHash) return;
+    const isUpdated = handleHeartbeatResponse(xhr);
+    if (isCountdownRenewal) {
+      isCountdownRenewing = false;
+      if (!isUpdated) dirty = true;
+    }
+  };
+  xhr.onerror = xhr.onabort = () => {
+    if (isCountdownRenewal) {
+      isCountdownRenewing = false;
+      dirty = true;
+    }
+  };
   xhr.send(JSON.stringify({
     tokenHash: tokenHash
   }));
@@ -223,6 +253,7 @@ function sendHeartbeat(tokenHash) {
  */
 function start(tokenHash) {
   if (timer) return;
+  currentTokenHash = tokenHash;
   initActiveListener();
   initCountdownListener();
   timer = utils.setInterval(() => {
@@ -242,6 +273,8 @@ function stop() {
   if (timer) timer.clear();
   timer = null;
   dirty = false;
+  currentTokenHash = null;
+  isCountdownRenewing = false;
   removeActiveListener();
   removeCountdownListener();
   clearCountdownTimer();
