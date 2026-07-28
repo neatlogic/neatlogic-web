@@ -1153,5 +1153,6 @@
   "duration": "Usage duration",
   "usedcount": "usage count",
   "servergroup": "Server group",
-  "alluser": "Everyone"
+  "alluser": "Everyone",
+  "reenable": "reactivate"
 }
