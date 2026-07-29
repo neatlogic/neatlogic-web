@@ -9,7 +9,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'deploy.pendingRelease',
+      name: 'deployPendingRelease',
       label: '待发布版本',
       description: '展示等待审批、排期或执行的发布版本',
       icon: 'tsfont-time',
@@ -25,7 +25,7 @@ export default {
       component: () => import('./widgets/release-attention.vue')
     },
     {
-      name: 'deploy.runningDeployment',
+      name: 'deployRunningDeployment',
       label: '执行中部署',
       description: '查看当前部署任务的阶段和执行进度',
       icon: 'tsfont-spinner',
@@ -40,7 +40,7 @@ export default {
       component: () => import('./widgets/release-attention.vue')
     },
     {
-      name: 'deploy.releaseRisk',
+      name: 'deployReleaseRisk',
       label: '失败与风险发布',
       description: '集中呈现失败、超时和存在风险的发布任务',
       icon: 'tsfont-warning-o',
@@ -55,7 +55,7 @@ export default {
       component: () => import('./widgets/release-attention.vue')
     },
     {
-      name: 'deploy.releaseCalendar',
+      name: 'deployReleaseCalendar',
       label: '发布日程与维护窗口',
       description: '展示近期发布计划和可用维护窗口',
       icon: 'tsfont-calendar',

@@ -36,11 +36,6 @@
 </template>
 
 <script>
-function getComponentNameWithoutPrefix(name) {
-  const separatorIndex = name.indexOf('.');
-  return separatorIndex < 0 ? name : name.slice(separatorIndex + 1);
-}
-
 export default {
   name: 'PortalWorkbenchComponentBatchAuthDialog',
   components: {
@@ -102,11 +97,9 @@ export default {
   },
   computed: {
     componentNameList() {
-      const nameList = this.componentList
+      return this.componentList
         .map(item => item.name)
-        .filter(Boolean)
-        .map(getComponentNameWithoutPrefix);
-      return Array.from(new Set(nameList));
+        .filter(Boolean);
     }
   }
 };

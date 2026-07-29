@@ -11,7 +11,7 @@ export default {
   moduleName: 'IT 服务',
   scopes: ['global', 'module'],
   widgetList: [{
-    name: 'process.myTodo',
+    name: 'processMyTodo',
     version: 1,
     label: '我的待办',
     group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
@@ -28,7 +28,7 @@ export default {
 };
 ```
 
-- `name` 必须以模块标识为前缀并保持全局唯一。
+- `name` 必须使用“模块标识 + 组件标识”的小驼峰格式并保持全局唯一，例如 `processMyTodo`，不使用 `.` 分隔。
 - 同一 `moduleGroup` 可以由基础、社区和商业 provider 共同贡献组件；同名组件冲突时保留
   先注册的基础定义，因此商业扩展必须使用新的全局唯一名称。
 - `component`、`configComponent`、挡板数据和正式数据适配均由所属模块维护。

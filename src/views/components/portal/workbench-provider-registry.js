@@ -219,11 +219,6 @@ export function createWorkbenchWidgetDefinitionMap(definitionList = []) {
       return;
     }
     definitionMap.set(definition.name, definition);
-    (definition.legacyNameList || []).forEach(name => {
-      if (name && !definitionMap.has(name)) {
-        definitionMap.set(name, definition);
-      }
-    });
   });
   if (Array.isArray(definitionList)) {
     definitionMapCache.set(definitionList, definitionMap);

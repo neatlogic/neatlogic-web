@@ -4,7 +4,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'cmdb.assetHealth',
+      name: 'cmdbAssetHealth',
       label: '资产健康概览',
       description: '展示资产总量、异常资产和待处理变更',
       icon: 'tsfont-ci',
@@ -22,7 +22,7 @@ export default {
       component: () => import('./widgets/asset-health.vue')
     },
     {
-      name: 'cmdb.abnormalAsset',
+      name: 'cmdbAbnormalAsset',
       label: '异常资产',
       description: '集中处理离线、采集失败和信息过期的资产',
       icon: 'tsfont-warning-o',
@@ -40,7 +40,7 @@ export default {
       component: () => import('./widgets/asset-attention.vue')
     },
     {
-      name: 'cmdb.pendingChange',
+      name: 'cmdbPendingChange',
       label: '待处理变更',
       description: '展示需要确认和执行的配置项变更',
       icon: 'tsfont-change',
@@ -58,7 +58,7 @@ export default {
       component: () => import('./widgets/asset-attention.vue')
     },
     {
-      name: 'cmdb.assetDistribution',
+      name: 'cmdbAssetDistribution',
       label: '资产类型与健康分布',
       description: '按资产类型展示规模和健康状态',
       icon: 'tsfont-chart-progress',

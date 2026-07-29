@@ -13,7 +13,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'common.welcomeOverview',
+      name: 'commonWelcomeOverview',
       label: '欢迎概况',
       description: '结合当前时间、用户和可用模块展示轻量工作氛围',
       icon: 'tsfont-day',
@@ -29,7 +29,7 @@ export default {
       component: () => import('./widgets/welcome-overview.vue')
     },
     {
-      name: 'common.todayFocus',
+      name: 'commonTodayFocus',
       label: '今日关注',
       description: '汇总消息中心的未读提醒，快速查看需要关注的信息',
       icon: 'tsfont-star',
@@ -45,7 +45,7 @@ export default {
       component: () => import('./widgets/today-focus.vue')
     },
     {
-      name: 'common.quickEntry',
+      name: 'commonQuickEntry',
       label: '快捷入口',
       description: '快速进入当前用户有权限的业务模块',
       icon: 'tsfont-lightning',
@@ -62,7 +62,7 @@ export default {
       component: () => import('./widgets/quick-entry.vue')
     },
     {
-      name: 'common.notice',
+      name: 'commonNotice',
       label: '系统通知',
       description: '平台公告、维护提醒与未读消息',
       icon: 'tsfont-bell-on',
@@ -78,7 +78,7 @@ export default {
       component: () => import('./widgets/system-notice.vue')
     },
     {
-      name: 'common.recentAccess',
+      name: 'commonRecentAccess',
       label: '最近访问',
       description: '快速返回近期访问过的业务功能',
       icon: 'tsfont-history',
@@ -94,7 +94,7 @@ export default {
       component: () => import('./widgets/recent-access.vue')
     },
     {
-      name: 'common.calendar',
+      name: 'commonCalendar',
       label: '日历提醒',
       description: '查看近期日期和个人工作提醒',
       icon: 'tsfont-calendar',

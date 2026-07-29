@@ -803,7 +803,8 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-m-dashboard',
       authority: 'HOME_PAGE_MODIFY',
-      type: 'others'
+      type: 'others',
+      routerViewKeyIgnoreQueryList: ['moduleGroup']
     }
   },
   {

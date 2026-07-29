@@ -4,7 +4,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'autoexec.jobAttention',
+      name: 'autoexecJobAttention',
       label: '执行中任务',
       description: '展示当前正在运行的自动化任务及进度',
       icon: 'tsfont-history',
@@ -23,7 +23,7 @@ export default {
       component: () => import('./widgets/job-attention.vue')
     },
     {
-      name: 'autoexec.failedJob',
+      name: 'autoexecFailedJob',
       label: '失败作业',
       description: '集中查看最近失败并需要处理的自动化作业',
       icon: 'tsfont-close-o',
@@ -41,7 +41,7 @@ export default {
       component: () => import('./widgets/job-attention.vue')
     },
     {
-      name: 'autoexec.pendingApproval',
+      name: 'autoexecPendingApproval',
       label: '待审批任务',
       description: '展示等待当前用户审批的自动化任务',
       icon: 'tsfont-time',
@@ -59,7 +59,7 @@ export default {
       component: () => import('./widgets/job-attention.vue')
     },
     {
-      name: 'autoexec.successTrend',
+      name: 'autoexecSuccessTrend',
       label: '近7日执行成功率',
       description: '展示自动化执行成功率和失败变化',
       icon: 'tsfont-chart-line',

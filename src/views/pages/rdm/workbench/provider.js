@@ -9,7 +9,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'rdm.myTask',
+      name: 'rdmMyTask',
       label: '我的任务',
       description: '展示当前用户正在处理和即将到期的研发任务',
       icon: 'tsfont-task',
@@ -25,7 +25,7 @@ export default {
       component: () => import('./widgets/rdm-attention.vue')
     },
     {
-      name: 'rdm.projectHealth',
+      name: 'rdmProjectHealth',
       label: '项目健康',
       description: '根据进度、风险和逾期情况判断项目健康状态',
       icon: 'tsfont-heart-s',
@@ -41,7 +41,7 @@ export default {
       component: () => import('./widgets/rdm-attention.vue')
     },
     {
-      name: 'rdm.overdueMilestone',
+      name: 'rdmOverdueMilestone',
       label: '逾期缺陷与里程碑',
       description: '集中展示逾期缺陷和临近日期的项目里程碑',
       icon: 'tsfont-warning-o',
@@ -56,7 +56,7 @@ export default {
       component: () => import('./widgets/rdm-attention.vue')
     },
     {
-      name: 'rdm.milestoneTimeline',
+      name: 'rdmMilestoneTimeline',
       label: '里程碑与交付风险',
       description: '展示近期里程碑、交付节点和阻塞风险',
       icon: 'tsfont-formtime',

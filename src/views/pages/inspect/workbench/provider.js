@@ -9,7 +9,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'inspect.recentIssue',
+      name: 'inspectRecentIssue',
       label: '近期问题',
       description: '展示巡检发现且尚未关闭的近期问题',
       icon: 'tsfont-warning-o',
@@ -25,7 +25,7 @@ export default {
       component: () => import('./widgets/inspect-attention.vue')
     },
     {
-      name: 'inspect.runningJob',
+      name: 'inspectRunningJob',
       label: '执行中巡检',
       description: '查看正在运行的巡检任务与完成进度',
       icon: 'tsfont-spinner',
@@ -40,7 +40,7 @@ export default {
       component: () => import('./widgets/inspect-attention.vue')
     },
     {
-      name: 'inspect.abnormalAsset',
+      name: 'inspectAbnormalAsset',
       label: '异常资产',
       description: '按资产聚合巡检异常，快速进入问题处理',
       icon: 'tsfont-ci',
@@ -55,7 +55,7 @@ export default {
       component: () => import('./widgets/inspect-attention.vue')
     },
     {
-      name: 'inspect.qualityTrend',
+      name: 'inspectQualityTrend',
       label: '问题趋势与通过率',
       description: '查看近期巡检问题变化和整体通过率',
       icon: 'tsfont-chart-line',

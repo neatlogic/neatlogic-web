@@ -20,8 +20,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'process.myTodo',
-      legacyNameList: ['processingOfMineProcessTask'],
+      name: 'processMyTodo',
       label: '我的待办',
       description: '当前用户可直接处理的 IT 服务工单',
       icon: 'tsfont-task',
@@ -37,8 +36,7 @@ export default {
       component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue')
     },
     {
-      name: 'process.processTaskSearch',
-      legacyNameList: ['processTaskSearch'],
+      name: 'processTaskSearch',
       version: 1,
       label: '工单列表',
       description: '按自定义搜索条件和表头展示 IT 服务工单',
@@ -68,8 +66,7 @@ export default {
       configComponent: () => import('./widgets/configs/process-task-search-config.vue')
     },
     {
-      name: 'process.slaRisk',
-      legacyNameList: ['slaRiskList'],
+      name: 'processSlaRisk',
       label: 'SLA 风险',
       description: '突出显示即将超时和已经超时的工单',
       icon: 'tsfont-warning-o',
@@ -86,8 +83,7 @@ export default {
       configComponent: () => import('./widgets/configs/sla-risk-config.vue')
     },
     {
-      name: 'process.favoriteService',
-      legacyNameList: ['favoritedServices'],
+      name: 'processFavoriteService',
       label: '收藏服务',
       description: '快速发起当前用户收藏的常用服务',
       icon: 'tsfont-star',
@@ -102,7 +98,7 @@ export default {
       component: () => import('./widgets/components/FavoritedServices.vue')
     },
     {
-      name: 'process.taskOverview',
+      name: 'processTaskOverview',
       label: '工单状态概览',
       description: '通过指标和进度快速判断当前工单处理压力',
       icon: 'tsfont-chart-progress',
