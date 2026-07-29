@@ -248,7 +248,8 @@ let routerList = [
       ismenu: false,
       icon: 'tsfont-user-setting',
       authority: '',
-      type: 'user'
+      type: 'user',
+      routerViewKeyIgnoreQueryList: ['paneName', 'moduleGroup']
     }
   },
   {

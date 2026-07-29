@@ -5,10 +5,10 @@
         <div class="user_content">
           <Tabs
             v-model="paneName"
-            name="userSettingTabs"
+            :name="userSettingTabsName"
             @on-click="changePane"
           >
-            <TabPane :label="$t('page.basicinfo')" name="usersetting" tab="userSettingTabs">
+            <TabPane :label="$t('page.basicinfo')" name="usersetting" :tab="userSettingTabsName">
               <TsForm ref="usersetting" v-model="formValue" :itemList="formSetting">
                 <template v-slot:avatar>
                   <AvatarSetting class="avatar-upload">
@@ -66,10 +66,10 @@
               </TsForm>
               <Button class="save" type="primary" @click="save()">{{ $t('page.save') }}</Button>
             </TabPane>
-            <TabPane :label="$t('term.framework.modifypwd')" name="password" tab="userSettingTabs">
+            <TabPane :label="$t('term.framework.modifypwd')" name="password" :tab="userSettingTabsName">
               <PasswordSetting></PasswordSetting>
             </TabPane>
-            <TabPane :label="$t('term.framework.custom')" name="convenience" tab="userSettingTabs">
+            <TabPane :label="$t('term.framework.custom')" name="convenience" :tab="userSettingTabsName">
               <div v-show="paneName === 'convenience'">
                 <div class="convenience">
                   <p class="title">{{ $t('term.framework.popupalert') }}</p>
@@ -95,73 +95,18 @@
                       >{{ mitem.text }}</Checkbox>
                     </template>
                   </TsTable>
-                  <!-- <div class="setting-wrapper">
-                    <div class="setting-top">
-                      <TsRow>
-                        <Col :xs="4">
-                          <span class="text-grey">模块</span>
-                        </Col>
-                        <Col :xs="4">
-                          <span class="text-grey">内容</span>
-                        </Col>
-                        <Col :xs="4">
-                          <span class="text-grey">禁用/启用</span>
-                        </Col>
-                        <Col :xs="12">
-                          <span class="text-grey">默认选项</span>
-                        </Col>
-                      </TsRow>
-                    </div>
-                    <div class="setting-content bg-op">
-                      <div v-for="(item, index) in convenienceList" :key="index">
-                        <div v-for="(citem, cindex) in item.config" :key="cindex" class="item">
-                          <TsRow>
-                            <Col :xs="4">
-                              <span>{{ item.moduleName }}</span>
-                            </Col>
-                            <Col :xs="4">
-                              <span>{{ citem.text }}</span>
-                            </Col>
-                            <Col :xs="4">
-                              <span>
-                                <i-switch
-                                  v-model="citem.checked"
-                                  :true-value="1"
-                                  :false-value="0"
-                                  @on-change="changeChecked(item.moduleId, citem)"
-                                ></i-switch>
-                              </span>
-                            </Col>
-                            <Col :xs="12">
-                              <Checkbox
-                                v-for="(mitem, mindex) in citem.userProfileOperateList"
-                                :key="mindex"
-                                v-model="mitem.checked"
-                                class="check-list"
-                                :disabled="citem.checked ? true : false"
-                                :true-value="1"
-                                :false-value="0"
-                                @on-change="changeProfileList(item.moduleId, citem, mitem)"
-                              >{{ mitem.text }}</Checkbox>
-                            </Col>
-                          </TsRow>
-                        </div>
-                      </div>
-                    </div>
-                  </div> -->
                 </div>
-                <!-- 默认页管理 -->
                 <DefaultpageManage />
               </div>
             </TabPane>
-            <TabPane label="工作台设置" name="workbench" tab="userSettingTabs">
+            <TabPane label="工作台设置" name="workbench" :tab="userSettingTabsName">
               <UserSettingWorkbenchManage v-if="paneName === 'workbench'"></UserSettingWorkbenchManage>
             </TabPane>
             <TabPane
               v-if="canShow"
               :label="$t('term.framework.missionauth')"
               name="task"
-              tab="userSettingTabs"
+              :tab="userSettingTabsName"
             >
               <TaskAuthorization></TaskAuthorization>
             </TabPane>
@@ -192,9 +137,9 @@ export default {
     PasswordSetting: () => import('./user-setting-password.vue'),
     UserSettingWorkbenchManage: () => import('./user-setting-workbench-manage.vue')
   },
-  props: [''],
   data() {
     return {
+      userSettingTabsName: `userSettingTabs-${this.$utils.setUuid()}`,
       tableConfig: {
         rowNum: 0,
         pageSize: 20,
@@ -507,11 +452,6 @@ export default {
 .user_setting {
   position: relative;
   .user_content {
-    // ::v-deep .ivu-tabs {
-    //   ::v-deep .ivu-tabs-bar{
-    //     border-bottom: 0px solid #ccc!important;
-    //   }
-    // }
     .avatar-upload {
       position: relative;
       .avatar {
@@ -548,24 +488,6 @@ export default {
       margin-bottom: 8px;
       font-size: 13px;
     }
-    // .setting-wrapper {
-    //   width: 100%;
-    //   height: 100%;
-    //   .setting-top {
-    //     height: 40px;
-    //     line-height: 40px;
-    //     padding: 0 @space-md;
-    //     margin-bottom: -1px;
-    //   }
-    //   .setting-content {
-    //     .item {
-    //       padding: @space-xs @space-md;
-    //       .check-list {
-    //         width: 136px;
-    //       }
-    //     }
-    //   }
-    // }
   }
   .ivu-tag {
     font-size: @font-size-base;

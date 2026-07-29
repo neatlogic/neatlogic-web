@@ -145,7 +145,12 @@ export default {
       return !!this.keepAliveInclude;
     },
     routerViewKey() {
-      const ignoredQueryList = ['hidden-topnav', 'hidden-leftmenu', 'hidden-topnav-leftmenu'];
+      const ignoredQueryList = [
+        'hidden-topnav',
+        'hidden-leftmenu',
+        'hidden-topnav-leftmenu',
+        ...((this.$route.meta && this.$route.meta.routerViewKeyIgnoreQueryList) || [])
+      ];
       const query = this.$route.query || {};
       const queryString = Object.keys(query)
         .filter(key => !ignoredQueryList.includes(key))
