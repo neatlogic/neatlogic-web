@@ -61,8 +61,6 @@
       <WorkbenchComponentBatchAuthDialog
         v-if="showBatchAuthDialog"
         :componentList="selectedComponentList"
-        :moduleGroup="moduleGroup"
-        :workbenchType="workbenchType"
         @close="closeBatchAuthDialog"
       ></WorkbenchComponentBatchAuthDialog>
     </div>

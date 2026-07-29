@@ -1,3 +1,9 @@
+import {
+  createDefaultConditionConfig,
+  hasRequiredThead,
+  serializeProcessTaskSearchConfig
+} from './widgets/utils/process-task-search.js';
+
 const TODO_SCHEMA = [
   { name: 'limit', label: '显示条数', type: 'slider', min: 2, max: 8, step: 1, defaultValue: 5 },
   { name: 'showMore', label: '显示更多入口', type: 'switch', defaultValue: 1 },
@@ -29,6 +35,37 @@ export default {
         isRecommended: true
       },
       component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue')
+    },
+    {
+      name: 'process.processTaskSearch',
+      legacyNameList: ['processTaskSearch'],
+      version: 1,
+      label: '工单列表',
+      description: '按自定义搜索条件和表头展示 IT 服务工单',
+      icon: 'tsfont-list',
+      group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
+      defaultLayout: { w: 8, h: 9, minW: 6, minH: 7 },
+      config: {
+        pageSize: 10,
+        conditionConfig: createDefaultConditionConfig(),
+        theadList: []
+      },
+      dataSource: 'api',
+      presentation: {
+        type: 'list',
+        isRecommended: true
+      },
+      validateConfig(config) {
+        if (!hasRequiredThead(config && config.theadList)) {
+          return '工单列表请至少选择一个表头，并保留工单标题列';
+        }
+        return true;
+      },
+      serializeConfig(config) {
+        return serializeProcessTaskSearchConfig(config);
+      },
+      component: () => import('./widgets/components/ProcessTaskSearch.vue'),
+      configComponent: () => import('./widgets/configs/process-task-search-config.vue')
     },
     {
       name: 'process.slaRisk',

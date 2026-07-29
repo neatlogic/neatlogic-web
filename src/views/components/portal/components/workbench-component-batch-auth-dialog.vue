@@ -36,7 +36,10 @@
 </template>
 
 <script>
-import { WORKBENCH_TYPE_GLOBAL } from '../workbench-constants.js';
+function getComponentNameWithoutPrefix(name) {
+  const separatorIndex = name.indexOf('.');
+  return separatorIndex < 0 ? name : name.slice(separatorIndex + 1);
+}
 
 export default {
   name: 'PortalWorkbenchComponentBatchAuthDialog',
@@ -47,9 +50,7 @@ export default {
     componentList: {
       type: Array,
       default: () => []
-    },
-    moduleGroup: { type: String, default: '' },
-    workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL }
+    }
   },
   data() {
     return {
@@ -85,9 +86,7 @@ export default {
       this.saveError = '';
       this.$api.common.batchSaveWorkbenchWidgetAuthority(
         this.componentNameList,
-        this.authorityList,
-        this.moduleGroup,
-        this.workbenchType
+        this.authorityList
       ).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '组件批量授权保存失败');
@@ -103,7 +102,11 @@ export default {
   },
   computed: {
     componentNameList() {
-      return this.componentList.map(item => item.name).filter(Boolean);
+      const nameList = this.componentList
+        .map(item => item.name)
+        .filter(Boolean)
+        .map(getComponentNameWithoutPrefix);
+      return Array.from(new Set(nameList));
     }
   }
 };

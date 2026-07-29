@@ -184,7 +184,7 @@
             <TsFormItem label="标题" labelPosition="top">
               <TsFormInput
                 :value="currentWidget.name"
-                @input="value => setWidgetField('name', value)"
+                @on-blur="value => setWidgetField('name', value)"
               ></TsFormInput>
             </TsFormItem>
             <TsFormItem label="显示标题" labelPosition="top">

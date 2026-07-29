@@ -235,8 +235,8 @@ const common = {
   saveWorkbenchWidgetAuthority(name, authorityList = [], moduleGroup, type = 'global') {
     return axios.post('/api/rest/portal/widget/save', withCurrentModuleGroup(withWorkbenchType({ name, authorityList }, type), moduleGroup));
   },
-  batchSaveWorkbenchWidgetAuthority(nameList = [], authorityList = [], moduleGroup, type = 'global') {
-    return axios.post('/api/rest/portal/widget/authority/batchsave', withCurrentModuleGroup(withWorkbenchType({ nameList, authorityList }, type), moduleGroup));
+  batchSaveWorkbenchWidgetAuthority(nameList = [], authorityList = []) {
+    return axios.post('/api/rest/portal/widget/authority/batchsave', { nameList, authorityList });
   },
   searchWorkbenchWidgetData(data = {}) {
     return axios.post('/api/rest/portal/widget/data/search', data);

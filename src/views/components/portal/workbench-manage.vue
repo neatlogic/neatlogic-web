@@ -12,7 +12,7 @@
           </Button>
           <Button
             v-if="canManageComponent"
-            v-auth="['PORTAL_WIDGET_MANAGE']"
+            v-auth="['PORTAL_WIDGET_MANAGE', 'ADMIN']"
             type="default"
             class="ml-sm"
             @click="openComponentManageDialog"
