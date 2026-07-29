@@ -127,7 +127,7 @@ export default {
     },
     model: {
       type: String,
-      default: 'edit&preview'
+      default: 'editOnly'
     },
     readonly: {
       type: Boolean,
@@ -157,10 +157,12 @@ export default {
       cherry: null,
       editorId: `ts-markdown-editor-${this.$utils.setUuid()}`,
       lastEmittedMarkdown: null,
+      currentModel: this.model,
       selectedVideo: null,
       videoResizeMask: null,
       videoResizeEventsBound: false,
       videoResizeState: null,
+      previewToggleEventsBound: false,
       toolbarResizeObserver: null,
       toolbarResizeHandler: null,
       bubbleToolbar: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'],
@@ -228,8 +230,10 @@ export default {
           afterInit: (markdown, html) => {
             this.$nextTick(() => {
               this.normalizeToolbarIcons();
+              this.overridePreviewToggle();
               this.bindToolbarResizeObserver();
               this.bindVideoResizeEvents();
+              this.bindPreviewToggleEvents();
               this.$emit('ready', this.cherry, markdown, html);
             });
           }
@@ -240,13 +244,16 @@ export default {
       this.applyRuntimeConfig();
       this.$nextTick(() => {
         this.normalizeToolbarIcons();
+        this.overridePreviewToggle();
         this.bindToolbarResizeObserver();
         this.bindVideoResizeEvents();
+        this.bindPreviewToggleEvents();
       });
     },
     destroyEditor() {
       this.unbindToolbarResizeObserver();
       this.unbindVideoResizeEvents();
+      this.unbindPreviewToggleEvents();
       this.removeVideoResizeMask();
       if (this.cherry && typeof this.cherry.destroy === 'function') {
         this.cherry.destroy();
@@ -265,7 +272,9 @@ export default {
       this.applyReadonlyConfig();
       this.$nextTick(() => {
         this.normalizeToolbarIcons();
+        this.overridePreviewToggle();
         this.bindToolbarResizeObserver();
+        this.bindPreviewToggleEvents();
       });
     },
     applyReadonlyConfig() {
@@ -364,6 +373,70 @@ export default {
         const text = button.textContent.trim();
         return (config.nameList && config.nameList.indexOf(name) > -1) || (config.titleList && (config.titleList.indexOf(title) > -1 || config.titleList.indexOf(text) > -1));
       }) || null;
+    },
+    overridePreviewToggle() {
+      const hooks = this.cherry && this.cherry.toolbar && this.cherry.toolbar.menus && this.cherry.toolbar.menus.hooks;
+      if (!hooks) {
+        return;
+      }
+      Object.keys(hooks).forEach(key => {
+        const hook = hooks[key];
+        if (!this.isPreviewToggleHook(key, hook) || hook.__tsMarkdownPreviewToggleOverridden) {
+          return;
+        }
+        hook.onClick = () => {
+          if (!this.readonly) {
+            this.switchModel(this.currentModel === 'previewOnly' ? 'editOnly' : 'previewOnly');
+          }
+          return false;
+        };
+        hook.updateMarkdown = false;
+        hook.__tsMarkdownPreviewToggleOverridden = true;
+      });
+    },
+    isPreviewToggleHook(key, hook) {
+      if (!hook) {
+        return false;
+      }
+      return ['togglePreview', 'previewClose'].indexOf(key) > -1 ||
+        ['togglePreview', 'previewClose'].indexOf(hook.name) > -1 ||
+        ['preview', 'previewClose'].indexOf(hook.iconName) > -1 ||
+        !!(hook.dom && hook.dom.querySelector && hook.dom.querySelector('.ch-icon-preview, .ch-icon-previewClose'));
+    },
+    bindPreviewToggleEvents() {
+      if (!this.$el || this.previewToggleEventsBound) {
+        return;
+      }
+      this.$el.addEventListener('click', this.handlePreviewToggleClick, true);
+      this.previewToggleEventsBound = true;
+    },
+    unbindPreviewToggleEvents() {
+      if (this.$el && this.previewToggleEventsBound) {
+        this.$el.removeEventListener('click', this.handlePreviewToggleClick, true);
+      }
+      this.previewToggleEventsBound = false;
+    },
+    handlePreviewToggleClick(event) {
+      const button = this.getPreviewToggleButtonByEvent(event);
+      if (!button || this.readonly) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === 'function') {
+        event.stopImmediatePropagation();
+      }
+      this.switchModel(this.currentModel === 'previewOnly' ? 'editOnly' : 'previewOnly');
+    },
+    getPreviewToggleButtonByEvent(event) {
+      const target = event.target;
+      const trigger = target && target.closest
+        ? target.closest('[name="togglePreview"], [name="previewClose"], .ch-icon-preview, .ch-icon-previewClose')
+        : null;
+      if (!trigger || !this.$el || !this.$el.contains(trigger)) {
+        return null;
+      }
+      return trigger.closest('.cherry-toolbar-button, .cherry-dropdown-item') || trigger;
     },
     handleFileUpload(file, callback) {
       this.uploadFileToBackend(file)
@@ -719,8 +792,24 @@ export default {
     },
     switchModel(model = this.model) {
       if (this.cherry && typeof this.cherry.switchModel === 'function') {
-        this.cherry.switchModel(model);
+        this.cherry.switchModel(model, this.toolbar !== false);
+        this.currentModel = model;
+        this.keepPreviewToolbarVisible();
       }
+    },
+    keepPreviewToolbarVisible() {
+      if (this.toolbar === false) {
+        return;
+      }
+      const editorDom = this.$refs.editor;
+      const cherryDom = editorDom && editorDom.querySelector('.cherry');
+      const toolbar = editorDom && editorDom.querySelector('.cherry-toolbar');
+      if (!cherryDom || !toolbar) {
+        return;
+      }
+      cherryDom.classList.remove('cherry--no-toolbar');
+      toolbar.style.display = '';
+      this.updateToolbarHeight(toolbar);
     },
     focus() {
       const codeMirror = this.cherry && typeof this.cherry.getCodeMirror === 'function' ? this.cherry.getCodeMirror() : null;
