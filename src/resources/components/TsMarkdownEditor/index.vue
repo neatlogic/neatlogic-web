@@ -163,6 +163,7 @@ export default {
       videoResizeEventsBound: false,
       videoResizeState: null,
       previewToggleEventsBound: false,
+      previewToggleEventName: null,
       toolbarResizeObserver: null,
       toolbarResizeHandler: null,
       bubbleToolbar: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'],
@@ -385,9 +386,7 @@ export default {
           return;
         }
         hook.onClick = () => {
-          if (!this.readonly) {
-            this.switchModel(this.currentModel === 'previewOnly' ? 'editOnly' : 'previewOnly');
-          }
+          this.switchModel(this.getNextPreviewToggleModel());
           return false;
         };
         hook.updateMarkdown = false;
@@ -407,18 +406,23 @@ export default {
       if (!this.$el || this.previewToggleEventsBound) {
         return;
       }
-      this.$el.addEventListener('click', this.handlePreviewToggleClick, true);
+      this.previewToggleEventName = this.getPreviewToggleEventName();
+      this.$el.addEventListener(this.previewToggleEventName, this.handlePreviewToggleClick, true);
       this.previewToggleEventsBound = true;
     },
     unbindPreviewToggleEvents() {
       if (this.$el && this.previewToggleEventsBound) {
-        this.$el.removeEventListener('click', this.handlePreviewToggleClick, true);
+        this.$el.removeEventListener(this.previewToggleEventName || this.getPreviewToggleEventName(), this.handlePreviewToggleClick, true);
       }
       this.previewToggleEventsBound = false;
+      this.previewToggleEventName = null;
+    },
+    getPreviewToggleEventName() {
+      return typeof window === 'object' && 'onpointerup' in window ? 'pointerup' : 'click';
     },
     handlePreviewToggleClick(event) {
       const button = this.getPreviewToggleButtonByEvent(event);
-      if (!button || this.readonly) {
+      if (!button) {
         return;
       }
       event.preventDefault();
@@ -426,7 +430,22 @@ export default {
       if (typeof event.stopImmediatePropagation === 'function') {
         event.stopImmediatePropagation();
       }
-      this.switchModel(this.currentModel === 'previewOnly' ? 'editOnly' : 'previewOnly');
+      this.switchModel(this.getNextPreviewToggleModel());
+      if (event.type === 'pointerup' && this.cherry && this.cherry.toolbar) {
+        this.cherry.toolbar.isPointerDown = false;
+      }
+    },
+    getNextPreviewToggleModel() {
+      const previewer = this.cherry && this.cherry.previewer;
+      if (previewer && typeof previewer.isPreviewerHidden === 'function') {
+        return previewer.isPreviewerHidden() ? 'previewOnly' : 'editOnly';
+      }
+      const editorDom = this.$refs.editor;
+      const previewerDom = editorDom && editorDom.querySelector('.cherry-previewer');
+      if (previewerDom) {
+        return previewerDom.classList.contains('cherry-previewer--hidden') ? 'previewOnly' : 'editOnly';
+      }
+      return this.currentModel === 'previewOnly' ? 'editOnly' : 'previewOnly';
     },
     getPreviewToggleButtonByEvent(event) {
       const target = event.target;
