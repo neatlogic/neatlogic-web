@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-chart-line"
     tone="success"
-    subtitle="巡检通过率和问题变化"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="resultHref" class="text-action">巡检结果</a>
@@ -38,6 +38,7 @@ export default {
   },
   props: {
     title: { type: String, default: '问题趋势与通过率' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   data() {

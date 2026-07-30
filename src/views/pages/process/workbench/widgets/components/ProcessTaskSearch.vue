@@ -6,7 +6,7 @@
     :empty="isEmpty"
     icon="tsfont-list"
     tone="primary"
-    subtitle="按已配置条件展示服务工单"
+    :subtitle="description"
     @retry="loadData"
   >
     <div ref="tableWrap" class="process-task-table">
@@ -36,7 +36,7 @@
               {{ getCellText(row[header.key]) || '-' }}
             </span>
             <WorkcenterColumnHandler
-              v-else-if="isObjectCell(row[header.key])"
+              v-else-if="isWorkcenterCell(row[header.key])"
               :config="row[header.key]"
               :header="header"
               :row="row"
@@ -62,6 +62,7 @@ import {
   PROCESS_TASK_WIDGET_NAME,
   createProcessTaskSearchParam,
   extractTheadList,
+  normalizeProcessTaskRowList,
   normalizePageSize,
   normalizeTheadList,
   serializeProcessTaskSearchConfig,
@@ -78,6 +79,7 @@ export default {
   props: {
     widget: { type: Object, default: () => ({}) },
     title: { type: String, default: '工单列表' },
+    description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },
@@ -173,7 +175,7 @@ export default {
         if ((!this.config.theadList || !this.config.theadList.length) && extractTheadList(data).length) {
           this.sourceTheadList = normalizeTheadList(extractTheadList(data));
         }
-        this.tbodyList = Array.isArray(data.tbodyList) ? data.tbodyList : [];
+        this.tbodyList = normalizeProcessTaskRowList(data.tbodyList);
         this.rowNum = Number(data.rowNum) || 0;
         this.currentPage = Math.max(1, Number(data.currentPage) || this.currentPage);
         this.pageCount = Number(data.pageCount) || 0;
@@ -188,7 +190,10 @@ export default {
       } finally {
         if (requestSequence === this.requestSequence) {
           this.loading = false;
-          this.$nextTick(this.updateTableHeight);
+          this.$nextTick(() => {
+            this.updateTableHeight();
+            this.bindResize();
+          });
         }
       }
     },
@@ -219,8 +224,8 @@ export default {
         this.tableHeight = Math.max(el.clientHeight, 80);
       }
     },
-    isObjectCell(value) {
-      return value !== null && typeof value === 'object' && !Array.isArray(value);
+    isWorkcenterCell(value) {
+      return value !== null && typeof value === 'object';
     },
     isTimeColumn(key) {
       return ['starttime', 'endtime', 'startTime', 'endTime'].includes(key);

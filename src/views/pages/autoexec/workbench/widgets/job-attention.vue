@@ -3,7 +3,7 @@
     :title="title"
     :icon="preset.icon"
     :tone="summary.tone"
-    :subtitle="preset.summary"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="jobListHref" class="text-action">全部作业</a>
@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import WorkbenchCard from '@/views/components/portal/providers/common/widgets/workbench-card.vue';
+import WorkbenchCard from '@/views/components/portal/providers/framework/widgets/workbench-card.vue';
 import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
 import WorkbenchSummary from '@/views/components/portal/components/display/WorkbenchSummary.vue';
 
@@ -66,6 +66,7 @@ export default {
   },
   props: {
     title: { type: String, default: '' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   computed: {

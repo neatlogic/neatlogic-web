@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-ci"
     tone="success"
-    subtitle="资产规模、风险和变更状态"
+    :subtitle="description"
   >
     <template v-if="config.showAction !== 0" v-slot:action>
       <a :href="assetHref" class="text-action">查看资产</a>
@@ -16,7 +16,7 @@
 <script>
 import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
 import WorkbenchMetricGroup from '@/views/components/portal/components/display/WorkbenchMetricGroup.vue';
-import WorkbenchCard from '@/views/components/portal/providers/common/widgets/workbench-card.vue';
+import WorkbenchCard from '@/views/components/portal/providers/framework/widgets/workbench-card.vue';
 
 export default {
   name: 'CmdbAssetHealth',
@@ -27,6 +27,7 @@ export default {
   },
   props: {
     title: { type: String, default: '资产健康概览' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   computed: {

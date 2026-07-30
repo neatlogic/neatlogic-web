@@ -5,7 +5,7 @@ const definitionMapCache = new WeakMap();
 const conflictWarningSet = new Set();
 
 function getProviderSourcePriority(sourceKey) {
-  if (sourceKey.includes('/views/components/portal/providers/common/')) {
+  if (sourceKey.includes('/views/components/portal/providers/framework/')) {
     return 0;
   }
   if (sourceKey.includes('/views/pages/')) {
@@ -47,10 +47,10 @@ function loadProviderContext(context) {
     });
 }
 
-loadProviderContext(require.context('@/', true, /(?:workbench|portal\/providers\/common)\/provider\.js$/));
+loadProviderContext(require.context('@/', true, /(?:workbench|portal\/providers\/framework)\/provider\.js$/));
 
 function isProviderAvailable(provider, moduleList) {
-  if (provider.moduleGroup === 'common') {
+  if (provider.moduleGroup === 'framework') {
     return true;
   }
   return (moduleList || []).some(module => {
@@ -128,7 +128,7 @@ export function getWorkbenchProviderList({ scope = GLOBAL_SCOPE, targetModuleGro
       return false;
     }
     if (scope === MODULE_SCOPE && targetModuleGroup) {
-      return provider.moduleGroup === 'common' || provider.moduleGroup === targetModuleGroup;
+      return provider.moduleGroup === 'framework' || provider.moduleGroup === targetModuleGroup;
     }
     return true;
   });
@@ -147,7 +147,7 @@ export function getWorkbenchScopeList({ moduleList = [] } = {}) {
     scope: MODULE_SCOPE,
     moduleList
   })
-    .filter(provider => provider.moduleGroup !== 'common')
+    .filter(provider => provider.moduleGroup !== 'framework')
     .map(provider => ({
       moduleGroup: provider.moduleGroup,
       label: provider.moduleName,
@@ -193,10 +193,10 @@ export function getWorkbenchWidgetDefinitions({ scope = GLOBAL_SCOPE, targetModu
         }
         return;
       }
-      if (scope === MODULE_SCOPE && provider.moduleGroup === 'common' && definition.moduleSafe !== true) {
+      if (scope === MODULE_SCOPE && provider.moduleGroup === 'framework' && definition.moduleSafe !== true) {
         return;
       }
-      if (scope === MODULE_SCOPE && provider.moduleGroup === 'common') {
+      if (scope === MODULE_SCOPE && provider.moduleGroup === 'framework') {
         normalizedDefinition.group = {
           ...normalizedDefinition.group,
           sort: 9000 + normalizedDefinition.group.sort
@@ -246,21 +246,6 @@ export function migrateWorkbenchWidget(widget, definition) {
   };
 }
 
-export function createFrontendAvailableWidgetList(definitionList = []) {
-  return definitionList.map(definition => ({
-    name: definition.name,
-    label: definition.label,
-    description: definition.description,
-    group: definition.group,
-    category: definition.category,
-    sort: definition.sort,
-    ownerModule: definition.ownerModule,
-    ownerModuleName: definition.ownerModuleName,
-    dataSource: definition.dataSource,
-    presentation: definition.presentation
-  }));
-}
-
 function isBackendWidgetAvailable(widget) {
   const hasOwn = key => Object.prototype.hasOwnProperty.call(widget, key);
   if (hasOwn('isAvailable')) {
@@ -279,27 +264,91 @@ function isBackendWidgetAvailable(widget) {
   return true;
 }
 
-export function mergeAuthorizedWorkbenchWidgetList(frontendList = [], apiList = []) {
-  const apiMap = new Map();
-  apiList.forEach(widget => {
-    if (widget && widget.name && !apiMap.has(widget.name)) {
-      apiMap.set(widget.name, widget);
-    }
-  });
-  return frontendList.reduce((result, definition) => {
-    const backendWidget = apiMap.get(definition.name);
-    // 接口成功时以后端返回范围为准；未返回不等于未授权，不在组件库中展示。
-    if (!backendWidget) {
+function getStringValue(value) {
+  return typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+}
+
+function getObjectStringValue(value, keyList) {
+  if (!value || typeof value !== 'object') {
+    return '';
+  }
+  const key = keyList.find(item => getStringValue(value[item]));
+  return key ? getStringValue(value[key]) : '';
+}
+
+function getBackendWidgetModuleInfo(backendWidget = {}, definition = {}) {
+  const moduleObjectList = [
+    backendWidget.ownerModule,
+    backendWidget.moduleGroup,
+    backendWidget.group
+  ];
+  const ownerModule =
+    getStringValue(backendWidget.ownerModule) ||
+    getStringValue(backendWidget.moduleGroup) ||
+    moduleObjectList.reduce((result, value) => {
+      return result || getObjectStringValue(value, ['group', 'moduleGroup', 'moduleId', 'id']);
+    }, '') ||
+    definition.ownerModule ||
+    'framework';
+  const ownerModuleName =
+    getStringValue(backendWidget.ownerModuleName) ||
+    getStringValue(backendWidget.moduleGroupName) ||
+    [
+      backendWidget.ownerModuleName,
+      backendWidget.moduleGroupName,
+      ...moduleObjectList
+    ].reduce((result, value) => {
+      return result || getObjectStringValue(value, ['groupName', 'moduleGroupName', 'moduleName', 'label']);
+    }, '') ||
+    definition.ownerModuleName ||
+    ownerModule;
+  return {
+    ownerModule,
+    ownerModuleName
+  };
+}
+
+export function mergeAuthorizedWorkbenchWidgetList(definitionList = [], apiList = []) {
+  const definitionMap = createWorkbenchWidgetDefinitionMap(definitionList);
+  const nameSet = new Set();
+  return apiList.reduce((result, backendWidget) => {
+    if (!backendWidget || !backendWidget.name || nameSet.has(backendWidget.name)) {
       return result;
     }
+    nameSet.add(backendWidget.name);
+    const definition = definitionMap.get(backendWidget.name);
     const isAvailable = isBackendWidgetAvailable(backendWidget);
+    const runtimeMissing = !definition;
+    const moduleInfo = getBackendWidgetModuleInfo(backendWidget, definition);
     result.push({
-      ...definition,
+      ...(definition || {}),
       ...backendWidget,
-      isAvailable: isAvailable ? 1 : 0,
-      unavailableReason: isAvailable
-        ? ''
-        : (backendWidget.unavailableReason || backendWidget.disabledReason || backendWidget.reason || '后台返回不可用状态')
+      label: backendWidget.label || backendWidget.displayName || (definition && definition.label) || backendWidget.name,
+      description: Object.prototype.hasOwnProperty.call(backendWidget, 'description')
+        ? backendWidget.description
+        : '',
+      ownerModule: moduleInfo.ownerModule,
+      ownerModuleName: moduleInfo.ownerModuleName,
+      icon: backendWidget.icon || (definition && definition.icon) || 'tsfont-component',
+      defaultLayout: backendWidget.defaultLayout || (definition && definition.defaultLayout) || {
+        w: 4,
+        h: 6,
+        minW: 2,
+        minH: 4
+      },
+      presentation: {
+        type: 'list',
+        isRecommended: false,
+        ...((definition && definition.presentation) || {}),
+        ...(backendWidget.presentation || {})
+      },
+      isAvailable: isAvailable && !runtimeMissing ? 1 : 0,
+      __runtimeMissing: runtimeMissing,
+      unavailableReason: runtimeMissing
+        ? '组件前端实现未注册'
+        : (isAvailable
+          ? ''
+          : (backendWidget.unavailableReason || backendWidget.disabledReason || backendWidget.reason || '后台返回不可用状态'))
     });
     return result;
   }, []);

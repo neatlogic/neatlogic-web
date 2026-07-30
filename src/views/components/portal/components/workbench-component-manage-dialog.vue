@@ -39,6 +39,9 @@
           :height="400"
           @getSelected="getSelected"
         >
+          <template v-slot:moduleGroup="{ row }">
+            {{ row.moduleGroup.groupName || '-' }}
+          </template>
           <template v-slot:authorityVoList="{ row }">
             <GroupList :dataList="row.authorityVoList || []"></GroupList>
           </template>
@@ -81,15 +84,14 @@ export default {
   },
   props: {
     moduleGroup: { type: String, default: '' },
-    workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL },
-    widgetDefinitions: { type: Array, default: () => [] }
+    workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL }
   },
   data() {
     return {
       theadList: [
         { key: 'selection', multiple: true },
         { title: '组件名称', key: 'label' },
-        { title: '所属模块', key: 'ownerModuleName' },
+        { title: '所属模块', key: 'moduleGroup' },
         { title: '权限', key: 'authorityVoList' },
         { key: 'action' }
       ],
@@ -124,19 +126,11 @@ export default {
           throw new Error((res && res.Message) || '组件列表加载失败');
         }
         const result = res.Return || {};
-        const apiComponentList = result.tbodyList || [];
-        const apiComponentMap = new Map(apiComponentList.map(item => [item.name, item]));
-        this.componentList = this.widgetDefinitions.map(definition => ({
-          ...definition,
-          ...(apiComponentMap.get(definition.name) || {})
-        }));
-        apiComponentList.forEach(item => {
-          if (!this.componentList.some(component => component.name === item.name)) {
-            this.componentList.push(item);
-          }
-        });
+        this.componentList = result.tbodyList || [];
         this.tableConfig = {
-          tbodyList: this.componentList
+          ...result,
+          tbodyList: this.componentList,
+          loading: false
         };
       }).catch(error => {
         this.componentList = [];

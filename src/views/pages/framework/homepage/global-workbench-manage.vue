@@ -4,7 +4,6 @@
     :workbenchType="workbenchType"
     editRouteName="global-workbench-edit"
     :editRouteQuery="{ moduleGroup }"
-    :widgetDefinitions="widgetDefinitions"
     :scopeList="scopeList"
     @scope-change="selectScope"
   ></PortalWorkbenchManage>
@@ -15,7 +14,6 @@ import PortalWorkbenchManage from '@/views/components/portal/workbench-manage.vu
 import { WORKBENCH_TYPE_GLOBAL } from '@/views/components/portal/workbench-constants.js';
 import {
   getWorkbenchScopeList,
-  getWorkbenchWidgetDefinitions,
   normalizeWorkbenchModuleGroup
 } from '@/views/components/portal/workbench-provider-registry.js';
 
@@ -80,13 +78,6 @@ export default {
   computed: {
     scopeList() {
       return getWorkbenchScopeList({
-        moduleList: this.moduleList
-      });
-    },
-    widgetDefinitions() {
-      return getWorkbenchWidgetDefinitions({
-        scope: this.moduleGroup === 'index' ? 'global' : 'module',
-        targetModuleGroup: this.moduleGroup === 'index' ? '' : this.moduleGroup,
         moduleList: this.moduleList
       });
     }

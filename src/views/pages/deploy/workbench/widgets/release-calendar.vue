@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-calendar"
     tone="warning"
-    subtitle="近期发布计划和维护窗口"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="versionHref" class="text-action">版本中心</a>
@@ -30,6 +30,7 @@ export default {
   },
   props: {
     title: { type: String, default: '发布日程与维护窗口' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   computed: {

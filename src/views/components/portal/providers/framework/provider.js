@@ -8,19 +8,20 @@ const WELCOME_SCHEMA = [
 ];
 
 export default {
-  moduleGroup: 'common',
+  moduleGroup: 'framework',
   moduleName: '公共组件',
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'commonWelcomeOverview',
+      name: 'welcomeOverview',
       label: '欢迎概况',
       description: '结合当前时间、用户和可用模块展示轻量工作氛围',
       icon: 'tsfont-day',
-      group: { name: 'common.atmosphere', label: '公共组件 · 氛围与概况', sort: 5 },
+      group: { name: 'framework.atmosphere', label: '公共组件 · 氛围与概况', sort: 5 },
       defaultLayout: { w: 8, h: 4, minW: 5, minH: 4 },
       config: { showTime: 1, showModuleCount: 1 },
       configSchema: WELCOME_SCHEMA,
+      moduleSafe: true,
       dataSource: 'local',
       presentation: {
         type: 'metric',
@@ -29,14 +30,15 @@ export default {
       component: () => import('./widgets/welcome-overview.vue')
     },
     {
-      name: 'commonTodayFocus',
+      name: 'todayFocus',
       label: '今日关注',
       description: '汇总消息中心的未读提醒，快速查看需要关注的信息',
       icon: 'tsfont-star',
-      group: { name: 'common.atmosphere', label: '公共组件 · 氛围与概况', sort: 5 },
+      group: { name: 'framework.atmosphere', label: '公共组件 · 氛围与概况', sort: 5 },
       defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
       config: { limit: 4 },
       configSchema: LIMIT_SCHEMA,
+      moduleSafe: true,
       dataSource: 'api',
       presentation: {
         type: 'list',
@@ -45,11 +47,11 @@ export default {
       component: () => import('./widgets/today-focus.vue')
     },
     {
-      name: 'commonQuickEntry',
+      name: 'quickEntry',
       label: '快捷入口',
       description: '快速进入当前用户有权限的业务模块',
       icon: 'tsfont-lightning',
-      group: { name: 'common.shortcuts', label: '公共组件 · 快捷访问', sort: 10 },
+      group: { name: 'framework.shortcuts', label: '公共组件 · 快捷访问', sort: 10 },
       defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
       config: { limit: 6 },
       configSchema: LIMIT_SCHEMA,
@@ -62,11 +64,11 @@ export default {
       component: () => import('./widgets/quick-entry.vue')
     },
     {
-      name: 'commonNotice',
+      name: 'notice',
       label: '系统通知',
       description: '平台公告、维护提醒与未读消息',
       icon: 'tsfont-bell-on',
-      group: { name: 'common.information', label: '公共组件 · 消息提醒', sort: 20 },
+      group: { name: 'framework.information', label: '公共组件 · 消息提醒', sort: 20 },
       defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
       config: { limit: 4 },
       configSchema: LIMIT_SCHEMA,
@@ -78,11 +80,11 @@ export default {
       component: () => import('./widgets/system-notice.vue')
     },
     {
-      name: 'commonRecentAccess',
+      name: 'recentAccess',
       label: '最近访问',
       description: '快速返回近期访问过的业务功能',
       icon: 'tsfont-history',
-      group: { name: 'common.shortcuts', label: '公共组件 · 快捷访问', sort: 10 },
+      group: { name: 'framework.shortcuts', label: '公共组件 · 快捷访问', sort: 10 },
       defaultLayout: { w: 4, h: 7, minW: 3, minH: 5 },
       config: { limit: 5 },
       configSchema: LIMIT_SCHEMA,
@@ -94,11 +96,11 @@ export default {
       component: () => import('./widgets/recent-access.vue')
     },
     {
-      name: 'commonCalendar',
+      name: 'calendar',
       label: '日历提醒',
       description: '查看近期日期和个人工作提醒',
       icon: 'tsfont-calendar',
-      group: { name: 'common.information', label: '公共组件 · 消息提醒', sort: 20 },
+      group: { name: 'framework.information', label: '公共组件 · 消息提醒', sort: 20 },
       defaultLayout: { w: 4, h: 7, minW: 3, minH: 6 },
       config: { limit: 4 },
       configSchema: LIMIT_SCHEMA,

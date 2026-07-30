@@ -19,7 +19,7 @@
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 
 export default {
-  name: 'CommonWorkbenchCard',
+  name: 'FrameworkWorkbenchCard',
   components: { WorkbenchCard },
   props: {
     title: { type: String, default: '' },

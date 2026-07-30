@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-formtime"
     tone="warning"
-    subtitle="近期里程碑和交付风险"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="projectHref" class="text-action">项目列表</a>
@@ -30,6 +30,7 @@ export default {
   },
   props: {
     title: { type: String, default: '里程碑与交付风险' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   computed: {

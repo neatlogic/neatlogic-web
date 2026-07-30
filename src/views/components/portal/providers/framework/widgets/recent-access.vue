@@ -1,7 +1,7 @@
 <template>
   <WorkbenchCard
     :title="title"
-    subtitle="返回最近使用的业务功能"
+    :subtitle="description"
     icon="tsfont-history"
     tone="info"
     :empty="displayList.length === 0"
@@ -15,13 +15,14 @@ import WorkbenchCard from './workbench-card.vue';
 import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
 
 export default {
-  name: 'CommonRecentAccess',
+  name: 'FrameworkRecentAccess',
   components: {
     WorkbenchCard,
     WorkbenchActionList
   },
   props: {
     title: { type: String, default: '最近访问' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   methods: {

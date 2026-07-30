@@ -138,6 +138,7 @@
 <script>
 import draggable from 'vuedraggable';
 import {
+  PROCESS_TASK_CONDITION_HANDLER,
   PROCESS_TASK_PAGE_SIZE_LIST,
   PROCESS_TASK_THEAD_HANDLER,
   PROCESS_TASK_WIDGET_NAME,
@@ -182,6 +183,14 @@ export default {
       conditionListMap: {
         simple: [],
         custom: []
+      },
+      conditionLoadedMap: {
+        simple: false,
+        custom: false
+      },
+      conditionRequestMap: {
+        simple: null,
+        custom: null
       },
       titleKeyword: '',
       contentKeyword: ''
@@ -252,17 +261,32 @@ export default {
     },
     async loadConditionList(mode) {
       const conditionMode = mode === 'custom' ? 'custom' : 'simple';
-      if (this.conditionListMap[conditionMode].length) {
+      if (this.conditionLoadedMap[conditionMode]) {
         return;
       }
-      const res = await this.$api.process.processtask.workcenterCondition({
-        conditionModel: conditionMode,
-        workcenterUuid: PROCESS_TASK_WORKCENTER_UUID
-      });
-      if (!res || res.Status !== 'OK') {
-        throw new Error((res && res.Message) || '搜索条件加载失败');
+      if (!this.conditionRequestMap[conditionMode]) {
+        const request = this.$api.common.searchWorkbenchWidgetData({
+          portalWidgetName: PROCESS_TASK_WIDGET_NAME,
+          handler: PROCESS_TASK_CONDITION_HANDLER,
+          param: {
+            conditionModel: conditionMode,
+            workcenterUuid: PROCESS_TASK_WORKCENTER_UUID
+          }
+        }).then(res => {
+          if (!res || res.Status !== 'OK') {
+            throw new Error((res && res.Message) || '搜索条件加载失败');
+          }
+          const conditionList = Array.isArray(res.Return)
+            ? res.Return
+            : ((res.Return && (res.Return.conditionList || res.Return.tbodyList)) || []);
+          this.$set(this.conditionListMap, conditionMode, conditionList);
+          this.$set(this.conditionLoadedMap, conditionMode, true);
+        }).finally(() => {
+          this.$set(this.conditionRequestMap, conditionMode, null);
+        });
+        this.$set(this.conditionRequestMap, conditionMode, request);
       }
-      this.$set(this.conditionListMap, conditionMode, Array.isArray(res.Return) ? res.Return : []);
+      await this.conditionRequestMap[conditionMode];
     },
     async openConditionDialog() {
       this.editingConditionConfig = this.normalizeConditionConfig(this.conditionConfig);

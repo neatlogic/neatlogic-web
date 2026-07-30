@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-chart-progress"
     tone="success"
-    subtitle="按类型查看资产覆盖率和健康程度"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="assetHref" class="text-action">资产清单</a>
@@ -31,6 +31,7 @@ export default {
   },
   props: {
     title: { type: String, default: '资产类型与健康分布' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   data() {

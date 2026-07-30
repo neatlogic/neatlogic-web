@@ -1,7 +1,7 @@
 <template>
   <WorkbenchCard
     :title="showTitle ? title : ''"
-    :subtitle="subtitle"
+    :subtitle="description"
     icon="tsfont-star"
     tone="warning"
     :loading="loading"
@@ -21,13 +21,14 @@ import WorkbenchCard from './workbench-card.vue';
 import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
 
 export default {
-  name: 'CommonTodayFocus',
+  name: 'FrameworkTodayFocus',
   components: {
     WorkbenchCard,
     WorkbenchActionList
   },
   props: {
     title: { type: String, default: '今日关注' },
+    description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },
@@ -123,9 +124,6 @@ export default {
     limit() {
       const limit = Number(this.config.limit);
       return Math.max(3, Math.min(8, Number.isFinite(limit) ? limit : 4));
-    },
-    subtitle() {
-      return this.unreadCount > 0 ? `${this.unreadCount} 条未读消息需要关注` : '未读提醒与跨模块动态';
     },
     historyHref() {
       return `${HOME}/framework.html#/history-overview?activeTab=HistoryMessage`;

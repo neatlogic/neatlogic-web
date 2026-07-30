@@ -24,6 +24,7 @@
       :widget="resolvedWidget"
       :config="resolvedWidget.config || {}"
       :title="resolvedWidget.name || definition.label"
+      :description="resolvedWidget.description || ''"
       :showTitle="resolvedWidget.showTitle !== 0"
     ></component>
     <div

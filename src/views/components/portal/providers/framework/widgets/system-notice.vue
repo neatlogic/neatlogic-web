@@ -1,7 +1,7 @@
 <template>
   <WorkbenchCard
     :title="title"
-    subtitle="公告、维护与消息提醒"
+    :subtitle="description"
     icon="tsfont-bell-on"
     tone="warning"
     :empty="displayNoticeList.length === 0"
@@ -18,13 +18,14 @@ import WorkbenchCard from './workbench-card.vue';
 import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
 
 export default {
-  name: 'CommonSystemNotice',
+  name: 'FrameworkSystemNotice',
   components: {
     WorkbenchCard,
     WorkbenchActionList
   },
   props: {
     title: { type: String, default: '系统通知' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   data() {

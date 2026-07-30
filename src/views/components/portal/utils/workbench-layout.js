@@ -9,6 +9,9 @@ export function createWorkbenchWidget(definition, option = {}) {
     type: definition ? definition.name : option.type,
     configVersion: (definition && Number(definition.version)) || 1,
     name: option.name || (definition && definition.label) || '',
+    description: Object.prototype.hasOwnProperty.call(option, 'description')
+      ? option.description
+      : ((definition && definition.description) || ''),
     x: getNumber(option.x, defaultLayout.x, 0),
     y: getNumber(option.y, defaultLayout.y, 0),
     w: Math.max(getNumber(option.w, defaultLayout.w, 4), minW),

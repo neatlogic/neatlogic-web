@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-chart-progress"
     tone="primary"
-    subtitle="待办、处理中和即将超时情况"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="taskHref" class="text-action">进入工作中心</a>
@@ -46,6 +46,7 @@ export default {
   },
   props: {
     title: { type: String, default: '工单状态概览' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   data() {

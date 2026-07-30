@@ -96,7 +96,6 @@
       v-if="isShowComponentManageDialog"
       :moduleGroup="moduleGroup"
       :workbenchType="workbenchType"
-      :widgetDefinitions="widgetDefinitions"
       @close="isShowComponentManageDialog = false"
     ></WorkbenchComponentManageDialog>
   </div>
@@ -122,7 +121,6 @@ export default {
     workbenchType: { type: String, default: WORKBENCH_TYPE_GLOBAL },
     editRouteName: { type: String, default: 'workbench-edit' },
     editRouteQuery: { type: Object, default: () => ({}) },
-    widgetDefinitions: { type: Array, default: () => [] },
     scopeList: { type: Array, default: () => [] }
   },
   data() {

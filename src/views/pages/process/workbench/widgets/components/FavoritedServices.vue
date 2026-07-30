@@ -4,6 +4,7 @@
     :loading="loading"
     :error="error"
     :empty="isEmpty"
+    :subtitle="description"
   >
     <div ref="tableWrap" class="favorited-service-table">
       <TsTable
@@ -39,6 +40,7 @@ export default {
   props: {
     widget: { type: Object },
     title: { type: String, default: '收藏服务' },
+    description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },

@@ -3,7 +3,7 @@
     :title="title"
     icon="tsfont-chart-line"
     tone="success"
-    subtitle="自动化任务近7日执行质量"
+    :subtitle="description"
   >
     <template v-slot:action>
       <a :href="jobHref" class="text-action">执行记录</a>
@@ -38,6 +38,7 @@ export default {
   },
   props: {
     title: { type: String, default: '近7日执行成功率' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   data() {

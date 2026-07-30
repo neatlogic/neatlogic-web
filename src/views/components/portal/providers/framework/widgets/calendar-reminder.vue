@@ -1,7 +1,7 @@
 <template>
   <WorkbenchCard
     :title="title"
-    :subtitle="today.week"
+    :subtitle="description"
     icon="tsfont-calendar"
     tone="primary"
   >
@@ -16,7 +16,7 @@ import WorkbenchSummary from '@/views/components/portal/components/display/Workb
 import WorkbenchTimeline from '@/views/components/portal/components/display/WorkbenchTimeline.vue';
 
 export default {
-  name: 'CommonCalendarReminder',
+  name: 'FrameworkCalendarReminder',
   components: {
     WorkbenchCard,
     WorkbenchSummary,
@@ -24,6 +24,7 @@ export default {
   },
   props: {
     title: { type: String, default: '日历提醒' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   data() {

@@ -48,9 +48,6 @@
               {{ availableWidgetError }}
               <span class="text-action ml-xs" @click="$emit('retry-widget-list')">重试</span>
             </div>
-            <div v-if="availableWidgetNotice" class="library-warning bg-warning-grey text-warning radius-md padding-xs mb-sm">
-              {{ availableWidgetNotice }}
-            </div>
             <div class="mb-sm">
               <TsFormInput
                 v-model.trim="widgetKeyword"
@@ -81,12 +78,12 @@
                     <div class="widget-option-main">
                       <div class="widget-option-heading">
                         <div class="widget-option-title overflow">{{ definition.label }}</div>
-                        <span v-if="definition.presentation.isRecommended" class="widget-recommended text-primary">推荐</span>
                       </div>
                       <div class="widget-option-desc overflow text-grey mt-xs">{{ definition.description }}</div>
-                      <div class="widget-option-meta text-grey mt-xs">
-                        <span>{{ getPresentationTypeLabel(definition) }}</span>
-                        <span>{{ getSizeLabel(definition) }}</span>
+                      <div
+                        v-if="getAddedCount(definition.name) || definition.__authorizationUnchecked || !isDefinitionAvailable(definition)"
+                        class="widget-option-meta text-grey mt-xs"
+                      >
                         <span v-if="getAddedCount(definition.name)">已添加 {{ getAddedCount(definition.name) }}</span>
                         <span v-if="definition.__authorizationUnchecked" class="text-warning">授权未校验</span>
                         <span v-else-if="!isDefinitionAvailable(definition)" class="text-danger">
@@ -187,6 +184,15 @@
                 @on-blur="value => setWidgetField('name', value)"
               ></TsFormInput>
             </TsFormItem>
+            <TsFormItem label="说明" labelPosition="top">
+              <TsFormInput
+                :value="currentWidget.description"
+                type="textarea"
+                :maxlength="200"
+                :height="64"
+                @change="value => setWidgetField('description', value)"
+              ></TsFormInput>
+            </TsFormItem>
             <TsFormItem label="显示标题" labelPosition="top">
               <TsFormSwitch
                 :value="currentWidget.showTitle"
@@ -241,17 +247,6 @@ import WorkbenchGridItem from './components/workbench-grid-item.vue';
 import { createWorkbenchWidget, getWorkbenchBottom, isWorkbenchWidgetListComplete, resolveWorkbenchLayout } from './utils/workbench-layout.js';
 
 const LAST_GROUP_SORT = Number.MAX_SAFE_INTEGER;
-const TYPE_LABEL_MAP = {
-  metric: '指标',
-  distribution: '状态分布',
-  ranking: '排行',
-  comparison: '对比',
-  list: '任务列表',
-  progress: '进度',
-  trend: '趋势',
-  timeline: '日程',
-  shortcut: '快捷操作'
-};
 
 function getSortValue(value, fallbackValue) {
   if (value === null || value === undefined || value === '') {
@@ -286,7 +281,6 @@ export default {
     availableWidgetList: { type: Array, default: () => [] },
     availableWidgetLoading: { type: Boolean, default: false },
     availableWidgetError: { type: String, default: '' },
-    availableWidgetNotice: { type: String, default: '' },
     loading: { type: Boolean, default: false },
     saving: { type: Boolean, default: false },
     showTemplateAuthority: { type: Boolean, default: true }
@@ -326,14 +320,6 @@ export default {
     },
     isDefinitionAvailable(definition) {
       return !!(definition && definition.__available);
-    },
-    getPresentationTypeLabel(definition) {
-      const type = definition && definition.presentation && definition.presentation.type;
-      return TYPE_LABEL_MAP[type] || '组件';
-    },
-    getSizeLabel(definition) {
-      const layout = (definition && definition.defaultLayout) || {};
-      return `${layout.w || 4}×${layout.h || 6}`;
     },
     getAddedCount(name) {
       return this.widgetList.filter(widget => {
@@ -507,8 +493,8 @@ export default {
     visibleModuleGroups() {
       const keyword = this.widgetKeyword.trim().toLowerCase();
       const moduleMap = new Map();
-      this.widgetDefinitions.forEach((definition, definitionIndex) => {
-        const mergedDefinition = this.widgetDefinitionMap.get(definition.name);
+      this.availableWidgetList.forEach((availableWidget, definitionIndex) => {
+        const mergedDefinition = this.widgetDefinitionMap.get(availableWidget.name);
         if (
           !mergedDefinition ||
           mergedDefinition.__visibleInLibrary === false
@@ -525,7 +511,7 @@ export default {
         if (keyword && text.indexOf(keyword) === -1) {
           return;
         }
-        const moduleName = mergedDefinition.ownerModule || 'common';
+        const moduleName = mergedDefinition.ownerModule || 'framework';
         if (!moduleMap.has(moduleName)) {
           moduleMap.set(moduleName, {
             name: moduleName,
@@ -558,30 +544,25 @@ export default {
           };
         });
     },
-    availableWidgetMap() {
-      // 可用组件由后端按当前用户权限返回，建立索引供分组和定义合并复用。
-      const availableWidgetMap = new Map();
-      this.availableWidgetList.forEach(widget => {
-        if (widget && widget.name && !availableWidgetMap.has(widget.name)) {
-          availableWidgetMap.set(widget.name, widget);
-        }
-      });
-      return availableWidgetMap;
-    },
     widgetDefinitionMap() {
-      // 保留全部前端定义以支持存量模板；已授权组件优先使用后端最新文案。
+      // Provider 保留运行时实现；接口决定左侧组件库的成员、顺序和展示数据。
       const widgetDefinitionMap = new Map();
       this.widgetDefinitions.forEach(definition => {
-        const availableWidget = this.availableWidgetMap.get(definition.name);
-        const isAvailable = !!(availableWidget && availableWidget.isAvailable !== 0);
         widgetDefinitionMap.set(definition.name, {
           ...definition,
-          label: (availableWidget && availableWidget.label) || definition.label,
-          description: (availableWidget && availableWidget.description) || definition.description,
-          __available: isAvailable,
-          __visibleInLibrary: !!availableWidget,
-          __authorizationUnchecked: !!(availableWidget && availableWidget.authorizationUnchecked),
-          __unavailableReason: (availableWidget && (availableWidget.unavailableReason || availableWidget.disabledReason)) || ''
+          __available: false,
+          __visibleInLibrary: false
+        });
+      });
+      this.availableWidgetList.forEach(availableWidget => {
+        const definition = widgetDefinitionMap.get(availableWidget.name) || {};
+        widgetDefinitionMap.set(availableWidget.name, {
+          ...definition,
+          ...availableWidget,
+          __available: availableWidget.isAvailable !== 0 && !availableWidget.__runtimeMissing,
+          __visibleInLibrary: true,
+          __authorizationUnchecked: !!availableWidget.authorizationUnchecked,
+          __unavailableReason: availableWidget.unavailableReason || availableWidget.disabledReason || ''
         });
       });
       return widgetDefinitionMap;
@@ -653,9 +634,6 @@ export default {
   .widget-option-desc {
     font-size: 12px;
     line-height: 16px;
-  }
-  .widget-recommended {
-    font-size: 10px;
   }
   .widget-option-meta {
     display: flex;

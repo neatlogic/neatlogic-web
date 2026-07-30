@@ -5,7 +5,6 @@
     :availableWidgetList="availableWidgetList"
     :availableWidgetLoading="availableWidgetLoading"
     :availableWidgetError="availableWidgetError"
-    :availableWidgetNotice="availableWidgetNotice"
     :loading="loading"
     :saving="saving"
     :showTemplateAuthority="workbenchType === globalWorkbenchType"
@@ -44,11 +43,10 @@
 
 <script>
 import PortalWorkbenchEdit from '@/views/components/portal/workbench-edit.vue';
-import { isWorkbenchMockModeEnabled, WORKBENCH_TYPE_GLOBAL } from '@/views/components/portal/workbench-constants.js';
+import { WORKBENCH_TYPE_GLOBAL } from '@/views/components/portal/workbench-constants.js';
 import WorkbenchWidgetConfig from '@/views/components/portal/components/workbench-widget-config.vue';
 import WorkbenchWidgetHost from '@/views/components/portal/components/workbench-widget-host.vue';
 import {
-  createFrontendAvailableWidgetList,
   createWorkbenchWidgetDefinitionMap,
   getWorkbenchProviderList,
   getWorkbenchWidgetDefinitions,
@@ -93,7 +91,6 @@ export default {
       availableWidgetList: [],
       availableWidgetLoading: true,
       availableWidgetError: '',
-      availableWidgetNotice: '',
       loading: false,
       saving: false
     };
@@ -122,17 +119,6 @@ export default {
     loadAvailableWidgetList() {
       this.availableWidgetLoading = true;
       this.availableWidgetError = '';
-      this.availableWidgetNotice = '';
-      const frontendList = createFrontendAvailableWidgetList(this.widgetDefinitions);
-      if (this.workbenchType === WORKBENCH_TYPE_GLOBAL && isWorkbenchMockModeEnabled()) {
-        this.availableWidgetList = frontendList.map(item => ({
-          ...item,
-          isAvailable: 1
-        }));
-        this.availableWidgetNotice = '组件效果测试模式：组件库使用前端定义，业务组件使用挡板数据';
-        this.availableWidgetLoading = false;
-        return;
-      }
       this.$api.common.searchAvailableWorkbenchWidgetList({
         currentPage: 1,
         pageSize: 1000,
@@ -143,7 +129,7 @@ export default {
           throw new Error((res && res.Message) || '可用组件列表加载失败');
         }
         const apiList = (res.Return && res.Return.tbodyList) || [];
-        this.availableWidgetList = mergeAuthorizedWorkbenchWidgetList(frontendList, apiList);
+        this.availableWidgetList = mergeAuthorizedWorkbenchWidgetList(this.widgetDefinitions, apiList);
       }).catch(error => {
         const errorMessage = (error && (error.Message || error.message)) || '可用组件列表加载失败';
         this.availableWidgetList = [];

@@ -6,7 +6,7 @@
     :empty="isEmpty"
     icon="tsfont-task"
     tone="primary"
-    subtitle="当前可直接处理的服务工单"
+    :subtitle="description"
   >
     <template v-slot:action>
       <span
@@ -63,6 +63,7 @@ export default {
   props: {
     widget: { type: Object },
     title: { type: String, default: '我的待办' },
+    description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },

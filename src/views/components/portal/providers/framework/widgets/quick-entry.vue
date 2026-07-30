@@ -1,7 +1,7 @@
 <template>
   <WorkbenchCard
     :title="title"
-    subtitle="按权限显示可访问功能"
+    :subtitle="description"
     icon="tsfont-lightning"
     tone="primary"
     :empty="visibleEntryList.length === 0"
@@ -15,13 +15,14 @@ import WorkbenchCard from './workbench-card.vue';
 import WorkbenchQuickGrid from '@/views/components/portal/components/display/WorkbenchQuickGrid.vue';
 
 export default {
-  name: 'CommonQuickEntry',
+  name: 'FrameworkQuickEntry',
   components: {
     WorkbenchCard,
     WorkbenchQuickGrid
   },
   props: {
     title: { type: String, default: '快捷入口' },
+    description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },
   computed: {

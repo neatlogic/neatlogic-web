@@ -1,5 +1,6 @@
 export const PROCESS_TASK_SEARCH_HANDLER = 'process.processTaskSearch';
 export const PROCESS_TASK_THEAD_HANDLER = 'process.processTaskTheadList';
+export const PROCESS_TASK_CONDITION_HANDLER = 'process.processTaskSearchCondition';
 export const PROCESS_TASK_WIDGET_NAME = 'processTaskSearch';
 export const PROCESS_TASK_WORKCENTER_UUID = 'allProcessTask';
 export const PROCESS_TASK_PAGE_SIZE_LIST = [5, 10, 20, 30];
@@ -32,8 +33,7 @@ function isSelectableThead(item) {
   if (!item || (!item.name && !item.key)) {
     return false;
   }
-  const sort = Number(item.sort);
-  return !Number.isFinite(sort) || sort >= 0;
+  return item.disabled !== 1 && item.disabled !== '1' && item.disabled !== true;
 }
 
 export function createDefaultConditionConfig() {
@@ -154,6 +154,75 @@ export function createProcessTaskSearchParam(config = {}, currentPage = 1) {
     pageSize: normalizePageSize(config.pageSize),
     currentPage: Math.max(1, Number(currentPage) || 1)
   };
+}
+
+export function getProcessTaskExpireConfig(timeList = [], currentTime = Date.now()) {
+  if (!Array.isArray(timeList) || !timeList.length) {
+    return {
+      expireStatus: 'no-expired-time',
+      expireConfig: {
+        timeLeftMin: null,
+        expireTimeMin: null,
+        expiredSlaName: null,
+        willOverTimeMin: null,
+        willOverSlaName: null
+      }
+    };
+  }
+  const expiredTimeList = timeList.filter(item => item && Object.prototype.hasOwnProperty.call(item, 'expireTime'));
+  const willOverTimeList = timeList.filter(item => item && Object.prototype.hasOwnProperty.call(item, 'timeLeft'));
+  let expireTimeMin = Math.min(...expiredTimeList.map(item => item.expireTime));
+  let willOverTimeMin = Math.min(...willOverTimeList.map(item => item.timeLeft));
+  let expiredSlaName = null;
+  let willOverSlaName = null;
+  let timeLeftMin = null;
+  if (expireTimeMin === Infinity) {
+    expireTimeMin = null;
+  } else {
+    const expiredTimeItem = expiredTimeList.find(item => item.expireTime === expireTimeMin);
+    expiredSlaName = expiredTimeItem && expiredTimeItem.slaName;
+    if (expiredTimeItem && expiredTimeItem.slaTimeDisplayMode === 'naturalTime') {
+      timeLeftMin = expireTimeMin - currentTime;
+    } else if (expiredTimeItem && expiredTimeItem.slaTimeDisplayMode === 'workTime') {
+      timeLeftMin = Math.abs(expiredTimeItem.timeLeft || 0);
+    }
+  }
+  if (willOverTimeMin === Infinity) {
+    willOverTimeMin = null;
+  } else {
+    const willOverTimeItem = willOverTimeList.find(item => item.timeLeft === willOverTimeMin);
+    willOverSlaName = willOverTimeItem && willOverTimeItem.slaName;
+  }
+  let expireStatus = 'no-expired-time';
+  if (expireTimeMin) {
+    if (currentTime > expireTimeMin) {
+      expireStatus = 'is-expired';
+    } else if (willOverTimeMin && willOverTimeMin < expireTimeMin) {
+      expireStatus = currentTime > willOverTimeMin ? 'will-be-expired' : 'not-expired';
+    } else {
+      expireStatus = 'not-expired';
+    }
+  }
+  return {
+    expireStatus,
+    expireConfig: {
+      timeLeftMin,
+      expireTimeMin,
+      expiredSlaName,
+      willOverTimeMin,
+      willOverSlaName
+    }
+  };
+}
+
+export function normalizeProcessTaskRowList(list = [], currentTime = Date.now()) {
+  return (Array.isArray(list) ? list : []).map(item => ({
+    ...item,
+    ...getProcessTaskExpireConfig(item && item.expiretime, currentTime),
+    get rowClassName() {
+      return this.isShow === 0 ? 'hide-task' : this.expireStatus;
+    }
+  }));
 }
 
 export function serializeProcessTaskSearchConfig(config = {}) {

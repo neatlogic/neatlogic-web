@@ -6,7 +6,7 @@
     :empty="isEmpty"
     icon="tsfont-sla"
     tone="danger"
-    subtitle="即将超时和已经超时的工单"
+    :subtitle="description"
   >
     <template v-if="config.showMore !== 0" v-slot:action>
       <a :href="workcenterHref" class="text-action">优先处理</a>
@@ -36,6 +36,7 @@ export default {
   props: {
     widget: { type: Object },
     title: { type: String, default: 'SLA 风险' },
+    description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },

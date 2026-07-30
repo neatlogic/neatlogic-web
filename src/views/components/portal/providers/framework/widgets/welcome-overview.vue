@@ -6,6 +6,7 @@
       </div>
       <div class="welcome-copy overflow">
         <div v-if="showTitle" class="welcome-label text-grey overflow">{{ title }}</div>
+        <div v-if="description" class="welcome-description text-grey overflow">{{ description }}</div>
         <div class="welcome-title overflow">{{ greeting }}，{{ userName }}</div>
         <div class="welcome-description text-grey overflow">{{ dateText }} · {{ rhythmText }}</div>
       </div>
@@ -28,10 +29,11 @@
 import WorkbenchCard from './workbench-card.vue';
 
 export default {
-  name: 'CommonWelcomeOverview',
+  name: 'FrameworkWelcomeOverview',
   components: { WorkbenchCard },
   props: {
     title: { type: String, default: '工作概况' },
+    description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },
