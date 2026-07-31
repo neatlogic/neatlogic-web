@@ -3,8 +3,7 @@ const LIMIT_SCHEMA = [
 ];
 
 const WELCOME_SCHEMA = [
-  { name: 'showTime', label: '显示当前时间', type: 'switch', defaultValue: 1 },
-  { name: 'showModuleCount', label: '显示可用模块数', type: 'switch', defaultValue: 1 }
+  { name: 'showTime', label: '显示当前时间', type: 'switch', defaultValue: 1 }
 ];
 
 export default {
@@ -15,11 +14,11 @@ export default {
     {
       name: 'welcomeOverview',
       label: '欢迎概况',
-      description: '结合当前时间、用户和可用模块展示轻量工作氛围',
+      description: '结合当前时间和用户展示轻量工作氛围',
       icon: 'tsfont-day',
       group: { name: 'framework.atmosphere', label: '公共组件 · 氛围与概况', sort: 5 },
-      defaultLayout: { w: 8, h: 4, minW: 5, minH: 4 },
-      config: { showTime: 1, showModuleCount: 1 },
+      defaultLayout: { w: 8, h: 3, minW: 5, minH: 3 },
+      config: { showTime: 1 },
       configSchema: WELCOME_SCHEMA,
       moduleSafe: true,
       dataSource: 'local',

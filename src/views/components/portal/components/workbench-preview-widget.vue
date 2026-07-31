@@ -12,41 +12,38 @@
           </div>
         </div>
         <div class="preview-welcome__context">
-          <span class="preview-welcome__context-item bg-block radius-md">
+          <span class="preview-welcome__context-item">
             <i class="tsfont-time text-primary"></i>
             <span>18:27</span>
-          </span>
-          <span class="preview-welcome__context-item bg-block radius-md">
-            <i class="tsfont-modules text-info"></i>
-            <span>15 个可用模块</span>
           </span>
         </div>
         <i class="tsfont-stars preview-welcome__decoration text-primary"></i>
       </div>
     </template>
 
-    <template v-else-if="viewType === 'table'">
-      <div class="preview-table">
-        <div class="preview-table__row preview-table__head bg-grey text-grey">
-          <span>工单号</span>
-          <span>标题</span>
-          <span>状态</span>
-          <span>优先级</span>
-          <span>更新时间</span>
-        </div>
-        <div
-          v-for="item in visibleTableList"
-          :key="item.id"
-          class="preview-table__row border-color"
-        >
-          <span class="overflow">{{ item.id }}</span>
-          <span class="overflow text-action">{{ item.title }}</span>
-          <span class="overflow">{{ item.status }}</span>
-          <span :class="item.priority === '高' ? 'text-error' : item.priority === '中' ? 'text-warning' : 'text-grey'">{{ item.priority }}</span>
-          <span>{{ item.time }}</span>
-        </div>
-      </div>
-    </template>
+    <TsTable
+      v-else-if="viewType === 'table'"
+      :theadList="tableTheadList"
+      :tbodyList="visibleTableList"
+      :showPager="false"
+      :showSizer="false"
+      :showTotal="false"
+      :canSelectRow="false"
+      :disabledHover="true"
+      :fixedHeader="false"
+      size="small"
+      keyName="id"
+      class="preview-table"
+    >
+      <template v-slot:title="{ row }">
+        <span class="overflow text-action">{{ row.title }}</span>
+      </template>
+      <template v-slot:priority="{ row }">
+        <span :class="row.priority === '高' ? 'text-error' : row.priority === '中' ? 'text-warning' : 'text-grey'">
+          {{ row.priority }}
+        </span>
+      </template>
+    </TsTable>
 
     <template v-else-if="viewType === 'metric'">
       <WorkbenchMetricGroup :metrics="visibleMetrics" compact></WorkbenchMetricGroup>
@@ -134,7 +131,8 @@ export default {
     WorkbenchQuickGrid,
     WorkbenchRankingList,
     WorkbenchSummary,
-    WorkbenchTimeline
+    WorkbenchTimeline,
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
     widget: { type: Object, default: () => ({}) },
@@ -162,6 +160,18 @@ export default {
     },
     visibleTableList() {
       return this.demo.tableList.slice(0, this.mode === 'card' ? 2 : 4);
+    },
+    tableTheadList() {
+      const theadList = [
+        { key: 'id', title: '工单号' },
+        { key: 'title', title: '标题' },
+        { key: 'status', title: '状态' },
+        { key: 'priority', title: '优先级' }
+      ];
+      if (this.mode !== 'card') {
+        theadList.push({ key: 'time', title: '更新时间' });
+      }
+      return theadList;
     }
   }
 };
@@ -247,38 +257,25 @@ export default {
   font-size: 12px;
 }
 
-.preview-table__row {
-  min-height: 34px;
-  display: grid;
-  grid-template-columns: 1.2fr 1.6fr 0.8fr 0.6fr 0.7fr;
-  gap: 10px;
-  align-items: center;
-  border-bottom: 1px solid;
-}
-
-.preview-table__head {
-  min-height: 28px;
-}
-
 .is-card {
   font-size: 11px;
 
   &.is-welcome {
     .preview-welcome {
       min-height: 0;
-      grid-template-columns: 26px minmax(0, 1fr) auto;
-      gap: 5px;
+      grid-template-columns: 20px minmax(0, 1fr) auto;
+      gap: 4px;
     }
 
     .preview-welcome__symbol {
-      width: 26px;
-      height: 26px;
-      font-size: 13px;
+      width: 20px;
+      height: 20px;
+      font-size: 11px;
     }
 
     .preview-welcome__title {
-      font-size: 11px;
-      line-height: 16px;
+      font-size: 10px;
+      line-height: 14px;
     }
 
     .preview-welcome__description {
@@ -290,14 +287,10 @@ export default {
     }
 
     .preview-welcome__context-item {
-      min-height: 20px;
-      padding: 0 4px;
+      min-height: 18px;
+      padding: 0 3px;
       gap: 2px;
-      font-size: 9px;
-    }
-
-    .preview-welcome__context-item:last-child {
-      display: none;
+      font-size: 8px;
     }
 
     .preview-welcome__decoration {
@@ -310,18 +303,14 @@ export default {
     font-size: 10px;
   }
 
-  .preview-table__row {
-    min-height: 25px;
-    grid-template-columns: 1.1fr 1.4fr 0.7fr 0.5fr;
-    gap: 4px;
-
-    span:last-child {
-      display: none;
+  ::v-deep .preview-table {
+    .tstable-body {
+      th,
+      td {
+        padding: 3px 4px;
+        font-size: 10px;
+      }
     }
-  }
-
-  .preview-table__head {
-    min-height: 22px;
   }
 
   ::v-deep .metric-label,

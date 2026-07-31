@@ -1,5 +1,5 @@
 <template>
-  <div class="workbench-widget-host">
+  <div :class="['workbench-widget-host', { 'is-background-transparent': isBackgroundTransparent }]">
     <div v-if="isMockEnabled" class="mock-badge text-warning">演示数据</div>
     <div v-if="renderError" class="widget-state bg-op radius-lg flex-center text-center">
       <i class="tsfont-warning-o text-danger"></i>
@@ -111,6 +111,9 @@ export default {
     },
     resolvedWidget() {
       return migrateWorkbenchWidget(this.widget, this.definition) || this.widget;
+    },
+    isBackgroundTransparent() {
+      return this.resolvedWidget.backgroundTransparent === 1 || this.resolvedWidget.backgroundTransparent === true;
     }
   },
   watch: {
@@ -142,6 +145,11 @@ export default {
     height: 100%;
     min-height: 100px;
     flex-direction: column;
+  }
+  &.is-background-transparent {
+    ::v-deep .workbench-card {
+      background-color: transparent !important;
+    }
   }
 }
 </style>

@@ -11,13 +11,9 @@
         <div class="welcome-description text-grey overflow">{{ dateText }} · {{ rhythmText }}</div>
       </div>
       <div class="welcome-context">
-        <span v-if="showTime" class="context-item bg-block radius-md">
+        <span v-if="showTime" class="context-item">
           <i class="tsfont-time text-primary"></i>
           <span>{{ timeText }}</span>
-        </span>
-        <span v-if="showModuleCount" class="context-item bg-block radius-md">
-          <i class="tsfont-modules text-info"></i>
-          <span>{{ moduleCount }} 个可用模块</span>
         </span>
       </div>
       <i class="tsfont-stars welcome-decoration text-primary"></i>
@@ -98,14 +94,8 @@ export default {
       const minute = String(this.now.getMinutes()).padStart(2, '0');
       return `${hour}:${minute}`;
     },
-    moduleCount() {
-      return (this.$store.state.topMenu.moduleList || []).filter(module => module.isDisabled !== 1).length;
-    },
     showTime() {
       return this.config.showTime !== 0 && this.config.showTime !== false;
-    },
-    showModuleCount() {
-      return this.config.showModuleCount !== 0 && this.config.showModuleCount !== false;
     }
   }
 };
@@ -153,6 +143,8 @@ export default {
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  height: 100%;
+  align-items: end;
 }
 .context-item {
   min-height: 34px;

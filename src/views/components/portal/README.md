@@ -43,6 +43,7 @@ export default {
 - 管理页 Demo 预览支持 `metric`、`distribution`、`ranking`、`list`、`progress`、`trend`、
   `timeline` 和 `shortcut`；未知类型使用通用列表占位。
 - 通用配置可使用 `configSchema`；复杂组件可提供独立 `configComponent`。
+- 组件实例顶层使用 `backgroundTransparent: 0 | 1` 控制卡片背景，默认 `0`（不透明）；该字段只影响当前模板中的当前组件。
 - 配置升级使用 `version` 和 `migrateConfig(config, fromVersion, toVersion)`。
 - 保存前校验和序列化分别使用 `validateConfig(config, widget)`、
   `serializeConfig(config, widget)`。

@@ -216,6 +216,17 @@
                 @on-change="value => setWidgetField('showTitle', value)"
               ></TsFormSwitch>
             </TsFormItem>
+            <TsFormItem label="背景透明" labelPosition="top">
+              <TsFormSwitch
+                :value="currentWidget.backgroundTransparent"
+                :trueValue="1"
+                :falseValue="0"
+                :showStatus="true"
+                trueText="透明"
+                falseText="不透明"
+                @on-change="value => setWidgetField('backgroundTransparent', value)"
+              ></TsFormSwitch>
+            </TsFormItem>
             <TsFormItem label="内边距" labelPosition="top">
               <Slider
                 :value="currentWidget.padding"

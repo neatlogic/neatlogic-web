@@ -49,7 +49,7 @@
           </Tabs>
           <div v-if="isPersonal" class="workbench-reference-tip text-grey mb-md">
             <span class="tsfont-info-o text-primary mr-xs"></span>
-            每个模块可引用一个工作台，引用后将在对应模块中展示
+            每个模块仅可引用一个工作台。模块未配置首页时，将默认展示所引用的工作台；已配置首页时，仍优先展示原首页。
           </div>
           <div v-if="listError" class="workbench-list-state flex-center text-center">
             <NoData :text="listError"></NoData>
@@ -133,9 +133,9 @@
                 ></WorkbenchLayoutPreview>
                 <div class="workbench-card__footer border-base-top padding-md">
                   <div class="workbench-card__meta text-grey">
-                    <div v-if="!isPersonal" class="workbench-card__authority overflow">
+                    <div v-if="!isPersonal" class="workbench-card__authority">
                       <span class="meta-label">适用：</span>
-                      <GroupList :dataList="row.authorityVoList || []"></GroupList>
+                      <WorkbenchAuthoritySummary :dataList="row.authorityVoList || []"></WorkbenchAuthoritySummary>
                     </div>
                     <span v-else>适用：个人</span>
                     <span>组件：{{ getWidgetCount(row) }} 个</span>
@@ -200,7 +200,7 @@ export default {
   name: 'PortalWorkbenchManage',
   components: {
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
-    GroupList: () => import('@/resources/components/GroupList/GroupList.vue'),
+    WorkbenchAuthoritySummary: () => import('./components/workbench-authority-summary.vue'),
     CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
@@ -618,9 +618,10 @@ export default {
 }
 
 .workbench-card__authority {
-  max-width: 220px;
+  max-width: 260px;
   display: flex;
   align-items: center;
+  overflow: visible;
 }
 
 .meta-label {

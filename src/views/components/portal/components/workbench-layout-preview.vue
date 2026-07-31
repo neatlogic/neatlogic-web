@@ -23,7 +23,14 @@
             v-for="widget in visibleWidgetList"
             :key="widget.i"
             :style="getWidgetStyle(widget)"
-            class="preview-widget bg-block radius-md shadow"
+            :class="[
+              'preview-widget radius-md',
+              {
+                'bg-block': !isWidgetBackgroundTransparent(widget),
+                'shadow': !isWidgetBackgroundTransparent(widget),
+                'is-welcome-widget': widget.type === 'welcomeOverview'
+              }
+            ]"
           >
             <div v-if="widget.showTitle !== 0" class="preview-widget__title overflow">
               {{ widget.name || getWidgetLabel(widget.type) }}
@@ -46,7 +53,7 @@
       @click.stop="openPreview"
     >
       <span v-if="remainingCount > 0">还有 {{ remainingCount }} 个组件 · </span>
-      <span class="text-action">查看完整布局</span>
+      <span class="text-href">查看完整布局</span>
     </button>
   </div>
 </template>
@@ -143,6 +150,9 @@ export default {
     },
     getWidgetLabel(type) {
       return this.labelMap[type] || type || '未注册组件';
+    },
+    isWidgetBackgroundTransparent(widget) {
+      return widget && (widget.backgroundTransparent === 1 || widget.backgroundTransparent === true);
     }
   },
   computed: {
@@ -235,12 +245,17 @@ export default {
 .workbench-layout-preview {
   position: relative;
   min-width: 0;
-  background-color: @default-background;
   overflow: hidden;
 }
 
 .is-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding: 12px 12px 0;
+  background-size: 16px 16px;
+  background-image: radial-gradient(circle, var(--border-color, @default-border) 0.6px, transparent 0.8px);
 }
 
 .is-detail {
@@ -297,6 +312,25 @@ export default {
 }
 
 .is-card {
+  .preview-widget.is-welcome-widget {
+    .preview-widget__title {
+      height: 18px;
+      padding: 3px 6px 0;
+      font-size: 9px;
+      line-height: 15px;
+    }
+
+    .preview-widget__body {
+      height: calc(100% - 18px);
+      padding: 0 6px 2px;
+
+      &.without-title {
+        height: 100%;
+        padding-top: 2px;
+      }
+    }
+  }
+
   .preview-widget__title {
     height: 23px;
     padding: 5px 6px 0;
@@ -315,8 +349,10 @@ export default {
 }
 
 .preview-more {
+  flex: 0 0 40px;
   width: 100%;
   height: 40px;
+  margin-top: auto;
   padding: 0;
   border: 0;
   text-align: center;
@@ -324,13 +360,5 @@ export default {
   font-family: inherit;
   cursor: pointer;
 
-  .text-action {
-    color: @default-primary-color;
-  }
-
-  &:focus-visible {
-    outline: 2px solid @default-primary-color;
-    outline-offset: -2px;
-  }
 }
 </style>

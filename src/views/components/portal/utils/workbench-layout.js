@@ -20,6 +20,7 @@ export function createWorkbenchWidget(definition, option = {}) {
     minH,
     padding: getNumber(option.padding, 0, 0),
     showTitle: option.showTitle === 0 ? 0 : 1,
+    backgroundTransparent: option.backgroundTransparent === 1 || option.backgroundTransparent === true ? 1 : 0,
     config: {
       ...((definition && definition.config) || {}),
       ...(option.config || {})
