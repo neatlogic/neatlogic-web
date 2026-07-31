@@ -1,5 +1,5 @@
 <template>
-  <PortalCard
+  <WorkbenchCard
     :title="showTitle ? title : ''"
     :loading="loading"
     :error="error"
@@ -25,16 +25,18 @@
         </template>
       </TsTable>
     </div>
-  </PortalCard>
+  </WorkbenchCard>
 </template>
 
 <script>
-import PortalCard from './PortalCard.vue';
+import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
+
+const PORTAL_WIDGET_NAME = 'processFavoriteService';
 
 export default {
-  name: 'FavoritedServices',
+  name: 'ProcessFavoriteService',
   components: {
-    PortalCard,
+    WorkbenchCard,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
@@ -84,7 +86,7 @@ export default {
       this.error = '';
       this.$api.common.searchWorkbenchWidgetData({
         handler: 'process.favoritedServiceList',
-        portalWidgetName: 'favoritedServices',
+        portalWidgetName: PORTAL_WIDGET_NAME,
         param: {}
       }).then(res => {
         if (!res || res.Status !== 'OK') {

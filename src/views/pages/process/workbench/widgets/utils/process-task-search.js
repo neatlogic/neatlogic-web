@@ -129,13 +129,23 @@ export function serializeTheadList(list = []) {
 export function toTableTheadList(list = []) {
   return normalizeTheadList(list)
     .filter(item => item.isShow !== 0 && item.name !== '_')
-    .map(item => ({
-      title: item.displayName,
-      key: item.name,
-      type: item.type,
-      className: item.className,
-      config: cloneValue(item.config)
-    }));
+    .map(item => {
+      const tableThead = {
+        title: item.displayName,
+        key: item.name,
+        type: item.type,
+        className: item.className,
+        config: cloneValue(item.config)
+      };
+      if (item.name === 'currentstep') {
+        tableThead.width = 260;
+        tableThead.style = {
+          display: 'inline-block',
+          width: '260px'
+        };
+      }
+      return tableThead;
+    });
 }
 
 export function hasRequiredThead(list = []) {

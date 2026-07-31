@@ -1,5 +1,5 @@
 <template>
-  <PortalCard
+  <WorkbenchCard
     :title="showTitle ? title : ''"
     :loading="loading"
     :error="error"
@@ -50,11 +50,11 @@
         </template>
       </TsTable>
     </div>
-  </PortalCard>
+  </WorkbenchCard>
 </template>
 
 <script>
-import PortalCard from './PortalCard.vue';
+import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import {
   PROCESS_TASK_SEARCH_HANDLER,
   PROCESS_TASK_THEAD_HANDLER,
@@ -71,7 +71,7 @@ import {
 export default {
   name: 'ProcessTaskSearch',
   components: {
-    PortalCard,
+    WorkbenchCard,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     WorkcenterColumnHandler: () => import('@/views/pages/process/task/overview/workcenter/workcenter-column-handler.vue')
   },

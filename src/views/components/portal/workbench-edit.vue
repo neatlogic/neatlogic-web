@@ -64,7 +64,7 @@
             <template v-else>
               <Collapse
                 v-if="!$utils.isEmpty(visibleModuleGroups)"
-                :value="visibleModuleGroups.map(item => item.name)"
+                v-model="expandedModuleGroupList"
               >
                 <Panel v-for="module in visibleModuleGroups" :key="module.name" :name="module.name">
                   <span class="module-title">{{ module.label }}</span>
@@ -301,6 +301,8 @@ export default {
   data() {
     return {
       widgetKeyword: '',
+      expandedModuleGroupList: [],
+      knownModuleGroupList: [],
       currentWidgetId: null,
       draggingWidget: null,
       gridResizeTimer: null,
@@ -618,6 +620,31 @@ export default {
     },
     currentWidgetDefinition() {
       return this.currentWidget ? this.getWidgetByName(this.currentWidget.type) : null;
+    }
+  },
+  watch: {
+    availableWidgetList: {
+      immediate: true,
+      handler() {
+        this.$nextTick(() => {
+          const moduleGroupList = this.availableWidgetList.reduce((list, availableWidget) => {
+            const definition = this.widgetDefinitionMap.get(availableWidget.name);
+            const moduleGroup = definition && definition.__visibleInLibrary !== false
+              ? (definition.ownerModule || 'framework')
+              : '';
+            if (moduleGroup && !list.includes(moduleGroup)) {
+              list.push(moduleGroup);
+            }
+            return list;
+          }, []);
+          const newModuleGroupList = moduleGroupList.filter(name => !this.knownModuleGroupList.includes(name));
+          this.expandedModuleGroupList = [
+            ...this.expandedModuleGroupList.filter(name => moduleGroupList.includes(name)),
+            ...newModuleGroupList
+          ];
+          this.knownModuleGroupList = moduleGroupList;
+        });
+      }
     }
   }
 };

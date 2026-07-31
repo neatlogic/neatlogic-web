@@ -95,7 +95,7 @@ export default {
       presentation: {
         type: 'shortcut'
       },
-      component: () => import('./widgets/components/FavoritedServices.vue')
+      component: () => import('./widgets/components/ProcessFavoriteService.vue')
     },
     {
       name: 'processTaskOverview',

@@ -1,5 +1,5 @@
 <template>
-  <PortalCard
+  <WorkbenchCard
     :title="showTitle ? title : ''"
     :loading="loading"
     :error="error"
@@ -18,18 +18,18 @@
       dense
       @select="toDetail"
     ></WorkbenchActionList>
-  </PortalCard>
+  </WorkbenchCard>
 </template>
 
 <script>
 import WorkbenchActionList from '@/views/components/portal/components/display/WorkbenchActionList.vue';
 import WorkbenchSummary from '@/views/components/portal/components/display/WorkbenchSummary.vue';
-import PortalCard from './PortalCard.vue';
+import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 
 export default {
   name: 'SlaRiskList',
   components: {
-    PortalCard,
+    WorkbenchCard,
     WorkbenchActionList,
     WorkbenchSummary
   },

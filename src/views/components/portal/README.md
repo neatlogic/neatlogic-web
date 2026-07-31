@@ -28,8 +28,9 @@ export default {
 };
 ```
 
-- `name` 必须保持全局唯一且不使用 `.` 分隔。业务组件使用“模块标识 + 组件标识”的小驼峰格式，
-  例如 `processMyTodo`；`framework` 公共组件使用后台接口约定的唯一名称。
+- 后台组件列表接口返回的 `name` 是唯一权威值，Provider 的 `name` 必须与其逐字一致；前端不得补模块前缀、
+  删除前缀、转换大小写或维护别名。组件名称保持全局唯一且不使用 `.` 分隔，例如
+  `processMyTodo`、`processFavoriteService`。
 - 同一 `moduleGroup` 可以由基础、社区和商业 provider 共同贡献组件；同名组件冲突时保留
   先注册的基础定义，因此商业扩展必须使用新的全局唯一名称。
 - `component`、`configComponent`、挡板数据和正式数据适配均由所属模块维护。

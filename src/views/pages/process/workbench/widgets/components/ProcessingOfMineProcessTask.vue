@@ -1,5 +1,5 @@
 <template>
-  <PortalCard
+  <WorkbenchCard
     :title="showTitle ? title : ''"
     :loading="loading"
     :error="error"
@@ -41,23 +41,25 @@
           <span class="overflow">{{ getText(row.priority) || '-' }}</span>
         </template>
         <template v-slot:currentStepName="{ row }">
-          <span class="overflow">{{ getText(row.currentStepName || row.currentstepname || row.currentstep) || '-' }}</span>
+          <span class="overflow" :title="getCurrentStepName(row)">{{ getCurrentStepName(row) }}</span>
         </template>
         <template v-slot:statusName="{ row }">
           <span class="overflow">{{ getText(row.statusName || row.status) || '-' }}</span>
         </template>
       </TsTable>
     </div>
-  </PortalCard>
+  </WorkbenchCard>
 </template>
 
 <script>
-import PortalCard from './PortalCard.vue';
+import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
+
+const PORTAL_WIDGET_NAME = 'processMyTodo';
 
 export default {
   name: 'ProcessingOfMineProcessTask',
   components: {
-    PortalCard,
+    WorkbenchCard,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
@@ -115,7 +117,7 @@ export default {
       this.error = '';
       this.$api.common.searchWorkbenchWidgetData({
         handler: 'process.processingOfMineProcessTask',
-        portalWidgetName: 'processingOfMineProcessTask',
+        portalWidgetName: PORTAL_WIDGET_NAME,
         param: {
           limit: this.limit,
           needPage: false
@@ -182,6 +184,33 @@ export default {
     },
     getTitle(item) {
       return this.getText(item.title || item.name || item.serialnumber || item.serialNumber) || '-';
+    },
+    getCurrentStepName(item) {
+      const value = [
+        item.currentStepName,
+        item.currentstepname,
+        item.currentStep,
+        item.currentstep
+      ].find(currentValue => {
+        return Array.isArray(currentValue)
+          ? currentValue.length > 0
+          : currentValue !== null && currentValue !== undefined && currentValue !== '';
+      });
+      const stepList = Array.isArray(value) ? value : [value];
+      const nameList = stepList.map(step => {
+        if (step && typeof step === 'object') {
+          return this.getText(
+            step.stepName ||
+            step.stepname ||
+            step.currentStepName ||
+            step.currentstepname ||
+            step.name ||
+            step
+          );
+        }
+        return this.getText(step);
+      }).filter(Boolean);
+      return nameList.slice(0, 2).join('、') || '-';
     },
     getTaskId(item) {
       return item.taskid || item.id || (item.route && item.route.taskid);
