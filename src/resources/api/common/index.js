@@ -217,11 +217,11 @@ const common = {
   deleteWorkbench(id, moduleGroup, type = 'global') {
     return axios.post('/api/rest/portal/delete', withCurrentModuleGroup(withWorkbenchType({ id }, type), moduleGroup));
   },
-  moveWorkbench(id, sort, moduleGroup, type = 'global') {
-    return axios.post('/api/rest/portal/move', withCurrentModuleGroup(withWorkbenchType({ id, sort }, type), moduleGroup));
-  },
   updateWorkbenchActive(id, isActive, moduleGroup, type = 'global') {
     return axios.post('/api/rest/portal/toggleactive', withCurrentModuleGroup(withWorkbenchType({ id, isActive }, type), moduleGroup));
+  },
+  toggleWorkbenchEnable(id, action) {
+    return axios.post('/api/rest/portal/toggleenable', { id, action });
   },
   searchWorkbenchWidgetManageList(data = {}) {
     return axios.post('/api/rest/portal/widget/list/manage', withCurrentModuleGroup(withWorkbenchType(data)));

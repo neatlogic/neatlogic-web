@@ -32,7 +32,7 @@
       <TsFormInput
         v-else
         :value="getConfigValue(schema.name)"
-        @input="value => setConfig(schema.name, value)"
+        @change="value => setConfig(schema.name, value)"
       ></TsFormInput>
     </TsFormItem>
     <NoData v-if="configSchema.length === 0" text="该组件没有独立配置"></NoData>
@@ -65,4 +65,3 @@ export default {
   }
 };
 </script>
-

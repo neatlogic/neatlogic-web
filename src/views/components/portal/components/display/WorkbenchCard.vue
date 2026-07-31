@@ -2,9 +2,8 @@
   <section
     :class="[
       'workbench-card bg-op text-default radius-lg',
-      { 'is-dense': dense, 'has-accent': tone }
+      { 'is-dense': dense }
     ]"
-    :style="cardStyle"
   >
     <div v-if="showHeader" class="card-header">
       <div v-if="icon" :class="[iconClass, backgroundClass, 'card-icon radius-md flex-center']">
@@ -58,18 +57,6 @@ export default {
     },
     backgroundClass() {
       return getToneBackgroundClass(this.tone);
-    },
-    cardStyle() {
-      const colorMap = {
-        primary: 'var(--primary-color, #00bcd4)',
-        info: 'var(--info-color, #2d8cf0)',
-        success: 'var(--success-color, #19be6b)',
-        warning: 'var(--warning-color, #ff9900)',
-        danger: 'var(--error-color, #ed4014)'
-      };
-      return {
-        '--workbench-accent': colorMap[this.tone] || 'var(--primary-color, #00bcd4)'
-      };
     }
   }
 };
@@ -86,17 +73,6 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  &.has-accent::before {
-    position: absolute;
-    top: 0;
-    left: 16px;
-    right: 16px;
-    height: 2px;
-    border-radius: 0 0 2px 2px;
-    background: var(--workbench-accent);
-    opacity: 0.32;
-    content: '';
-  }
   &.is-dense {
     padding: 12px;
     .card-header {

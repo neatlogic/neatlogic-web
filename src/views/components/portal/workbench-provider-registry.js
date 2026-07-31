@@ -61,8 +61,6 @@ function isProviderAvailable(provider, moduleList) {
 function normalizeDefinition(provider, definition, index) {
   const group = definition.group || {};
   const presentation = { ...(definition.presentation || {}) };
-  delete presentation.previewData;
-  delete presentation.useCaseList;
   const name = definition.name || '';
   let categoryLabel = group.label || provider.moduleName;
   if (provider.moduleName && categoryLabel.indexOf(provider.moduleName) === 0) {

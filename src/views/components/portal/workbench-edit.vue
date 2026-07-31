@@ -2,9 +2,12 @@
   <div class="portal-workbench-edit">
     <TsContain
       :enableCollapse="true"
-      :siderWidth="286"
-      :rightWidth="320"
+      :siderWidth="260"
+      :rightWidth="300"
+      :rightBtn="true"
       :hasContentPadding="false"
+      @toggleSiderHide="refreshGridWidth"
+      @rightSiderToggle="refreshGridWidth"
     >
       <template v-slot:navigation>
         <slot name="navigation">
@@ -40,71 +43,81 @@
       </template>
       <template v-slot:sider>
         <div class="widget-library padding-sm">
-          <div v-if="availableWidgetLoading" class="library-state flex-center text-center">
-            <Loading :loadingShow="true"></Loading>
+          <div class="widget-library__search mb-sm">
+            <TsFormInput
+              v-model.trim="widgetKeyword"
+              placeholder="搜索组件"
+              clearable
+              border="border"
+            ></TsFormInput>
           </div>
-          <template v-else>
-            <div v-if="availableWidgetError" class="library-warning bg-error-grey text-danger radius-md padding-xs mb-sm">
-              {{ availableWidgetError }}
-              <span class="text-action ml-xs" @click="$emit('retry-widget-list')">重试</span>
+          <div class="widget-library__body">
+            <div v-if="availableWidgetLoading" class="library-state flex-center text-center">
+              <Loading :loadingShow="true"></Loading>
             </div>
-            <div class="mb-sm">
-              <TsFormInput
-                v-model.trim="widgetKeyword"
-                placeholder="搜索组件"
-                clearable
-                border="border"
-              ></TsFormInput>
+            <div v-else-if="availableWidgetError" class="library-state flex-center text-center">
+              <div class="library-warning bg-error-grey text-danger radius-md padding-xs">
+                {{ availableWidgetError }}
+                <span class="text-action ml-xs" @click="$emit('retry-widget-list')">重试</span>
+              </div>
             </div>
-            <Collapse
-              v-if="!$utils.isEmpty(visibleModuleGroups)"
-              :value="visibleModuleGroups.map(item => item.name)"
-            >
-              <Panel v-for="module in visibleModuleGroups" :key="module.name" :name="module.name">
-                <span class="module-title">{{ module.label }}</span>
-                <span class="module-count text-grey">{{ module.widgetCount }}</span>
-                <div slot="content">
-                  <div
-                    v-for="definition in module.widgetList"
-                    :key="definition.name"
-                    :class="[
-                      'widget-option radius-sm bg-op text-default border-base padding-xs mb-sm',
-                      isDefinitionAvailable(definition) ? 'bg-hover-grey' : 'is-disabled'
-                    ]"
-                    :draggable="isDefinitionAvailable(definition)"
-                    @dragstart="startDrag($event, definition)"
-                  >
-                    <i :class="[definition.icon, 'widget-option-icon flex-center radius-md bg-selected text-primary']"></i>
-                    <div class="widget-option-main">
-                      <div class="widget-option-heading">
-                        <div class="widget-option-title overflow">{{ definition.label }}</div>
-                      </div>
-                      <div class="widget-option-desc overflow text-grey mt-xs">{{ definition.description }}</div>
-                      <div
-                        v-if="getAddedCount(definition.name) || definition.__authorizationUnchecked || !isDefinitionAvailable(definition)"
-                        class="widget-option-meta text-grey mt-xs"
-                      >
-                        <span v-if="getAddedCount(definition.name)">已添加 {{ getAddedCount(definition.name) }}</span>
-                        <span v-if="definition.__authorizationUnchecked" class="text-warning">授权未校验</span>
-                        <span v-else-if="!isDefinitionAvailable(definition)" class="text-danger">
-                          {{ definition.__unavailableReason || '不可用' }}
-                        </span>
-                      </div>
-                      <div class="widget-option-actions mt-xs">
-                        <span
-                          :class="isDefinitionAvailable(definition) ? 'text-action' : 'text-disabled'"
-                          @click.stop="addWidget(definition)"
+            <template v-else>
+              <Collapse
+                v-if="!$utils.isEmpty(visibleModuleGroups)"
+                :value="visibleModuleGroups.map(item => item.name)"
+              >
+                <Panel v-for="module in visibleModuleGroups" :key="module.name" :name="module.name">
+                  <span class="module-title">{{ module.label }}</span>
+                  <span class="module-count text-grey">{{ module.widgetCount }}</span>
+                  <div slot="content">
+                    <div
+                      v-for="definition in module.widgetList"
+                      :key="definition.name"
+                      :class="[
+                        'widget-option radius-sm bg-op text-default border-base padding-xs mb-sm',
+                        isDefinitionAvailable(definition) ? 'bg-hover-grey' : 'is-disabled'
+                      ]"
+                      :draggable="isDefinitionAvailable(definition)"
+                      @dragstart="startDrag($event, definition)"
+                    >
+                      <i :class="[definition.icon, 'widget-option-icon flex-center radius-md bg-selected text-primary']"></i>
+                      <div class="widget-option-main">
+                        <div class="widget-option-heading">
+                          <div class="widget-option-title overflow">{{ definition.label }}</div>
+                        </div>
+                        <div class="widget-option-desc overflow text-grey mt-xs">{{ definition.description }}</div>
+                        <div
+                          v-if="getAddedCount(definition.name) || definition.__authorizationUnchecked || !isDefinitionAvailable(definition)"
+                          class="widget-option-meta text-grey mt-xs"
                         >
-                          添加
-                        </span>
+                          <span v-if="getAddedCount(definition.name)">已添加 {{ getAddedCount(definition.name) }}</span>
+                          <span v-if="definition.__authorizationUnchecked" class="text-warning">授权未校验</span>
+                          <span v-else-if="!isDefinitionAvailable(definition)" class="text-danger">
+                            {{ definition.__unavailableReason || '不可用' }}
+                          </span>
+                        </div>
+                        <div class="widget-option-actions mt-xs">
+                          <span
+                            :class="isDefinitionAvailable(definition) ? 'text-action' : 'text-disabled'"
+                            @click.stop="addWidget(definition)"
+                          >
+                            添加
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Panel>
-            </Collapse>
-            <NoData v-if="visibleModuleGroups.length === 0" text="暂无匹配组件"></NoData>
-          </template>
+                </Panel>
+              </Collapse>
+              <div v-else class="library-empty">
+                <NoData
+                  :text="widgetLibraryEmptyText"
+                  :isSearchIcon="!!widgetKeyword.trim()"
+                  :isVerticalCenter="true"
+                ></NoData>
+              </div>
+            </template>
+          </div>
         </div>
       </template>
       <div
@@ -117,6 +130,7 @@
         <div class="canvas-inner">
           <grid-layout
             v-if="widgetList.length > 0"
+            ref="gridLayout"
             :layout="widgetList"
             :col-num="12"
             :row-height="30"
@@ -222,9 +236,7 @@
             <div class="panel-title align-center mb-md">
               <div>
                 <div class="text-title">模板配置</div>
-                <div class="panel-subtitle text-grey mt-xs">
-                  {{ showTemplateAuthority ? '指定模板启用状态和适用对象，默认适用于所有人。' : '个人模板仅当前用户可用，可在此设置启用状态。' }}
-                </div>
+                <div class="panel-subtitle text-grey mt-xs">{{ templateConfigDescription }}</div>
               </div>
             </div>
             <TsForm
@@ -283,6 +295,7 @@ export default {
     availableWidgetError: { type: String, default: '' },
     loading: { type: Boolean, default: false },
     saving: { type: Boolean, default: false },
+    showTemplateActive: { type: Boolean, default: true },
     showTemplateAuthority: { type: Boolean, default: true }
   },
   data() {
@@ -290,6 +303,7 @@ export default {
       widgetKeyword: '',
       currentWidgetId: null,
       draggingWidget: null,
+      gridResizeTimer: null,
       baseFormConfig: {
         isActive: {
           type: 'switch',
@@ -314,7 +328,25 @@ export default {
       }
     };
   },
+  beforeDestroy() {
+    if (this.gridResizeTimer) {
+      clearTimeout(this.gridResizeTimer);
+      this.gridResizeTimer = null;
+    }
+  },
   methods: {
+    refreshGridWidth() {
+      if (this.gridResizeTimer) {
+        clearTimeout(this.gridResizeTimer);
+      }
+      this.gridResizeTimer = setTimeout(() => {
+        this.gridResizeTimer = null;
+        const gridLayout = this.$refs.gridLayout;
+        if (gridLayout && typeof gridLayout.onWindowResize === 'function') {
+          gridLayout.onWindowResize();
+        }
+      }, 250);
+    },
     getWidgetByName(name) {
       return this.widgetDefinitionMap.get(name) || null;
     },
@@ -479,16 +511,30 @@ export default {
       return this.value;
     },
     templateFormConfig() {
-      if (this.showTemplateAuthority) {
-        return this.baseFormConfig;
+      const formConfig = {};
+      if (this.showTemplateActive) {
+        formConfig.isActive = this.baseFormConfig.isActive;
       }
-      return {
-        isActive: this.baseFormConfig.isActive
-      };
+      if (this.showTemplateAuthority) {
+        formConfig.authorityList = this.baseFormConfig.authorityList;
+      }
+      return formConfig;
+    },
+    templateConfigDescription() {
+      if (this.showTemplateAuthority) {
+        return '指定模板启用状态和适用对象，默认适用于所有人。';
+      }
+      if (this.showTemplateActive) {
+        return '个人模板仅当前用户可用，可在此设置启用状态。';
+      }
+      return '个人模板仅当前用户可用，保存后可在个人设置中选择引用。';
     },
     widgetList() {
       const config = this.workbench.config || {};
       return config.widgetList || [];
+    },
+    widgetLibraryEmptyText() {
+      return this.widgetKeyword.trim() ? '暂无匹配组件' : '暂无授权组件';
     },
     visibleModuleGroups() {
       const keyword = this.widgetKeyword.trim().toLowerCase();
@@ -584,11 +630,28 @@ export default {
   color: inherit;
   .widget-library {
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .widget-library__search {
+    flex: 0 0 auto;
+  }
+  .widget-library__body {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: auto;
   }
   .library-state {
+    height: 100%;
     min-height: 180px;
     flex-direction: column;
+  }
+  .library-empty {
+    position: relative;
+    min-height: 100%;
   }
   .library-warning {
     font-size: 11px;
@@ -629,7 +692,6 @@ export default {
   }
   .widget-option-title {
     line-height: 18px;
-    font-weight: 600;
   }
   .widget-option-desc {
     font-size: 12px;

@@ -20,7 +20,6 @@
         :height="tableHeight"
         :showPager="true"
         :showSizer="false"
-        :canDrag="false"
         :canSelectRow="false"
         keyName="id"
         @changeCurrent="changeCurrent"
@@ -91,7 +90,6 @@ export default {
       tbodyList: [],
       rowNum: 0,
       currentPage: 1,
-      pageCount: 0,
       tableHeight: 160,
       resizeObserver: null,
       reloadTimer: null,
@@ -178,14 +176,12 @@ export default {
         this.tbodyList = normalizeProcessTaskRowList(data.tbodyList);
         this.rowNum = Number(data.rowNum) || 0;
         this.currentPage = Math.max(1, Number(data.currentPage) || this.currentPage);
-        this.pageCount = Number(data.pageCount) || 0;
       } catch (error) {
         if (requestSequence !== this.requestSequence) {
           return;
         }
         this.tbodyList = [];
         this.rowNum = 0;
-        this.pageCount = 0;
         this.error = (error && (error.Message || error.message)) || '工单列表加载失败';
       } finally {
         if (requestSequence === this.requestSequence) {

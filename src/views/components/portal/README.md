@@ -28,17 +28,19 @@ export default {
 };
 ```
 
-- `name` 必须使用“模块标识 + 组件标识”的小驼峰格式并保持全局唯一，例如 `processMyTodo`，不使用 `.` 分隔。
+- `name` 必须保持全局唯一且不使用 `.` 分隔。业务组件使用“模块标识 + 组件标识”的小驼峰格式，
+  例如 `processMyTodo`；`framework` 公共组件使用后台接口约定的唯一名称。
 - 同一 `moduleGroup` 可以由基础、社区和商业 provider 共同贡献组件；同名组件冲突时保留
   先注册的基础定义，因此商业扩展必须使用新的全局唯一名称。
 - `component`、`configComponent`、挡板数据和正式数据适配均由所属模块维护。
 - `dataSource` 标识 `api`、`local` 或 `mock`；`presentation` 只保留展示类型和推荐标记，
-  不会保存进模板。编辑器以中间画布中的真实组件作为预览，不维护静态预览数据。
+  不会保存进模板。编辑器中间画布渲染真实组件；管理页缩略图和完整预览使用统一 Demo 数据，
+  不挂载业务组件或请求业务接口。完整预览固定按 100% 逻辑尺寸展示，超出区域使用原生滚动条。
 - 编辑器组件库以 `/portal/widget/list/hasauthority` 的返回成员、顺序和展示数据为准。
   接口未返回的 Provider 定义不进入组件库；接口返回但前端未注册实现的组件显示为不可添加。
 - 组件库当前只按模块分组并提供搜索；`group` 分类元数据仍用于模块内排序和未来扩展。
-- `presentation.type` 支持 `metric`、`distribution`、`ranking`、`comparison`、`list`、
-  `progress`、`trend`、`timeline` 和 `shortcut`。
+- 管理页 Demo 预览支持 `metric`、`distribution`、`ranking`、`list`、`progress`、`trend`、
+  `timeline` 和 `shortcut`；未知类型使用通用列表占位。
 - 通用配置可使用 `configSchema`；复杂组件可提供独立 `configComponent`。
 - 配置升级使用 `version` 和 `migrateConfig(config, fromVersion, toVersion)`。
 - 保存前校验和序列化分别使用 `validateConfig(config, widget)`、

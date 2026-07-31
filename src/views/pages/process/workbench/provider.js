@@ -4,7 +4,7 @@ import {
   serializeProcessTaskSearchConfig
 } from './widgets/utils/process-task-search.js';
 
-const TODO_SCHEMA = [
+const TASK_LIST_SCHEMA = [
   { name: 'limit', label: '显示条数', type: 'slider', min: 2, max: 8, step: 1, defaultValue: 5 },
   { name: 'showMore', label: '显示更多入口', type: 'switch', defaultValue: 1 },
   { name: 'showStatus', label: '显示状态', type: 'switch', defaultValue: 1 }
@@ -27,7 +27,7 @@ export default {
       group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
       defaultLayout: { w: 8, h: 8, minW: 5, minH: 6 },
       config: { limit: 5, showMore: 1, showStatus: 1 },
-      configSchema: TODO_SCHEMA,
+      configSchema: TASK_LIST_SCHEMA,
       dataSource: 'api',
       presentation: {
         type: 'list',
@@ -73,7 +73,7 @@ export default {
       group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
       defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
       config: { limit: 5, showMore: 1, showStatus: 1, warnMinutes: 60 },
-      configSchema: TODO_SCHEMA,
+      configSchema: TASK_LIST_SCHEMA,
       dataMode: 'mock',
       presentation: {
         type: 'ranking',

@@ -12,9 +12,7 @@ const THeadPersistKeyList = [
   'sort',
   'type',
   'config',
-  'className',
-  'disabled',
-  'isSortable'
+  'className'
 ];
 
 function cloneValue(value) {
@@ -136,7 +134,6 @@ export function toTableTheadList(list = []) {
       key: item.name,
       type: item.type,
       className: item.className,
-      isSortable: item.isSortable,
       config: cloneValue(item.config)
     }));
 }

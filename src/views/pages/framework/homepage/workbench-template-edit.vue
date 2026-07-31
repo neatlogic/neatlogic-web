@@ -7,6 +7,7 @@
     :availableWidgetError="availableWidgetError"
     :loading="loading"
     :saving="saving"
+    :showTemplateActive="workbenchType === globalWorkbenchType"
     :showTemplateAuthority="workbenchType === globalWorkbenchType"
     @retry-widget-list="loadAvailableWidgetList"
     @save="saveWorkbench"
@@ -83,8 +84,12 @@ export default {
       moduleGroup: this.$route.query.moduleGroup || 'index',
       workbench: {
         name: '',
-        isActive: 1,
-        authorityList: this.workbenchType === WORKBENCH_TYPE_GLOBAL ? ['common#alluser'] : [],
+        ...(this.workbenchType === WORKBENCH_TYPE_GLOBAL
+          ? {
+            isActive: 1,
+            authorityList: ['common#alluser']
+          }
+          : {}),
         config: { widgetList: [] }
       },
       widgetDefinitions: [],
@@ -176,7 +181,6 @@ export default {
       const data = {
         id: workbench.id,
         name: workbench.name,
-        isActive: workbench.isActive,
         moduleGroup: this.moduleGroup,
         type: this.workbenchType,
         config: {
@@ -185,6 +189,7 @@ export default {
         }
       };
       if (this.workbenchType === WORKBENCH_TYPE_GLOBAL) {
+        data.isActive = workbench.isActive;
         data.authorityList = workbench.authorityList;
       }
       this.$api.common.saveWorkbench(data).then(res => {
