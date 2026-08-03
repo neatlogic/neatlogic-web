@@ -484,6 +484,7 @@
     "viewnode": "View Node"
   },
   "process": {
+    "allowprocessonmobile": "Allow processing on mobile",
     "start": "Start",
     "end": "End",
     "event": "Event",

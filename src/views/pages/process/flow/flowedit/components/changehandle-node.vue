@@ -72,6 +72,7 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
+    <MobileProcessSetting v-model="configData.stepConfig.isAllowProcessOnMobile"></MobileProcessSetting>
     <!-- 变更 -->
     <div class="settingList">
       <div id="changeStep" class="control-box">
@@ -147,6 +148,7 @@ export default {
     TsFormSelect,
     ReplySetting: () => import('./nodesetting/reply-setting.vue'),
     TagSetting: () => import('./nodesetting/tag-setting.vue'),
+    MobileProcessSetting: () => import('./nodesetting/mobile-process-setting.vue'),
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
@@ -319,4 +321,3 @@ export default {
   }
 };
 </script>
-

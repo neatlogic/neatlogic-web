@@ -484,6 +484,7 @@
     "viewnode": "视图节点"
   },
   "process": {
+    "allowprocessonmobile": "允许在移动端处理",
     "start": "开始",
     "end": "结束",
     "event": "事件",
