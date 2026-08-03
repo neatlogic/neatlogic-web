@@ -133,7 +133,7 @@ export default {
       if (!this.theadRequest) {
         this.theadRequest = this.$api.common.searchWorkbenchWidgetData({
           handler: PROCESS_TASK_THEAD_HANDLER,
-          portalWidgetName: PROCESS_TASK_WIDGET_NAME,
+          portalWidgetName: 'processingOfMineProcessTask',
           param: {}
         }).then(res => {
           if (!res || res.Status !== 'OK') {
@@ -156,8 +156,8 @@ export default {
           return;
         }
         const res = await this.$api.common.searchWorkbenchWidgetData({
-          handler: PROCESS_TASK_SEARCH_HANDLER,
-          portalWidgetName: PROCESS_TASK_WIDGET_NAME,
+          handler: 'process.processingOfMineProcessTask',
+          portalWidgetName: 'processingOfMineProcessTask',
           param: createProcessTaskSearchParam({
             ...this.config,
             theadList: this.resolvedTheadList

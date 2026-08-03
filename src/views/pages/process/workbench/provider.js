@@ -36,7 +36,7 @@ export default {
     //   component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue')
     // },
     {
-      name: 'processMyTodo',
+      name: 'processingOfMineProcessTask',
       version: 1,
       label: '我的待办',
       description: '按自定义搜索条件和表头展示 IT 服务工单',
