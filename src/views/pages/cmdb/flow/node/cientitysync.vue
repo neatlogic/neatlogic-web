@@ -47,6 +47,7 @@
         {{ $t('term.cmdb.associateform') }}
       </div>
     </div>
+    <MobileProcessSetting v-model="configData.stepConfig.isAllowProcessOnMobile"></MobileProcessSetting>
     <AssignSetting
       id="assignData"
       ref="assignData"
@@ -69,6 +70,7 @@ export default {
     NoticeSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/notice-setting.vue'),
     AuthoritySetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/authority-setting.vue'),
     ButtonSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/button-setting.vue'),
+    MobileProcessSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/mobile-process-setting.vue'),
     FormsceneSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/formscene-setting') // 表单场景
   },
   filters: {},
