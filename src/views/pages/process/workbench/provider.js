@@ -20,22 +20,6 @@ export default {
   moduleName: 'IT 服务',
   scopes: ['global', 'module'],
   widgetList: [
-    // {
-    //   name: 'processMyTodo',
-    //   label: '我的待办',
-    //   description: '当前用户可直接处理的 IT 服务工单',
-    //   icon: 'tsfont-task',
-    //   group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
-    //   defaultLayout: { w: 8, h: 8, minW: 5, minH: 6 },
-    //   config: { limit: 5, showMore: 1, showStatus: 1 },
-    //   configSchema: TASK_LIST_SCHEMA,
-    //   dataSource: 'api',
-    //   presentation: {
-    //     type: 'list',
-    //     isRecommended: true
-    //   },
-    //   component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue')
-    // },
     {
       name: 'processingOfMineProcessTask',
       version: 1,
@@ -65,6 +49,36 @@ export default {
       },
       component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue'),
       configComponent: () => import('./widgets/configs/processing-of-mine-process-task-config.vue')
+    },
+    {
+      name: 'draftProcessTask',
+      version: 1,
+      label: '我的待办',
+      description: '按时间范围和自定义表头展示当前用户未提交的 IT 服务工单',
+      icon: 'tsfont-task',
+      group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
+      defaultLayout: { w: 8, h: 8, minW: 5, minH: 6 },
+      config: {
+        pageSize: 10,
+        conditionConfig: createDefaultConditionConfig(),
+        theadList: []
+      },
+      dataSource: 'api',
+      presentation: {
+        type: 'list',
+        isRecommended: true
+      },
+      validateConfig(config) {
+        if (!hasRequiredThead(config && config.theadList)) {
+          return '工单列表请至少选择一个表头，并保留工单标题列';
+        }
+        return true;
+      },
+      serializeConfig(config) {
+        return serializeProcessingOfMineProcessTaskConfig(config);
+      },
+      component: () => import('./widgets/components/DraftProcessTask.vue'),
+      configComponent: () => import('./widgets/configs/draftProcessTaskConfig.vue')
     },
     {
       name: 'processTaskSearch',
