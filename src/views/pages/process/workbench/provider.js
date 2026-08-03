@@ -11,7 +11,7 @@ const TASK_LIST_SCHEMA = [
 ];
 
 const FAVORITE_SCHEMA = [
-  { name: 'limit', label: '显示数量', type: 'slider', min: 2, max: 10, step: 1, defaultValue: 6 }
+  { name: 'pageSize', label: '每页显示条数', type: 'slider', min: 2, max: 10, step: 1, defaultValue: 6 }
 ];
 
 export default {
@@ -89,7 +89,7 @@ export default {
       icon: 'tsfont-star',
       group: { name: 'process.service', label: 'IT 服务 · 快捷服务', sort: 110 },
       defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
-      config: { limit: 6 },
+      config: { pageSize: 6 },
       configSchema: FAVORITE_SCHEMA,
       dataSource: 'api',
       presentation: {

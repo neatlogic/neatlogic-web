@@ -166,8 +166,8 @@ export default {
       return !this.list.length;
     },
     pageSize() {
-      const pageSize = Number(this.config.limit);
-      return Math.max(1, pageSize || 5);
+      const pageSize = Number(this.config.pageSize);
+      return Math.max(2, Math.min(10, pageSize || 6));
     },
     list() {
       return this.sourceList;
