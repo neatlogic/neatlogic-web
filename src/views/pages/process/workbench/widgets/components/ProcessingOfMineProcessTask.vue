@@ -56,20 +56,20 @@
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import {
-  PROCESS_TASK_SEARCH_HANDLER,
+  PROCESSING_OF_MINE_PROCESS_TASK_HANDLER,
+  PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME,
   PROCESS_TASK_THEAD_HANDLER,
-  PROCESS_TASK_WIDGET_NAME,
   createProcessTaskSearchParam,
   extractTheadList,
   normalizeProcessTaskRowList,
   normalizePageSize,
   normalizeTheadList,
-  serializeProcessTaskSearchConfig,
+  serializeProcessingOfMineProcessTaskConfig,
   toTableTheadList
 } from '../utils/process-task-search.js';
 
 export default {
-  name: 'ProcessTaskSearch',
+  name: 'ProcessingOfMineProcessTask',
   components: {
     WorkbenchCard,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
@@ -133,7 +133,7 @@ export default {
       if (!this.theadRequest) {
         this.theadRequest = this.$api.common.searchWorkbenchWidgetData({
           handler: PROCESS_TASK_THEAD_HANDLER,
-          portalWidgetName: 'processingOfMineProcessTask',
+          portalWidgetName: PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME,
           param: {}
         }).then(res => {
           if (!res || res.Status !== 'OK') {
@@ -156,12 +156,15 @@ export default {
           return;
         }
         const res = await this.$api.common.searchWorkbenchWidgetData({
-          handler: 'process.processingOfMineProcessTask',
-          portalWidgetName: 'processingOfMineProcessTask',
-          param: createProcessTaskSearchParam({
-            ...this.config,
-            theadList: this.resolvedTheadList
-          }, this.currentPage)
+          handler: PROCESSING_OF_MINE_PROCESS_TASK_HANDLER,
+          portalWidgetName: PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME,
+          param: createProcessTaskSearchParam(
+            serializeProcessingOfMineProcessTaskConfig({
+              ...this.config,
+              theadList: this.resolvedTheadList
+            }),
+            this.currentPage
+          )
         });
         if (requestSequence !== this.requestSequence) {
           return;
@@ -267,7 +270,7 @@ export default {
       return toTableTheadList(this.resolvedTheadList);
     },
     configFingerprint() {
-      return JSON.stringify(serializeProcessTaskSearchConfig(this.config));
+      return JSON.stringify(serializeProcessingOfMineProcessTaskConfig(this.config));
     },
     isEmpty() {
       return !this.tbodyList.length;

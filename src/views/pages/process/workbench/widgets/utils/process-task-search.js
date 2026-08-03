@@ -3,6 +3,8 @@ export const PROCESS_TASK_THEAD_HANDLER = 'process.processTaskTheadList';
 export const PROCESS_TASK_CONDITION_HANDLER = 'process.processTaskSearchCondition';
 export const PROCESS_TASK_WIDGET_NAME = 'processTaskSearch';
 export const PROCESS_TASK_WORKCENTER_UUID = 'allProcessTask';
+export const PROCESSING_OF_MINE_PROCESS_TASK_HANDLER = 'process.processingOfMineProcessTask';
+export const PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME = 'processingOfMineProcessTask';
 export const PROCESS_TASK_PAGE_SIZE_LIST = [5, 10, 20, 30];
 
 const THeadPersistKeyList = [
@@ -41,6 +43,13 @@ export function createDefaultConditionConfig() {
     conditionGroupRelList: [],
     keywordConditionList: [],
     startTimeCondition: null
+  };
+}
+
+export function createTimeRangeConditionConfig(conditionConfig = {}) {
+  return {
+    ...createDefaultConditionConfig(),
+    startTimeCondition: cloneValue(conditionConfig.startTimeCondition) || null
   };
 }
 
@@ -235,6 +244,14 @@ export function normalizeProcessTaskRowList(list = [], currentTime = Date.now())
 export function serializeProcessTaskSearchConfig(config = {}) {
   return {
     conditionConfig: cloneValue(config.conditionConfig || createDefaultConditionConfig()),
+    theadList: serializeTheadList(config.theadList || []),
+    pageSize: normalizePageSize(config.pageSize)
+  };
+}
+
+export function serializeProcessingOfMineProcessTaskConfig(config = {}) {
+  return {
+    conditionConfig: createTimeRangeConditionConfig(config.conditionConfig),
     theadList: serializeTheadList(config.theadList || []),
     pageSize: normalizePageSize(config.pageSize)
   };

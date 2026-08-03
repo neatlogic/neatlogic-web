@@ -1,6 +1,7 @@
 import {
   createDefaultConditionConfig,
   hasRequiredThead,
+  serializeProcessingOfMineProcessTaskConfig,
   serializeProcessTaskSearchConfig
 } from './widgets/utils/process-task-search.js';
 
@@ -39,7 +40,7 @@ export default {
       name: 'processingOfMineProcessTask',
       version: 1,
       label: '我的待办',
-      description: '按自定义搜索条件和表头展示 IT 服务工单',
+      description: '按时间范围和自定义表头展示当前用户待处理的 IT 服务工单',
       icon: 'tsfont-task',
       group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
       defaultLayout: { w: 8, h: 8, minW: 5, minH: 6 },
@@ -60,10 +61,10 @@ export default {
         return true;
       },
       serializeConfig(config) {
-        return serializeProcessTaskSearchConfig(config);
+        return serializeProcessingOfMineProcessTaskConfig(config);
       },
       component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue'),
-      configComponent: () => import('./widgets/configs/process-task-search-config.vue')
+      configComponent: () => import('./widgets/configs/processing-of-mine-process-task-config.vue')
     },
     {
       name: 'processTaskSearch',
