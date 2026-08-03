@@ -10,9 +10,15 @@
       <TsTable
         :theadList="theadList"
         :tbodyList="list"
+        :rowNum="rowNum"
+        :currentPage="currentPage"
+        :pageSize="pageSize"
+        :defaultShowSize="pageSize"
         :can-drag="false"
         :height="tableHeight"
-        :show-pager="false"
+        :show-pager="true"
+        :show-sizer="false"
+        @changeCurrent="changeCurrent"
       >
         <template v-slot:name="{ row }">
           <span class="service-name align-center text-href" @click.stop="toCatalog(row)">
@@ -20,8 +26,12 @@
             <span class="overflow">{{ row.name }}</span>
           </span>
         </template>
-        <template v-slot:desc="{ row }">
-          <span class="overflow">{{ row.desc || '-' }}</span>
+        <template v-slot:action="{ row }">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li class="tsfont-edit" @click="toEdit(row)">{{ $t('page.edit') }}</li>
+            </ul>
+          </div>
         </template>
       </TsTable>
     </div>
@@ -51,11 +61,13 @@ export default {
       loading: false,
       error: '',
       sourceList: [],
+      rowNum: 0,
+      currentPage: 1,
       tableHeight: 160,
       resizeObserver: null,
       theadList: [
         { key: 'name', title: '服务名称' },
-        { key: 'desc', title: '描述' }
+        { key: 'action' }
       ]
     };
   },
@@ -73,13 +85,24 @@ export default {
   },
   methods: {
     toCatalog(row) {
-      const catalogId = row.id || row.uuid || row.channelUuid;
-      const path = catalogId ? `/catalog-overview?catalogId=${catalogId}` : '/catalog-overview';
+      const path = `/task-dispatch?uuid=${row.uuid}`;
       if (MODULEID === 'process') {
         this.$router.push(path);
       } else {
         window.location.href = `${HOME}/process.html#${path}`;
       }
+    },
+    toEdit(row) {
+      const path = `/catalog-manage?uuid=${row.uuid}`;
+      if (MODULEID === 'process') {
+        this.$router.push(path);
+      } else {
+        window.location.href = `${HOME}/process.html#${path}`;
+      }
+    },
+    changeCurrent(page) {
+      this.currentPage = Math.max(1, Number(page) || 1);
+      this.loadData();
     },
     loadData() {
       this.loading = true;
@@ -87,15 +110,22 @@ export default {
       this.$api.common.searchWorkbenchWidgetData({
         handler: 'process.favoritedServiceList',
         portalWidgetName: PORTAL_WIDGET_NAME,
-        param: {}
+        param: {
+          currentPage: this.currentPage,
+          pageSize: this.pageSize,
+          isAuthenticate: 1
+        }
       }).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '收藏服务加载失败');
         }
         const result = res.Return || {};
         this.sourceList = Array.isArray(result.tbodyList) ? result.tbodyList : [];
+        this.rowNum = Number(result.rowNum) || 0;
+        this.currentPage = Math.max(1, Number(result.currentPage) || this.currentPage);
       }).catch(error => {
         this.sourceList = [];
+        this.rowNum = 0;
         this.error = (error && (error.Message || error.message)) || '收藏服务加载失败';
       }).finally(() => {
         this.loading = false;
@@ -135,9 +165,18 @@ export default {
     isEmpty() {
       return !this.list.length;
     },
+    pageSize() {
+      const pageSize = Number(this.config.limit);
+      return Math.max(1, pageSize || 5);
+    },
     list() {
-      const limit = Number(this.config.limit) || this.sourceList.length;
-      return this.sourceList.slice(0, limit);
+      return this.sourceList;
+    }
+  },
+  watch: {
+    pageSize() {
+      this.currentPage = 1;
+      this.loadData();
     }
   }
 };
@@ -151,7 +190,7 @@ export default {
 }
 .service-name {
   display: inline-flex;
-  max-width: 100%;
+  max-width: calc(100% - 48px);
 }
 .service-icon {
   flex: none;
