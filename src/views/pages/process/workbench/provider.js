@@ -11,7 +11,7 @@ const TASK_LIST_SCHEMA = [
 ];
 
 const FAVORITE_SCHEMA = [
-  { name: 'pageSize', label: '每页显示条数', type: 'slider', min: 2, max: 10, step: 1, defaultValue: 6 }
+  { name: 'pageSize', label: '每页显示条数', type: 'number', min: 1, max: 100, defaultValue: 6 }
 ];
 
 export default {

@@ -32,6 +32,9 @@
       <TsFormInput
         v-else
         :value="getConfigValue(schema.name)"
+        :type="schema.type"
+        :min="schema.min"
+        :max="schema.max"
         @change="value => setConfig(schema.name, value)"
       ></TsFormInput>
     </TsFormItem>
