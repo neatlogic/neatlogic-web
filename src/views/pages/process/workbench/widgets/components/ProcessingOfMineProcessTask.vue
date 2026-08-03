@@ -4,47 +4,49 @@
     :loading="loading"
     :error="error"
     :empty="isEmpty"
-    icon="tsfont-task"
+    icon="tsfont-list"
     tone="primary"
     :subtitle="description"
+    @retry="loadData"
   >
-    <template v-slot:action>
-      <span
-        :class="['todo-filter', { 'text-primary': activeFilter === 'all' }]"
-        @click="activeFilter = 'all'"
-      >
-        全部
-      </span>
-      <span
-        :class="['todo-filter', { 'text-danger': activeFilter === 'urgent' }]"
-        @click="activeFilter = 'urgent'"
-      >
-        紧急
-      </span>
-      <span v-if="showMore" class="text-action ml-sm" @click="toWorkcenter">更多</span>
-    </template>
-    <div ref="tableWrap" class="todo-table">
+    <div ref="tableWrap" class="process-task-table">
       <TsTable
-        :theadList="theadList"
-        :tbodyList="list"
-        :can-drag="false"
+        :theadList="tableTheadList"
+        :tbodyList="tbodyList"
+        :rowNum="rowNum"
+        :currentPage="currentPage"
+        :pageSize="pageSize"
+        :defaultShowSize="pageSize"
         :height="tableHeight"
-        :show-pager="false"
+        :showPager="true"
+        :showSizer="false"
+        :canSelectRow="false"
+        keyName="id"
+        @changeCurrent="changeCurrent"
       >
-        <template v-slot:title="{ row }">
-          <span class="text-href overflow" :title="getTitle(row)" @click.stop="toDetail(row)">{{ getTitle(row) }}</span>
-        </template>
-        <template v-slot:channelName="{ row }">
-          <span class="overflow">{{ getText(row.channelName || row.channel || row.catalogName || row.catalog) || '-' }}</span>
-        </template>
-        <template v-slot:priority="{ row }">
-          <span class="overflow">{{ getText(row.priority) || '-' }}</span>
-        </template>
-        <template v-slot:currentStepName="{ row }">
-          <span class="overflow" :title="getCurrentStepName(row)">{{ getCurrentStepName(row) }}</span>
-        </template>
-        <template v-slot:statusName="{ row }">
-          <span class="overflow">{{ getText(row.statusName || row.status) || '-' }}</span>
+        <template v-for="header in tableTheadList" :slot="header.key" slot-scope="{ row }">
+          <div :key="header.key" class="process-task-cell">
+            <span
+              v-if="header.key === 'title'"
+              class="text-href overflow"
+              :title="getCellText(row[header.key])"
+              @click.stop="toDetail(row)"
+            >
+              {{ getCellText(row[header.key]) || '-' }}
+            </span>
+            <WorkcenterColumnHandler
+              v-else-if="isWorkcenterCell(row[header.key])"
+              :config="row[header.key]"
+              :header="header"
+              :row="row"
+            ></WorkcenterColumnHandler>
+            <span v-else-if="isTimeColumn(header.key)">
+              {{ row[header.key] | formatDate }}
+            </span>
+            <span v-else class="overflow" :title="getCellText(row[header.key])">
+              {{ getCellText(row[header.key]) || '-' }}
+            </span>
+          </div>
         </template>
       </TsTable>
     </div>
@@ -53,18 +55,29 @@
 
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
-
-const PORTAL_WIDGET_NAME = 'processMyTodo';
+import {
+  PROCESS_TASK_SEARCH_HANDLER,
+  PROCESS_TASK_THEAD_HANDLER,
+  PROCESS_TASK_WIDGET_NAME,
+  createProcessTaskSearchParam,
+  extractTheadList,
+  normalizeProcessTaskRowList,
+  normalizePageSize,
+  normalizeTheadList,
+  serializeProcessTaskSearchConfig,
+  toTableTheadList
+} from '../utils/process-task-search.js';
 
 export default {
-  name: 'ProcessingOfMineProcessTask',
+  name: 'ProcessTaskSearch',
   components: {
     WorkbenchCard,
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
+    WorkcenterColumnHandler: () => import('@/views/pages/process/task/overview/workcenter/workcenter-column-handler.vue')
   },
   props: {
-    widget: { type: Object },
-    title: { type: String, default: '我的待办' },
+    widget: { type: Object, default: () => ({}) },
+    title: { type: String, default: '工单列表' },
     description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
@@ -73,12 +86,15 @@ export default {
     return {
       loading: false,
       error: '',
-      sourceList: [],
+      sourceTheadList: [],
+      tbodyList: [],
+      rowNum: 0,
+      currentPage: 1,
       tableHeight: 160,
       resizeObserver: null,
       reloadTimer: null,
       requestSequence: 0,
-      activeFilter: 'all'
+      theadRequest: null
     };
   },
   created() {
@@ -100,60 +116,91 @@ export default {
   },
   methods: {
     scheduleLoadData() {
-      // 配置滑块会连续触发更新，先让当前请求失效，再合并为最后一次查询。
       this.requestSequence += 1;
       if (this.reloadTimer) {
         clearTimeout(this.reloadTimer);
       }
       this.reloadTimer = setTimeout(() => {
         this.reloadTimer = null;
+        this.currentPage = 1;
         this.loadData();
       }, 200);
     },
-    loadData() {
-      // 仅允许最后发起的请求更新状态，避免旧响应覆盖新配置对应的数据。
+    async ensureTheadList() {
+      if ((this.config.theadList && this.config.theadList.length) || this.sourceTheadList.length) {
+        return;
+      }
+      if (!this.theadRequest) {
+        this.theadRequest = this.$api.common.searchWorkbenchWidgetData({
+          handler: PROCESS_TASK_THEAD_HANDLER,
+          portalWidgetName: PROCESS_TASK_WIDGET_NAME,
+          param: {}
+        }).then(res => {
+          if (!res || res.Status !== 'OK') {
+            throw new Error((res && res.Message) || '工单表头加载失败');
+          }
+          this.sourceTheadList = normalizeTheadList(extractTheadList(res.Return));
+        }).finally(() => {
+          this.theadRequest = null;
+        });
+      }
+      await this.theadRequest;
+    },
+    async loadData() {
       const requestSequence = ++this.requestSequence;
       this.loading = true;
       this.error = '';
-      this.$api.common.searchWorkbenchWidgetData({
-        handler: 'process.processingOfMineProcessTask',
-        portalWidgetName: PORTAL_WIDGET_NAME,
-        param: {
-          limit: this.limit,
-          needPage: false
+      try {
+        await this.ensureTheadList();
+        if (requestSequence !== this.requestSequence) {
+          return;
         }
-      }).then(res => {
+        const res = await this.$api.common.searchWorkbenchWidgetData({
+          handler: PROCESS_TASK_SEARCH_HANDLER,
+          portalWidgetName: PROCESS_TASK_WIDGET_NAME,
+          param: createProcessTaskSearchParam({
+            ...this.config,
+            theadList: this.resolvedTheadList
+          }, this.currentPage)
+        });
         if (requestSequence !== this.requestSequence) {
           return;
         }
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '我的待办加载失败');
+          throw new Error((res && res.Message) || '工单列表加载失败');
         }
-        const result = res.Return || {};
-        this.sourceList = Array.isArray(result.tbodyList) ? result.tbodyList : [];
-      }).catch(error => {
+        const data = res.Return || {};
+        if ((!this.config.theadList || !this.config.theadList.length) && extractTheadList(data).length) {
+          this.sourceTheadList = normalizeTheadList(extractTheadList(data));
+        }
+        this.tbodyList = normalizeProcessTaskRowList(data.tbodyList);
+        this.rowNum = Number(data.rowNum) || 0;
+        this.currentPage = Math.max(1, Number(data.currentPage) || this.currentPage);
+      } catch (error) {
         if (requestSequence !== this.requestSequence) {
           return;
         }
-        this.sourceList = [];
-        this.error = (error && (error.Message || error.message)) || '我的待办加载失败';
-      }).finally(() => {
-        if (requestSequence !== this.requestSequence) {
-          return;
+        this.tbodyList = [];
+        this.rowNum = 0;
+        this.error = (error && (error.Message || error.message)) || '工单列表加载失败';
+      } finally {
+        if (requestSequence === this.requestSequence) {
+          this.loading = false;
+          this.$nextTick(() => {
+            this.updateTableHeight();
+            this.bindResize();
+          });
         }
-        this.loading = false;
-        this.$nextTick(() => {
-          this.updateTableHeight();
-          this.bindResize();
-        });
-      });
+      }
+    },
+    changeCurrent(page) {
+      this.currentPage = Math.max(1, Number(page) || 1);
+      this.loadData();
     },
     bindResize() {
       this.unbindResize();
       if (window.ResizeObserver && this.$refs.tableWrap) {
-        this.resizeObserver = new ResizeObserver(() => {
-          this.updateTableHeight();
-        });
+        this.resizeObserver = new ResizeObserver(this.updateTableHeight);
         this.resizeObserver.observe(this.$refs.tableWrap);
       } else {
         window.addEventListener('resize', this.updateTableHeight);
@@ -173,108 +220,61 @@ export default {
         this.tableHeight = Math.max(el.clientHeight, 80);
       }
     },
-    getText(value) {
-      if (value === null || value === undefined) {
+    isWorkcenterCell(value) {
+      return value !== null && typeof value === 'object';
+    },
+    isTimeColumn(key) {
+      return ['starttime', 'endtime', 'startTime', 'endTime'].includes(key);
+    },
+    getCellText(value) {
+      if (value === undefined || value === null) {
         return '';
+      }
+      if (Array.isArray(value)) {
+        return value.map(this.getCellText).filter(Boolean).join('、');
       }
       if (typeof value === 'object') {
         return value.text || value.name || value.label || value.value || '';
       }
       return value;
     },
-    getTitle(item) {
-      return this.getText(item.title || item.name || item.serialnumber || item.serialNumber) || '-';
+    getTaskId(row) {
+      return row.id || row.processTaskId || row.taskid || (row.route && row.route.taskid);
     },
-    getCurrentStepName(item) {
-      const value = [
-        item.currentStepName,
-        item.currentstepname,
-        item.currentStep,
-        item.currentstep
-      ].find(currentValue => {
-        return Array.isArray(currentValue)
-          ? currentValue.length > 0
-          : currentValue !== null && currentValue !== undefined && currentValue !== '';
-      });
-      const stepList = Array.isArray(value) ? value : [value];
-      const nameList = stepList.map(step => {
-        if (step && typeof step === 'object') {
-          return this.getText(
-            step.stepName ||
-            step.stepname ||
-            step.currentStepName ||
-            step.currentstepname ||
-            step.name ||
-            step
-          );
-        }
-        return this.getText(step);
-      }).filter(Boolean);
-      return nameList.slice(0, 2).join('、') || '-';
-    },
-    getTaskId(item) {
-      return item.taskid || item.id || (item.route && item.route.taskid);
-    },
-    isUrgentTask(item) {
-      const status = this.getText(item.statusName || item.status);
-      const priority = this.getText(item.priority);
-      return /超时|风险|紧急|urgent|high/i.test(`${status} ${priority}`);
-    },
-    toDetail(item) {
-      const processTaskId = this.getTaskId(item);
-      if (processTaskId) {
-        const path = `/task-detail?processTaskId=${processTaskId}`;
-        if (MODULEID === 'process') {
-          this.$router.push({ path: '/task-detail', query: { processTaskId } });
-        } else {
-          window.location.href = `${HOME}/process.html#${path}`;
-        }
+    toDetail(row) {
+      const processTaskId = this.getTaskId(row);
+      if (!processTaskId) {
+        return;
       }
-    },
-    toWorkcenter() {
-      const path = '/task-overview-processingOfMineProcessTask';
+      const path = '/task-detail';
       if (MODULEID === 'process') {
-        this.$router.push({ path });
+        this.$router.push({ path, query: { processTaskId } });
       } else {
-        window.location.href = `${HOME}/process.html#${path}`;
+        window.location.href = `${HOME}/process.html#${path}?processTaskId=${processTaskId}`;
       }
     }
   },
   computed: {
-    limit() {
-      const limit = Number(this.config.limit);
-      return Math.max(2, Math.min(8, Number.isFinite(limit) ? limit : 5));
+    pageSize() {
+      return normalizePageSize(this.config.pageSize);
     },
-    showStatus() {
-      return this.config.showStatus !== 0 && this.config.showStatus !== false;
+    resolvedTheadList() {
+      return this.config.theadList && this.config.theadList.length
+        ? this.config.theadList
+        : this.sourceTheadList;
     },
-    showMore() {
-      return this.config.showMore !== 0 && this.config.showMore !== false;
+    tableTheadList() {
+      return toTableTheadList(this.resolvedTheadList);
     },
-    theadList() {
-      const theadList = [
-        { key: 'title', title: '工单标题' },
-        { key: 'channelName', title: '服务' },
-        { key: 'priority', title: '优先级' },
-        { key: 'currentStepName', title: '当前节点' }
-      ];
-      if (this.showStatus) {
-        theadList.push({ key: 'statusName', title: '状态' });
-      }
-      return theadList;
-    },
-    list() {
-      const sourceList = this.activeFilter === 'urgent'
-        ? this.sourceList.filter(this.isUrgentTask)
-        : this.sourceList;
-      return sourceList.slice(0, this.limit);
+    configFingerprint() {
+      return JSON.stringify(serializeProcessTaskSearchConfig(this.config));
     },
     isEmpty() {
-      return !this.list.length;
+      return !this.tbodyList.length;
     }
   },
   watch: {
-    limit() {
+    configFingerprint() {
       this.scheduleLoadData();
     }
   }
@@ -282,13 +282,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.todo-table {
+.process-task-table {
   height: 100%;
   min-height: 0;
   overflow: hidden;
 }
-.todo-filter {
-  margin-left: 8px;
-  cursor: pointer;
+.process-task-cell {
+  min-width: 0;
+  overflow: hidden;
+  line-height: 34px;
 }
 </style>
