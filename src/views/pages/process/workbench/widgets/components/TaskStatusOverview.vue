@@ -4,6 +4,9 @@
     icon="tsfont-chart-progress"
     tone="primary"
     :subtitle="description"
+    :loading="loading"
+    :error="error"
+    @retry="loadData"
   >
     <template v-slot:action>
       <a :href="taskHref" class="text-action">进入工作中心</a>
@@ -17,30 +20,22 @@
         title="工单状态分布"
         :items="distributionList"
       ></WorkbenchDistribution>
-      <WorkbenchComparison
-        label="目标时间内响应率"
-        :current="92"
-        :previous="89"
-        :target="95"
-        unit="%"
-        tone="success"
-        description="较上期提升 3 个百分点"
-      ></WorkbenchComparison>
     </div>
   </WorkbenchCard>
 </template>
 
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
-import WorkbenchComparison from '@/views/components/portal/components/display/WorkbenchComparison.vue';
 import WorkbenchDistribution from '@/views/components/portal/components/display/WorkbenchDistribution.vue';
 import WorkbenchMetricGroup from '@/views/components/portal/components/display/WorkbenchMetricGroup.vue';
+
+const PORTAL_WIDGET_NAME = 'personalProcessTaskOverview';
+const PORTAL_WIDGET_HANDLER = 'process.personalProcessTaskOverview';
 
 export default {
   name: 'ProcessTaskStatusOverview',
   components: {
     WorkbenchCard,
-    WorkbenchComparison,
     WorkbenchDistribution,
     WorkbenchMetricGroup
   },
@@ -51,22 +46,72 @@ export default {
   },
   data() {
     return {
-      metricList: [
-        { key: 'todo', label: '我的待办', value: 16, trend: '4 单待接单', tone: 'primary', icon: 'tsfont-task' },
-        { key: 'doing', label: '处理中', value: 12, trend: '较昨日 +2', tone: 'success', icon: 'tsfont-spinner' },
-        { key: 'risk', label: 'SLA风险', value: 3, trend: '1 单已超时', tone: 'danger', icon: 'tsfont-sla' }
-      ],
-      distributionList: [
-        { key: 'todo', label: '待响应', value: 6, tone: 'warning' },
-        { key: 'doing', label: '处理中', value: 12, tone: 'primary' },
-        { key: 'done', label: '已完成', value: 24, tone: 'success' },
-        { key: 'risk', label: '风险', value: 3, tone: 'danger' }
-      ]
+      loading: false,
+      error: '',
+      overview: {
+        myTask: 0,
+        todo: 0,
+        doing: 0,
+        risk: 0,
+        done: 0
+      }
     };
+  },
+  created() {
+    this.loadData();
+  },
+  methods: {
+    loadData() {
+      this.loading = true;
+      this.error = '';
+      this.$api.common.searchWorkbenchWidgetData({
+        portalWidgetName: PORTAL_WIDGET_NAME,
+        handler: PORTAL_WIDGET_HANDLER,
+        param: {
+          timeRange: 1,
+          timeUnit: 'year'
+        }
+      }).then(res => {
+        if (!res || res.Status !== 'OK') {
+          throw new Error((res && res.Message) || '个人工单状态概览加载失败');
+        }
+        const result = res.Return || {};
+        this.overview = {
+          myTask: this.normalizeCount(result.myTask),
+          todo: this.normalizeCount(result.todo),
+          doing: this.normalizeCount(result.doing),
+          risk: this.normalizeCount(result.risk),
+          done: this.normalizeCount(result.done)
+        };
+      }).catch(error => {
+        this.error = (error && (error.Message || error.message)) || '个人工单状态概览加载失败';
+      }).finally(() => {
+        this.loading = false;
+      });
+    },
+    normalizeCount(value) {
+      return Math.max(0, Number(value) || 0);
+    }
   },
   computed: {
     taskHref() {
       return `${HOME}/process.html#/task-overview-processingOfMineProcessTask`;
+    },
+    metricList() {
+      return [
+        { key: 'myTask', label: '我的待办', value: this.overview.myTask, tone: 'primary', icon: 'tsfont-task' },
+        { key: 'todo', label: '可抢单', value: this.overview.todo, tone: 'warning', icon: 'tsfont-spinner' },
+        { key: 'doing', label: '处理中', value: this.overview.doing, tone: 'primary', icon: 'tsfont-spinner' },
+        { key: 'risk', label: '已超时', value: this.overview.risk, tone: 'danger', icon: 'tsfont-sla' }
+      ];
+    },
+    distributionList() {
+      return [
+        { key: 'todo', label: '可抢单', value: this.overview.todo, tone: 'warning' },
+        { key: 'doing', label: '处理中', value: this.overview.doing, tone: 'primary' },
+        { key: 'risk', label: '已超时', value: this.overview.risk, tone: 'danger' },
+        { key: 'done', label: '已完成', value: this.overview.done, tone: 'success' }
+      ];
     }
   }
 };
@@ -74,13 +119,6 @@ export default {
 
 <style lang="less" scoped>
 .overview-detail {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(180px, 0.8fr);
-  gap: 12px;
-}
-@media screen and (max-width: 1200px) {
-  .overview-detail {
-    grid-template-columns: 1fr;
-  }
+  min-width: 0;
 }
 </style>

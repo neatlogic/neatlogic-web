@@ -119,7 +119,7 @@ export default {
       defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
       config: { limit: 5, showMore: 1, showStatus: 1, warnMinutes: 60 },
       configSchema: TASK_LIST_SCHEMA,
-      dataMode: 'mock',
+      dataSource: 'api',
       presentation: {
         type: 'ranking',
         isRecommended: true
