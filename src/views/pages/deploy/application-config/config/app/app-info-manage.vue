@@ -531,11 +531,14 @@ export default {
 
 .theme(@table-hover-color){
  .show-operation {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
   top: 10px;
   right: 16px;
-  width: 100px;
+  min-width: 120px;
+  white-space: nowrap;
   text-align: center;
   background-color: @table-hover-color;
 }

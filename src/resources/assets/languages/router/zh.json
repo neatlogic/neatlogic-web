@@ -86,7 +86,7 @@
     "collection": "工单集合"
   },
   "autoexec": {
-    "detail": "自动化明显",
+    "detail": "自动化详情",
     "job": "作业",
     "quickService": "快捷服务",
     "tool": "工具",
