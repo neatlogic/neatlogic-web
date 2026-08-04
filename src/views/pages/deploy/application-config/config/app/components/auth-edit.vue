@@ -182,18 +182,30 @@ export default {
 <style lang="less" scoped>
 .auth-edit-wrap {
   display: flex;
+  align-items: flex-start;
+  column-gap: 24px;
   ::v-deep .ivu-checkbox-group {
-    width: 100%;
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    min-width: 0;
   }
   ::v-deep .ivu-checkbox-wrapper {
-    width: 128px;
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    max-width: 240px;
+    margin-right: 0;
     white-space: nowrap;
   }
   .tooltips-box {
-     width: 100%;
-    .text-width {
-      width: 100%;
-    }
+    width: 100%;
+  }
+  .text-width {
+    display: inline-block;
+    max-width: 210px;
+    vertical-align: middle;
   }
 }
 </style>
