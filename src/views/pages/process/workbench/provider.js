@@ -158,7 +158,8 @@ export default {
         type: 'distribution',
         isRecommended: true
       },
-      component: () => import('./widgets/components/TaskStatusOverview.vue')
+      component: () => import('./widgets/components/TaskStatusOverview.vue'),
+      configComponent: () => import('./widgets/configs/personalProcessTaskOverviewConfig.vue')
     }
   ]
 };
