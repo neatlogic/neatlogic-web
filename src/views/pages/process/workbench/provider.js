@@ -144,7 +144,7 @@ export default {
     },
     {
       name: 'personalProcessTaskOverview',
-      label: '工单状态概览',
+      label: '个人工单状态概览',
       description: '通过指标和进度快速判断当前工单处理压力',
       icon: 'tsfont-chart-progress',
       group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
