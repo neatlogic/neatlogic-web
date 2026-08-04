@@ -3,7 +3,7 @@
     <TsFormItem label="时间范围" labelPosition="top">
       <TimeSelect
         :value="startTimeCondition"
-        :isMore="false"
+        :isMore="true"
         :transfer="true"
         :clearable="false"
         @change="changeTimeRange"

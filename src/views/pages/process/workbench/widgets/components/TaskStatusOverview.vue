@@ -93,6 +93,12 @@ export default {
   computed: {
     queryTimeRange() {
       const startTimeCondition = this.config.startTimeCondition || {};
+      if (startTimeCondition.startTime || startTimeCondition.endTime) {
+        return {
+          startTime: startTimeCondition.startTime || null,
+          endTime: startTimeCondition.endTime || null
+        };
+      }
       return {
         timeRange: Math.max(1, Number(startTimeCondition.timeRange) || 1),
         timeUnit: startTimeCondition.timeUnit || 'year'
