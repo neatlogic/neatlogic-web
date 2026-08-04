@@ -149,7 +149,13 @@ export default {
       icon: 'tsfont-chart-progress',
       group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
       defaultLayout: { w: 8, h: 7, minW: 5, minH: 6 },
-      config: { showTrend: 1 },
+      config: {
+        showTrend: 1,
+        startTimeCondition: {
+          timeRange: '1',
+          timeUnit: 'year'
+        }
+      },
       configSchema: [
         { name: 'showTrend', label: '显示状态进度', type: 'switch', defaultValue: 1 }
       ],

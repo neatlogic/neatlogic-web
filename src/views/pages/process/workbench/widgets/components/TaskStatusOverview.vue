@@ -67,10 +67,7 @@ export default {
       this.$api.common.searchWorkbenchWidgetData({
         portalWidgetName: PORTAL_WIDGET_NAME,
         handler: PORTAL_WIDGET_HANDLER,
-        param: {
-          timeRange: 1,
-          timeUnit: 'year'
-        }
+        param: this.queryTimeRange
       }).then(res => {
         if (!res || res.Status !== 'OK') {
           throw new Error((res && res.Message) || '个人工单状态概览加载失败');
@@ -94,6 +91,13 @@ export default {
     }
   },
   computed: {
+    queryTimeRange() {
+      const startTimeCondition = this.config.startTimeCondition || {};
+      return {
+        timeRange: Math.max(1, Number(startTimeCondition.timeRange) || 1),
+        timeUnit: startTimeCondition.timeUnit || 'year'
+      };
+    },
     taskHref() {
       return `${HOME}/process.html#/task-overview-processingOfMineProcessTask`;
     },
@@ -112,6 +116,14 @@ export default {
         { key: 'risk', label: '已超时', value: this.overview.risk, tone: 'danger' },
         { key: 'done', label: '已完成', value: this.overview.done, tone: 'success' }
       ];
+    }
+  },
+  watch: {
+    queryTimeRange: {
+      deep: true,
+      handler() {
+        this.loadData();
+      }
     }
   }
 };
