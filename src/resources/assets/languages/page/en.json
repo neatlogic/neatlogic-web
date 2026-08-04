@@ -391,6 +391,7 @@
   "custom": "Custom",
   "sort": "Sort",
   "heavyload": "Reload",
+  "override": "Override",
   "responsibleperson": "Owner",
   "variable": "Variable",
   "variablename": "Variable Name",
