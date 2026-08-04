@@ -119,7 +119,7 @@ export default {
       defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
       config: { limit: 5, showMore: 1, showStatus: 1, warnMinutes: 60 },
       configSchema: TASK_LIST_SCHEMA,
-      dataSource: 'api',
+      dataSource: 'mock',
       presentation: {
         type: 'ranking',
         isRecommended: true
@@ -153,7 +153,7 @@ export default {
       configSchema: [
         { name: 'showTrend', label: '显示状态进度', type: 'switch', defaultValue: 1 }
       ],
-      dataMode: 'mock',
+      dataSource: 'api',
       presentation: {
         type: 'distribution',
         isRecommended: true
