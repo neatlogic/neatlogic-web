@@ -62,7 +62,7 @@
                           <template v-if="appModuleId || envId">
                             <CommonStatus
                               v-if="step.hasOwnProperty('override') && step.override"
-                              :statusName="$t('page.heavyload')"
+                              :statusName="$t('page.override')"
                               statusValue="running"
                               class="pl-sm"
                             ></CommonStatus>
@@ -92,7 +92,7 @@
                       <div class="inherit bg-op radius-lg padding">
                         <div class="tsfont-jicheng inherit-title border-color">{{ step.source }}</div>
                         <div class="pr-nm">
-                          <span class="pr-xs">{{ $t('page.heavyload') }}</span>
+                          <span class="pr-xs">{{ $t('page.override') }}</span>
                           <span class="inline-block"><TsFormSwitch v-model="step.override" :disabled="!canEdit" @change="(val)=>{ changeOverride(val, step) }"></TsFormSwitch></span>
 
                         </div>
