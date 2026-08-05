@@ -73,7 +73,6 @@
 export default {
   name: '',
   components: {
-    //UserCard:()=>import('@/resources/components/UserCard/UserCard.vue'),
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),

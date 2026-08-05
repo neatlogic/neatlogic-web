@@ -222,4 +222,37 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.event-type-manage {
+  ::v-deep .drag-tree-table-wrap {
+    .action-wrap,
+    .btn-list {
+      width: 600px;
+    }
+
+    .action-wrap {
+      text-align: left;
+    }
+
+    .btn-list {
+      text-align: left;
+
+      .action-group {
+        display: grid;
+        grid-template-columns: 100px 90px 120px 170px 70px;
+        align-items: center;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        white-space: nowrap;
+
+        .action-item {
+          display: block;
+          padding: 0 8px !important;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
 </style>

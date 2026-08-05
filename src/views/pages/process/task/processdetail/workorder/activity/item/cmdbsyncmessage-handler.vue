@@ -8,7 +8,6 @@ export default {
   name: '',
   components: {
     CmdbsyncDetail: () => import('@/views/pages/process/task/processdetail/workorder/cmdbsync/cmdbsync-detail.vue')
-
   },
   props: {
     config: Object

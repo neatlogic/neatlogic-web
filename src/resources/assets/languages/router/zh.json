@@ -76,13 +76,13 @@
     "taskdispatch": "工单上报",
     "taskdetail": "工单处理",
     "flowedit": "流程编辑",
-    "slamanage": "时效管理",
+    "slamanage": "SLA管理",
     "eventsolutionedit": "编辑事件解决方案",
     "changeedit": "变更编辑",
     "eoatemplate": "EOA模板",
     "eoatemplateedit": "EOA模板编辑",
     "taskoverview": "工单中心",
-    "flowdemo": "流程图demo",
+    "flowdemo": "流程图Demo",
     "collection": "工单集合"
   },
   "autoexec": {

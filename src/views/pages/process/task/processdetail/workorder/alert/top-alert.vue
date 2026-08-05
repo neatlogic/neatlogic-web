@@ -101,8 +101,7 @@ export default {
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: {imgViewer, clipboard},
-  filters: {
-  },
+  filters: {},
   props: {
     list: {
       type: Array,

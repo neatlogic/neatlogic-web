@@ -36,8 +36,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {},
-  computed: {
-  },
+  computed: {},
   watch: {}
 
 };

@@ -15,10 +15,8 @@
 <script>
 export default {
   name: '',
-  components: {
-  },
-  filters: {
-  },
+  components: {},
+  filters: {},
   props: {
     list: Array, //步骤列表
     id: [String, Number] //选中id

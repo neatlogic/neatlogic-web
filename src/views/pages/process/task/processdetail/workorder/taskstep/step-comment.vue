@@ -97,7 +97,7 @@ export default {
         urge: this.$t('page.urge'),
         pause: this.$t('page.pause'),
         recover: this.$t('term.process.recoverstep'),
-        tranferreport: this.$t('page.tranferreport'),
+        tranferreport: this.$t('term.process.tranferreport'),
         copyprocesstask: this.$t('term.process.copyreport'),
         redo: this.$t('term.process.redo'),
         markrepeat: this.$t('term.process.markrepeat'),
@@ -109,9 +109,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -139,12 +137,8 @@ export default {
       return actionText || this.actionText[type];
     }
   },
-  filter: {
-
-  },
-  computed: {
-
-  },
+  filter: {},
+  computed: {},
   watch: {}
 };
 </script>
@@ -200,7 +194,6 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    // padding-left: 70px;
   }
   .comment-list-box {
     &:last-child {

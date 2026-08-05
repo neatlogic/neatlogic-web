@@ -46,7 +46,6 @@
           <span class="pr-md shrink" :style="{ color: row.channeltype.color }">{{ row.channeltype.text }}</span>
           <span :title="row.title" class="mr-md overflow">{{ row.title }}</span>
           <span class="colorgray shrink">
-            <!-- <span style="font-weight: bold; font-size: 16px;display: inline-block;margin-top: -10px;">.</span> -->
             {{ row.serialnumber }}
           </span>
         </div>
@@ -95,7 +94,6 @@
           v-on="$listeners"
         ></ControllerBtn>
       </div>
-      <!-- <div v-else ></div> -->
     </TsCard>
   </div>
 </template>
@@ -152,9 +150,6 @@ export default {
       if (event) {
         let path = event.path || (event.composedPath && event.composedPath());
         let is = path[0].tagName === 'BUTTON';
-        // let is1 = event.path.some(d => {
-        //     return d && d.nodeType === 1 && d.classList.contains && d.classList.contains('ivu-carousel-dots')
-        // });
         if (is) {
           return;
         }
@@ -170,8 +165,6 @@ export default {
             }
           });
         } else {
-          //sessionStorage.removeItem('processConditionConfig');
-          //sessionStorage.setItem('processConditionConfig', JSON.stringify(this.searchConfig));
           this.$router.push({
             path: '/task-detail',
             query: {
@@ -236,7 +229,6 @@ export default {
     handlerStep(data, item) {
       sessionStorage.setItem('processTaskUuid', this.taskTypeUuid);
       if (item.status.value === 'draft') {
-        //task-dispatch?processTaskId=180
         this.$router.push({
           path: '/task-dispatch',
           query: {
@@ -437,11 +429,6 @@ export default {
   .widthFix {
     width: 55px;
   }
-
-  // .content {
-  //   padding: 0 12px;
-  //   /*overflow: hidden;*/
-  // }
   .Carousel {
     width: 100%;
     height: 78px;
@@ -486,18 +473,6 @@ export default {
     margin-right: 6px;
     vertical-align: middle;
   }
-  // .userType {
-  //   margin-top: 10px;
-  // }
-  // .marginright {
-  //   margin-right: 10px;
-  // }
-  // .marginbottom {
-  //   margin-bottom: 6px;
-  // }
-  // .paddingright {
-  //   padding-right: 10px;
-  // }
   .not-focus {
     display: none;
   }
