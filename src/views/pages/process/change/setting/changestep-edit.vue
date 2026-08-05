@@ -214,10 +214,6 @@ export default {
         'on-ok': vnode => {
           vnode.isShow = false;
           this.newChangeStepList.splice(0);
-          // this.$Notice.success({
-          //   title: '清除成功',
-          //   duration: 1.5
-          // });
         }
       });
     },

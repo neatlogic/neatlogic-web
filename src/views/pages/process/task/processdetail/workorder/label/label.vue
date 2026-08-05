@@ -61,7 +61,6 @@ export default {
         dataList: [],
         textName: 'text',
         valueName: 'text'
-        // filterable: true
       },
       onceSubmit: 1
     };

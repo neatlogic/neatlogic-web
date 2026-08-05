@@ -12,11 +12,8 @@
 <script>
 export default {
   name: '',
-  components: {
-    
-  },
-  filters: {
-  },
+  components: {},
+  filters: {},
   props: {
     processTaskStepConfig: Object
   },

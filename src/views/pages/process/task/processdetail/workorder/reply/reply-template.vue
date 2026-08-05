@@ -196,29 +196,18 @@ export default {
       replyType: 'custom'
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getTableDataSearch(1);
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     addRow() {
       this.editTsDialog.isShow = true;
@@ -367,11 +356,8 @@ export default {
       this.getTableDataSearch();
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     'editTsDialog.isShow'(val) {
       if (!val) {

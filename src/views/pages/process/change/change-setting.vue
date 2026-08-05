@@ -45,7 +45,6 @@ export default {
 .changeSetting {
   width: 100%;
   height: 100%;
-  // padding-top: 8px;
   ::v-deep .ivu-tabs-nav .ivu-tabs-tab {
     padding: 18px 16px;
   }

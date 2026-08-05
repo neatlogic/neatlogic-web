@@ -179,7 +179,6 @@ export default {
   },
   beforeCreate() {},
   created() {
-    // console.log(this.$dragBox);
     this.getSopTemplateList();
   },
   beforeMount() {},

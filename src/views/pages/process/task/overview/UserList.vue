@@ -63,7 +63,6 @@ export default {
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   props: ['item', 'styleClass'],
-
   data() {
     return {
       userList: this.item.userlist,
@@ -80,14 +79,9 @@ export default {
       this.isShowUserCard = true;
     }
   },
-  methods: {
-
-  },
-  computed: {
-  },
-
-  destory() {
-  }
+  methods: {},
+  computed: {},
+  destory() {}
 };
 </script>
 
@@ -150,12 +144,10 @@ export default {
 
 .content {
   padding: 0 12px;
-  /*overflow: hidden;*/
 }
 
 .Carousel {
   width: 100%;
-  /*margin-right: 2px;*/
   background-color: #fff;
   border-bottom: 1px solid @default-dividing;
   margin-bottom: 16px;

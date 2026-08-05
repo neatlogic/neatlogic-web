@@ -368,9 +368,7 @@ export default {
       taskAlertHeight: 0 // taskAlert高度
     };
   },
-  created() {
-
-  },
+  created() {},
   mounted() {
     this.getAllData();
     if (!this.$utils.isEmpty(this.changeValid())) {
@@ -517,9 +515,7 @@ export default {
       return validList;
     }
   },
-  computed: {
-  },
-
+  computed: {},
   watch: {}
 };
 </script>

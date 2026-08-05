@@ -33,7 +33,6 @@ export default {
   beforeCreate() {},
   created() {
     this.item.commentList.forEach((comment) => {
-      // console.log(comment);
       if (comment.content && comment.content.includes('<img')) {
         Object.assign(comment, {
           maxheight: '200px',
