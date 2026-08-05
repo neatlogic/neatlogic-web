@@ -109,8 +109,7 @@ export default {
         },
         value: {
           type: 'text',
-          label: this.$t('page.value'),
-          validateList: ['required']
+          label: this.$t('page.value')
         },
         description: {
           type: 'textarea',
