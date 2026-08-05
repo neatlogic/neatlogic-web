@@ -23,24 +23,44 @@
           v-if="dashboardData.tbodyList && dashboardData.tbodyList.length > 0"
           :padding="false"
           v-bind="dashboardData"
-          :xl="6"
-          :sm="8"
+          :xxl="8"
+          :xl="12"
+          :lg="12"
+          :md="24"
+          :sm="24"
           :xs="24"
           @updatePage="searchDashboard"
         >
           <template slot="header" slot-scope="{ row }">
-            <div class="overflow h3">{{ row.name }}</div>
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-heading">
+                <div class="dashboard-card-title overflow">{{ row.name }}</div>
+                <div class="dashboard-card-meta text-grey">
+                  <span v-if="row.lcd">{{ row.lcd | formatDate }}</span>
+                  <span v-else>{{ row.fcd | formatDate }}</span>
+                </div>
+              </div>
+              <div class="dashboard-card-actions">
+                <span
+                  class="dashboard-enter tsfont-search text-action"
+                  role="button"
+                  tabindex="0"
+                  :title="$t('page.viewdetails')"
+                  :aria-label="$t('page.viewdetails')"
+                  @click.stop="toDashboardDetail(row.id)"
+                  @keydown.enter.stop="toDashboardDetail(row.id)"
+                ></span>
+              </div>
+            </div>
           </template>
           <template slot-scope="{ row }">
-            <div class="action-group" style="text-align: right">
-              <span v-if="row.lcd" class="action-item fz10 text-grey">{{ row.lcd | formatDate }}</span>
-              <span v-else class="action-item fz10 text-grey">{{ row.fcd | formatDate }}</span>
-            </div>
             <div class="dashbord-overview" @click="toDashboardDetail(row.id)">
-              <widget-overview v-if="row.widgetList.length > 0" :widgetList="row.widgetList"></widget-overview>
-              <div class="slider-container text-op">
+              <widget-overview
+                v-if="row.widgetList.length > 0"
+                :widgetList="row.widgetList"
+              ></widget-overview>
+              <div v-if="row.description" class="slider-container text-op">
                 <div>{{ row.description }}</div>
-                <div class="icon-enter tsfont-search"></div>
               </div>
             </div>
           </template>

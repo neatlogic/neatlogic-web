@@ -2770,6 +2770,7 @@
     "rangewidth": "Annular thickness",
     "systemdashboard": "System",
     "personaldashboard": "Personal",
+    "unsupportedpreview": "Preview unavailable",
     "widgetname": "Component Name",
     "widgetnameempty": "Component name cannot be empty!",
     "basicsetting": "Basic Settings",

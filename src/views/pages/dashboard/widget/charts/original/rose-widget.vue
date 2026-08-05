@@ -18,6 +18,9 @@ export default {
         xField: 'xField',
         yField: 'yField',
         seriesField: 'seriesField',
+        label: { offset: 18 },
+        xAxis: false,
+        yAxis: false,
         color: this.getChartTheme('chart')
       }
     };
@@ -47,6 +50,7 @@ export default {
       if (this.$refs.container) {
         this.plot = new Rose(this.$refs.container, {
           ...this.chartConfig,
+          padding: this.getPolarChartPadding(),
           data: this.finalData
         });
         this.plot.render();

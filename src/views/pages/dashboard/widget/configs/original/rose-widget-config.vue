@@ -1,6 +1,19 @@
 <template>
   <div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
+      <label class="ivu-form-item-label overflow">{{ $t('term.report.showlabel') }}</label>
+      <div class="ivu-form-item-content">
+        <TsFormSwitch
+          :value="config.label !== false"
+          :true-value="true"
+          :false-value="false"
+          @change="val => {
+            setConfigValue('label', val ? { offset: 18 } : false);
+          }"
+        ></TsFormSwitch>
+      </div>
+    </div>
+    <div class="ivu-form-item tsform-item ivu-form-label-top">
       <label class="ivu-form-item-label overflow">{{ $t('term.report.axis.showlegend') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSwitch

@@ -18,6 +18,8 @@ export default {
     { name: 'seriesField', label: $t('term.report.chartsetting.groupfield'), type: ['text', 'date', 'datetime', 'time'], isRequired: true } 
   ], 
   config: { 
+    xAxis: false,
+    label: { offset: 18 },
     legend: { 
       visible: true, 
       position: 'bottom', 
