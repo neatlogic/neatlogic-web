@@ -9,7 +9,7 @@
     @retry="loadData"
   >
     <template v-slot:action>
-      <a :href="taskHref" class="text-action">进入工作中心</a>
+      <a :href="taskHref" class="text-action">进入我的待办</a>
     </template>
     <WorkbenchMetricGroup :metrics="metricList"></WorkbenchMetricGroup>
     <div
@@ -49,11 +49,11 @@ export default {
       loading: false,
       error: '',
       overview: {
-        myTask: 0,
-        todo: 0,
-        doing: 0,
-        risk: 0,
-        done: 0
+        myTaskCount: 0,
+        pendingCount: 0,
+        runningCount: 0,
+        timeoutCount: 0,
+        succeedCount: 0
       }
     };
   },
@@ -74,11 +74,11 @@ export default {
         }
         const result = res.Return || {};
         this.overview = {
-          myTask: this.normalizeCount(result.myTask),
-          todo: this.normalizeCount(result.todo),
-          doing: this.normalizeCount(result.doing),
-          risk: this.normalizeCount(result.risk),
-          done: this.normalizeCount(result.done)
+          myTaskCount: this.normalizeCount(result.myTaskCount),
+          pendingCount: this.normalizeCount(result.pendingCount),
+          runningCount: this.normalizeCount(result.runningCount),
+          timeoutCount: this.normalizeCount(result.timeoutCount),
+          succeedCount: this.normalizeCount(result.succeedCount)
         };
       }).catch(error => {
         this.error = (error && (error.Message || error.message)) || '个人工单状态概览加载失败';
@@ -101,7 +101,7 @@ export default {
       }
       return {
         timeRange: Math.max(1, Number(startTimeCondition.timeRange) || 1),
-        timeUnit: startTimeCondition.timeUnit || 'year'
+        timeUnit: startTimeCondition.timeUnit || 'week'
       };
     },
     taskHref() {
@@ -109,18 +109,18 @@ export default {
     },
     metricList() {
       return [
-        { key: 'myTask', label: '我的待办', value: this.overview.myTask, tone: 'primary', icon: 'tsfont-task' },
-        { key: 'todo', label: '可抢单', value: this.overview.todo, tone: 'warning', icon: 'tsfont-spinner' },
-        { key: 'doing', label: '处理中', value: this.overview.doing, tone: 'primary', icon: 'tsfont-spinner' },
-        { key: 'risk', label: '已超时', value: this.overview.risk, tone: 'danger', icon: 'tsfont-sla' }
+        { key: 'myTaskCount', label: '我的待办', value: this.overview.myTaskCount, tone: 'primary', icon: 'tsfont-task' },
+        { key: 'pendingCount', label: '可抢单', value: this.overview.pendingCount, tone: 'warning', icon: 'tsfont-spinner' },
+        { key: 'runningCount', label: '处理中', value: this.overview.runningCount, tone: 'primary', icon: 'tsfont-spinner' },
+        { key: 'timeoutCount', label: '已超时', value: this.overview.timeoutCount, tone: 'danger', icon: 'tsfont-sla' }
       ];
     },
     distributionList() {
       return [
-        { key: 'todo', label: '可抢单', value: this.overview.todo, tone: 'warning' },
-        { key: 'doing', label: '处理中', value: this.overview.doing, tone: 'primary' },
-        { key: 'risk', label: '已超时', value: this.overview.risk, tone: 'danger' },
-        { key: 'done', label: '已完成', value: this.overview.done, tone: 'success' }
+        { key: 'pendingCount', label: '可抢单', value: this.overview.pendingCount, tone: 'warning' },
+        { key: 'runningCount', label: '处理中', value: this.overview.runningCount, tone: 'primary' },
+        { key: 'timeoutCount', label: '已超时', value: this.overview.timeoutCount, tone: 'danger' },
+        { key: 'succeedCount', label: '已完成', value: this.overview.succeedCount, tone: 'success' }
       ];
     }
   },

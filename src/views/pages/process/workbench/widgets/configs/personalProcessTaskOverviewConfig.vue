@@ -9,31 +9,20 @@
         @change="changeTimeRange"
       ></TimeSelect>
     </TsFormItem>
-
-    <!-- <TsFormItem label="显示状态进度" labelPosition="top">
-      <TsFormSwitch
-        :value="config.showTrend"
-        :trueValue="1"
-        :falseValue="0"
-        :showStatus="true"
-        @on-change="value => setConfig('showTrend', value)"
-      ></TsFormSwitch>
-    </TsFormItem> -->
   </div>
 </template>
 
 <script>
 const DEFAULT_START_TIME_CONDITION = {
   timeRange: '1',
-  timeUnit: 'year'
+  timeUnit: 'week'
 };
 
 export default {
   name: 'PersonalProcessTaskOverviewConfig',
   components: {
     TimeSelect: () => import('@/resources/components/TimeSelect/TimeSelect.vue'),
-    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')//,
-    // TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
   props: {
     widget: { type: Object, default: () => ({}) },
