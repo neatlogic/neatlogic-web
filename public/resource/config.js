@@ -9,8 +9,9 @@ if (TENANT.indexOf('.') <= -1) {
   TENANT = '';
   HOME = '/';
 }
-var USERLANGUAGE = getCookie('neatlogic_language');
-var BASELANGUAGES = USERLANGUAGE || 'zh';
+var USERLANGUAGECOOKIE = getCookie('neatlogic_language');
+var USERLANGUAGE = normalizeLanguage(USERLANGUAGECOOKIE);
+var BASELANGUAGES = resolveLanguage(USERLANGUAGE);
 var MODULEID = '';
 var MENULIST = [];
 var MENUTYPE = {};
@@ -56,6 +57,38 @@ function getCookie(name) {
       }
     }
   }
+}
+
+// 将浏览器区域语言和 Cookie 值统一映射为系统支持的 zh/en。
+function normalizeLanguage(language) {
+  if (typeof language !== 'string') {
+    return '';
+  }
+  const languageCode = language.trim().toLowerCase().split(/[-_]/)[0];
+  return languageCode === 'zh' || languageCode === 'en' ? languageCode : '';
+}
+
+// 按浏览器首选语言顺序返回第一个系统支持的语言。
+function getBrowserLanguage() {
+  if (typeof navigator === 'undefined') {
+    return '';
+  }
+  const languageList = Array.isArray(navigator.languages) ? navigator.languages.slice() : [];
+  if (navigator.language && !languageList.includes(navigator.language)) {
+    languageList.push(navigator.language);
+  }
+  for (const language of languageList) {
+    const normalizedLanguage = normalizeLanguage(language);
+    if (normalizedLanguage) {
+      return normalizedLanguage;
+    }
+  }
+  return '';
+}
+
+// Cookie 缺失或无效时，依次使用租户语言配置、浏览器首选语言和中文。
+function resolveLanguage(userLanguage, defaultLanguage) {
+  return normalizeLanguage(userLanguage) || normalizeLanguage(defaultLanguage) || getBrowserLanguage() || 'zh';
 }
 
 function removeCookie(name) {
@@ -161,10 +194,12 @@ async function getSsoTokenKey() {
     try {
       const responseText = JSON.parse(xhr.responseText);
       if (responseText && responseText.Status === 'OK') {
-        if (!USERLANGUAGE) {
-          BASELANGUAGES = responseText.defaultLanguage || BASELANGUAGES || 'zh';
+        BASELANGUAGES = resolveLanguage(USERLANGUAGE, responseText.defaultLanguage);
+        if (USERLANGUAGECOOKIE !== BASELANGUAGES) {
           setCookie('neatlogic_language', BASELANGUAGES, 7);
         }
+        USERLANGUAGE = BASELANGUAGES;
+        USERLANGUAGECOOKIE = BASELANGUAGES;
         getFaviconUrl(responseText.themeConfig);
         SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';

@@ -86,7 +86,7 @@
     "collection": "工单集合"
   },
   "autoexec": {
-    "detail": "自动化明显",
+    "detail": "自动化详情",
     "job": "作业",
     "quickService": "快捷服务",
     "tool": "工具",
@@ -215,11 +215,11 @@
     "editpipeline": "编辑流水线",
     "activeversion": "活动版本",
     "schedulejob": "定时作业",
-    "configadd": "配置",
+    "configadd": "持续集成配置",
     "addschedulejob": "添加定时作业",
     "editschedulejob": "编辑定时作业",
     "toolclassification": "工具分类",
-    "webhook": "webhook"
+    "webhook": "Webhook"
   },
   "inspect": {
     "inspectmanage": "巡检管理",

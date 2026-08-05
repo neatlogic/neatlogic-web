@@ -57,10 +57,13 @@ axios({
       }
       authtype = data.authType;
       encrypt = data.encrypt;
-      if (!USERLANGUAGE) {
-        BASELANGUAGES = data.defaultLanguage || BASELANGUAGES || 'zh';
-        document.cookie = 'neatlogic_language=' + BASELANGUAGES + '; path=' + HOME + ';';
+      const languageCookie = getCookie('neatlogic_language');
+      BASELANGUAGES = resolveLanguage(languageCookie, data.defaultLanguage);
+      if (languageCookie !== BASELANGUAGES) {
+        setCookie('neatlogic_language', BASELANGUAGES, 7);
       }
+      USERLANGUAGE = BASELANGUAGES;
+      USERLANGUAGECOOKIE = BASELANGUAGES;
       // 存储密码过期跳转路径
       sessionStorage.setItem('PWD_EXPIRED_DIRECT_URL', data.pwdExpiredDirectUrl || '');
     }
