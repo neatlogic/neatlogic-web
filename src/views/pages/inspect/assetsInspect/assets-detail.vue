@@ -94,7 +94,7 @@
             class="item"
             :class="{ 'item-row': field.type === 'JsonArray' || field.type === 'JsonObject' || field.type === 'Text' }"
           >
-            <div class="title overflow text-grey" :class="getFieldClass(field.name)" :title="getFieldLabel(field)">
+            <div class="title overflow text-grey" :class="getFieldClass(field.name)" :title="getFieldTitle(field)">
               <span>{{ getFieldLabel(field) }}</span>
             </div>
             <div v-if="field.type === 'JsonArray'" class="ts-table-wrapper-div">
@@ -292,12 +292,19 @@ export default {
       }
       return null;
     },
-    // 巡检报告统一展示稳定的字段name，不受系统语言影响。
+    isEnglishLocale() {
+      return this.$i18n && this.$i18n.locale === 'en';
+    },
+    // 巡检字段定义的desc为中文描述，英文环境直接展示稳定的字段name。
     getFieldLabel(field) {
       if (!field) {
         return '';
       }
-      return field.name;
+      return this.isEnglishLocale() ? field.name : field.desc;
+    },
+    getFieldTitle(field) {
+      const label = this.getFieldLabel(field);
+      return this.isEnglishLocale() ? label : label + '(' + field.name + ')';
     },
     getFieldTheadList(field) {
       if (field.subset) {
