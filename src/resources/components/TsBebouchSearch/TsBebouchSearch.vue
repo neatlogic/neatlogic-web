@@ -46,29 +46,19 @@ export default {
       cancelAxios: null
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   destroyed() {},
   beforeDestroy() {
     //取消正在搜索的请求
     this.cancelAxios && this.cancelAxios.cancel();
   },
-
   methods: {
     debounceInput(value) {
       if (this.timeout !== null) {
@@ -97,13 +87,9 @@ export default {
       }, this.delay);
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>
-
 <style lang="less"></style>

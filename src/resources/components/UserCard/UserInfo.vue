@@ -6,9 +6,6 @@
     </div>
     <div v-else class="usercard-body">
       <header class="header-wrap">
-        <!--<div class="center-circle">
-          <div class="circle bg-primary"></div>
-        </div>-->
         <div class="userinfo-avatar">
           <!-- 头像 -->
           <TsAvatar v-bind="userInfo" :size="66" />
@@ -48,14 +45,12 @@
             <Tag v-for="(role,index) in userInfo.roleList" :key="index">
               {{ role.description }}
             </Tag>
-            <!-- {{ getName(userInfo.roleList) }}-->
           </span>
           <span v-else class="content-text">-</span>
         </li>
         <li>
           <span class="content-label text-grey">{{ $t('page.group') }}</span>
           <span v-if="userInfo.teamNameList && userInfo.teamNameList.length > 0" class="content-text">
-            <!--{{ getName(userInfo.teamNameList, false) }}-->
             <Tag v-for="(team,index) in userInfo.teamNameList" :key="index">
               {{ team }}
             </Tag>
@@ -122,7 +117,6 @@ export default {
     .name-text {
       display: inline-block;
       font-size: 16px;
-      // font-weight: bold;
       margin-right: 6px;
     }
     .userid-text {
@@ -141,8 +135,6 @@ export default {
     // 头像样式
     .userinfo-avatar {
       position: absolute;
-      //right: 49px;
-      // top: -10px;
       right: 20px;
       top:30px;
       z-index: 1;

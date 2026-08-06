@@ -33,7 +33,7 @@
                 v-model="searchValue.keyword"
                 search
                 clearable
-                placeholder="请输入用户名、用户ID、邮箱"
+                :placeholder="$t('page.inputusernameuseridemail')"
                 border="border"
                 @on-enter="searchUser(1)"
                 @on-search="searchUser(1)"
@@ -128,7 +128,7 @@ export default {
         clearable: true,
         transfer: true,
         border: 'border',
-        placeholder: '请选择角色'
+        placeholder: this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.role')})
       },
       teamTreeList: [],
       teamTreeConfig: {
@@ -142,7 +142,7 @@ export default {
         clearable: true,
         transfer: true,
         border: 'border',
-        placeholder: '请选择分组'
+        placeholder: this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.group')})
       },
       searchValue: {},
       tableData: {

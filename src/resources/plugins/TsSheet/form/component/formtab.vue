@@ -377,7 +377,7 @@ export default {
             h('Poptip', {
               props: {
                 trigger: 'hover',
-                title: '异常',
+                title: this.$t('page.exception'),
                 width: '350',
                 transfer: true,
                 'word-wrap': true,

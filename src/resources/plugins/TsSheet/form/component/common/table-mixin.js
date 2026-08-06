@@ -62,9 +62,9 @@ export default {
                       if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
                         findItem.errorPageList.push(pageCount);
                         findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-                        findItem.error = `${label}：第${findItem.errorPageList.join(',')}页【${findUnunique.label}】属性必须唯一`;
+                        findItem.error = this.$t('page.attrmustbeunique', { label: label, page: findItem.errorPageList.join(','), attr: findUnunique.label });
                       } else {
-                        errorList.push({ uuid: uuid, attrUuid: key, errorPageList: [pageCount], error: `${label}：第${pageCount}页【${findUnunique.label}】属性必须唯一` });
+                        errorList.push({ uuid: uuid, attrUuid: key, errorPageList: [pageCount], error: this.$t('page.attrmustbeunique', { label: label, page: pageCount, attr: findUnunique.label }) });
                       }
                     } else {
                       existMap[key] = existMap[key] ? [...existMap[key], value] : [value];
@@ -96,9 +96,9 @@ export default {
                 if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
                   findItem.errorPageList.push(pageCount);
                   findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-                  findItem.error = `${label}：第${findItem.errorPageList.join(',')}页【${attrLabel}】属性必须唯一`;
+                  findItem.error = this.$t('page.attrmustbeunique', { label: label, page: findItem.errorPageList.join(','), attr: attrLabel });
                 } else {
-                  errorList.push({ uuid: uniqueRuleConfig[0], errorPageList: [pageCount], error: `${label}：第${pageCount}页【${attrLabel}】属性必须唯一` });
+                  errorList.push({ uuid: uniqueRuleConfig[0], errorPageList: [pageCount], error: this.$t('page.attrmustbeunique', { label: label, page: pageCount, attr: attrLabel }) });
                 }
               } else {
                 existList.push(tempValue);
@@ -129,13 +129,13 @@ export default {
             label: title,
             uuid: formItemKey,
             attrUuid: key,
-            error: formItemLabel + '：第' + pageCount + '页' + this.$t('message.completerequired', {'target': '【' + title + '】'})
+            error: this.$t('page.fieldcompleterequired', { label: formItemLabel, page: pageCount, attr: title })
           });
         } else {
           if (!findItem.errorPageList.find(d => d === pageCount)) {
             findItem.errorPageList.push(pageCount);
             findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-            findItem.error = formItemLabel + '：第' + findItem.errorPageList.join(',') + '页' + this.$t('message.completerequired', {'target': '【' + title + '】'});
+            findItem.error = this.$t('page.fieldcompleterequired', { label: formItemLabel, page: findItem.errorPageList.join(','), attr: title });
           }
         }
       }

@@ -65,7 +65,7 @@
   </div>
 </template>
 <script>
-import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
 export default {
   name: 'ReferenceSelect',
   components: {
@@ -324,12 +324,8 @@ export default {
 };
 </script>
 <style lang='less' scoped>
-// .text-action:before{
-//   margin-right: 0px!important;
-// }
 .reference-number{
     font-size: 11px;
-    // padding: 0 0px!important;
   }
   .marr4{
     margin-right:4px!important;

@@ -15,8 +15,7 @@
       >
         <!--<span class="text-error tsfont-warning-s"></span>-->
         <Tag color="error">
-          <b>{{ configErrorList.length }}</b>
-          个异常
+          {{ $t('page.exceptioncounttarget', { target: configErrorList.length }) }}
         </Tag>
         <div slot="content">
           <ul>
@@ -36,8 +35,7 @@
       >
         <!--<span class="text-error tsfont-danger-s"></span>-->
         <Tag color="error" closable @on-close="handleCloseErrorMessage">
-          <b>{{ dataErrorList.length }}</b>
-          个异常
+          {{ $t('page.exceptioncounttarget', { target: dataErrorList.length }) }}
         </Tag>
         <div slot="content">
           <ul>
@@ -271,7 +269,6 @@ export default {
         currentItemReadonly: false, //当前组件是否只读
         cunrrentRequire: false //
       }
-      
     };
   },
   beforeCreate() {},

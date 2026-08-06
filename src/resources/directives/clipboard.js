@@ -1,3 +1,4 @@
+import { $t } from '@/resources/init.js';
 const clipboard = {
   bind(el, binding) {
     if (!binding.arg && binding.value) {
@@ -11,7 +12,7 @@ const clipboard = {
         try {
           copytxt = JSON.stringify(value);
         } catch (e) {
-          console.error('粘贴内容不合法！');
+          console.error($t('page.invalidpastecontent'));
           return;
         }
       } else {
@@ -43,7 +44,7 @@ const clipboard = {
         if (el.cliptext) {
           clipboardTxt(el.cliptext);
         } else {
-          console.error('无可供粘贴的内容！');
+          console.error($t('page.nopastecontentavailable'));
         }
       }
     };

@@ -19,7 +19,6 @@
         @ready="$emit('ready')"
         @blur="onBlur"
       ></ckeditor>
-      <!-- <i class="ck-expandedbtn tsfont-up text-action" @click="isHidebar = !isHidebar;"></i> -->
       <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
       <transition name="fade">
@@ -397,10 +396,8 @@ export default {
   right: 10px;
   width: 20px;
   height: 20px;
-  // background: #333;
   cursor: pointer;
   top: 10px;
-  // display: none;
 }
 #new_ckeditor,
 .form-li {

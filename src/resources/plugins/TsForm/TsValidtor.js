@@ -616,7 +616,4 @@ let validtor = {
     message: $t('message.plugin.highriskcode')
   }
 };
-
-//module.exports.default =module.exports = validtor;
-
 export default validtor;

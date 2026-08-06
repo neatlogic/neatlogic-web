@@ -4,15 +4,15 @@
       {{ $t('page.help') }}
       <template slot="desc">
         <ul>
-          <li>数据配置是一个json格式的字符串，字段说明如下：</li>
-          <li>this为vue实例对象</li>
-          <li>main为执行方法<span class="text-danger">(该方法名不可更改)</span>，输出结果：
+          <li>{{ $t('page.dataconfigjsondesc') }}</li>
+          <li>{{ $t('page.thisisvueinstance') }}</li>
+          <li>{{ $t('page.mainmethod') }}<span class="text-danger">{{ $t('page.mainmethodfixedname') }}</span>{{ $t('page.outputresultis') }}
             <Poptip
               trigger="click"
               width="700"
               :transfer="true"
             >
-              <span class="text-href">示例</span>
+              <span class="text-href">{{ $t('page.eg') }}</span>
               <div slot="content" class="overflow" style="height: 300px;overflow-y: auto">
                 <TsCodemirror
                   ref="code"
@@ -24,14 +24,14 @@
               </div>
             </Poptip>
             <ul>
-              <li>main执行方法入参说明：</li>
-              <li class="ml-nm" style="list-style: disc;">componentList是数据配置值，输出结果：
+              <li>{{ $t('page.mainmethodparamdesc') }}</li>
+              <li class="ml-nm" style="list-style: disc;">{{ $t('page.componentlistoutputdesc') }}
                 <Poptip
                   trigger="click"
                   width="700"
                   :transfer="true"
                 >
-                  <span class="text-href">示例</span>
+                  <span class="text-href">{{ $t('page.eg') }}</span>
                   <div slot="content" class="overflow" style="height: 300px;overflow-y: auto">
                     <TsCodemirror
                       ref="code"
@@ -43,13 +43,13 @@
                   </div>
                 </Poptip>
               </li>
-              <li class="ml-nm" style="list-style: disc;">formData是表单数据值，输出结果：
+              <li class="ml-nm" style="list-style: disc;">{{ $t('page.formdataoutputdesc') }}
                 <Poptip
                   trigger="click"
                   width="700"
                   :transfer="true"
                 >
-                  <span class="text-href">示例</span>
+                  <span class="text-href">{{ $t('page.eg') }}</span>
                   <div slot="content" class="overflow" style="height: 300px;overflow-y: auto">
                     <TsCodemirror
                       ref="code"
@@ -63,14 +63,14 @@
               </li>
             </ul>
           </li>
-          <li>this.$.customFn()为自定义方法。要调用自定义方法，请使用<span class="text-danger">this.$</span>开头，例如：this.$.customFn()。
+          <li>{{ $t('page.customfnprefix') }}<span class="text-danger">this.$</span>{{ $t('page.customfnsuffixwithperiod') }}
             <Poptip
               trigger="click"
               width="700"
               :transfer="true"
               :title="$t('term.framework.grammarhint')"
             >
-              <span class="text-href">示例</span>
+              <span class="text-href">{{ $t('page.eg') }}</span>
               <div slot="content" class="overflow" style="height: 300px;overflow-y: auto">
                 <TsCodemirror
                   ref="code"
@@ -116,9 +116,9 @@ export default {
 }`,
       valueList: [
         {
-          'tag': 'common1', // 标签名称
-          'key': 'formspecifications_systemName', // 键名
-          'dataList': 'TLOP' // 值
+          'tag': 'common1', // Tag name
+          'key': 'formspecifications_systemName', // Key name
+          'dataList': 'TLOP' // Value
         },
         {
           'tag': 'common1',
@@ -127,19 +127,19 @@ export default {
             {
               'app': 'TLOP',
               'uuid': 1178825270501587,
-              'osver': '麒麟v10',
-              'netRegion': 'DMZ区域',
+              'osver': 'Kylin V10',
+              'netRegion': 'DMZ',
               'xuqiu': 'XQ20240512-002',
-              'oscfg': '低配[4c8g]',
+              'oscfg': 'Standard[4c8g]',
               'osNum': '1',
-              'osBaseline': '麒麟v10-202402',
-              'name': 'TLOP_三资村行前置机',
+              'osBaseline': 'Kylin V10-202402',
+              'name': 'TLOP_Gateway_Server',
               'osType': 'ECS',
               'id': 1178825270501587,
               'cfgId': 1178825270501600,
               'sysUesr': '1',
-              'moduleType': '应用服务',
-              'moduleEnName': 'sanzi',
+              'moduleType': 'Application Server',
+              'moduleEnName': 'gateway',
               'networkAreaCode': 'DMZ'
             }
           ]
@@ -148,14 +148,14 @@ export default {
       componentList: [
         {
           'handler': 'formselect',
-          'label': '资源规格_1_系统名称',
+          'label': 'Resource Spec_1_System Name',
           'key': 'formspecifications_systemName',
           'tag': 'common1',
           'type': 'form'
         },
         {
           'handler': 'formtableinputer',
-          'label': '资源规格_1_操作系统',
+          'label': 'Resource Spec_1_Operating System',
           'key': 'formspecifications_os',
           'tag': 'common1',
           'type': 'form',
@@ -163,32 +163,32 @@ export default {
             'dataConfig': [
               {
                 'handler': 'formtext',
-                'label': '资源规格_1_操作系统_需求编号',
+                'label': 'Resource Spec_1_Operating System_Request No.',
                 'uuid': 'xuqiu'
               },
               {
                 'handler': 'formtext',
-                'label': '资源规格_1_操作系统_配置项id',
+                'label': 'Resource Spec_1_Operating System_Config Item ID',
                 'uuid': 'id'
               },
               {
                 'handler': 'formtext',
-                'label': '资源规格_1_操作系统_uuid',
+                'label': 'Resource Spec_1_Operating System_UUID',
                 'uuid': 'uuid'
               },
               {
                 'handler': 'formselect',
-                'label': '资源规格_1_操作系统_模块名称',
+                'label': 'Resource Spec_1_Operating System_Module Name',
                 'uuid': 'name'
               },
               {
                 'handler': 'formtext',
-                'label': '资源规格_1_操作系统_模块类型',
+                'label': 'Resource Spec_1_Operating System_Module Type',
                 'uuid': 'moduleType'
               },
               {
                 'handler': 'formtext',
-                'label': '资源规格_1_操作系统_模块英文名称',
+                'label': 'Resource Spec_1_Operating System_Module English Name',
                 'uuid': 'moduleEnName'
               }
             ]
@@ -203,12 +203,12 @@ export default {
           'dataList': {
             'otherDeviceResources': [
               {
-                'deviceType': '加密机',
+                'deviceType': 'Encryption Device',
                 'number': '222',
                 'xuqiu': 'XQ20230925946-009',
                 'moduleName': 'test09-web',
-                'modelType': '其他设备资源规格',
-                'type': '基础模型',
+                'modelType': 'Other Device Resource Spec',
+                'type': 'Basic Model',
                 'deviceName': '333',
                 'uuid': '1162121589039167',
                 'id': '1162121589039167'
@@ -220,11 +220,11 @@ export default {
                 'xuqiu': 'XQ20230925946-009',
                 'balanceName': 'TEST09_TEST09_002',
                 'loadBalanceUuid': '002',
-                'name': 'test09-数据库',
+                'name': 'test09-database',
                 'uuid': '1172469759091395',
-                'xforward': '否',
+                'xforward': 'No',
                 'infrabalanceType': 'HTTP',
-                'policy': '无需会话保持',
+                'policy': 'No Session Persistence',
                 'moduleEnName': 'TEST09',
                 'id': '1172469759091395',
                 'port': [
@@ -247,9 +247,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

@@ -16,7 +16,6 @@
       <i class="inner-icon" :class="config.icon" :style="{'font-size':size+'px','color':config['stroke-color']}"></i>
     </i-circle>
   </div>
-  <!-- <div v-else-if="shape=='progress'" class="com-status"> -->
   <div v-else-if="shape=='progress'">
     <div class="div-propress" :class="[getProgress.bgClass]">
       <span v-if="getProgress.position=='left'" class="propress-text"> {{ percent }}% </span> 

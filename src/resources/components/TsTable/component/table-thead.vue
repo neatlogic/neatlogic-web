@@ -66,10 +66,8 @@
 <script>
 export default {
   name: 'THead',
-  components: {
-  },
-  filters: {
-  },
+  components: {},
+  filters: {},
   props: {
     columnList: Array,
     list: Array,
@@ -114,11 +112,9 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {   
-  },
+  mounted() {},
   beforeUpdate() {},
-  updated() {
-  },
+  updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},

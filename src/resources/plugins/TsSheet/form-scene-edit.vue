@@ -699,7 +699,6 @@ export default {
 .form-item {
   text-align: center;
   cursor: move;
-  // width: 50%;
   display: inline-block;
 }
 .customitem-btn {

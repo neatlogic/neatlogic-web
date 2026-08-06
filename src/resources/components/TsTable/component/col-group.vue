@@ -7,9 +7,7 @@
 <script>
 export default {
   name: 'ColGroup',
-  components: {
-    
-  },
+  components: {},
   filters: {
   },
   props: {

@@ -2,6 +2,7 @@ import axios from '@/resources/api/http.js';
 import qs from 'qs';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { downloadBlobFile } from '@/resources/assets/js/downloadUtil.js';
+import { $t } from '@/resources/init.js';
 export default {
   methods: {
     download(params) {
@@ -45,7 +46,7 @@ export default {
                 duration: 0,
                 title: '',
                 render: h => {
-                  return h('span', ['已切换到后台导出，请到', h('a', {attrs: {href: HOME + '/framework.html#/user-export-file-manage', target: '_blank'}}, '导出管理'), '查看']);
+                  return h('span', [$t('page.backgroundexportprefix'), h('a', {attrs: {href: HOME + '/framework.html#/user-export-file-manage', target: '_blank'}}, $t('page.exportmanage')), $t('page.view')]);
                 }
               });
             }
@@ -58,7 +59,7 @@ export default {
               const jsonText = await JSON.parse(text);
               ViewUI.Notice.error({
                 title: '',
-                desc: jsonText.Message || '下载失败'
+                desc: jsonText.Message || $t('page.downloadfailed')
               });
             }
             params.changeStatus && params.changeStatus('error', null);
