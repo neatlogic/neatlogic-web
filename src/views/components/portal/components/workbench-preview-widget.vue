@@ -38,22 +38,18 @@
       <template v-slot:title="{ row }">
         <span class="overflow text-action">{{ row.title }}</span>
       </template>
+      <template v-slot:name="{ row }">
+        <span class="preview-service-name overflow text-action">
+          <i class="tsfont-ip-list text-primary mr-xs"></i>
+          <span class="overflow">{{ row.name }}</span>
+        </span>
+      </template>
       <template v-slot:priority="{ row }">
         <span :class="row.priority === '高' ? 'text-error' : row.priority === '中' ? 'text-warning' : 'text-grey'">
           {{ row.priority }}
         </span>
       </template>
     </TsTable>
-
-    <template v-else-if="viewType === 'metric'">
-      <WorkbenchMetricGroup :metrics="visibleMetrics" compact></WorkbenchMetricGroup>
-      <WorkbenchActionList
-        :items="visibleActionList"
-        :limit="mode === 'card' ? 2 : 3"
-        dense
-        class="mt-sm"
-      ></WorkbenchActionList>
-    </template>
 
     <WorkbenchQuickGrid
       v-else-if="viewType === 'shortcut'"
@@ -62,116 +58,67 @@
       :columnCount="mode === 'card' ? 2 : 3"
     ></WorkbenchQuickGrid>
 
-    <WorkbenchTimeline
-      v-else-if="viewType === 'timeline'"
-      :items="demo.timelineList"
-      :limit="mode === 'card' ? 2 : 3"
-    ></WorkbenchTimeline>
-
-    <template v-else-if="viewType === 'ranking'">
-      <WorkbenchSummary :summary="demo.summary" class="mb-sm"></WorkbenchSummary>
-      <WorkbenchRankingList :items="demo.rankingList" :limit="mode === 'card' ? 2 : 3"></WorkbenchRankingList>
-    </template>
-
     <template v-else-if="viewType === 'distribution'">
       <WorkbenchMetricGroup :metrics="visibleMetrics" compact class="mb-sm"></WorkbenchMetricGroup>
       <WorkbenchDistribution :items="demo.distributionList"></WorkbenchDistribution>
     </template>
 
-    <WorkbenchProgressList
-      v-else-if="viewType === 'progress'"
-      :items="demo.progressList"
-      :limit="mode === 'card' ? 2 : 4"
-    ></WorkbenchProgressList>
-
-    <template v-else-if="viewType === 'trend'">
-      <WorkbenchMiniTrend
-        :data="demo.trendData"
-        value="92%"
-        label="近 7 日执行成功率"
-        description="较上周提升 4%"
-      ></WorkbenchMiniTrend>
-      <WorkbenchMetricGroup
-        v-if="mode !== 'card'"
-        :metrics="visibleMetrics"
-        compact
-        class="mt-sm"
-      ></WorkbenchMetricGroup>
-    </template>
-
-    <WorkbenchActionList
-      v-else
-      :items="visibleActionList"
-      :limit="mode === 'card' ? 2 : 4"
-      dense
-    ></WorkbenchActionList>
+    <div v-else class="preview-unknown flex-center text-grey text-center">
+      <span class="tsfont-warning-o mr-xs"></span>
+      <span>{{ unknownReason }}</span>
+    </div>
   </div>
 </template>
 
 <script>
-import WorkbenchActionList from './display/WorkbenchActionList.vue';
 import WorkbenchDistribution from './display/WorkbenchDistribution.vue';
 import WorkbenchMetricGroup from './display/WorkbenchMetricGroup.vue';
-import WorkbenchMiniTrend from './display/WorkbenchMiniTrend.vue';
-import WorkbenchProgressList from './display/WorkbenchProgressList.vue';
 import WorkbenchQuickGrid from './display/WorkbenchQuickGrid.vue';
-import WorkbenchRankingList from './display/WorkbenchRankingList.vue';
-import WorkbenchSummary from './display/WorkbenchSummary.vue';
-import WorkbenchTimeline from './display/WorkbenchTimeline.vue';
 import { getWorkbenchPreviewDemo } from '../utils/workbench-preview-demo.js';
+
+const SUPPORTED_PRESENTATION_TYPE_LIST = [
+  'table',
+  'shortcut',
+  'distribution',
+  'welcome'
+];
 
 export default {
   name: 'WorkbenchPreviewWidget',
   components: {
-    WorkbenchActionList,
     WorkbenchDistribution,
     WorkbenchMetricGroup,
-    WorkbenchMiniTrend,
-    WorkbenchProgressList,
     WorkbenchQuickGrid,
-    WorkbenchRankingList,
-    WorkbenchSummary,
-    WorkbenchTimeline,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   props: {
-    widget: { type: Object, default: () => ({}) },
-    presentationType: { type: String, default: 'list' },
+    presentation: { type: Object, default: () => ({ type: 'unknown' }) },
     mode: { type: String, default: 'card' }
   },
   computed: {
     viewType() {
-      if (this.widget.type === 'welcomeOverview') {
-        return 'welcome';
+      const type = this.presentation && this.presentation.type;
+      return SUPPORTED_PRESENTATION_TYPE_LIST.includes(type) ? type : 'unknown';
+    },
+    unknownReason() {
+      if (this.presentation && this.presentation.unavailableReason) {
+        return this.presentation.unavailableReason;
       }
-      if (this.widget.type === 'processTaskSearch') {
-        return 'table';
-      }
-      return this.presentationType || 'list';
+      return '暂无预览定义';
     },
     demo() {
-      return getWorkbenchPreviewDemo(this.viewType);
+      return getWorkbenchPreviewDemo(this.viewType, this.presentation && this.presentation.previewKey);
     },
     visibleMetrics() {
       return this.demo.metricList.slice(0, this.mode === 'card' ? 2 : 4);
-    },
-    visibleActionList() {
-      return this.demo.actionList.slice(0, this.mode === 'card' ? 2 : 4);
     },
     visibleTableList() {
       return this.demo.tableList.slice(0, this.mode === 'card' ? 2 : 4);
     },
     tableTheadList() {
-      const theadList = [
-        { key: 'id', title: '工单号' },
-        { key: 'title', title: '标题' },
-        { key: 'status', title: '状态' },
-        { key: 'priority', title: '优先级' }
-      ];
-      if (this.mode !== 'card') {
-        theadList.push({ key: 'time', title: '更新时间' });
-      }
-      return theadList;
+      return (this.demo.tableTheadList || []).filter(column => {
+        return this.mode !== 'card' || column.cardVisible !== false;
+      });
     }
   }
 };
@@ -182,6 +129,12 @@ export default {
   height: 100%;
   overflow: hidden;
   color: inherit;
+}
+
+.preview-service-name {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
 }
 
 .is-welcome {
@@ -257,6 +210,15 @@ export default {
   font-size: 12px;
 }
 
+.preview-unknown {
+  width: 100%;
+  height: 100%;
+  min-height: 44px;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 12px;
+}
+
 .is-card {
   font-size: 11px;
 
@@ -315,7 +277,6 @@ export default {
 
   ::v-deep .metric-label,
   ::v-deep .metric-trend,
-  ::v-deep .row-description,
   ::v-deep .quick-description {
     display: none;
   }
@@ -324,22 +285,9 @@ export default {
     font-size: 17px;
   }
 
-  ::v-deep .action-row {
-    min-height: 30px;
-  }
-
-  ::v-deep .row-icon {
-    width: 22px;
-    height: 22px;
-  }
-
   ::v-deep .quick-item {
     min-height: 40px;
     padding: 4px;
-  }
-
-  ::v-deep .timeline-row {
-    min-height: 30px;
   }
 }
 </style>

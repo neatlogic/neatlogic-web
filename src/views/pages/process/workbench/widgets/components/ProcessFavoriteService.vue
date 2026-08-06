@@ -14,7 +14,6 @@
         :currentPage="currentPage"
         :pageSize="pageSize"
         :defaultShowSize="pageSize"
-        :can-drag="false"
         :height="tableHeight"
         :show-pager="true"
         :show-sizer="false"
@@ -40,8 +39,10 @@
 
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
-
-const PORTAL_WIDGET_NAME = 'processFavoriteService';
+import {
+  PROCESS_FAVORITE_SERVICE_HANDLER,
+  PROCESS_FAVORITE_SERVICE_WIDGET_NAME
+} from '../utils/process-widget-constants.js';
 
 export default {
   name: 'ProcessFavoriteService',
@@ -108,8 +109,8 @@ export default {
       this.loading = true;
       this.error = '';
       this.$api.common.searchWorkbenchWidgetData({
-        handler: 'process.favoritedServiceList',
-        portalWidgetName: PORTAL_WIDGET_NAME,
+        handler: PROCESS_FAVORITE_SERVICE_HANDLER,
+        portalWidgetName: PROCESS_FAVORITE_SERVICE_WIDGET_NAME,
         param: {
           currentPage: this.currentPage,
           pageSize: this.pageSize,

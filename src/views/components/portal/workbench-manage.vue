@@ -444,9 +444,10 @@ export default {
     },
     presentationMap() {
       return this.widgetDefinitions.reduce((map, definition) => {
-        map[definition.name] = definition.presentation && definition.presentation.type
-          ? definition.presentation.type
-          : 'list';
+        map[definition.name] = {
+          type: 'unknown',
+          ...(definition.presentation || {})
+        };
         return map;
       }, {});
     },

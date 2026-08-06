@@ -802,7 +802,7 @@ let routerList = [
       title: '工作台管理',
       ismenu: true,
       icon: 'tsfont-m-dashboard',
-      authority: 'HOME_PAGE_MODIFY',
+      authority: ['PORTAL_MANAGE', 'ADMIN'],
       type: 'others',
       routerViewKeyIgnoreQueryList: ['moduleGroup']
     }
@@ -815,7 +815,7 @@ let routerList = [
       title: '工作台配置',
       ismenu: false,
       icon: 'tsfont-m-dashboard',
-      authority: 'HOME_PAGE_MODIFY',
+      authority: '',
       type: 'others'
     }
   },

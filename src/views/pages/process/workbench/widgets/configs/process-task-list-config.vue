@@ -1,5 +1,5 @@
 <template>
-  <div class="draft-process-task-config">
+  <div class="process-task-list-config">
     <TsFormItem label="每页展示条数" labelPosition="top">
       <TsFormSelect
         :value="pageSize"
@@ -30,15 +30,15 @@
 
 <script>
 import {
-  DRAFT_PROCESS_TASK_WIDGET_NAME,
   PROCESS_TASK_PAGE_SIZE_LIST,
   PROCESS_TASK_THEAD_HANDLER,
   createTimeRangeConditionConfig,
+  getProcessTaskListContract,
   normalizePageSize
 } from '../utils/process-task-search.js';
 
 export default {
-  name: 'DraftProcessTaskConfig',
+  name: 'ProcessTaskListConfig',
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
@@ -72,7 +72,8 @@ export default {
       return this.config.conditionConfig && this.config.conditionConfig.startTimeCondition;
     },
     portalWidgetName() {
-      return DRAFT_PROCESS_TASK_WIDGET_NAME;
+      const contract = getProcessTaskListContract(this.widget.type || this.definition.name);
+      return contract ? contract.portalWidgetName : '';
     },
     theadHandler() {
       return PROCESS_TASK_THEAD_HANDLER;

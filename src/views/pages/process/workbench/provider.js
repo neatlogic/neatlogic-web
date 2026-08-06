@@ -1,15 +1,16 @@
 import {
+  DRAFT_PROCESS_TASK_WIDGET_NAME,
+  PERSONAL_PROCESS_TASK_OVERVIEW_WIDGET_NAME,
+  PROCESS_FAVORITE_SERVICE_WIDGET_NAME,
+  PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME,
+  PROCESS_TASK_WIDGET_NAME
+} from './widgets/utils/process-widget-constants.js';
+import {
   createDefaultConditionConfig,
   hasRequiredThead,
-  serializeProcessingOfMineProcessTaskConfig,
+  serializeProcessTaskListConfig,
   serializeProcessTaskSearchConfig
 } from './widgets/utils/process-task-search.js';
-
-const TASK_LIST_SCHEMA = [
-  { name: 'limit', label: '显示条数', type: 'slider', min: 2, max: 8, step: 1, defaultValue: 5 },
-  { name: 'showMore', label: '显示更多入口', type: 'switch', defaultValue: 1 },
-  { name: 'showStatus', label: '显示状态', type: 'switch', defaultValue: 1 }
-];
 
 const FAVORITE_SCHEMA = [
   { name: 'pageSize', label: '每页显示条数', type: 'number', min: 1, max: 100, defaultValue: 6 }
@@ -21,7 +22,7 @@ export default {
   scopes: ['global', 'module'],
   widgetList: [
     {
-      name: 'processingOfMineProcessTask',
+      name: PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME,
       version: 1,
       label: '我的待办',
       description: '按时间范围和自定义表头展示当前用户待处理的 IT 服务工单',
@@ -35,7 +36,8 @@ export default {
       },
       dataSource: 'api',
       presentation: {
-        type: 'list',
+        type: 'table',
+        previewKey: 'processTask',
         isRecommended: true
       },
       validateConfig(config) {
@@ -45,16 +47,16 @@ export default {
         return true;
       },
       serializeConfig(config) {
-        return serializeProcessingOfMineProcessTaskConfig(config);
+        return serializeProcessTaskListConfig(config);
       },
-      component: () => import('./widgets/components/ProcessingOfMineProcessTask.vue'),
-      configComponent: () => import('./widgets/configs/processing-of-mine-process-task-config.vue')
+      component: () => import('./widgets/components/ProcessTaskList.vue'),
+      configComponent: () => import('./widgets/configs/process-task-list-config.vue')
     },
     {
-      name: 'draftProcessTask',
+      name: DRAFT_PROCESS_TASK_WIDGET_NAME,
       version: 1,
-      label: '我的待办',
-      description: '按时间范围和自定义表头展示当前用户未提交的 IT 服务工单',
+      label: '我的草稿',
+      description: '按时间范围和自定义表头展示当前用户尚未提交的 IT 服务工单',
       icon: 'tsfont-task',
       group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
       defaultLayout: { w: 8, h: 8, minW: 5, minH: 6 },
@@ -65,7 +67,8 @@ export default {
       },
       dataSource: 'api',
       presentation: {
-        type: 'list',
+        type: 'table',
+        previewKey: 'processTask',
         isRecommended: true
       },
       validateConfig(config) {
@@ -75,13 +78,13 @@ export default {
         return true;
       },
       serializeConfig(config) {
-        return serializeProcessingOfMineProcessTaskConfig(config);
+        return serializeProcessTaskListConfig(config);
       },
-      component: () => import('./widgets/components/DraftProcessTask.vue'),
-      configComponent: () => import('./widgets/configs/draftProcessTaskConfig.vue')
+      component: () => import('./widgets/components/ProcessTaskList.vue'),
+      configComponent: () => import('./widgets/configs/process-task-list-config.vue')
     },
     {
-      name: 'processTaskSearch',
+      name: PROCESS_TASK_WIDGET_NAME,
       version: 1,
       label: '工单列表',
       description: '按自定义搜索条件和表头展示 IT 服务工单',
@@ -95,7 +98,8 @@ export default {
       },
       dataSource: 'api',
       presentation: {
-        type: 'list',
+        type: 'table',
+        previewKey: 'processTask',
         isRecommended: true
       },
       validateConfig(config) {
@@ -111,24 +115,7 @@ export default {
       configComponent: () => import('./widgets/configs/process-task-search-config.vue')
     },
     {
-      name: 'processSlaRisk',
-      label: 'SLA 风险',
-      description: '突出显示即将超时和已经超时的工单',
-      icon: 'tsfont-warning-o',
-      group: { name: 'process.task', label: 'IT 服务 · 任务处理', sort: 100 },
-      defaultLayout: { w: 4, h: 8, minW: 3, minH: 6 },
-      config: { limit: 5, showMore: 1, showStatus: 1, warnMinutes: 60 },
-      configSchema: TASK_LIST_SCHEMA,
-      dataSource: 'mock',
-      presentation: {
-        type: 'ranking',
-        isRecommended: true
-      },
-      component: () => import('./widgets/components/SlaRiskList.vue'),
-      configComponent: () => import('./widgets/configs/sla-risk-config.vue')
-    },
-    {
-      name: 'processFavoriteService',
+      name: PROCESS_FAVORITE_SERVICE_WIDGET_NAME,
       label: '收藏服务',
       description: '快速发起当前用户收藏的常用服务',
       icon: 'tsfont-star',
@@ -138,12 +125,13 @@ export default {
       configSchema: FAVORITE_SCHEMA,
       dataSource: 'api',
       presentation: {
-        type: 'shortcut'
+        type: 'table',
+        previewKey: 'processFavoriteService'
       },
       component: () => import('./widgets/components/ProcessFavoriteService.vue')
     },
     {
-      name: 'personalProcessTaskOverview',
+      name: PERSONAL_PROCESS_TASK_OVERVIEW_WIDGET_NAME,
       label: '个人工单状态概览',
       description: '通过指标和进度快速判断当前工单处理压力',
       icon: 'tsfont-chart-progress',

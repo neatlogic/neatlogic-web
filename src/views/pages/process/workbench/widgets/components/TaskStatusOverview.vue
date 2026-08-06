@@ -1,6 +1,6 @@
 <template>
   <WorkbenchCard
-    :title="title"
+    :title="showTitle ? title : ''"
     icon="tsfont-chart-progress"
     tone="primary"
     :subtitle="description"
@@ -28,9 +28,10 @@
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import WorkbenchDistribution from '@/views/components/portal/components/display/WorkbenchDistribution.vue';
 import WorkbenchMetricGroup from '@/views/components/portal/components/display/WorkbenchMetricGroup.vue';
-
-const PORTAL_WIDGET_NAME = 'personalProcessTaskOverview';
-const PORTAL_WIDGET_HANDLER = 'process.personalProcessTaskOverview';
+import {
+  PERSONAL_PROCESS_TASK_OVERVIEW_HANDLER,
+  PERSONAL_PROCESS_TASK_OVERVIEW_WIDGET_NAME
+} from '../utils/process-widget-constants.js';
 
 export default {
   name: 'ProcessTaskStatusOverview',
@@ -40,8 +41,9 @@ export default {
     WorkbenchMetricGroup
   },
   props: {
-    title: { type: String, default: '工单状态概览' },
+    title: { type: String, default: '个人工单状态概览' },
     description: { type: String, default: '' },
+    showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
   },
   data() {
@@ -65,8 +67,8 @@ export default {
       this.loading = true;
       this.error = '';
       this.$api.common.searchWorkbenchWidgetData({
-        portalWidgetName: PORTAL_WIDGET_NAME,
-        handler: PORTAL_WIDGET_HANDLER,
+        portalWidgetName: PERSONAL_PROCESS_TASK_OVERVIEW_WIDGET_NAME,
+        handler: PERSONAL_PROCESS_TASK_OVERVIEW_HANDLER,
         param: this.queryTimeRange
       }).then(res => {
         if (!res || res.Status !== 'OK') {

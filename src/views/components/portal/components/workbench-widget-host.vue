@@ -1,6 +1,5 @@
 <template>
   <div :class="['workbench-widget-host', { 'is-background-transparent': isBackgroundTransparent }]">
-    <div v-if="isMockEnabled" class="mock-badge text-warning">演示数据</div>
     <div v-if="renderError" class="widget-state bg-op radius-lg flex-center text-center">
       <i class="tsfont-warning-o text-danger"></i>
       <div class="text-grey mt-xs">{{ renderError }}</div>
@@ -12,10 +11,6 @@
       >
         重新加载
       </Button>
-    </div>
-    <div v-else-if="isMockDisabled" class="widget-state bg-op radius-lg flex-center text-center">
-      <i class="tsfont-warning-o text-warning"></i>
-      <div class="text-grey mt-xs">业务数据接口待接入</div>
     </div>
     <component
       :is="definition.component"
@@ -43,7 +38,6 @@
 
 <script>
 import { createWorkbenchWidgetDefinitionMap, migrateWorkbenchWidget } from '../workbench-provider-registry.js';
-import { isWorkbenchMockModeEnabled } from '../workbench-constants.js';
 
 export default {
   name: 'PortalWorkbenchWidgetHost',
@@ -103,12 +97,6 @@ export default {
     definition() {
       return this.definitionMap.get(this.widget.type) || null;
     },
-    isMockEnabled() {
-      return !!(this.definition && this.definition.dataMode === 'mock' && isWorkbenchMockModeEnabled());
-    },
-    isMockDisabled() {
-      return !!(this.definition && this.definition.dataMode === 'mock' && !this.isMockEnabled);
-    },
     resolvedWidget() {
       return migrateWorkbenchWidget(this.widget, this.definition) || this.widget;
     },
@@ -130,17 +118,6 @@ export default {
   height: 100%;
   min-width: 0;
   overflow: hidden;
-  .mock-badge {
-    position: absolute;
-    bottom: 8px;
-    right: 12px;
-    z-index: 6;
-    padding: 1px 6px;
-    border-radius: 10px;
-    background: rgba(255, 153, 0, 0.12);
-    font-size: 11px;
-    pointer-events: none;
-  }
   .widget-state {
     height: 100%;
     min-height: 100px;

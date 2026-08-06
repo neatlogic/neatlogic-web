@@ -5,7 +5,7 @@ const definitionMapCache = new WeakMap();
 const conflictWarningSet = new Set();
 
 function getProviderSourcePriority(sourceKey) {
-  if (sourceKey.includes('/views/components/portal/providers/framework/')) {
+  if (sourceKey.includes('/views/pages/framework/workbench/')) {
     return 0;
   }
   if (sourceKey.includes('/views/pages/')) {
@@ -81,9 +81,9 @@ function normalizeDefinition(provider, definition, index) {
     ownerModuleName: provider.moduleName,
     sort: index,
     ...definition,
-    dataSource: definition.dataSource || (definition.dataMode === 'mock' ? 'mock' : 'api'),
+    dataSource: definition.dataSource === 'local' ? 'local' : 'api',
     presentation: {
-      type: 'list',
+      type: 'unknown',
       isRecommended: false,
       ...presentation
     },
@@ -335,7 +335,7 @@ export function mergeAuthorizedWorkbenchWidgetList(definitionList = [], apiList 
         minH: 4
       },
       presentation: {
-        type: 'list',
+        type: 'unknown',
         isRecommended: false,
         ...((definition && definition.presentation) || {}),
         ...(backendWidget.presentation || {})

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import WorkbenchCard from './workbench-card.vue';
+import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import WorkbenchQuickGrid from '@/views/components/portal/components/display/WorkbenchQuickGrid.vue';
 
 export default {

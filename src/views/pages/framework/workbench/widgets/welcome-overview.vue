@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import WorkbenchCard from './workbench-card.vue';
+import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 
 export default {
   name: 'FrameworkWelcomeOverview',

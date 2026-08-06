@@ -56,20 +56,19 @@
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import {
-  DRAFT_PROCESS_TASK_HANDLER,
-  DRAFT_PROCESS_TASK_WIDGET_NAME,
   PROCESS_TASK_THEAD_HANDLER,
   createProcessTaskSearchParam,
   extractTheadList,
+  getProcessTaskListContract,
   normalizeProcessTaskRowList,
   normalizePageSize,
   normalizeTheadList,
-  serializeProcessingOfMineProcessTaskConfig,
+  serializeProcessTaskListConfig,
   toTableTheadList
 } from '../utils/process-task-search.js';
 
 export default {
-  name: 'ProcessingOfMineProcessTask',
+  name: 'ProcessTaskList',
   components: {
     WorkbenchCard,
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
@@ -127,13 +126,16 @@ export default {
       }, 200);
     },
     async ensureTheadList() {
+      if (!this.widgetContract) {
+        throw new Error('工单组件定义无效');
+      }
       if ((this.config.theadList && this.config.theadList.length) || this.sourceTheadList.length) {
         return;
       }
       if (!this.theadRequest) {
         this.theadRequest = this.$api.common.searchWorkbenchWidgetData({
           handler: PROCESS_TASK_THEAD_HANDLER,
-          portalWidgetName: DRAFT_PROCESS_TASK_WIDGET_NAME,
+          portalWidgetName: this.widgetContract.portalWidgetName,
           param: {}
         }).then(res => {
           if (!res || res.Status !== 'OK') {
@@ -156,10 +158,10 @@ export default {
           return;
         }
         const res = await this.$api.common.searchWorkbenchWidgetData({
-          handler: DRAFT_PROCESS_TASK_HANDLER,
-          portalWidgetName: DRAFT_PROCESS_TASK_WIDGET_NAME,
+          handler: this.widgetContract.handler,
+          portalWidgetName: this.widgetContract.portalWidgetName,
           param: createProcessTaskSearchParam(
-            serializeProcessingOfMineProcessTaskConfig({
+            serializeProcessTaskListConfig({
               ...this.config,
               theadList: this.resolvedTheadList
             }),
@@ -258,6 +260,9 @@ export default {
     }
   },
   computed: {
+    widgetContract() {
+      return getProcessTaskListContract(this.widget.type);
+    },
     pageSize() {
       return normalizePageSize(this.config.pageSize);
     },
@@ -270,7 +275,7 @@ export default {
       return toTableTheadList(this.resolvedTheadList);
     },
     configFingerprint() {
-      return JSON.stringify(serializeProcessingOfMineProcessTaskConfig(this.config));
+      return JSON.stringify(serializeProcessTaskListConfig(this.config));
     },
     isEmpty() {
       return !this.tbodyList.length;

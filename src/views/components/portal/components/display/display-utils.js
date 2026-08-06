@@ -45,11 +45,3 @@ export function getToneBackgroundClass(tone) {
 export function getToneColor(tone) {
   return TONE_COLOR_MAP[tone] || TONE_COLOR_MAP.primary;
 }
-
-export function clampPercent(value) {
-  const percent = Number(value);
-  if (!Number.isFinite(percent)) {
-    return 0;
-  }
-  return Math.min(100, Math.max(0, percent));
-}

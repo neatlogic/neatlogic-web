@@ -1,13 +1,17 @@
-export const PROCESS_TASK_SEARCH_HANDLER = 'process.processTaskSearch';
-export const PROCESS_TASK_THEAD_HANDLER = 'process.processTaskTheadList';
-export const PROCESS_TASK_CONDITION_HANDLER = 'process.processTaskSearchCondition';
-export const PROCESS_TASK_WIDGET_NAME = 'processTaskSearch';
 export const PROCESS_TASK_WORKCENTER_UUID = 'allProcessTask';
-export const PROCESSING_OF_MINE_PROCESS_TASK_HANDLER = 'process.processingOfMineProcessTask';
-export const PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME = 'processingOfMineProcessTask';
-export const DRAFT_PROCESS_TASK_HANDLER = 'process.draftProcessTask';
-export const DRAFT_PROCESS_TASK_WIDGET_NAME = 'draftProcessTask';
 export const PROCESS_TASK_PAGE_SIZE_LIST = [5, 10, 20, 30];
+
+export {
+  DRAFT_PROCESS_TASK_HANDLER,
+  DRAFT_PROCESS_TASK_WIDGET_NAME,
+  PROCESSING_OF_MINE_PROCESS_TASK_HANDLER,
+  PROCESSING_OF_MINE_PROCESS_TASK_WIDGET_NAME,
+  PROCESS_TASK_CONDITION_HANDLER,
+  PROCESS_TASK_SEARCH_HANDLER,
+  PROCESS_TASK_THEAD_HANDLER,
+  PROCESS_TASK_WIDGET_NAME,
+  getProcessTaskListContract
+} from './process-widget-constants.js';
 
 const THeadPersistKeyList = [
   'name',
@@ -251,7 +255,7 @@ export function serializeProcessTaskSearchConfig(config = {}) {
   };
 }
 
-export function serializeProcessingOfMineProcessTaskConfig(config = {}) {
+export function serializeProcessTaskListConfig(config = {}) {
   return {
     conditionConfig: createTimeRangeConditionConfig(config.conditionConfig),
     theadList: serializeTheadList(config.theadList || []),

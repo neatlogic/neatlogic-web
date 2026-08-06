@@ -4,7 +4,6 @@
     :class="['workbench-layout-preview', `is-${mode}`]"
   >
     <div
-      ref="previewDemo"
       class="preview-demo"
       aria-hidden="true"
       inert
@@ -28,7 +27,7 @@
               {
                 'bg-block': !isWidgetBackgroundTransparent(widget),
                 'shadow': !isWidgetBackgroundTransparent(widget),
-                'is-welcome-widget': widget.type === 'welcomeOverview'
+                'is-welcome-widget': getPresentation(widget.type).type === 'welcome'
               }
             ]"
           >
@@ -37,8 +36,7 @@
             </div>
             <div :class="['preview-widget__body', { 'without-title': widget.showTitle === 0 }]">
               <WorkbenchPreviewWidget
-                :widget="widget"
-                :presentationType="getPresentationType(widget.type)"
+                :presentation="getPresentation(widget.type)"
                 :mode="mode"
               ></WorkbenchPreviewWidget>
             </div>
@@ -46,15 +44,13 @@
         </div>
       </div>
     </div>
-    <button
+    <div
       v-if="isReady && normalizedWidgetList.length && mode === 'card'"
-      type="button"
       class="preview-more bg-block"
       @click.stop="openPreview"
     >
-      <span v-if="remainingCount > 0">还有 {{ remainingCount }} 个组件 · </span>
-      <span class="text-href">查看完整布局</span>
-    </button>
+      <span class="text-href tsfont-down"></span>
+    </div>
   </div>
 </template>
 
@@ -93,10 +89,6 @@ export default {
   },
   mounted() {
     this.observeVisibility();
-    this.$nextTick(this.disablePreviewInteraction);
-  },
-  updated() {
-    this.$nextTick(this.disablePreviewInteraction);
   },
   beforeDestroy() {
     this.disconnectObserver();
@@ -123,17 +115,6 @@ export default {
         this.observer = null;
       }
     },
-    disablePreviewInteraction() {
-      const previewDemo = this.$refs.previewDemo;
-      if (!previewDemo) {
-        return;
-      }
-      previewDemo
-        .querySelectorAll('a[href], button, input, select, textarea, [tabindex], [contenteditable="true"]')
-        .forEach(element => {
-          element.setAttribute('tabindex', '-1');
-        });
-    },
     openPreview() {
       if (this.mode === 'card') {
         this.$emit('open');
@@ -145,8 +126,11 @@ export default {
         gridRow: `${widget.y + 1} / span ${widget.h}`
       };
     },
-    getPresentationType(type) {
-      return this.presentationMap[type] || 'list';
+    getPresentation(type) {
+      return this.presentationMap[type] || {
+        type: 'unknown',
+        unavailableReason: '组件前端实现未注册'
+      };
     },
     getWidgetLabel(type) {
       return this.labelMap[type] || type || '未注册组件';
@@ -189,12 +173,6 @@ export default {
       }
       return this.normalizedWidgetList.filter(widget => widget.y + widget.h <= CARD_ROW_LIMIT);
     },
-    remainingCount() {
-      if (this.mode !== 'card') {
-        return 0;
-      }
-      return this.normalizedWidgetList.length - this.visibleWidgetList.length;
-    },
     canvasRows() {
       if (this.mode !== 'card') {
         return Math.max(1, getWorkbenchBottom(this.normalizedWidgetList));
@@ -212,26 +190,17 @@ export default {
       return this.canvasRows * this.rowHeight + Math.max(0, this.canvasRows - 1) * this.gap;
     },
     shellStyle() {
-      if (this.mode === 'card') {
-        return {
-          width: '100%',
-          height: `${this.canvasHeight}px`
-        };
-      }
       return {
         width: '100%',
         height: `${this.canvasHeight}px`
       };
     },
     canvasStyle() {
-      const style = {
+      return {
         gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
         gridAutoRows: `${this.rowHeight}px`,
         gap: `${this.gap}px`,
-        height: `${this.canvasHeight}px`
-      };
-      return {
-        ...style,
+        height: `${this.canvasHeight}px`,
         width: '100%'
       };
     }
@@ -349,9 +318,10 @@ export default {
 }
 
 .preview-more {
-  flex: 0 0 40px;
+  flex: 0 0 24px;
   width: 100%;
-  height: 40px;
+  height: 24px;
+  line-height: 24px;
   margin-top: auto;
   padding: 0;
   border: 0;
