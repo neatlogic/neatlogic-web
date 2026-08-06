@@ -94,8 +94,8 @@
             class="item"
             :class="{ 'item-row': field.type === 'JsonArray' || field.type === 'JsonObject' || field.type === 'Text' }"
           >
-            <div class="title overflow text-grey" :class="getFieldClass(field.name)" :title="field.desc + '(' + field.name + ')'">
-              <span>{{ field.desc }}</span>
+            <div class="title overflow text-grey" :class="getFieldClass(field.name)" :title="getFieldTitle(field)">
+              <span>{{ getFieldLabel(field) }}</span>
             </div>
             <div v-if="field.type === 'JsonArray'" class="ts-table-wrapper-div">
               <TsTable
@@ -292,17 +292,41 @@ export default {
       }
       return null;
     },
+    isEnglishLocale() {
+      return this.$i18n && this.$i18n.locale === 'en';
+    },
+    // 巡检字段定义的desc为中文描述，英文环境直接展示稳定的字段name。
+    getFieldLabel(field) {
+      if (!field) {
+        return '';
+      }
+      return this.isEnglishLocale() ? field.name : field.desc;
+    },
+    getFieldTitle(field) {
+      const label = this.getFieldLabel(field);
+      return this.isEnglishLocale() ? label : label + '(' + field.name + ')';
+    },
     getFieldTheadList(field) {
       if (field.subset) {
         const handler = this.getReportFieldHandler(field);
+        let theadList;
         if (handler && typeof handler.getTheadList === 'function') {
-          return handler.getTheadList(field);
+          theadList = handler.getTheadList(field);
+        } else {
+          theadList = field.subset.map(d => {
+            return {
+              key: d.name,
+              title: this.getFieldLabel(d)
+            };
+          });
         }
-        return field.subset.map(d => {
-          return {
-            key: d.name,
-            title: d.desc
-          };
+        const fieldMap = field.subset.reduce((map, item) => {
+          map[item.name] = item;
+          return map;
+        }, {});
+        return (theadList || []).map(thead => {
+          const subsetField = fieldMap[thead.key];
+          return subsetField ? { ...thead, title: this.getFieldLabel(subsetField) } : thead;
         });
       }
     },
