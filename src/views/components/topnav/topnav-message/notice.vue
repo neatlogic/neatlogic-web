@@ -93,7 +93,6 @@ export default {
       noticeDetail: {},
       scrollConfig: {
         height: null,
-        // onReachTop: () => this.pullNew(),
         onReachBottom: () => this.getOld(),
         distanceToEdge: [0, -100]
       }

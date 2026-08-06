@@ -391,23 +391,7 @@ export default {
           type: 'radio',
           label: this.$t('page.type'),
           name: 'type',
-          dataList: [
-            // {
-            //   text: '自定义数据源',
-            //   value: 'custom',
-            //   key: 'custom'
-            // },
-            // {
-            //   text: '外部数据源',
-            //   value: 'integrationUuid11',
-            //   key: 'fileId'
-            // },
-            // {
-            //   text: '视图数据源',
-            //   value: 'fileId22',
-            //   key: 'integrationUuid'
-            // }
-          ],
+          dataList: [],
           value: 'custom',
           onChange: val => {
             _this.allHidden(val);

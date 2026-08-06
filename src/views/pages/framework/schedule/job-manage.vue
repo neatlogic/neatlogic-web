@@ -116,7 +116,6 @@
                   @click="testRow(row, row.handler)"
                 >{{ $t('page.test') }}</li>
                 <li class="tsfont-copy icon" @click="copyRow(row.uuid,row.handler,row.group)">{{ $t('page.copy') }}</li>
-                <!-- <li class="tsfont-edit icon" @click="editRow(row.uuid)">{{ $t('page.edit') }}</li> -->
                 <li class="tsfont-trash-o icon" @click="deleteRow(row.uuid, row.name)">{{ $t('page.delete') }}</li>
                 <li class="tsfont-history" @click="showAudit(row.uuid)">{{ $t('term.autoexec.executionrecord') }}</li>
               </ul>
@@ -259,8 +258,7 @@ export default {
     this.searchJob(1);
   },
   created() {},
-  beforeDestroy() {
-  },
+  beforeDestroy() {},
   methods: {
     closeEditDialog(needRefresh) {
       this.isEditShow = false;
@@ -527,7 +525,6 @@ export default {
   }
 
   .job-box {
-    // min-height: calc(100vh - 58px - 16px - 16px - 22px);
     .job-top {
       margin-bottom: 16px;
     }

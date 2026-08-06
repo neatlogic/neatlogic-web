@@ -185,29 +185,18 @@ export default {
       showAddRole: false
     };
   },
-
   beforeCreate() {},
-
   created() {
     this.initConfig();
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     initConfig() {
       if (this.authName != '' && this.type == 'role') {
@@ -602,9 +591,7 @@ export default {
       return this.saveUuidList;
     }
   },
-
   filter: {},
-
   computed: {
     showUser() {
       return function(li) {
@@ -616,7 +603,6 @@ export default {
       };
     }
   },
-
   watch: {
     single: {
       handler: function(newVal) {

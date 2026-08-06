@@ -181,29 +181,18 @@ export default {
       isRecordVisible: false
     };
   },
-
   beforeCreate() {},
-
   created() {
     this.getTableDataSearch();
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getTableDataSearch(params = {}) {
       this.loadingShow = true;
@@ -287,11 +276,8 @@ export default {
       }
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

@@ -125,11 +125,8 @@ export default {
     };
   },
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.regionId && (this.teamList = this.$utils.deepClone(this.value) || []);
     this.getTeamList();
@@ -139,19 +136,12 @@ export default {
       this.isNeedChildren = true;
     }
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     searchkeyWord(value) {
       if (value) {
@@ -345,12 +335,8 @@ export default {
       return this.teamList;
     }
   },
-
   filter: {},
-
-  computed: {
-  },
-
+  computed: {},
   watch: {}
 };
 </script>

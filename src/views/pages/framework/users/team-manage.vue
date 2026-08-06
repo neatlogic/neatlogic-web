@@ -65,12 +65,10 @@
 </template>
 
 <script>
-// import vuedraggable from "vuedraggable";
 import TeamTreeview from './team/team-treeview';
 export default {
   name: '',
   components: {
-    // vuedraggable
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
     TeamTreeview
   },

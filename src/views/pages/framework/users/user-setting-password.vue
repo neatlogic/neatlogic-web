@@ -12,7 +12,6 @@ export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm')
-
   },
   props: {},
   data() {
@@ -74,9 +73,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  
-  },
+  created() {},
   beforeMount() {},
   mounted() {
     this.userInfo = this.$utils.getUserInfo();

@@ -355,9 +355,6 @@ export default {
 @import (reference) '~@/resources/assets/css/variable.less';
 .theme(@top-active) {
   .topnav-menu {
-    // display: flex;
-    // align-items: center;
-    // justify-content: flex-start;
     display: grid;
     grid-template-columns: 46px auto auto;
     align-items: center;

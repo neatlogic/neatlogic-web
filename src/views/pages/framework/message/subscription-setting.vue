@@ -88,11 +88,9 @@ export default {
       rowData: {}
     };
   },
-
   created() {
     this.getHandlerList();
   },
-
   methods: {
     async getHandlerList(moduleId) {
       this.isLoading = true;

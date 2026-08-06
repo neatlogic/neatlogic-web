@@ -12,9 +12,7 @@
 <script>
 export default {
   name: 'Welcome',
-  created() {
-    // document.title = this.$store.getters['currentModule'].moduleName;
-  },
+  created() {},
   methods: {
     toUsersetting: function() {
       if (MODULEID == 'framework') {

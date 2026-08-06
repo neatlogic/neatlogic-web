@@ -2,7 +2,6 @@
   <div class="topnav">
     <div class="topnav-left-container">
       <span class="homeLink" @click.prevent="toHomePage()">
-        <!-- <h1 class="topnav-logo"></h1> -->
         <img
           class="topnav-newlogo"
           :src="getNavigationLogo"

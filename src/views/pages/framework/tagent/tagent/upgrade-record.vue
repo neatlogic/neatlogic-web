@@ -188,9 +188,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -225,8 +223,6 @@ export default {
       this.$api.framework.tagent.getBatchUpgradeList(params).then((res) => {
         if (res.Status == 'OK') {
           if (this.$utils.isEmptyObj(res.Return)) {
-            // 暂无数据
-            // this.$set(this.tableData, 'tbodyList', []);
             Object.assign(this.tableData, {loading: false, rowNum: 0, currentPage: 1, pageSize: 10, tbodyList: []});
           } else {
             Object.assign(this.tableData, res.Return);

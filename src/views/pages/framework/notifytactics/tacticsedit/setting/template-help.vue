@@ -100,20 +100,6 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    // getHelpList() {
-    //   let data = {
-    //     policyId: this.policyId
-    //   };
-    //   this.$api.framework.tactics.getHelpList(data).then(res => {
-    //     if (res.Status == 'OK') {
-    //       let helpList = res.Return.helpList;
-    //       if (helpList.length > 0) {
-    //         this.helpList = helpList;
-    //         this.templateConfig = helpList[0];
-    //       }
-    //     }
-    //   });
-    // },
     close() {
       this.$emit('update:isDialog', false);
     },

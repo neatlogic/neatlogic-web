@@ -18,7 +18,6 @@
               @saveUser="editSave"
               @deleteOk="deleteOk('user')"
             ></CommonAdduser>
-            <!-- <Button type="primary" @click="editSave()">{{ $t('page.save') }}</Button> -->
           </TabPane>
           <TabPane :label="roleLabel" name="role">
             <CommonAdduser
@@ -29,31 +28,10 @@
               @saveRole="editSave"
               @deleteOk="deleteOk('role')"
             ></CommonAdduser>
-            <!-- <Button type="primary" @click="editSave()">{{ $t('page.save') }}</Button> -->
           </TabPane>
         </Tabs>
       </div>
     </TsContain>
-    <!-- <TsDialog
-      :isShow.sync="tabsaveModel"
-      width="437"
-      title="提示"
-      cancelText="否"
-      content="是否保存对当前权限的更改？"
-      okText="是"
-      @on-ok="tabsJumping('ok')"
-      @on-cancel="tabsJumping('cancel')"
-    > </TsDialog>
-    <TsDialog
-      :isShow.sync="saveModel"
-      width="437"
-      title="提示"
-      cancelText="取消"
-      content="确定放弃编辑当前权限？"
-      okText="确定"
-      @on-ok="toQuery"
-      @on-cancel="saveModel = false"
-    > </TsDialog> -->
   </div>
 </template>
 

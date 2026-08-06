@@ -48,7 +48,6 @@ export default {
   components: {
     GroupTreeView: () => import('./group-treeview'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
-
   },
   props: {
     isNeedChildren: {
@@ -65,29 +64,16 @@ export default {
     return {
     };
   },
-
   beforeCreate() {},
-
-  created() {
-  },
-
+  created() {},
   beforeMount() {},
-
-  mounted() {
-  },
-
+  mounted() {},
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     changeCheckbox(node, value) {
       node.checked = value ? 1 : 0;
