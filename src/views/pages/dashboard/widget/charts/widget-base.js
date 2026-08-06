@@ -43,6 +43,34 @@ export const WidgetBase = {
     getDataLabelTextColor() {
       return this.getThemeColor(CHART_TEXT_THEME.dataLabel);
     },
+    getPolarChartPadding() {
+      // 极坐标图在小组件中使用 auto padding 会被标签和图例挤出画布，因此按容器和图例方位预留空间。
+      if (this.chartConfig?.padding != null && this.chartConfig.padding !== 'auto') {
+        return this.chartConfig.padding;
+      }
+      const container = this.$refs.container;
+      const width = container?.clientWidth || 0;
+      const height = container?.clientHeight || this.height || 0;
+      const minSize = Math.max(Math.min(width || height, height || width), 1);
+      const basePadding = Math.max(Math.min(Math.round(minSize * 0.1), 24), 12);
+      const padding = [basePadding, basePadding, basePadding, basePadding];
+      const legend = this.chartConfig?.legend;
+      if (legend && legend !== false && legend.visible !== false) {
+        const position = legend.position || 'bottom';
+        const horizontalSpace = Math.max(Math.min(Math.round(height * 0.22), 64), 40);
+        const verticalSpace = Math.max(Math.min(Math.round(width * 0.18), 100), 64);
+        if (position.startsWith('top')) {
+          padding[0] = horizontalSpace;
+        } else if (position.startsWith('bottom')) {
+          padding[2] = horizontalSpace;
+        } else if (position.startsWith('left')) {
+          padding[3] = verticalSpace;
+        } else if (position.startsWith('right')) {
+          padding[1] = verticalSpace;
+        }
+      }
+      return padding;
+    },
     getByPath(target, path) {
       if (!target || !path) {
         return undefined;
@@ -153,6 +181,16 @@ export const WidgetBase = {
     async createRandomData() {
       //生成随机数据，返回data，由子组件继承
     },
+    setStaticData() {
+      this.data = [];
+      if (this.widget.fields && this.widget.fields.length > 0) {
+        this.widget.fields.forEach(element => {
+          const data = {};
+          data[element.name] = element.value;
+          this.data.push(data);
+        });
+      }
+    },
     async getData(isFirstGetData) {
       const data = [];
       const conditionList = this.widget.conditionList;
@@ -249,7 +287,6 @@ export const WidgetBase = {
     widget: {
       handler: async function(val, oldVal) {
         const widget = val;
-        //console.log(JSON.stringify(widget, null, 2));
         if (widget) {
           //合并图形配置
           Object.assign(this.chartConfig, this.$utils.deepClone(widget.config));
@@ -259,12 +296,7 @@ export const WidgetBase = {
             //旧配置为空代表是首次加载
             this.oldChartConfig = this.$utils.deepClone(this.chartConfig);
             if (widget.dataType === 'static' && widget.fields && widget.fields.length > 0) {
-              this.data = [];
-              widget.fields.forEach(element => {
-                const d = {};
-                d[element.name] = element.value;
-                this.data.push(d);
-              });
+              this.setStaticData();
             } else if (widget.dataType === 'dynamic' && widget.datasourceId && (!this.widgetComponent.fields || this.widgetComponent.fields.length == 0 || (widget.fields && widget.fields.length == this.widgetComponent.fields.length && widget.fields.filter(d => !d.datasourceField).length == 0))) {
               await this.getData(true);
             } else {
@@ -301,12 +333,7 @@ export const WidgetBase = {
           config['dataType'] = widget.dataType;
           if (!this.$utils.isSame(this.oldConfig, config)) {
             if (widget.dataType === 'static' && widget.fields && widget.fields.length > 0) {
-              this.data = [];
-              widget.fields.forEach(element => {
-                const d = {};
-                d[element.name] = element.value;
-                this.data.push(d);
-              });
+              this.setStaticData();
               this.changeData();
             } else if (widget.dataType === 'dynamic' && widget.datasourceId && (!this.widgetComponent.fields || this.widgetComponent.fields.length == 0 || (widget.fields && widget.fields.length == this.widgetComponent.fields.length && widget.fields.filter(d => !d.datasourceField).length == 0))) {
               this.getData();
