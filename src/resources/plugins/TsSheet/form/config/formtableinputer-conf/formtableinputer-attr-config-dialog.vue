@@ -369,6 +369,20 @@
           <template v-else-if="propertyLocal.handler === 'formuserselect'" v-slot:config>
             <FormuserselectSetting ref="formitem_userselectSetting" :propertyLocal="propertyLocal"></FormuserselectSetting>
           </template>
+          <template v-else-if="isExtendTableInputerHandler(propertyLocal.handler)" v-slot:config>
+            <component
+              :is="propertyLocal.handler"
+              :formItem="propertyLocal"
+              :formItemList="formItemList"
+              :extraFormItemList="formItemConfig.dataConfig"
+              :isTableInputer="true"
+              :source="source"
+              :extendConfigList="extendConfigList"
+            ></component>
+            <ul v-if="extendConfigErrorList.length" class="text-error mt-xs pl-nm">
+              <li v-for="(error, index) in extendConfigErrorList" :key="index">{{ error.error }}</li>
+            </ul>
+          </template>
           <template v-slot:reaction>
             <Tabs v-if="propertyLocal.reaction && isReady">
               <TabPane
@@ -447,9 +461,27 @@
   </TsDialog>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
+import { FORMITEMS } from '../../formitem-list.js';
+
+const extendFormConfigItems = {};
+const formConfigComponentMap = ComponentManager.getFormConfigComponent() || {};
+Object.keys(formConfigComponentMap).forEach(handler => {
+  const configComponent = formConfigComponentMap[handler];
+  if (Array.isArray(configComponent)) {
+    const defaultVersionComponent = configComponent.find(item => item.version === 'defaultVersion');
+    if (defaultVersionComponent) {
+      extendFormConfigItems[handler] = defaultVersionComponent.component;
+    }
+  } else {
+    extendFormConfigItems[handler] = configComponent;
+  }
+});
+
 export default {
   name: '',
   components: {
+    ...extendFormConfigItems,
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
@@ -521,6 +553,7 @@ export default {
         setValueOther: this.$t('term.framework.linkageassignment')
       },
       reactionError: {}, //交互异常信息
+      extendConfigErrorList: [],
       errorMap: {},
       validateList: [{ name: 'required', message: ' ' }],
       mappingDataList: [],
@@ -703,6 +736,7 @@ export default {
   methods: {
     init() {
       this.propertyLocal = this.property;
+      this.appendExtendTableInputerHandlerList();
       if (!this.propertyLocal.config) {
         this.$set(this.propertyLocal, 'config', {
           isRequired: false,
@@ -758,6 +792,23 @@ export default {
       }
       this.handleUniqueAttrHidden(this.propertyLocal.handler);
     },
+    appendExtendTableInputerHandlerList() {
+      const handlerConfig = this.formConfig.find(item => item.name === 'handler');
+      if (!handlerConfig) {
+        return;
+      }
+      FORMITEMS.filter(item => item.supportTableInputer).forEach(item => {
+        if (!handlerConfig.dataList.find(handler => handler.value === item.handler)) {
+          handlerConfig.dataList.push({ text: item.label, value: item.handler });
+        }
+      });
+    },
+    getExtendTableInputerDefinition(handler) {
+      return FORMITEMS.find(item => item.handler === handler && item.supportTableInputer);
+    },
+    isExtendTableInputerHandler(handler) {
+      return !!this.getExtendTableInputerDefinition(handler);
+    },
     handleUniqueAttrHidden(handler) {
       // 判断唯一属性是否显示
       let findItem = this.formConfig.find((v) => v.name == 'isUnique');
@@ -771,6 +822,7 @@ export default {
     async save() {
       let isValid = true;
       this.reactionError = {};
+      this.extendConfigErrorList = [];
       if (this.$refs) {
         for (let key in this.$refs) {
           if (key.startsWith('formitem_')) {
@@ -820,6 +872,16 @@ export default {
         }
       }
       const config = this.propertyLocal.config;
+      const extendDefinition = this.getExtendTableInputerDefinition(this.propertyLocal.handler);
+      if (extendDefinition?.validTableInputerConfig) {
+        this.extendConfigErrorList = extendDefinition.validTableInputerConfig({
+          formItem: this.propertyLocal,
+          formItemList: this.allFormItemList
+        }) || [];
+        if (this.extendConfigErrorList.length) {
+          isValid = false;
+        }
+      }
       this.errorMap = {};
       if (config.dataSource === 'static' && (!config.dataList || config.dataList.filter(d => d.value).length === 0)) {
         this.$set(this.errorMap, 'dataList', true);
@@ -859,6 +921,14 @@ export default {
     },
     changeHandler(val) {
       let reaction = this.$utils.deepClone(this.reaction);
+      const extendDefinition = this.getExtendTableInputerDefinition(val);
+      if (extendDefinition) {
+        this.$set(this.propertyLocal, 'config', {
+          ...this.$utils.deepClone(extendDefinition.config || {}),
+          isRequired: true
+        });
+        this.$set(this.propertyLocal, 'hasValue', extendDefinition.hasValue !== false);
+      }
      
       if (val !== 'formtable') {
         this.$set(this.reactionName, 'setvalue', this.$t('term.framework.conditionassignment'));
