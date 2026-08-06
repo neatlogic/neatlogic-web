@@ -170,12 +170,6 @@ export default {
         tableConfig: {
           type: 'slot',
           label: this.$t('term.report.displayfield'),
-          /* get value() {
-            return _this.tableList.map(table => {
-              const {id: tableId, valueList: columnList} = table;
-              return {tableId, columnList};
-            });
-          }, */
           get isHidden() {
             return !_this.tableList || _this.tableList.length === 0;
           }

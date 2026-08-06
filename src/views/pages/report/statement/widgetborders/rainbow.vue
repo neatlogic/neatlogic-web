@@ -59,7 +59,6 @@ export default {
 
 .box {
 	position: relative;
-	//margin: 300px auto 0;
 	width: 100%;
 	height: 100%;
 	background: linear-gradient(0deg, #000, #272727);

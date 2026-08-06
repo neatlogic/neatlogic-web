@@ -36,15 +36,13 @@ export default {
   },
   data() {
     return {
-    
       value: ''
     };
   },
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() { 
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},

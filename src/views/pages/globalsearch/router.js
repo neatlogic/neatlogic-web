@@ -1,5 +1,4 @@
 const refresh = () => import('@/views/pages/common/refresh.vue');
-//const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const welcome = () => import('@/views/pages/common/welcome.vue');
 const SearchIndex = () => import('./index/search-index.vue');
 import { $t } from '@/resources/init.js';
