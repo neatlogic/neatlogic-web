@@ -53,7 +53,7 @@
 <script>
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
-import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
 export default {
   name: 'TsFormCascader',
   tagComponent: 'TsForm',

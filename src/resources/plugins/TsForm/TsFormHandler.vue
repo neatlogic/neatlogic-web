@@ -81,7 +81,6 @@ export default {
           change: (val, opt) => {
             this.valueLocal = val;
             this.$emit('on-change', this.valueLocal, opt);
-            //console.log(JSON.stringify(opt));
           }
         }
       });

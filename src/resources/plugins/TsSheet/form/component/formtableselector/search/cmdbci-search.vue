@@ -33,7 +33,6 @@
       <div
         v-for="attr in attrSearchList"
         :key="attr.uuid"
-
         class="search-list"
       >
         <div class="text-grey text-right overflow" :title="attr.name">{{ attr.name }}</div>
@@ -84,7 +83,6 @@
       <div
         v-for="rel in relSearchList"
         :key="rel.uuid"
-
         class="search-list"
       >
         <div class="text-grey text-right overflow" :title="rel.name">{{ rel.name }}</div>

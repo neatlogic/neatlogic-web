@@ -1,7 +1,7 @@
 <template>
   <div class="edit-condition">
     <div class="pb-sm">
-      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('term.cmdb.rulegroup') }}</a></span>
+      <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('page.rulegroup') }}</a></span>
     </div>
     <div v-for="(conditionGroup, groupIndex) in rule.conditionGroupList" :key="groupIndex" class="group-border">
       <div class="group-content bg-op radius-md">

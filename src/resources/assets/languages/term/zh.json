@@ -17,7 +17,9 @@
     "isnotnull": "不为空",
     "inworktime": "在服务时间内",
     "outworktime": "在服务时间外",
-    "between": "在区间内"
+    "between": "在区间内",
+    "include": "包括",
+    "exclude": "不包括"
   },
   "cmdb": {
     "cabinetone": "机柜一号",
@@ -1962,7 +1964,6 @@
     "globalreadonly": "全局只读",
     "globalreadonlytip": "全局只读优先级高于组件内部的读写设置，打开全局只读开关后，场景内所有组件均为只读状态",
     "iscannotdeletenode": "存在子节点不可删除",
-    "requiredselectedtips": "若当前组件设置为必填，且过滤后仅剩余一个选项，系统会自动选中该选项",
     "formtableinputercomponent": "表格输入组件",
     "tablecomponent": "表格组件",
     "internalmenu": "内部菜单",

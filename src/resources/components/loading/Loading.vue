@@ -36,15 +36,10 @@ export default {
     return {
     };
   },
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   methods: {},
-
   computed: {
     getType() {
       return function(type) {
@@ -56,9 +51,7 @@ export default {
       };
     }
   },
-
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less">

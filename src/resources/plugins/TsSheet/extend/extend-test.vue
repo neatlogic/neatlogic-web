@@ -6,15 +6,15 @@
       :animated="false"
       @on-click="(name)=>changeTab(name)"
     >
-      <TabPane label="测试数据" name="testData" tab="test">
+      <TabPane :label="$t('page.testdata')" name="testData" tab="test">
         <TsCodemirror v-model="initData._currentTestData" codeMode="json" isCopy></TsCodemirror>
         <div class="pt-sm">
-          <Button @click="test(initData)">测试</Button>
+          <Button @click="test(initData)">{{ $t('page.test') }}</Button>
         </div>
       </TabPane>
       <TabPane
         v-if="initData._errorConfig||initData._outinputConfig"
-        label="数据配置结果"
+        :label="$t('page.dataconfigresult')"
         name="configData"
         tab="test"
       >
@@ -30,7 +30,7 @@
       </TabPane>
       <TabPane
         v-if="initData._errorData || initData._outinpuData"
-        label="数据转换结果 "
+        :label="$t('page.dataconversionresult')"
         name="valueData"
         tab="test"
       > <Alert v-if="initData._errorData" type="error">

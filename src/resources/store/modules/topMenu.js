@@ -69,7 +69,7 @@ const actions = {
         try {
           let { group: moduleId, groupName: moduleName, description, isDefault, defaultPage, isDisabled, disabledReason } = moduleGroup;
           if (!description || !description.trim()) {
-            description = `${moduleName}平台`;
+            description = $t('page.moduleplatform', { target: moduleName });
           }
           const authorizedMenuList = getMenuList(routerConfig[moduleId], userAuthList, moduleId);
           const menuGroupList = sortMenuList(authorizedMenuList, moduleId, menuConfigList);
@@ -81,7 +81,7 @@ const actions = {
             }
           }
         } catch (e) {
-          console.log(moduleGroup.groupName + '模块加载异常，' + e);
+          console.log($t('page.moduleloadexception', { target: moduleGroup.groupName, error: e }));
         }
       });
     commit('setModuleList', moduleList);

@@ -1,6 +1,6 @@
 <template>
   <div v-if="!$utils.isEmpty(extendConfigList)" class="pt-nm">
-    <TsFormItem label="请选择扩展数据标签" labelPosition="top">
+    <TsFormItem :label="$t('page.selectextenddatatag')" labelPosition="top">
       <TsFormSelect
         v-model="extendTag"
         :dataList="extendConfigList"
@@ -12,7 +12,7 @@
       ></TsFormSelect>
     </TsFormItem>
     <div class="pb-nm">
-      <Button @click="testExtendData()">测试结果</Button>
+      <Button @click="testExtendData()">{{ $t('page.testresult') }}</Button>
     </div>
     <Tabs
       v-if="!$utils.isEmpty(resultData)"
@@ -23,7 +23,7 @@
     >
       <TabPane
         v-if="resultData._errorConfig || resultData._outinputConfig"
-        label="数据配置结果"
+        :label="$t('page.dataconfigresult')"
         name="configData"
         tab="result"
       >
@@ -42,7 +42,7 @@
       </TabPane>
       <TabPane
         v-if="resultData._errorData || resultData._outinpuData"
-        label="数据转换结果 "
+        :label="$t('page.dataconversionresult')"
         name="valueData"
         tab="result"
       > <Alert v-if="resultData._errorData" type="error">

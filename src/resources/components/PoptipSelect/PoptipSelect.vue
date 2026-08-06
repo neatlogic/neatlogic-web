@@ -38,7 +38,7 @@
               :class="{'text-href':item[valueName] == selectValue}"
               @click="changeValue($event,item)"
             >
-              <div class="type-name" :style="{'min-width':popLable+'px'}">
+              <div :style="{'min-width':popLable+'px'}">
                 <span v-if="isIcon" class="icon-type text-grey" :class="iconConfig[item[valueName]]?iconConfig[item[valueName]]:'tsfont-forminput'"></span>
                 <span>{{ item[textName] }}</span>
               </div>
@@ -282,10 +282,6 @@ export default {
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom:1px solid;
-  }
-  .type-name{
-    // min-width: 70px;
-    // padding-right: 10px;
   }
   .type-tip{
     width: 100%;

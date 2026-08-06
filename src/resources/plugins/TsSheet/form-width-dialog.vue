@@ -118,8 +118,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less">

@@ -211,7 +211,7 @@ export function initRouter(VueRouter, store) {
         //console.log(to, JSON.stringify(fromPageList, null, 2));
         next();
       } else {
-        next({ path: '/no-authority', replace: true, query: { des: '无访问权限' } });
+        next({ path: '/no-authority', replace: true, query: { des: $t('page.acessdenine') } });
       }
     }
   });

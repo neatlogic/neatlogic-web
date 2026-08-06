@@ -103,9 +103,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-   
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -175,7 +173,6 @@ export default {
     close() {
       this.$emit('close');
     }
-    
   },
   computed: {},
   watch: {
