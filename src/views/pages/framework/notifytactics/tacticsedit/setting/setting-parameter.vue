@@ -116,7 +116,6 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       cardData: {
         classname: 'card-item',

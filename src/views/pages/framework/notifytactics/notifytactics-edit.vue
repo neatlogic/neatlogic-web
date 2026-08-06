@@ -195,7 +195,6 @@ export default {
     SettingTemplate: () => import('./tacticsedit/setting/setting-template'),
     SettingParameter: () => import('./tacticsedit/setting/setting-parameter'),
     DelItme: () => import('./tacticsedit/setting/del-item.vue'),
-    // UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
     ActiveDetail
   },

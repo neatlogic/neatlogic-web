@@ -44,7 +44,6 @@ export default {
     }
   },
   data() {
-    const _this = this;
     return {
       errorMsg: '',
       fileList: [],

@@ -60,7 +60,6 @@ export default {
     id: { type: Number }
   },
   data() {
-    const _this = this;
     return {
       searchParam: { dataSourceId: this.id, isExpired: 0 },
       dialogConfig: {

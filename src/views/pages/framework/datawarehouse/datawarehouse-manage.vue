@@ -96,7 +96,6 @@
                 <li v-if="row.status != 'doing' && row.isActive == 1" class="tsfont-play" @click="runReportDataSource(row)">{{ $t('term.framework.syncdata') }}</li>
                 <li v-if="row.status != 'doing'" class="tsfont-db" @click="showReportData(row)">{{ $t('page.viewtarget', { target: $t('page.data') }) }}</li>
                 <li v-if="row.status != 'doing' && $utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-filter-o" @click="editCondition(row)">{{ $t('dialog.title.edittarget', { target: $t('page.condition') }) }}</li>
-                <!--<li class="tsfont-cloud" @click="editReportDataSource(row)">编辑同步策略</li>-->
                 <li v-if="row.status != 'doing' && $utils.isUserHasAuth('DATA_WAREHOUSE_MODIFY')" class="tsfont-batch-upload" @click="editReportDataSource(row)">{{ $t('dialog.title.edittarget', { target: $t('page.datasource') }) }}</li>
                 <li v-if="row.status != 'doing'" class="tsfont-trash-o" @click="deleteReportDataSource(row)">{{ $t('page.delete') }}</li>
               </ul>

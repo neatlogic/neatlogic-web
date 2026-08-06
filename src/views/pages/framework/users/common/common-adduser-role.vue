@@ -120,29 +120,18 @@ export default {
       userCount: {userUuidList: [], teamUuidList: [], number: 0}
     };
   },
-
   beforeCreate() {},
-
   created() {
     this.authName && this.getRoleUserList();
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     userKeyword() {
       this.getRoleUserList();
@@ -310,9 +299,7 @@ export default {
       return this.saveUuidList;
     }
   },
-
   filter: {},
-
   computed: {
     showUser() {
       return function(li) {
@@ -324,7 +311,6 @@ export default {
       };
     }
   },
-
   watch: {
     single: {
       handler: function(newVal) {
@@ -372,14 +358,7 @@ export default {
     overflow: auto;
     padding-bottom: 60px;
     .block-wrapper {
-      // margin-bottom: 16px;
-      // border: 1px solid transparent;
       .block-item {
-        // height: 110px;
-        // .top {
-        //   padding: 8px;
-        //   text-align: right;
-        // }
         .text-content {
           position: relative;
           .level {
@@ -420,7 +399,6 @@ export default {
               cursor: pointer;
             }
           }
-          // padding: 16px;
         }
       }
       .block-add {

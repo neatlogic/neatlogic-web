@@ -2,7 +2,6 @@
   <div>
     <TsForm ref="comForm" :itemList="comForm"></TsForm>
     <!-- <TsForm v-if="formType='itsm'" ref="item" :itemList="item"></TsForm> -->
-
   </div>
 </template>
 
@@ -14,7 +13,6 @@ export default {
   },
   props: [],
   data() {
-    const _this = this;
     return {
       comForm: [
         {
@@ -23,7 +21,6 @@ export default {
           label: this.$t('page.plugins'),
           value: '',
           transfer: true,
-
           dataList: [
             {
               text: this.$t('term.framework.itsmworkorder'),
@@ -59,45 +56,21 @@ export default {
           validateList: ['required']
         }
       ]
-      // formType: ''
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
-  methods: {
-    // typeSelect(val) {
-    //   this.formType = val;
-    // },
-    // submit() {
-    //   if (this.$refs.comForm.valid()) {
-    //     console.log(1);
-    //   }
-    // }
-  },
-
+  methods: {},
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

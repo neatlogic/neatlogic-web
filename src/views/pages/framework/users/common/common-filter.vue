@@ -54,22 +54,13 @@ export default {
       allroleList: [] //所有角色列表
     };
   },
-
   created() {
     if (this.type == 'user') {
       this.getAllrole();
     }
-    // this.fliterList.forEach(item => {
-    //   item.authVoList.map(citem => {
-    //     citem.name = item.name + "#" + citem.name;
-    //   })
-    // })
   },
-
   beforeMount() {},
-
   mounted() {},
-
   methods: {
     onChange: function(val) {
       this.filterSelect = val;
@@ -96,9 +87,7 @@ export default {
         });
     }
   },
-
   computed: {},
-
   watch: {}
 };
 </script>

@@ -34,12 +34,6 @@
       <div slot="content" class="content">
         <div v-if="uuid == null">
           <div class="step">
-            <!-- <Steps :current="current" :status="stepStatus">
-              <Step title="基本信息" content=""></Step>
-              <Step title="添加成员" content=""></Step>
-              <Step title="添加分组" content=""></Step>
-              <Step title="授权" content=""></Step>
-            </Steps> -->
             <Steps :current="current" :status="stepStatus">
               <Step
                 v-for="(litem,lindex) in stepList"
@@ -267,11 +261,9 @@ export default {
       rulePrefix: '' //规则key前缀
     };
   },
-
   beforeCreate() {
     this.rulePrefix = this.$route.query.rulePrefix || '';
   },
-
   created() {
     this.uuid = this.$route.query.uuid || null;
     this.roleId = this.$route.query.roleId || null;
@@ -280,9 +272,7 @@ export default {
     this.getAuthList();
     this.getProfile();
   },
-
   beforeMount() {},
-
   mounted() {
     let _this = this;
     this.timer = setInterval(() => {
@@ -297,19 +287,12 @@ export default {
       }
     }, 1000);
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     //步骤条点击
     stepClick(index) {
@@ -686,11 +669,8 @@ export default {
       });
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     uuid() {
       if (this.uuid != undefined) {

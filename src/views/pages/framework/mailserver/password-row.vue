@@ -26,35 +26,22 @@ export default {
       isShow: false
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     changestatus() {
       this.isShow = !this.isShow;
     }
   },
-
   filter: {},
-
   computed: {
     hiddenText() {
       const arr = new Array(this.value.length);
@@ -62,7 +49,6 @@ export default {
       return arr.join('');
     }
   },
-
   watch: {}
 };
 </script>

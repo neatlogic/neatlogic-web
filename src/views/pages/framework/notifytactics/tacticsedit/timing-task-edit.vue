@@ -15,7 +15,6 @@
                 border="bottom"
                 :validateList="['required', 'name-special']"
               />
-            <!-- <Input ref="formNameInput" v-model="jobConfig.name" placeholder="请输入定时任务名称" style="width:300px;" maxlength="30" /> -->
             </div>
           </Col>
           <Col span="10">
@@ -30,7 +29,6 @@
       <div slot="content" class="content">
         <div class="handler">
           <TsForm ref="handlerConfig" :itemList="handlerConfig" width="100%"></TsForm>
-          <!-- <i class="tsfont-eye text-action" @click="getPreviewConfig('handler')">预览</i> -->
         </div>
         <div class="handlerDetail">
           <TsForm
@@ -101,7 +99,6 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     Draggable: () => import('vuedraggable'),
     TimingPreview: () => import('./timing-preview.vue')
-    // TsFormSelect:()=>import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: [],
   data() {
@@ -211,30 +208,20 @@ export default {
       previewCondition: {}
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.$route.query.id) {
       this.jobConfig.id = this.$route.query.id;
     }
     this.initData();
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
   beforeRouteLeave(from, to, next, url) {
     let isSame = this.$utils.isSame(this.jobConfig, this.initConfig);
@@ -443,9 +430,7 @@ export default {
       this.$set(this.jobConfig, 'cron', val);
     }
   },
-
   filter: {},
-
   computed: {
     getName() {
       return function(val) {
@@ -453,7 +438,6 @@ export default {
       };
     }
   },
-
   watch: {}
 };
 </script>

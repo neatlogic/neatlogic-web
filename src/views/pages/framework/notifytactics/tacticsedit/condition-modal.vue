@@ -171,7 +171,6 @@ import Items from '@/resources/components/FormItems';
 export default {
   name: '',
   components: {
-    // TsForm:()=>import("@/resources/plugins/TsForm/TsForm"),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
@@ -570,13 +569,10 @@ export default {
       }
     },
     toEditTemplate(templateId) {
-      // let obj = HOME + '/framework.html#/notifytactics-edit?step=2&&templateDialog=true&trigger=' + this.trigger + '&id=' + this.tacticsId;
       if (templateId) {
         this.$notifyBox.editTemplateList('edit', templateId);
-        // window.open(obj + '&templateId=' + templateId, '_blank');
       } else {
         this.$notifyBox.editTemplateList('edit');
-        // window.open(obj, '_blank');
       }
     },
     changeExpression(item) {

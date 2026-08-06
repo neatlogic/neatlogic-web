@@ -30,33 +30,21 @@ export default {
   },
   props: [],
   data() {
-    const _this = this;
     return {
       tabsName: 'list',
       keyword: ''
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     userGetPagedata() {
       this.$refs.userList.getPagedata();
