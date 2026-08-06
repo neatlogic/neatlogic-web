@@ -4,7 +4,7 @@
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
-      <template v-slot:topRight>
+      <template v-slot:top>
         <div v-if="ciData.authData && ciData.authData['cimanage']" class="dashboard-action action-group" style="text-align: right">
           <span class="action-item tsfont-edit" @click="editCi()">{{ $t('page.basicinfo') }}</span>
           <span v-if="!ciData.isVirtual" class="action-item tsfont-plus" @click="addAttr()">{{ $t('page.attribute') }}</span>
