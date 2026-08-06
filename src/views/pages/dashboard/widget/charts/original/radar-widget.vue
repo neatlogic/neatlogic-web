@@ -52,6 +52,7 @@ export default {
       if (this.$refs.container) {
         this.plot = new Radar(this.$refs.container, {
           ...this.chartConfig,
+          padding: this.getPolarChartPadding(),
           data: this.finalData
         });
         this.plot.render();

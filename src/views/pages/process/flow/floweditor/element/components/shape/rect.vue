@@ -6,7 +6,7 @@
         <LoadingIcon></LoadingIcon>
       </span>
     </div>
-    <div v-if="data.name" style="text-align: center" class="text-grey">{{ data.name }}</div>
+    <div v-if="data.name" style="text-align: center; word-break: break-all;" class="text-grey">{{ data.name }}</div>
   </div>
 </template>
 <script>

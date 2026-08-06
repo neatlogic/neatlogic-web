@@ -9,9 +9,7 @@
 <script>
 export default {
   name: '',
-  components: {
-   
-  },
+  components: {},
   filters: {},
   props: {
     config: Object

@@ -143,18 +143,11 @@ export default {
     cancleSetp() {
       this.stepDialog = false;
       this.$emit('close', this.notifyDialog);
-      // this.cancleForm();
     },
     close(needRefresh) {
       this.stepDialog = needRefresh;
       this.$emit('close', needRefresh);
-      // this.cancleForm();
     },
-    // cancleForm() {
-    //   this.stepDialogForm.forEach(e => {
-    //     e.value = '';
-    //   });
-    // },
     getUserText(val, label) {
       if (label) {
         this.workerName = label.text;

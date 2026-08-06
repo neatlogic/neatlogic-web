@@ -4,7 +4,7 @@
       <!--日期范围-->
       <TimeSelect :value="workcenterConditionData.startTimeCondition" v-bind="timeSelectConfig" @change="changeTimeRange"></TimeSelect>
     </div>
-    <div class="text-right">
+    <div class="text-right action-container">
       <Dropdown trigger="custom" :visible="visible">
         <Button
           type="primary"
@@ -24,7 +24,7 @@
         </DropdownMenu>
       </Dropdown>
       <!--我的待办-->
-      <span v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" class="pl-sm">
+      <span v-if="workcenterData.processingOfMineCount && workcenterData.processingOfMineCount!='0'" class="todo-action">
         <Button :type="workcenterConditionData.isProcessingOfMine ? 'primary' : 'default'" @click="toggleIsMyProcessing">
           <Badge :text="workcenterData.processingOfMineCount"></Badge>
           <span>{{ $t('term.process.mytodo') }}</span>
@@ -523,8 +523,18 @@ export default {
 <style lang="less" scoped>
 .searcher-container {
   display: grid;
-  grid-template-columns: 220px 240px auto;
+  grid-template-columns: 220px max-content minmax(0, 1fr);
   grid-gap: 10px;
+}
+.action-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  white-space: nowrap;
+  .todo-action {
+    display: inline-flex;
+  }
 }
 .searcher-inputer {
   text-align: left;

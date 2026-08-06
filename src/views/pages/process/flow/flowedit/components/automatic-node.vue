@@ -482,6 +482,7 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
+    <MobileProcessSetting v-model="configData.stepConfig.isAllowProcessOnMobile"></MobileProcessSetting>
     <AssignSetting
       id="assignData"
       ref="assignData"
@@ -517,6 +518,7 @@ export default {
     ButtonSetting: () => import('./nodesetting/button-setting.vue'),
     WaitTip: () => import('./nodesetting/wait-tip.vue'),
     TagSetting: () => import('./nodesetting/tag-setting.vue'),
+    MobileProcessSetting: () => import('./nodesetting/mobile-process-setting.vue'),
     FormsceneSetting: () => import('./nodesetting/formscene-setting'), // 表单场景
     FormTagSetting: () => import('@/views/pages/process/flow/flowedit/components/nodesetting/form-tag-setting.vue') // 表单扩展数据标签
     

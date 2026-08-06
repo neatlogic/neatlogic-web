@@ -495,7 +495,7 @@ export default {
       const toolNameList = (this.toolConfig.name || 'tool').split('/');
       const fileName = toolNameList[toolNameList.length - 1];
       downloadBlobFile(this.onlineHelpContent, {
-        defaultFileName: `[${fileName}]帮助.md`,
+        defaultFileName: `[${fileName}]${this.$t('term.autoexec.toolhelpfilename')}`,
         type: 'text/markdown;charset=utf-8'
       });
     },

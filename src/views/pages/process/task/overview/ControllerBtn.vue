@@ -148,23 +148,8 @@ export default {
     handlerStep(data, item) {
       sessionStorage.setItem('processTaskUuid', this.taskTypeUuid);
       if (item && item.status.value === 'draft') {
-        //task-dispatch?processTaskId=180
-        // this.$router.push({
-        //   path: '/task-dispatch',
-        //   query: {
-        //     processTaskId: data.config.taskid
-        //   }
-        // });
         window.open(HOME + `/process.html#/task-dispatch?processTaskId=${data.config.taskid}`, '_blank');
       } else {
-        // this.$router.push({
-        //   path: '/task-detail',
-        //   query: {
-        //     processTaskId: data.config.taskid,
-        //     processTaskStepId: data.config.stepid,
-        //     autoStart: 1
-        //   }
-        // });
         window.open(HOME + `/process.html#/task-detail?processTaskId=${data.config.taskid}&processTaskStepId=${data.config.stepid}&autoStart=1`, '_blank');
       }
     },
@@ -173,20 +158,6 @@ export default {
     }
   },
   computed: {
-    // showAction() {
-    //   //用来判断当全部不可以操作时不显示操作栏
-    //   return function(list) {
-    //     let isShow = false;
-    //     if (list && list.length > 0) {
-    //       list.forEach(li => {
-    //         if (li.isEnable) {
-    //           isShow = true;
-    //         }
-    //       });
-    //     }
-    //     return isShow;
-    //   };
-    // },
     getIcon() {
       return function(name) {
         let icon = '';

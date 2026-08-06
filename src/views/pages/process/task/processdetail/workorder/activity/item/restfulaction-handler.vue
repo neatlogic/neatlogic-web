@@ -16,7 +16,6 @@
     </div>
     <div v-if="newContentJson.error">
       <span v-if="newContentJson.error" class="text-href look-btn" @click="lookFailed(newContentJson.error)">{{ $t('page.failreason') }}</span>
-      <!-- <span><pre>{{ newContentJson.error }}</pre></span> -->
     </div>
     <TsDialog
       type="modal"

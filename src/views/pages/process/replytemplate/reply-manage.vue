@@ -189,33 +189,22 @@ export default {
       saving: false
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.$route.query.id) {
       this.getDataById(this.$route.query.id);
     }
   },
-
   beforeMount() {},
-
   mounted() {
     this.getTableDataSearch(1);
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getDataById(id) {
       const data = { id: id };
@@ -370,11 +359,8 @@ export default {
       return this.$AuthUtils.hasRole('PROCESS_COMMENT_TEMPLATE_MODIFY');
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     'editTsDialog.isShow'(val) {
       if (!val) {

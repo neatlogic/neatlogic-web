@@ -99,7 +99,7 @@
   "refresh": "刷新",
   "refreshtarget": "刷新{target}",
   "logout": "登出",
-  "ip": "ip",
+  "ip": "IP",
   "name": "名称",
   "nodata": "暂无数据",
   "notarget": "暂无{target}",
@@ -391,6 +391,7 @@
   "custom": "自定义",
   "sort": "排序",
   "heavyload": "重载",
+  "override": "重载",
   "responsibleperson": "负责人",
   "variable": "变量",
   "variablename": "变量名",
@@ -949,7 +950,7 @@
   "customscript": "自定义脚本",
   "scripthelp": "脚本说明",
   "componentinfo": "组件信息",
-  "apimethod": "api方法",
+  "apimethod": "API方法",
   "scripterror": "脚本语法异常",
   "wee": "周",
   "sum": "总",
@@ -1001,7 +1002,7 @@
   "autoexecradomrunnergroup": "随机分配",
   "common": "普通",
   "design": "设计",
-  "licensedberror": "请联系管理员核对系统配置db.url参数的值，重新授权",
+  "licensedberror": "请联系管理员核对系统配置DB.URL参数的值，重新授权",
   "licenseexpired": "已失效",
   "licenseend": "已终止",
   "workcenternoauthbatchdelete": "以下工单:{target},没有权限删除",
@@ -1154,5 +1155,7 @@
   "usedcount": "使用次数",
   "servergroup": "服务器组",
   "alluser": "所有人",
-  "reenable": "重新激活"
+  "reenable": "重新激活",
+  "formatr": "表单属性",
+  "inheritedfrom": "继承自"
 }
