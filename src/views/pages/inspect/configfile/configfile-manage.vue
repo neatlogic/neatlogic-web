@@ -157,7 +157,7 @@ export default {
         }
       ],
       searchConfig: {
-        placeholder: this.$t('term.inspect.inputargetnameip'),
+        placeholder: this.$t('term.inspect.inputtargetnameip'),
         searchList: [
           {
             type: 'select',

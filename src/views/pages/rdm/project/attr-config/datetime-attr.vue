@@ -29,7 +29,6 @@ export default {
     config: { type: Object }
   },
   data() {
-    const _this = this;
     return {
       myConfig: {},
       formatList: [
