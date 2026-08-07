@@ -1,6 +1,6 @@
 <template>
   <div class="personal-process-task-overview-config">
-    <TsFormItem label="时间范围" labelPosition="top">
+    <TsFormItem :label="$t('page.timerange')" labelPosition="top">
       <TimeSelect
         :value="startTimeCondition"
         :isMore="true"

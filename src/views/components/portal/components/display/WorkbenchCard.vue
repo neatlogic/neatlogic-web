@@ -17,12 +17,12 @@
     </div>
     <div v-if="loading" class="card-state flex-center text-grey">
       <i class="tsfont-spinner"></i>
-      <span>{{ loadingText }}</span>
+      <span>{{ loadingText || $t('page.loading') }}</span>
     </div>
     <div v-else-if="error" class="card-state flex-center text-danger">
       <i class="tsfont-warning-o"></i>
       <span>{{ error }}</span>
-      <span v-if="$listeners.retry" class="text-action" @click="$emit('retry')">重试</span>
+      <span v-if="$listeners.retry" class="text-action" @click="$emit('retry')">{{ $t('page.retry') }}</span>
     </div>
     <div v-else-if="empty" class="card-state flex-center">
       <NoData :text="emptyText"></NoData>
@@ -45,7 +45,7 @@ export default {
     loading: { type: Boolean, default: false },
     error: { type: String, default: '' },
     empty: { type: Boolean, default: false },
-    loadingText: { type: String, default: '加载中...' },
+    loadingText: { type: String, default: '' },
     emptyText: { type: String, default: '' }
   },
   computed: {

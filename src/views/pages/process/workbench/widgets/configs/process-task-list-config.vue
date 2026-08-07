@@ -1,6 +1,6 @@
 <template>
   <div class="process-task-list-config">
-    <TsFormItem label="每页展示条数" labelPosition="top">
+    <TsFormItem :label="$t('term.workbench.itemsperpage')" labelPosition="top">
       <TsFormSelect
         :value="pageSize"
         :dataList="pageSizeDataList"
@@ -10,7 +10,7 @@
       ></TsFormSelect>
     </TsFormItem>
 
-    <TsFormItem label="时间范围" labelPosition="top">
+    <TsFormItem :label="$t('page.timerange')" labelPosition="top">
       <TimeSelect
         :value="startTimeCondition"
         :transfer="true"
@@ -65,7 +65,7 @@ export default {
     pageSizeDataList() {
       return PROCESS_TASK_PAGE_SIZE_LIST.map(value => ({
         value,
-        text: value + ' 条/页'
+        text: this.$t('term.workbench.itemsperpageoption', { count: value })
       }));
     },
     startTimeCondition() {

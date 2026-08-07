@@ -2,8 +2,8 @@
   <div class="workbench-widget radius-lg" :class="{ selected: selected, 'border-color-primary': selected }">
     <span
       v-if="editable"
+      :title="$t('term.workbench.removewidget')"
       class="widget-remove tsfont-close radius-sm flex-center cursor-pointer bg-error-grey text-danger"
-      title="删除组件"
       @mousedown.stop.prevent
       @click.stop.prevent="$emit('remove', widget)"
     ></span>

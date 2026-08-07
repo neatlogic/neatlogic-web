@@ -182,6 +182,9 @@
     "log": "查看日志",
     "regionmanage": "地域管理",
     "threadpool": "线程池监控",
+    "workbenchmanage": "工作台管理",
+    "workbenchconfig": "工作台配置",
+    "personalworkbenchconfig": "个人工作台配置",
     "ai": "人工智能"
   },
   "report": {

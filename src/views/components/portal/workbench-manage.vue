@@ -18,7 +18,7 @@
             @click="openComponentManageDialog"
           >
             <span class="tsfont-setting mr-xs"></span>
-            组件管理
+            {{ $t('term.workbench.widgetmanagement') }}
           </Button>
         </div>
       </template>
@@ -31,6 +31,10 @@
       </template>
       <template v-slot:content>
         <div class="workbench-manage__content">
+          <div v-if="isPersonal" class="workbench-reference-tip text-grey mb-md">
+            <span class="tsfont-info-o text-primary mr-xs"></span>
+            {{ $t('term.workbench.referencehelp') }}
+          </div>
           <Tabs
             v-if="scopeList.length"
             :value="moduleGroup"
@@ -47,13 +51,9 @@
               :tab="scopeTabsName"
             ></TabPane>
           </Tabs>
-          <div v-if="isPersonal" class="workbench-reference-tip text-grey mb-md">
-            <span class="tsfont-info-o text-primary mr-xs"></span>
-            每个模块仅可引用一个工作台。模块未配置首页时，将默认展示所引用的工作台；已配置首页时，仍优先展示原首页。
-          </div>
           <div v-if="listError" class="workbench-list-state flex-center text-center">
             <NoData :text="listError"></NoData>
-            <div class="text-action mt-sm" @click="searchWorkbench(currentPage)">重试</div>
+            <div class="text-action mt-sm" @click="searchWorkbench(currentPage)">{{ $t('page.retry') }}</div>
           </div>
           <div v-else class="workbench-card-list">
             <TsCard
@@ -88,7 +88,7 @@
                     <template v-if="isReferenced(row)">
                       <span class="workbench-reference-badge bg-primary-grey text-primary radius-md">
                         <span class="tsfont-check mr-xs"></span>
-                        当前引用
+                        {{ $t('term.workbench.currentreference') }}
                       </span>
                       <Button
                         type="text"
@@ -96,7 +96,7 @@
                         :loading="referenceSavingId === row.id"
                         :disabled="referenceSavingId !== null && referenceSavingId !== row.id"
                         @click.stop="changePersonalReference(row, 'delete')"
-                      >取消引用</Button>
+                      >{{ $t('term.workbench.stopusing') }}</Button>
                     </template>
                     <Button
                       v-else
@@ -107,7 +107,7 @@
                       @click.stop="changePersonalReference(row, 'save')"
                     >
                       <span class="tsfont-circle-o mr-xs"></span>
-                      设为引用
+                      {{ $t('term.workbench.usethisworkbench') }}
                     </Button>
                   </div>
                   <CommonStatus
@@ -134,12 +134,12 @@
                 <div class="workbench-card__footer border-base-top padding-md">
                   <div class="workbench-card__meta text-grey">
                     <div v-if="!isPersonal" class="workbench-card__authority">
-                      <span class="meta-label">适用：</span>
+                      <span class="meta-label">{{ $t('term.workbench.appliestolabel') }}</span>
                       <WorkbenchAuthoritySummary :dataList="row.authorityVoList || []"></WorkbenchAuthoritySummary>
                     </div>
-                    <span v-else>适用：个人</span>
-                    <span>组件：{{ getWidgetCount(row) }} 个</span>
-                    <span>更新于 {{ (row.lcd || row.fcd) | formatDate }}</span>
+                    <span v-else>{{ $t('term.workbench.appliestoformat', { target: $t('page.personal') }) }}</span>
+                    <span>{{ $tc('term.workbench.widgetcount', getWidgetCount(row), { count: getWidgetCount(row) }) }}</span>
+                    <span>{{ $t('term.workbench.updatedat', { time: $options.filters.formatDate(row.lcd || row.fcd) }) }}</span>
                   </div>
                   <div class="workbench-card__actions">
                     <div v-if="!isPersonal" @click.stop>
@@ -162,7 +162,7 @@
                         'tsfont-trash-o',
                         isPersonal && isReferenced(row) ? 'text-disabled' : 'text-action text-error'
                       ]"
-                      :title="isPersonal && isReferenced(row) ? '请先取消引用后再删除' : ''"
+                      :title="isPersonal && isReferenced(row) ? $t('term.workbench.cancelreferencebeforedelete') : ''"
                       @click.stop="deleteWorkbenchTemplate(row)"
                     >{{ $t('page.delete') }}</span>
                   </div>
@@ -265,7 +265,7 @@ export default {
           return;
         }
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '工作台模板加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.workbenchloadfailed'));
         }
         const result = res.Return || {};
         const tbodyList = Array.isArray(result.tbodyList) ? result.tbodyList : [];
@@ -281,7 +281,7 @@ export default {
           return;
         }
         this.tableConfig = { tbodyList: [] };
-        this.listError = (error && (error.Message || error.message)) || '工作台模板加载失败';
+        this.listError = (error && (error.Message || error.message)) || this.$t('term.workbench.workbenchloadfailed');
         this.$Message.error(this.listError);
       }).finally(() => {
         if (requestId === this.listRequestId) {
@@ -312,12 +312,12 @@ export default {
     },
     getWorkbenchTypeLabel(row) {
       if (this.isPersonalWorkbench(row)) {
-        return '个人';
+        return this.$t('page.personal');
       }
       if (this.isGlobalWorkbench(row)) {
-        return '全局';
+        return this.$t('page.global');
       }
-      return '未知';
+      return this.$t('term.workbench.unknown');
     },
     canEditWorkbench(row) {
       return !this.isPersonal || this.isPersonalWorkbench(row);
@@ -352,15 +352,15 @@ export default {
           return;
         }
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '工作台引用状态更新失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.workbenchreferenceupdatefailed'));
         }
-        this.$Message.success(action === 'save' ? '引用成功' : '已取消引用');
+        this.$Message.success(this.$t(action === 'save' ? 'term.workbench.referenceupdated' : 'term.workbench.referencecanceled'));
         this.searchWorkbench(this.currentPage);
       }).catch(error => {
         if (requestId !== this.referenceRequestId || moduleGroup !== this.moduleGroup) {
           return;
         }
-        this.$Message.error((error && (error.Message || error.message)) || '工作台引用状态更新失败');
+        this.$Message.error((error && (error.Message || error.message)) || this.$t('term.workbench.workbenchreferenceupdatefailed'));
       }).finally(() => {
         if (requestId === this.referenceRequestId) {
           this.referenceSavingId = null;
@@ -370,12 +370,12 @@ export default {
     deleteWorkbenchTemplate(row) {
       if (!this.canDeleteWorkbench(row)) {
         if (this.isPersonal) {
-          this.$Message.warning('全局工作台不能在个人设置中删除');
+          this.$Message.warning(this.$t('term.workbench.globalworkbenchreadonly'));
         }
         return;
       }
       if (this.isPersonal && this.isReferenced(row)) {
-        this.$Message.warning('请先取消引用后再删除');
+        this.$Message.warning(this.$t('term.workbench.cancelreferencebeforedelete'));
         return;
       }
       this.$createDialog({
@@ -385,13 +385,13 @@ export default {
         'on-ok': vnode => {
           this.$api.common.deleteWorkbench(row.id, this.moduleGroup, row.type || this.workbenchType).then(res => {
             if (!res || res.Status !== 'OK') {
-              throw new Error((res && res.Message) || '工作台模板删除失败');
+              throw new Error((res && res.Message) || this.$t('term.workbench.workbenchdeletefailed'));
             }
             this.$Message.success(this.$t('message.deletesuccess'));
             this.searchWorkbench(1);
             vnode.isShow = false;
           }).catch(error => {
-            this.$Message.error((error && (error.Message || error.message)) || '工作台模板删除失败');
+            this.$Message.error((error && (error.Message || error.message)) || this.$t('term.workbench.workbenchdeletefailed'));
           });
         }
       });
@@ -403,12 +403,12 @@ export default {
       const previousValue = row.isActive === 1 ? 0 : 1;
       this.$api.common.updateWorkbenchActive(row.id, row.isActive, this.moduleGroup, this.workbenchType).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '工作台状态更新失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.workbenchstatusupdatefailed'));
         }
         this.$Message.success(this.$t('message.executesuccess'));
       }).catch(error => {
         this.$set(row, 'isActive', previousValue);
-        this.$Message.error((error && (error.Message || error.message)) || '工作台状态更新失败');
+        this.$Message.error((error && (error.Message || error.message)) || this.$t('term.workbench.workbenchstatusupdatefailed'));
       });
     },
     toEdit(id, type = this.workbenchType) {
@@ -433,7 +433,7 @@ export default {
       return this.workbenchType === WORKBENCH_TYPE_GLOBAL;
     },
     createLabel() {
-      return this.isPersonal ? '新建个人模板' : '新建模板';
+      return this.$t(this.isPersonal ? 'term.workbench.newpersonaltemplate' : 'term.workbench.newtemplate');
     },
     widgetDefinitions() {
       return getWorkbenchWidgetDefinitions({

@@ -1,91 +1,94 @@
-const metricList = [
-  { label: '工单总数', value: 328, tone: 'primary', trend: '8.3%' },
-  { label: '平均响应', value: 18, unit: '分钟', tone: 'success', trend: '12%' },
-  { label: '一次解决率', value: 92, unit: '%', tone: 'primary', trend: '5%' },
-  { label: '满意度', value: 4.6, unit: '/5', tone: 'success', trend: '0.2' }
-];
+import { $t } from '@/resources/init.js';
 
-const quickList = [
-  { id: 'quick-1', title: '工单创建', icon: 'tsfont-plus', tone: 'primary' },
-  { id: 'quick-2', title: 'VPN申请', icon: 'tsfont-lock', tone: 'primary' },
-  { id: 'quick-3', title: '权限申请', icon: 'tsfont-user', tone: 'primary' },
-  { id: 'quick-4', title: '变更申请', icon: 'tsfont-change', tone: 'primary' },
-  { id: 'quick-5', title: '资产查询', icon: 'tsfont-ci', tone: 'primary' },
-  { id: 'quick-6', title: '更多服务', icon: 'tsfont-apps', tone: 'primary' }
-];
+function getMetricList() {
+  return [
+    { label: $t('term.workbench.totalworkorders'), value: 328, tone: 'primary', trend: '8.3%' },
+    { label: $t('term.workbench.averageresponse'), value: 18, unit: $t('term.workbench.minutes'), tone: 'success', trend: '12%' },
+    { label: $t('term.workbench.firstcontactresolution'), value: 92, unit: '%', tone: 'primary', trend: '5%' },
+    { label: $t('term.workbench.satisfaction'), value: 4.6, unit: '/5', tone: 'success', trend: '0.2' }
+  ];
+}
 
-const distributionList = [
-  { label: '新建', value: 82, tone: 'primary' },
-  { label: '处理中', value: 146, tone: 'success' },
-  { label: '待确认', value: 48, tone: 'warning' },
-  { label: '已解决', value: 52, tone: 'danger' }
-];
+function getQuickList() {
+  return [
+    { id: 'quick-1', title: $t('term.workbench.createworkorder'), icon: 'tsfont-plus', tone: 'primary' },
+    { id: 'quick-2', title: $t('term.workbench.vpnrequest'), icon: 'tsfont-lock', tone: 'primary' },
+    { id: 'quick-3', title: $t('term.workbench.permissionrequest'), icon: 'tsfont-user', tone: 'primary' },
+    { id: 'quick-4', title: $t('term.workbench.changerequest'), icon: 'tsfont-change', tone: 'primary' },
+    { id: 'quick-5', title: $t('term.workbench.assetquery'), icon: 'tsfont-ci', tone: 'primary' },
+    { id: 'quick-6', title: $t('term.workbench.moreservices'), icon: 'tsfont-apps', tone: 'primary' }
+  ];
+}
 
-const genericTableTheadList = [
-  { key: 'id', title: '编号' },
-  { key: 'title', title: '名称' },
-  { key: 'status', title: '状态' },
-  { key: 'priority', title: '级别' },
-  { key: 'time', title: '更新时间', cardVisible: false }
-];
+function getDistributionList() {
+  return [
+    { label: $t('term.workbench.new'), value: 82, tone: 'primary' },
+    { label: $t('term.workbench.processing'), value: 146, tone: 'success' },
+    { label: $t('term.workbench.pendingconfirmation'), value: 48, tone: 'warning' },
+    { label: $t('term.workbench.resolved'), value: 52, tone: 'danger' }
+  ];
+}
 
-const genericTableList = [
-  { id: 'TASK-001', title: '待处理事项', status: '进行中', priority: '中', time: '15:20' },
-  { id: 'TASK-002', title: '待确认事项', status: '待确认', priority: '低', time: '15:18' },
-  { id: 'TASK-003', title: '异常事项', status: '待处理', priority: '高', time: '15:05' },
-  { id: 'TASK-004', title: '已完成事项', status: '已完成', priority: '中', time: '14:50' }
-];
+function getGenericTableDemo() {
+  return {
+    tableTheadList: [
+      { key: 'id', title: $t('term.workbench.identifier') },
+      { key: 'title', title: $t('page.name') },
+      { key: 'status', title: $t('page.status') },
+      { key: 'priority', title: $t('page.level') },
+      { key: 'time', title: $t('term.workbench.updatedtime'), cardVisible: false }
+    ],
+    tableList: [
+      { id: 'TASK-001', title: $t('term.workbench.pendingitem'), status: $t('term.workbench.inprogress'), priority: $t('page.medium'), time: '15:20' },
+      { id: 'TASK-002', title: $t('term.workbench.confirmationitem'), status: $t('term.workbench.pendingconfirmation'), priority: $t('term.workbench.low'), time: '15:18' },
+      { id: 'TASK-003', title: $t('term.workbench.exceptionitem'), status: $t('term.workbench.pending'), priority: $t('term.workbench.high'), time: '15:05' },
+      { id: 'TASK-004', title: $t('term.workbench.completeditem'), status: $t('page.completed'), priority: $t('page.medium'), time: '14:50' }
+    ]
+  };
+}
 
-const processTaskTableTheadList = [
-  { key: 'id', title: '工单号' },
-  { key: 'title', title: '标题' },
-  { key: 'status', title: '状态' },
-  { key: 'priority', title: '优先级' },
-  { key: 'time', title: '更新时间', cardVisible: false }
-];
+function getProcessTaskDemo() {
+  return {
+    tableTheadList: [
+      { key: 'id', title: $t('page.workordernumber') },
+      { key: 'title', title: $t('page.title') },
+      { key: 'status', title: $t('page.status') },
+      { key: 'priority', title: $t('page.priority') },
+      { key: 'time', title: $t('term.workbench.updatedtime'), cardVisible: false }
+    ],
+    tableList: [
+      { id: 'INC202607300128', title: $t('term.workbench.paymentapitimeout'), status: $t('term.workbench.processing'), priority: $t('term.workbench.high'), priorityTone: 'error', time: '15:20' },
+      { id: 'INC202607300127', title: $t('term.workbench.userloginfailed'), status: $t('term.workbench.new'), priority: $t('page.medium'), priorityTone: 'warning', time: '15:18' },
+      { id: 'REQ202607300126', title: $t('term.workbench.accessrequest'), status: $t('term.workbench.pendingconfirmation'), priority: $t('term.workbench.low'), priorityTone: 'grey', time: '15:05' },
+      { id: 'INC202607300125', title: $t('term.workbench.reportdataexception'), status: $t('term.workbench.resolved'), priority: $t('page.medium'), priorityTone: 'warning', time: '14:50' }
+    ]
+  };
+}
 
-const processTaskTableList = [
-  { id: 'INC202607300128', title: '支付接口超时', status: '处理中', priority: '高', time: '15:20' },
-  { id: 'INC202607300127', title: '用户登录失败', status: '新建', priority: '中', time: '15:18' },
-  { id: 'REQ202607300126', title: '申请访问权限', status: '待确认', priority: '低', time: '15:05' },
-  { id: 'INC202607300125', title: '报表数据异常', status: '已解决', priority: '中', time: '14:50' }
-];
-
-const favoriteServiceTableTheadList = [
-  { key: 'name', title: '服务名称' }
-];
-
-const favoriteServiceTableList = [
-  { id: 'service-1', name: '测试标准服务' },
-  { id: 'service-2', name: '移动端服务申请' },
-  { id: 'service-3', name: '测试指导服务' },
-  { id: 'service-4', name: '数据采集服务' }
-];
-
-const typePreviewMap = {
-  table: {
-    tableTheadList: genericTableTheadList,
-    tableList: genericTableList
-  }
-};
-
-const previewKeyMap = {
-  processTask: {
-    tableTheadList: processTaskTableTheadList,
-    tableList: processTaskTableList
-  },
-  processFavoriteService: {
-    tableTheadList: favoriteServiceTableTheadList,
-    tableList: favoriteServiceTableList
-  }
-};
+function getFavoriteServiceDemo() {
+  return {
+    tableTheadList: [
+      { key: 'name', title: $t('page.servicename') }
+    ],
+    tableList: [
+      { id: 'service-1', name: $t('term.workbench.standardtestservice') },
+      { id: 'service-2', name: $t('term.workbench.mobileservicerequest') },
+      { id: 'service-3', name: $t('term.workbench.testguidanceservice') },
+      { id: 'service-4', name: $t('term.workbench.datacollectionservice') }
+    ]
+  };
+}
 
 export function getWorkbenchPreviewDemo(type, previewKey) {
+  const typeDemo = type === 'table' ? getGenericTableDemo() : {};
+  const previewDemo = previewKey === 'processTask'
+    ? getProcessTaskDemo()
+    : (previewKey === 'processFavoriteService' ? getFavoriteServiceDemo() : {});
   return {
-    metricList,
-    quickList,
-    distributionList,
-    ...(typePreviewMap[type] || {}),
-    ...(previewKeyMap[previewKey] || {})
+    metricList: getMetricList(),
+    quickList: getQuickList(),
+    distributionList: getDistributionList(),
+    ...typeDemo,
+    ...previewDemo
   };
 }

@@ -1,17 +1,17 @@
 <template>
   <div class="process-task-thead-config">
     <TsFormItem :label="label" labelPosition="top">
-      <div v-if="theadLoading" class="text-tip">正在加载可选表头...</div>
+      <div v-if="theadLoading" class="text-tip">{{ $t('term.workbench.loadingcolumns') }}</div>
       <div v-else-if="theadError" class="text-danger">
         {{ theadError }}
-        <span class="text-action ml-xs" @click="loadTheadList">重试</span>
+        <span class="text-action ml-xs" @click="loadTheadList">{{ $t('page.retry') }}</span>
       </div>
       <div v-else>
         <div v-if="visibleTheadList.length" class="thead-summary mb-xs">
           <Tag v-for="thead in visibleTheadList" :key="thead.name">{{ thead.displayName }}</Tag>
         </div>
-        <div v-else class="text-tip mb-xs">尚未选择表头</div>
-        <span class="text-action tsfont-setting" @click="openTheadDialog">配置表头</span>
+        <div v-else class="text-tip mb-xs">{{ $t('term.workbench.nocolumnselected') }}</div>
+        <span class="text-action tsfont-setting" @click="openTheadDialog">{{ $t('term.workbench.configurecolumns') }}</span>
       </div>
     </TsFormItem>
 
@@ -26,7 +26,7 @@
     >
       <div class="thead-editor">
         <div class="text-tip mb-md">
-          拖拽调整列顺序，取消勾选可隐藏对应列；{{ requiredTheadLabel }}为必选列。
+          {{ $t('term.workbench.columnconfigurationhelp', { name: requiredTheadLabel }) }}
         </div>
         <draggable :list="theadDraftList" :animation="150" handle=".thead-drag-handler">
           <div
@@ -58,6 +58,7 @@ import {
   mergeTheadList,
   serializeTheadList
 } from '../utils/process-task-search.js';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: 'ProcessTaskTheadConfig',
@@ -71,12 +72,12 @@ export default {
   },
   props: {
     value: { type: Array, default: () => [] },
-    label: { type: String, default: '表头' },
-    dialogTitle: { type: String, default: '配置工单表头' },
+    label: { type: String, default: () => $t('term.workbench.columnsettings') },
+    dialogTitle: { type: String, default: () => $t('term.workbench.configureworkordercolumns') },
     portalWidgetName: { type: String, default: PROCESS_TASK_WIDGET_NAME },
     handler: { type: String, default: PROCESS_TASK_THEAD_HANDLER },
     requiredTheadName: { type: String, default: 'title' },
-    requiredTheadLabel: { type: String, default: '工单标题' }
+    requiredTheadLabel: { type: String, default: () => $t('term.workbench.workordertitle') }
   },
   data() {
     return {
@@ -102,7 +103,7 @@ export default {
           param: {}
         });
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '可选表头加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.columnloadfailed'));
         }
         this.availableTheadList = extractTheadList(res.Return);
         this.theadList = mergeTheadList(this.availableTheadList, this.value);
@@ -112,7 +113,7 @@ export default {
       } catch (error) {
         this.availableTheadList = [];
         this.theadList = mergeTheadList(this.value, this.value);
-        this.theadError = (error && (error.Message || error.message)) || '可选表头加载失败';
+        this.theadError = (error && (error.Message || error.message)) || this.$t('term.workbench.columnloadfailed');
       } finally {
         this.theadLoading = false;
       }
@@ -131,7 +132,7 @@ export default {
         requiredThead.isShow = 1;
       }
       if (!this.theadDraftList.some(item => item.isShow !== 0)) {
-        this.$Message.warning('请至少选择一个表头');
+        this.$Message.warning(this.$t('term.workbench.selectatleastonecolumn'));
         return;
       }
       const theadList = serializeTheadList(this.theadDraftList);

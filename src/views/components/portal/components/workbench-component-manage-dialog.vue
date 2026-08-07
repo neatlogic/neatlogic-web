@@ -1,8 +1,8 @@
 <template>
   <TsDialog
     :isShow="true"
-    title="组件管理"
     width="medium"
+    :title="$t('term.workbench.widgetmanagement')"
     :hasFooter="false"
     :maskClose="false"
     @on-close="close"
@@ -10,7 +10,7 @@
     <div class="workbench-component-manage">
       <div v-if="errorMessage" class="padding-lg text-center">
         <NoData :text="errorMessage"></NoData>
-        <div class="text-action pt-sm cursor-pointer" @click="loadComponentList">重试</div>
+        <div class="text-action pt-sm cursor-pointer" @click="loadComponentList">{{ $t('page.retry') }}</div>
       </div>
       <template v-else>
         <div class="flex-between align-center pb-md">
@@ -19,15 +19,15 @@
             :disabled="!selectedComponentList.length"
             @click="openBatchAuthDialog"
           >
-            批量授权
+            {{ $t('term.workbench.batchauthorization') }}
           </Button>
           <TsFormInput
             v-model="keyword"
             search
             clearable
             width="240"
-            placeholder="请输入组件名称"
             :disabled="tableConfig.loading"
+            :placeholder="$t('term.workbench.enterwidgetname')"
           ></TsFormInput>
         </div>
         <TsTable
@@ -48,7 +48,7 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-permission" @click.stop="openAuthDialog(row)">授权</li>
+                <li class="tsfont-permission" @click.stop="openAuthDialog(row)">{{ $t('term.workbench.authorization') }}</li>
               </ul>
             </div>
           </template>
@@ -90,9 +90,9 @@ export default {
     return {
       theadList: [
         { key: 'selection', multiple: true },
-        { title: '组件名称', key: 'label' },
-        { title: '所属模块', key: 'moduleGroup' },
-        { title: '权限', key: 'authorityVoList' },
+        { title: this.$t('term.workbench.widgetname'), key: 'label' },
+        { title: this.$t('term.workbench.owningmodule'), key: 'moduleGroup' },
+        { title: this.$t('term.workbench.permission'), key: 'authorityVoList' },
         { key: 'action' }
       ],
       tableConfig: {
@@ -123,7 +123,7 @@ export default {
         type: this.workbenchType
       }).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '组件列表加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.widgetlistloadfailed'));
         }
         const result = res.Return || {};
         this.componentList = result.tbodyList || [];
@@ -135,7 +135,7 @@ export default {
       }).catch(error => {
         this.componentList = [];
         this.tableConfig = { tbodyList: [] };
-        this.errorMessage = (error && (error.Message || error.message)) || '组件列表加载失败';
+        this.errorMessage = (error && (error.Message || error.message)) || this.$t('term.workbench.widgetlistloadfailed');
       }).finally(() => {
         this.$set(this.tableConfig, 'loading', false);
       });

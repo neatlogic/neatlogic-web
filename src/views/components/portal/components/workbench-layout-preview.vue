@@ -10,12 +10,14 @@
     >
       <div v-if="!isReady" class="preview-state flex-center text-grey">
         <span class="tsfont-m-dashboard mr-xs"></span>
-        布局预览
+        {{ $t('term.workbench.layoutpreview') }}
       </div>
+
       <div v-else-if="!normalizedWidgetList.length" class="preview-state flex-center text-grey">
         <span class="tsfont-m-dashboard mr-xs"></span>
-        暂无布局预览
+        {{ $t('term.workbench.nolayoutpreview') }}
       </div>
+
       <div v-else :style="shellStyle" class="preview-canvas-shell">
         <div :style="canvasStyle" class="preview-canvas">
           <div
@@ -129,11 +131,11 @@ export default {
     getPresentation(type) {
       return this.presentationMap[type] || {
         type: 'unknown',
-        unavailableReason: '组件前端实现未注册'
+        unavailableReason: this.$t('term.workbench.widgetimplementationmissing')
       };
     },
     getWidgetLabel(type) {
-      return this.labelMap[type] || type || '未注册组件';
+      return this.labelMap[type] || type || this.$t('term.workbench.unregisteredwidget');
     },
     isWidgetBackgroundTransparent(widget) {
       return widget && (widget.backgroundTransparent === 1 || widget.backgroundTransparent === true);

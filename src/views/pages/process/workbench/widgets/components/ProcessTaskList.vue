@@ -55,6 +55,7 @@
 
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
+import { $t } from '@/resources/init.js';
 import {
   PROCESS_TASK_THEAD_HANDLER,
   createProcessTaskSearchParam,
@@ -76,7 +77,7 @@ export default {
   },
   props: {
     widget: { type: Object, default: () => ({}) },
-    title: { type: String, default: '工单列表' },
+    title: { type: String, default: () => $t('term.workbench.workorderlist') },
     description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
@@ -127,7 +128,7 @@ export default {
     },
     async ensureTheadList() {
       if (!this.widgetContract) {
-        throw new Error('工单组件定义无效');
+        throw new Error(this.$t('term.workbench.invalidworkorderwidget'));
       }
       if ((this.config.theadList && this.config.theadList.length) || this.sourceTheadList.length) {
         return;
@@ -139,7 +140,7 @@ export default {
           param: {}
         }).then(res => {
           if (!res || res.Status !== 'OK') {
-            throw new Error((res && res.Message) || '工单表头加载失败');
+            throw new Error((res && res.Message) || this.$t('term.workbench.workordercolumnloadfailed'));
           }
           this.sourceTheadList = normalizeTheadList(extractTheadList(res.Return));
         }).finally(() => {
@@ -172,7 +173,7 @@ export default {
           return;
         }
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '工单列表加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.workorderlistloadfailed'));
         }
         const data = res.Return || {};
         if ((!this.config.theadList || !this.config.theadList.length) && extractTheadList(data).length) {
@@ -187,7 +188,7 @@ export default {
         }
         this.tbodyList = [];
         this.rowNum = 0;
-        this.error = (error && (error.Message || error.message)) || '工单列表加载失败';
+        this.error = (error && (error.Message || error.message)) || this.$t('term.workbench.workorderlistloadfailed');
       } finally {
         if (requestSequence === this.requestSequence) {
           this.loading = false;

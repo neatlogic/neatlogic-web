@@ -6,9 +6,14 @@
           <i class="tsfont-night"></i>
         </div>
         <div class="preview-welcome__copy overflow">
-          <div class="preview-welcome__title overflow">晚上好，系统管理员</div>
+          <div class="preview-welcome__title overflow">
+            {{ $t('term.workbench.previewgreeting', {
+              greeting: $t('term.workbench.eveninggreeting'),
+              name: $t('term.workbench.systemadministrator')
+            }) }}
+          </div>
           <div class="preview-welcome__description text-grey overflow">
-            2026年7月31日 星期五 · 回顾今日进展，安排后续事项
+            {{ previewDate }} · {{ $t('term.workbench.eveningprompt') }}
           </div>
         </div>
         <div class="preview-welcome__context">
@@ -45,7 +50,7 @@
         </span>
       </template>
       <template v-slot:priority="{ row }">
-        <span :class="row.priority === '高' ? 'text-error' : row.priority === '中' ? 'text-warning' : 'text-grey'">
+        <span :class="row.priorityTone ? `text-${row.priorityTone}` : 'text-grey'">
           {{ row.priority }}
         </span>
       </template>
@@ -104,10 +109,19 @@ export default {
       if (this.presentation && this.presentation.unavailableReason) {
         return this.presentation.unavailableReason;
       }
-      return '暂无预览定义';
+      return this.$t('term.workbench.nopreviewdefinition');
     },
     demo() {
       return getWorkbenchPreviewDemo(this.viewType, this.presentation && this.presentation.previewKey);
+    },
+    previewDate() {
+      const locale = this.$i18n.locale === 'en' ? 'en-US' : 'zh-CN';
+      return new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      }).format(new Date(2026, 6, 31));
     },
     visibleMetrics() {
       return this.demo.metricList.slice(0, this.mode === 'card' ? 2 : 4);

@@ -39,6 +39,7 @@
 
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
+import { $t } from '@/resources/init.js';
 import {
   PROCESS_FAVORITE_SERVICE_HANDLER,
   PROCESS_FAVORITE_SERVICE_WIDGET_NAME
@@ -52,7 +53,7 @@ export default {
   },
   props: {
     widget: { type: Object },
-    title: { type: String, default: '收藏服务' },
+    title: { type: String, default: () => $t('term.workbench.favoriteservices') },
     description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
@@ -67,7 +68,7 @@ export default {
       tableHeight: 160,
       resizeObserver: null,
       theadList: [
-        { key: 'name', title: '服务名称' },
+        { key: 'name', title: this.$t('page.servicename') },
         { key: 'action' }
       ]
     };
@@ -118,7 +119,7 @@ export default {
         }
       }).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '收藏服务加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.favoriteservicesloadfailed'));
         }
         const result = res.Return || {};
         this.sourceList = Array.isArray(result.tbodyList) ? result.tbodyList : [];
@@ -127,7 +128,7 @@ export default {
       }).catch(error => {
         this.sourceList = [];
         this.rowNum = 0;
-        this.error = (error && (error.Message || error.message)) || '收藏服务加载失败';
+        this.error = (error && (error.Message || error.message)) || this.$t('term.workbench.favoriteservicesloadfailed');
       }).finally(() => {
         this.loading = false;
         this.$nextTick(() => {

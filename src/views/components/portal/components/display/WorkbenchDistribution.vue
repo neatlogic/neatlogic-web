@@ -50,7 +50,7 @@ export default {
       return this.items.reduce((total, item) => total + Math.max(0, Number(item.value) || 0), 0);
     },
     totalLabel() {
-      return this.total ? `共 ${this.total}` : '';
+      return this.total ? this.$t('term.workbench.total', { count: this.total }) : '';
     },
     normalizedItems() {
       if (!this.total) {

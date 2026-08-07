@@ -99,7 +99,7 @@
                 <DefaultpageManage />
               </div>
             </TabPane>
-            <TabPane label="工作台设置" name="workbench" :tab="userSettingTabsName">
+            <TabPane :label="$t('term.workbench.workbenchsettings')" name="workbench" :tab="userSettingTabsName">
               <UserSettingWorkbenchManage v-if="paneName === 'workbench'"></UserSettingWorkbenchManage>
             </TabPane>
             <TabPane

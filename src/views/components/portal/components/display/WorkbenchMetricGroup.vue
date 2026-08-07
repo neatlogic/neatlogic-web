@@ -19,7 +19,7 @@
       </div>
       <div v-else-if="metric.trend" :class="[getTextClass(metric.tone), 'metric-trend overflow']">{{ metric.trend }}</div>
       <div v-if="metric.target !== undefined && metric.target !== null" class="metric-target text-grey overflow">
-        目标 {{ metric.target }}{{ metric.unit || '' }}
+        {{ $t('page.target') }} {{ metric.target }}{{ metric.unit || '' }}
       </div>
     </component>
   </div>

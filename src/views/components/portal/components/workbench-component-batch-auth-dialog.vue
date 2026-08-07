@@ -1,14 +1,14 @@
 <template>
   <TsDialog
     :isShow="true"
-    title="批量授权"
     width="small"
+    :title="$t('term.workbench.batchauthorization')"
     :maskClose="false"
     @on-close="close"
   >
     <div class="workbench-component-batch-auth">
-      <div class="text-tip pb-md">已选择 {{ componentList.length }} 个组件</div>
-      <div class="form-label pb-sm">授权对象</div>
+      <div class="text-tip pb-md">{{ $tc('term.workbench.selectedwidgetcount', componentList.length, { count: componentList.length }) }}</div>
+      <div class="form-label pb-sm">{{ $t('term.workbench.authorizationtargets') }}</div>
       <UserSelect
         v-model="authorityList"
         :groupList="['common', 'user', 'role', 'team']"
@@ -17,7 +17,7 @@
         border="border"
       ></UserSelect>
       <div class="text-warning pt-sm">
-        批量授权会覆盖所选组件的原有授权；未选择授权对象时，保存将清空原有授权。
+        {{ $t('term.workbench.batchauthorizationwarning') }}
       </div>
       <div v-if="saveError" class="text-error pt-sm">{{ saveError }}</div>
     </div>
@@ -64,9 +64,9 @@ export default {
       }
       if (!this.authorityList.length) {
         this.$createDialog({
-          title: '清空授权确认',
-          content: `确定清空所选 ${this.componentNameList.length} 个组件的原有授权吗？`,
           btnType: 'error',
+          title: this.$t('term.workbench.clearauthorization'),
+          content: this.$tc('term.workbench.clearauthorizationcontent', this.componentNameList.length, { count: this.componentNameList.length }),
           'on-ok': vnode => {
             vnode.isShow = false;
             this.submit();
@@ -84,12 +84,12 @@ export default {
         this.authorityList
       ).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '组件批量授权保存失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.widgetbatchauthorizationsavefailed'));
         }
         this.$Message.success(this.$t('message.savesuccess'));
         this.$emit('close', true);
       }).catch(error => {
-        this.saveError = (error && (error.Message || error.message)) || '组件批量授权保存失败';
+        this.saveError = (error && (error.Message || error.message)) || this.$t('term.workbench.widgetbatchauthorizationsavefailed');
       }).finally(() => {
         this.saving = false;
       });

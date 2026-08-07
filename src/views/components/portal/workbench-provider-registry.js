@@ -1,3 +1,5 @@
+import { $t } from '@/resources/init.js';
+
 const GLOBAL_SCOPE = 'global';
 const MODULE_SCOPE = 'module';
 const providerContributionList = [];
@@ -70,7 +72,7 @@ function normalizeDefinition(provider, definition, index) {
   }
   const category = {
     name: group.name || `${provider.moduleGroup}.default`,
-    label: categoryLabel || '其他组件',
+    label: categoryLabel || $t('term.workbench.otherwidgets'),
     sort: group.sort === undefined ? index : group.sort
   };
   return {
@@ -150,14 +152,14 @@ export function getWorkbenchScopeList({ moduleList = [] } = {}) {
       moduleGroup: provider.moduleGroup,
       label: provider.moduleName,
       icon: 'tsfont-module',
-      description: `配置${provider.moduleName}模块自己的工作台模板`
+      description: $t('term.workbench.modulescopehelp', { name: provider.moduleName })
     }));
   return [
     {
       moduleGroup: 'index',
-      label: '总工作台',
+      label: $t('term.workbench.globalworkbench'),
       icon: 'tsfont-m-dashboard',
-      description: '配置整个系统首页，可组合所有已安装模块的组件'
+      description: $t('term.workbench.globalscopehelp')
     },
     ...moduleScopeList
   ];
@@ -343,10 +345,10 @@ export function mergeAuthorizedWorkbenchWidgetList(definitionList = [], apiList 
       isAvailable: isAvailable && !runtimeMissing ? 1 : 0,
       __runtimeMissing: runtimeMissing,
       unavailableReason: runtimeMissing
-        ? '组件前端实现未注册'
+        ? $t('term.workbench.widgetimplementationmissing')
         : (isAvailable
           ? ''
-          : (backendWidget.unavailableReason || backendWidget.disabledReason || backendWidget.reason || '后台返回不可用状态'))
+          : (backendWidget.unavailableReason || backendWidget.disabledReason || backendWidget.reason || $t('term.workbench.backendwidgetunavailable')))
     });
     return result;
   }, []);

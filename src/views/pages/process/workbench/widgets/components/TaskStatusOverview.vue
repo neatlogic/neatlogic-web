@@ -9,7 +9,7 @@
     @retry="loadData"
   >
     <template v-slot:action>
-      <a :href="taskHref" class="text-action">进入我的待办</a>
+      <a :href="taskHref" class="text-action">{{ $t('term.workbench.entermytodos') }}</a>
     </template>
     <WorkbenchMetricGroup :metrics="metricList"></WorkbenchMetricGroup>
     <div
@@ -17,7 +17,7 @@
       class="overview-detail mt-md"
     >
       <WorkbenchDistribution
-        title="工单状态分布"
+        :title="$t('term.workbench.workorderstatusdistribution')"
         :items="distributionList"
       ></WorkbenchDistribution>
     </div>
@@ -28,6 +28,7 @@
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import WorkbenchDistribution from '@/views/components/portal/components/display/WorkbenchDistribution.vue';
 import WorkbenchMetricGroup from '@/views/components/portal/components/display/WorkbenchMetricGroup.vue';
+import { $t } from '@/resources/init.js';
 import {
   PERSONAL_PROCESS_TASK_OVERVIEW_HANDLER,
   PERSONAL_PROCESS_TASK_OVERVIEW_WIDGET_NAME
@@ -41,7 +42,7 @@ export default {
     WorkbenchMetricGroup
   },
   props: {
-    title: { type: String, default: '个人工单状态概览' },
+    title: { type: String, default: () => $t('term.workbench.personalworkorderstatusoverview') },
     description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
@@ -72,7 +73,7 @@ export default {
         param: this.queryTimeRange
       }).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '个人工单状态概览加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.statusoverviewloadfailed'));
         }
         const result = res.Return || {};
         this.overview = {
@@ -83,7 +84,7 @@ export default {
           succeedCount: this.normalizeCount(result.succeedCount)
         };
       }).catch(error => {
-        this.error = (error && (error.Message || error.message)) || '个人工单状态概览加载失败';
+        this.error = (error && (error.Message || error.message)) || this.$t('term.workbench.statusoverviewloadfailed');
       }).finally(() => {
         this.loading = false;
       });
@@ -111,18 +112,18 @@ export default {
     },
     metricList() {
       return [
-        { key: 'myTaskCount', label: '我的待办', value: this.overview.myTaskCount, tone: 'primary', icon: 'tsfont-task' },
-        { key: 'pendingCount', label: '可抢单', value: this.overview.pendingCount, tone: 'warning', icon: 'tsfont-spinner' },
-        { key: 'runningCount', label: '处理中', value: this.overview.runningCount, tone: 'primary', icon: 'tsfont-spinner' },
-        { key: 'timeoutCount', label: '已超时', value: this.overview.timeoutCount, tone: 'danger', icon: 'tsfont-sla' }
+        { key: 'myTaskCount', label: this.$t('term.workbench.mytodos'), value: this.overview.myTaskCount, tone: 'primary', icon: 'tsfont-task' },
+        { key: 'pendingCount', label: this.$t('term.workbench.availabletoclaim'), value: this.overview.pendingCount, tone: 'warning', icon: 'tsfont-spinner' },
+        { key: 'runningCount', label: this.$t('term.workbench.processing'), value: this.overview.runningCount, tone: 'primary', icon: 'tsfont-spinner' },
+        { key: 'timeoutCount', label: this.$t('term.workbench.timedout'), value: this.overview.timeoutCount, tone: 'danger', icon: 'tsfont-sla' }
       ];
     },
     distributionList() {
       return [
-        { key: 'pendingCount', label: '可抢单', value: this.overview.pendingCount, tone: 'warning' },
-        { key: 'runningCount', label: '处理中', value: this.overview.runningCount, tone: 'primary' },
-        { key: 'timeoutCount', label: '已超时', value: this.overview.timeoutCount, tone: 'danger' },
-        { key: 'succeedCount', label: '已完成', value: this.overview.succeedCount, tone: 'success' }
+        { key: 'pendingCount', label: this.$t('term.workbench.availabletoclaim'), value: this.overview.pendingCount, tone: 'warning' },
+        { key: 'runningCount', label: this.$t('term.workbench.processing'), value: this.overview.runningCount, tone: 'primary' },
+        { key: 'timeoutCount', label: this.$t('term.workbench.timedout'), value: this.overview.timeoutCount, tone: 'danger' },
+        { key: 'succeedCount', label: this.$t('page.completed'), value: this.overview.succeedCount, tone: 'success' }
       ];
     }
   },

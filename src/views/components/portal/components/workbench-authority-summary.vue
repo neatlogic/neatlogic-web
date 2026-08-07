@@ -15,8 +15,8 @@
         placement="bottom-start"
       >
         <span
+          :title="$tc('term.workbench.remainingapplicableusers', remainingCount, { count: remainingCount })"
           class="authority-more tsfont-option-horizontal text-tip-active"
-          :title="`还有 ${remainingCount} 个适用对象`"
         ></span>
         <div slot="content" class="authority-popover">
           <div

@@ -13,6 +13,7 @@
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
 import WorkbenchQuickGrid from '@/views/components/portal/components/display/WorkbenchQuickGrid.vue';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: 'FrameworkQuickEntry',
@@ -21,7 +22,7 @@ export default {
     WorkbenchQuickGrid
   },
   props: {
-    title: { type: String, default: '快捷入口' },
+    title: { type: String, default: () => $t('term.workbench.quickaccess') },
     description: { type: String, default: '' },
     config: { type: Object, default: () => ({}) }
   },

@@ -4,7 +4,7 @@
     <div v-else-if="error" class="workbench-state flex-center text-center">
       <slot name="error" :error="error" :retry="retry">
         <NoData :text="error"></NoData>
-        <Button type="primary" ghost @click="retry">重新加载</Button>
+        <Button type="primary" ghost @click="retry">{{ $t('term.workbench.reload') }}</Button>
       </slot>
     </div>
     <div v-else-if="!normalizedWidgetList.length" class="workbench-empty flex-center text-center">

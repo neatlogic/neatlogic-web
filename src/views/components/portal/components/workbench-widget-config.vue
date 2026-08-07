@@ -38,7 +38,7 @@
         @change="value => setConfig(schema.name, value)"
       ></TsFormInput>
     </TsFormItem>
-    <NoData v-if="configSchema.length === 0" text="该组件没有独立配置"></NoData>
+    <NoData v-if="configSchema.length === 0" :text="$t('term.workbench.noindependentconfiguration')"></NoData>
   </div>
 </template>
 

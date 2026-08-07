@@ -2,7 +2,7 @@
   <div class="process-task-condition-config">
     <TsFormItem :label="label" labelPosition="top">
       <div v-if="hasTimeCondition" class="mb-xs">
-        <Tag>已配置时间范围</Tag>
+        <Tag>{{ $t('term.workbench.timerangeconfigured') }}</Tag>
       </div>
       <ConditionViewer
         v-if="hasCondition"
@@ -10,8 +10,8 @@
         :conditionList="currentConditionList"
         :workcenterConditionData="conditionConfig"
       ></ConditionViewer>
-      <div v-else class="text-tip mb-xs">未配置搜索条件，将查询全部工单</div>
-      <span class="text-action tsfont-setting" @click="openConditionDialog">配置搜索条件</span>
+      <div v-else class="text-tip mb-xs">{{ $t('term.workbench.conditionnotconfigured') }}</div>
+      <span class="text-action tsfont-setting" @click="openConditionDialog">{{ $t('term.workbench.configuresearchcriteria') }}</span>
     </TsFormItem>
 
     <TsDialog
@@ -29,7 +29,7 @@
         <div v-if="conditionError" class="text-danger text-center padding-sm mb-sm">{{ conditionError }}</div>
         <TsRow :gutter="16">
           <Col :span="8">
-            <TsFormItem label="时间范围" labelPosition="top">
+            <TsFormItem :label="$t('page.timerange')" labelPosition="top">
               <TimeSelect
                 :value="editingConditionConfig.startTimeCondition"
                 :transfer="true"
@@ -39,12 +39,12 @@
             </TsFormItem>
           </Col>
           <Col :span="8">
-            <TsFormItem label="标题关键词" labelPosition="top">
+            <TsFormItem :label="$t('term.workbench.titlekeyword')" labelPosition="top">
               <TsFormInput v-model.trim="titleKeyword" border="border" clearable></TsFormInput>
             </TsFormItem>
           </Col>
           <Col :span="8">
-            <TsFormItem label="上报内容关键词" labelPosition="top">
+            <TsFormItem :label="$t('term.workbench.reportcontentkeyword')" labelPosition="top">
               <TsFormInput v-model.trim="contentKeyword" border="border" clearable></TsFormInput>
             </TsFormItem>
           </Col>
@@ -54,7 +54,7 @@
           :animated="false"
           @on-click="changeConditionMode"
         >
-          <TabPane label="简单模式" name="simple">
+          <TabPane :label="$t('page.simplemode')" name="simple">
             <SimplePanel
               v-if="conditionMode === 'simple' && currentEditingConditionList.length"
               ref="conditionPanel"
@@ -62,9 +62,9 @@
               :conditionList="currentEditingConditionList"
               :workcenterConditionData="editingConditionConfig"
             ></SimplePanel>
-            <NoData v-else-if="conditionMode === 'simple'" text="暂无可用搜索条件"></NoData>
+            <NoData v-else-if="conditionMode === 'simple'" :text="$t('term.workbench.nosearchcriteria')"></NoData>
           </TabPane>
-          <TabPane v-if="canUseAdvanced" label="高级模式" name="custom">
+          <TabPane v-if="canUseAdvanced" :label="$t('page.advancedmode')" name="custom">
             <CustomPanel
               v-if="conditionMode === 'custom' && currentEditingConditionList.length"
               ref="conditionPanel"
@@ -72,7 +72,7 @@
               :conditionList="currentEditingConditionList"
               :workcenterConditionData="editingConditionConfig"
             ></CustomPanel>
-            <NoData v-else-if="conditionMode === 'custom'" text="暂无可用搜索条件"></NoData>
+            <NoData v-else-if="conditionMode === 'custom'" :text="$t('term.workbench.nosearchcriteria')"></NoData>
           </TabPane>
         </Tabs>
       </div>
@@ -87,6 +87,7 @@ import {
   PROCESS_TASK_WORKCENTER_UUID,
   createDefaultConditionConfig
 } from '../utils/process-task-search.js';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: 'ProcessTaskConditionConfig',
@@ -104,8 +105,8 @@ export default {
   },
   props: {
     value: { type: Object, default: () => ({}) },
-    label: { type: String, default: '搜索条件' },
-    dialogTitle: { type: String, default: '配置工单搜索条件' },
+    label: { type: String, default: () => $t('term.workbench.searchcriteria') },
+    dialogTitle: { type: String, default: () => $t('term.workbench.configureworkordersearchcriteria') },
     portalWidgetName: { type: String, default: PROCESS_TASK_WIDGET_NAME },
     handler: { type: String, default: PROCESS_TASK_CONDITION_HANDLER },
     workcenterUuid: { type: String, default: PROCESS_TASK_WORKCENTER_UUID },
@@ -167,7 +168,7 @@ export default {
           }
         }).then(res => {
           if (!res || res.Status !== 'OK') {
-            throw new Error((res && res.Message) || '搜索条件加载失败');
+            throw new Error((res && res.Message) || this.$t('term.workbench.searchcriterialoadfailed'));
           }
           const conditionList = Array.isArray(res.Return)
             ? res.Return
@@ -196,7 +197,7 @@ export default {
         await this.loadConditionList(this.conditionMode);
         this.conditionPanelKey += 1;
       } catch (error) {
-        this.conditionError = (error && (error.Message || error.message)) || '搜索条件加载失败';
+        this.conditionError = (error && (error.Message || error.message)) || this.$t('term.workbench.searchcriterialoadfailed');
       } finally {
         this.conditionLoading = false;
       }
@@ -223,7 +224,7 @@ export default {
         };
         this.conditionPanelKey += 1;
       } catch (error) {
-        this.conditionError = (error && (error.Message || error.message)) || '搜索条件加载失败';
+        this.conditionError = (error && (error.Message || error.message)) || this.$t('term.workbench.searchcriterialoadfailed');
       } finally {
         this.conditionLoading = false;
       }
@@ -244,7 +245,7 @@ export default {
         keywordConditionList.push({
           uuid: this.$utils.setUuid(),
           name: 'title',
-          text: '标题',
+          text: this.$t('page.title'),
           valueList: [this.titleKeyword]
         });
       }
@@ -252,7 +253,7 @@ export default {
         keywordConditionList.push({
           uuid: this.$utils.setUuid(),
           name: 'content',
-          text: '上报内容',
+          text: this.$t('term.workbench.reportcontentkeyword'),
           valueList: [this.contentKeyword]
         });
       }

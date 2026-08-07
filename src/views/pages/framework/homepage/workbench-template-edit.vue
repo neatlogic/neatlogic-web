@@ -14,7 +14,7 @@
   >
     <template v-slot:navigation>
       <span class="tsfont-left text-action" @click="toManage">
-        {{ workbenchType === globalWorkbenchType ? '工作台管理' : '个人设置' }}
+        {{ $t(workbenchType === globalWorkbenchType ? 'term.workbench.workbenchmanagement' : 'page.personalsetting') }}
       </span>
     </template>
     <template v-slot:widget="{ widget }">
@@ -131,13 +131,13 @@ export default {
         type: this.workbenchType
       }).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '可用组件列表加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.availablewidgetlistloadfailed'));
         }
         const apiList = (res.Return && res.Return.tbodyList) || [];
         this.availableWidgetList = mergeAuthorizedWorkbenchWidgetList(this.widgetDefinitions, apiList);
       }).catch(error => {
-        const errorMessage = (error && (error.Message || error.message)) || '可用组件列表加载失败';
         this.availableWidgetList = [];
+        const errorMessage = (error && (error.Message || error.message)) || this.$t('term.workbench.availablewidgetlistloadfailed');
         this.availableWidgetError = errorMessage;
       }).finally(() => {
         this.availableWidgetLoading = false;
@@ -147,10 +147,10 @@ export default {
       this.loading = true;
       this.$api.common.getWorkbenchDetail(this.id, this.moduleGroup, this.workbenchType).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '工作台模板加载失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.workbenchloadfailed'));
         }
         if (!res.Return) {
-          this.$Message.warning('工作台模板不存在');
+          this.$Message.warning(this.$t('term.workbench.workbenchnotfound'));
           this.toManage();
           return;
         }
@@ -171,7 +171,7 @@ export default {
           }
         };
       }).catch(error => {
-        this.$Message.error((error && (error.Message || error.message)) || '工作台模板加载失败');
+        this.$Message.error((error && (error.Message || error.message)) || this.$t('term.workbench.workbenchloadfailed'));
       }).finally(() => {
         this.loading = false;
       });
@@ -194,12 +194,12 @@ export default {
       }
       this.$api.common.saveWorkbench(data).then(res => {
         if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '工作台模板保存失败');
+          throw new Error((res && res.Message) || this.$t('term.workbench.workbenchsavefailed'));
         }
         this.$Message.success(this.$t('message.savesuccess'));
         this.toManage();
       }).catch(error => {
-        this.$Message.error((error && (error.Message || error.message)) || '工作台模板保存失败');
+        this.$Message.error((error && (error.Message || error.message)) || this.$t('term.workbench.workbenchsavefailed'));
       }).finally(() => {
         this.saving = false;
       });

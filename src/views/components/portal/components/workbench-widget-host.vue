@@ -9,7 +9,7 @@
         ghost
         @click="retryRender"
       >
-        重新加载
+        {{ $t('term.workbench.reload') }}
       </Button>
     </div>
     <component
@@ -24,14 +24,14 @@
     ></component>
     <div
       v-else-if="definition && definition.component"
+      :aria-label="$t('term.workbench.widgetwaiting')"
       class="widget-state bg-op radius-lg flex-center"
-      aria-label="组件等待加载"
     >
       <Loading :loadingShow="true"></Loading>
     </div>
     <div v-else class="widget-state bg-op radius-lg flex-center text-center">
       <i class="tsfont-warning-o text-warning"></i>
-      <div class="text-grey mt-xs">组件不可用，可在编辑页移除</div>
+      <div class="text-grey mt-xs">{{ $t('term.workbench.widgetunavailablehint') }}</div>
     </div>
   </div>
 </template>
@@ -61,7 +61,7 @@ export default {
     this.disconnectVisibilityObserver();
   },
   errorCaptured(error) {
-    this.renderError = (error && error.message) || '组件加载失败';
+    this.renderError = (error && error.message) || this.$t('term.workbench.widgetloadfailed');
     return false;
   },
   methods: {

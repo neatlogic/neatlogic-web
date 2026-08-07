@@ -7,7 +7,7 @@
       <div class="welcome-copy overflow">
         <div v-if="showTitle" class="welcome-label text-grey overflow">{{ title }}</div>
         <div v-if="description" class="welcome-description text-grey overflow">{{ description }}</div>
-        <div class="welcome-title overflow">{{ greeting }}，{{ userName }}</div>
+        <div class="welcome-title overflow">{{ greeting }}{{ greetingSeparator }}{{ userName }}</div>
         <div class="welcome-description text-grey overflow">{{ dateText }} · {{ rhythmText }}</div>
       </div>
       <div class="welcome-context">
@@ -23,12 +23,13 @@
 
 <script>
 import WorkbenchCard from '@/views/components/portal/components/display/WorkbenchCard.vue';
+import { $t } from '@/resources/init.js';
 
 export default {
   name: 'FrameworkWelcomeOverview',
   components: { WorkbenchCard },
   props: {
-    title: { type: String, default: '工作概况' },
+    title: { type: String, default: () => $t('term.workbench.welcomeoverview') },
     description: { type: String, default: '' },
     showTitle: { type: Boolean, default: true },
     config: { type: Object, default: () => ({}) }
@@ -56,38 +57,46 @@ export default {
     },
     userName() {
       const userInfo = this.$store.state.userInfo || {};
-      return userInfo.userName || userInfo.userId || '你好';
+      return userInfo.userName || userInfo.userId || this.$t('term.workbench.hello');
     },
     greeting() {
       if (this.hour < 6) {
-        return '夜深了';
+        return this.$t('term.workbench.latenightgreeting');
       }
       if (this.hour < 11) {
-        return '上午好';
+        return this.$t('term.workbench.morninggreeting');
       }
       if (this.hour < 14) {
-        return '中午好';
+        return this.$t('term.workbench.noongreeting');
       }
       if (this.hour < 18) {
-        return '下午好';
+        return this.$t('term.workbench.afternoongreeting');
       }
-      return '晚上好';
+      return this.$t('term.workbench.eveninggreeting');
     },
     rhythmText() {
       if (this.hour < 9) {
-        return '梳理计划，从重要事项开始';
+        return this.$t('term.workbench.morningprompt');
       }
       if (this.hour < 18) {
-        return '聚焦重要事项，保持清晰节奏';
+        return this.$t('term.workbench.dayprompt');
       }
-      return '回顾今日进展，安排后续事项';
+      return this.$t('term.workbench.eveningprompt');
     },
     periodIcon() {
       return this.hour >= 6 && this.hour < 18 ? 'tsfont-day' : 'tsfont-night';
     },
     dateText() {
-      const weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-      return `${this.now.getFullYear()}年${this.now.getMonth() + 1}月${this.now.getDate()}日 ${weekList[this.now.getDay()]}`;
+      const locale = this.$i18n.locale === 'en' ? 'en-US' : 'zh-CN';
+      return new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      }).format(this.now);
+    },
+    greetingSeparator() {
+      return this.$i18n.locale === 'en' ? ', ' : '，';
     },
     timeText() {
       const hour = String(this.now.getHours()).padStart(2, '0');

@@ -799,8 +799,8 @@ let routerList = [
     name: 'global-workbench-manage',
     component: globalWorkbenchManage,
     meta: {
-      title: '工作台管理',
       ismenu: true,
+      title: $t('router.framework.workbenchmanage'),
       icon: 'tsfont-m-dashboard',
       authority: ['PORTAL_MANAGE', 'ADMIN'],
       type: 'others',
@@ -812,8 +812,8 @@ let routerList = [
     name: 'global-workbench-edit',
     component: globalWorkbenchEdit,
     meta: {
-      title: '工作台配置',
       ismenu: false,
+      title: $t('router.framework.workbenchconfig'),
       icon: 'tsfont-m-dashboard',
       authority: '',
       type: 'others'
@@ -824,8 +824,8 @@ let routerList = [
     name: 'personal-workbench-edit',
     component: personalWorkbenchEdit,
     meta: {
-      title: '个人工作台配置',
       ismenu: false,
+      title: $t('router.framework.personalworkbenchconfig'),
       icon: 'tsfont-m-dashboard',
       authority: '',
       type: 'user'

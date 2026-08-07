@@ -9,7 +9,7 @@
   >
     <template slot="header">
       <div class="preview-dialog__header">
-        <div class="overflow">{{ workbench.name || '工作台' }} · 完整预览</div>
+        <div class="overflow">{{ $t('term.workbench.fullpreviewtitle', { name: workbench.name || $t('term.workbench.workbench') }) }}</div>
       </div>
     </template>
     <div class="preview-dialog__viewport bg-grey">

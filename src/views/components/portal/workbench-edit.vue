@@ -20,7 +20,7 @@
             ref="nameInput"
             :value="workbench.name"
             maxlength="50"
-            placeholder="工作台名称"
+            :placeholder="$t('term.workbench.workbenchname')"
             :validateList="[{ name: 'required', message: ' ' }]"
             border="border"
             @on-blur="setWorkbenchName"
@@ -46,7 +46,7 @@
           <div class="widget-library__search mb-sm">
             <TsFormInput
               v-model.trim="widgetKeyword"
-              placeholder="搜索组件"
+              :placeholder="$t('term.workbench.searchwidgets')"
               clearable
               border="border"
             ></TsFormInput>
@@ -58,7 +58,7 @@
             <div v-else-if="availableWidgetError" class="library-state flex-center text-center">
               <div class="library-warning bg-error-grey text-danger radius-md padding-xs">
                 {{ availableWidgetError }}
-                <span class="text-action ml-xs" @click="$emit('retry-widget-list')">重试</span>
+                <span class="text-action ml-xs" @click="$emit('retry-widget-list')">{{ $t('page.retry') }}</span>
               </div>
             </div>
             <template v-else>
@@ -90,10 +90,10 @@
                           v-if="getAddedCount(definition.name) || definition.__authorizationUnchecked || !isDefinitionAvailable(definition)"
                           class="widget-option-meta text-grey mt-xs"
                         >
-                          <span v-if="getAddedCount(definition.name)">已添加 {{ getAddedCount(definition.name) }}</span>
-                          <span v-if="definition.__authorizationUnchecked" class="text-warning">授权未校验</span>
+                          <span v-if="getAddedCount(definition.name)">{{ $t('term.workbench.addedcount', { count: getAddedCount(definition.name) }) }}</span>
+                          <span v-if="definition.__authorizationUnchecked" class="text-warning">{{ $t('term.workbench.authorizationunchecked') }}</span>
                           <span v-else-if="!isDefinitionAvailable(definition)" class="text-danger">
-                            {{ definition.__unavailableReason || '不可用' }}
+                            {{ definition.__unavailableReason || $t('term.workbench.unavailable') }}
                           </span>
                         </div>
                         <div class="widget-option-actions mt-xs">
@@ -101,7 +101,7 @@
                             :class="isDefinitionAvailable(definition) ? 'text-action' : 'text-disabled'"
                             @click.stop="addWidget(definition)"
                           >
-                            添加
+                            {{ $t('page.add') }}
                           </span>
                         </div>
                       </div>
@@ -173,8 +173,8 @@
           </grid-layout>
           <div v-else class="canvas-empty bg-op radius-lg flex-center text-center">
             <i class="tsfont-plus flex-center radius-md bg-selected text-primary"></i>
-            <div class="empty-title">从左侧添加组件</div>
-            <div class="text-grey">组件仅保存布局和展示参数，业务数据由模块组件自行加载。</div>
+            <div class="empty-title">{{ $t('term.workbench.addwidgethint') }}</div>
+            <div class="text-grey">{{ $t('term.workbench.widgetdatahint') }}</div>
           </div>
         </div>
         <Loading v-if="loading" :loadingShow="loading" type="fix"></Loading>
@@ -184,7 +184,7 @@
           <template v-if="currentWidget">
             <div class="panel-title align-center mb-md">
               <div>
-                <div class="text-title">组件配置</div>
+                <div class="text-title">{{ $t('term.workbench.widgetconfiguration') }}</div>
                 <div class="panel-subtitle text-grey mt-xs">{{ currentWidgetDefinition && currentWidgetDefinition.description }}</div>
               </div>
               <i
@@ -192,13 +192,13 @@
                 :class="[currentWidgetDefinition.icon, 'panel-icon flex-center radius-md bg-selected text-primary']"
               ></i>
             </div>
-            <TsFormItem label="标题" labelPosition="top">
+            <TsFormItem :label="$t('page.title')" labelPosition="top">
               <TsFormInput
                 :value="currentWidget.name"
                 @on-blur="value => setWidgetField('name', value)"
               ></TsFormInput>
             </TsFormItem>
-            <TsFormItem label="说明" labelPosition="top">
+            <TsFormItem :label="$t('page.explain')" labelPosition="top">
               <TsFormInput
                 :value="currentWidget.description"
                 type="textarea"
@@ -207,7 +207,7 @@
                 @change="value => setWidgetField('description', value)"
               ></TsFormInput>
             </TsFormItem>
-            <TsFormItem label="显示标题" labelPosition="top">
+            <TsFormItem :label="$t('term.workbench.showtitle')" labelPosition="top">
               <TsFormSwitch
                 :value="currentWidget.showTitle"
                 :trueValue="1"
@@ -216,18 +216,18 @@
                 @on-change="value => setWidgetField('showTitle', value)"
               ></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem label="背景透明" labelPosition="top">
+            <TsFormItem :label="$t('term.workbench.transparentbackground')" labelPosition="top">
               <TsFormSwitch
                 :value="currentWidget.backgroundTransparent"
                 :trueValue="1"
                 :falseValue="0"
                 :showStatus="true"
-                trueText="透明"
-                falseText="不透明"
+                :trueText="$t('term.workbench.transparent')"
+                :falseText="$t('term.workbench.opaque')"
                 @on-change="value => setWidgetField('backgroundTransparent', value)"
               ></TsFormSwitch>
             </TsFormItem>
-            <TsFormItem label="内边距" labelPosition="top">
+            <TsFormItem :label="$t('term.workbench.padding')" labelPosition="top">
               <Slider
                 :value="currentWidget.padding"
                 :min="0"
@@ -246,7 +246,7 @@
           <template v-else>
             <div class="panel-title align-center mb-md">
               <div>
-                <div class="text-title">模板配置</div>
+                <div class="text-title">{{ $t('term.workbench.templateconfiguration') }}</div>
                 <div class="panel-subtitle text-grey mt-xs">{{ templateConfigDescription }}</div>
               </div>
             </div>
@@ -320,14 +320,14 @@ export default {
       baseFormConfig: {
         isActive: {
           type: 'switch',
-          label: '是否启用',
+          label: this.$t('term.workbench.enabled'),
           trueValue: 1,
           falseValue: 0,
           onChange: () => this.emitInput()
         },
         authorityList: {
           type: 'userselect',
-          label: '适用用户',
+          label: this.$t('term.workbench.applicableusers'),
           groupList: ['common', 'user', 'role', 'team'],
           isMultiple: true,
           transfer: true,
@@ -464,18 +464,18 @@ export default {
         return false;
       }
       if (!this.widgetList.length) {
-        this.$Message.warning('请至少添加一个组件');
+        this.$Message.warning(this.$t('term.workbench.selectatleastonewidget'));
         return false;
       }
       if (
         this.showTemplateAuthority &&
         (!Array.isArray(this.workbench.authorityList) || !this.workbench.authorityList.some(item => !!item))
       ) {
-        this.$Message.warning('请选择适用用户');
+        this.$Message.warning(this.$t('term.workbench.selectapplicableuser'));
         return false;
       }
       if (!isWorkbenchWidgetListComplete(this.widgetList, this.widgetDefinitions)) {
-        this.$Message.warning('组件布局数据不完整，请重新添加组件');
+        this.$Message.warning(this.$t('term.workbench.invalidlayout'));
         return false;
       }
       const invalidWidget = this.widgetList.find(widget => {
@@ -487,7 +487,9 @@ export default {
         if (result === true || result === undefined) {
           return false;
         }
-        widget.__validateMessage = typeof result === 'string' ? result : `${definition.label || widget.name}配置不完整`;
+        widget.__validateMessage = typeof result === 'string'
+          ? result
+          : this.$t('term.workbench.incompletewidgetconfig', { name: definition.label || widget.name });
         return true;
       });
       if (invalidWidget) {
@@ -535,19 +537,19 @@ export default {
     },
     templateConfigDescription() {
       if (this.showTemplateAuthority) {
-        return '指定模板启用状态和适用对象，默认适用于所有人。';
+        return this.$t('term.workbench.globaltemplatehelp');
       }
       if (this.showTemplateActive) {
-        return '个人模板仅当前用户可用，可在此设置启用状态。';
+        return this.$t('term.workbench.personaltemplateedithelp');
       }
-      return '个人模板仅当前用户可用，保存后可在个人设置中选择引用。';
+      return this.$t('term.workbench.personaltemplatenewhelp');
     },
     widgetList() {
       const config = this.workbench.config || {};
       return config.widgetList || [];
     },
     widgetLibraryEmptyText() {
-      return this.widgetKeyword.trim() ? '暂无匹配组件' : '暂无授权组件';
+      return this.$t(this.widgetKeyword.trim() ? 'term.workbench.nowidgetsmatched' : 'term.workbench.nowidgetsavailable');
     },
     visibleModuleGroups() {
       const keyword = this.widgetKeyword.trim().toLowerCase();

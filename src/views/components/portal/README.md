@@ -58,3 +58,17 @@ export default {
 
 当模块未安装、被禁用或当前用户无模块访问权限时，其 provider 不会进入可添加组件
 列表；存量模板中的对应组件由公共 Host 隔离显示为不可用，不影响其他组件。
+
+## i18n 约定
+
+- 工作台专属术语、表单项、弹窗和消息统一维护在 `term.workbench`，中英文 key 必须保持一致。
+  标题、状态、优先级、添加、重试、时间范围等通用词组直接复用 `page` 顶层语言项，避免在工作台命名空间重复定义。
+- 路由和导航标题继续维护在 `router.framework`，不归入 `term.workbench`。
+- Provider 等非 Vue 文件通过 `@/resources/init.js` 导出的 `$t` 获取本地兜底文案。接口返回的组件名称、说明、
+  动态表头和错误消息仍为权威数据，后台需根据当前语言返回本地化内容。
+- 组件唯一名称、handler、API 地址和请求字段属于协议，不参与翻译。用户自定义的模板标题和组件说明按原值保存。
+- 工作台语境统一使用 `Workbench`、`Widget`、`Workbench Template`、`Work Order`、`Column Settings`、
+  `Search Criteria` 和 `Applies To`。引用操作统一使用 `Use This Workbench`、`In Use`、`Stop Using`。
+- 英文短 UI 文案使用 Title Case，完整句子使用 Sentence case；`ID`、`IP`、`AI`、`UUID`、`API`、`URL`、
+  `HTTP`、`HTTPS`、`SSH`、`SQL` 等通用缩写保持全大写。
+- 数量使用插值或 `$tc`，日期和星期使用当前 `$i18n.locale` 的本地化格式；管理预览 Demo 同样必须通过语言包生成。
