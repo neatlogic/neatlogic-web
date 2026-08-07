@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain :enableCollapse="true">
+    <TsContain :enableCollapse="true" topLeftWidth="82%" topRightWidth="18%">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/discovery-manage')">{{ $getFromPage() }}</span>
       </template>

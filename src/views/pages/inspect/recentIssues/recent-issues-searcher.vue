@@ -25,7 +25,7 @@
               <TsFormInput
                 v-model="keyword"
                 border="none"
-                :placeholder="$t('term.inspect.inputargetnameip')"
+                :placeholder="$t('term.inspect.inputtargetnameip')"
                 width="250px"
                 @on-enter="enterKeword"
               ></TsFormInput>

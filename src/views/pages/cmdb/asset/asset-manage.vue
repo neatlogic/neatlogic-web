@@ -339,7 +339,7 @@ export default {
       searchConfig: {
         isShowAdvanceMode: true,
         searchMode: 'clickBtnSearch',
-        placeholder: this.$t('term.inspect.inputargetnameip'),
+        placeholder: this.$t('term.inspect.inputtargetnameip'),
         searchList: [
           {
             type: 'select',

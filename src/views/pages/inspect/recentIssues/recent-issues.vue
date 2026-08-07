@@ -313,7 +313,7 @@ export default {
         rowNum: null
       },
       searchConfig: {
-        placeholder: this.$t('term.inspect.inputargetnameip'),
+        placeholder: this.$t('term.inspect.inputtargetnameip'),
         searchMode: 'clickBtnSearch', // 点击搜索按钮搜索
         searchList: [
           {
