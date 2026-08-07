@@ -66,8 +66,7 @@ export default {
       };
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

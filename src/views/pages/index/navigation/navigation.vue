@@ -15,7 +15,6 @@
           :bordered="false"
         >
           <div class="module-name text-default">{{ module.moduleName }}</div>
-          <!-- <div class="divider-line dividing-bg-color "></div> -->
           <div class="module-desc text-title">{{ module.description }}</div>
         </Card>
       </a>
@@ -41,9 +40,7 @@ export default {
       location.assign(HOME + '/' + this.defaultModuleId + '.html');
     }
   },
-  methods: {
-
-  },
+  methods: {},
   computed: {
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;

@@ -20,8 +20,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
     };
@@ -29,16 +28,14 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {
     content() {
@@ -91,8 +88,7 @@ export default {
       };
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

@@ -14,10 +14,10 @@
       className="message-drawer"
     >
       <Tabs ref="tabs" v-model="activeTab">
-        <TabPane name="message" :label="h=>renderLabel(h, '通知', messageCount)">
+        <TabPane name="message" :label="h=>renderLabel(h, $t('page.notify'), messageCount)">
           <Message :messageCount.sync="messageCount" :isDrawerShow.sync="isDrawerShow" />
         </TabPane>
-        <TabPane name="notice" :label="h=>renderLabel(h, '系统公告', noticeCount)">
+        <TabPane name="notice" :label="h=>renderLabel(h, $t('page.sysnotice'), noticeCount)">
           <Notice :noticeCount.sync="noticeCount" />
         </TabPane>
       </Tabs>

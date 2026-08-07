@@ -62,8 +62,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       isFirst: true,
@@ -97,9 +96,7 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {
-
-  },
+  beforeDestroy() {},
   destroyed() {},
   methods: {
     createRandomData() {

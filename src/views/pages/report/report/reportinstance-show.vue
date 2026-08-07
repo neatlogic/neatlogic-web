@@ -141,16 +141,6 @@ export default {
       this.cancelAxios = this.$https.CancelToken.source();
       this.loadingShow = true;
       this.reportContent = '';
-      /*this.$https.post('/api/binary/report/show/' + this.reportInstanceData.reportId, this.searchParam, {
-        cancelAxios: this.cancelAxios.token
-      }).then(res => {
-        _this.reportContent = res.data || res;
-        if (showStatus) {
-          _this.$Message.success(_this.$t('message.refreshsuccess'));
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });*/
       this.$api.report.report
         .showReportSvg(this.reportInstanceData.reportId, this.searchParam, this.cancelAxios.token)
         .then(res => {

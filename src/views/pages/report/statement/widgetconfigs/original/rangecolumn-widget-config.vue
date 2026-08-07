@@ -59,16 +59,12 @@ export default {
   name: '',
   components: {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    //TsFormSelect:()=>import('@/resources/plugins/TsForm/TsFormSelect'),
-    //TsFormRadio:()=>import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: { config: { type: Object } },
   data() {
     return {
       myConfig: {
-        //legend: { visible: true, position: 'bottom-center' },
-        //label: { visible: false, type: 'outer' },
         title: { visible: false, text: '' },
         description: { visible: false, text: '' },
         meta: {xField: {alias: this.$t('term.report.axis.xfield')}, yField: {alias: this.$t('term.report.axis.yfield')}}
