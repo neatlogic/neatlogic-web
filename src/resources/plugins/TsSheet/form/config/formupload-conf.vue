@@ -93,8 +93,8 @@ export default {
     changeType(type) {
       if (type === 'one' && this.config.templateList && this.config.templateList.length > 1) {
         this.$createDialog({
-          title: '确定切换单个附件',
-          content: '默认保存第一个附件模板文件。',
+          title: this.$t('page.confirmswitchsingleattachment'),
+          content: this.$t('page.keepfirstattachmenttemplatefiletip'),
           'on-ok': vnode => {
             this.setConfig('uploadType', type);
             this.setConfig('templateList', this.config.templateList.slice(0, 1));

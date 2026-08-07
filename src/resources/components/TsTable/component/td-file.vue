@@ -25,8 +25,7 @@
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   directives: { download },
   props: {
     list: {

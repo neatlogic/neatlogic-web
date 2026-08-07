@@ -26,17 +26,6 @@
               </div>
             </li>
           </ul>
-          <!-- <Page
-            class="page-container"
-            transfer
-            size="small"
-            show-total
-            :total="tableData.rowNum"
-            :current="tableData.currentPage"
-            :page-size="tableData.pageSize"
-            @on-change="searchData(arguments, 'currentPage',true)"
-            @on-page-size-change="searchData(arguments, 'pageSize',true)"
-          /> -->
         </div>
       </template>
     </TsContain>
@@ -126,7 +115,6 @@ export default {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 vnode.isShow = false;
                 this.tableData.tbodyList.splice(index, 1);
-              //this.searchData();
               }
             });
           }

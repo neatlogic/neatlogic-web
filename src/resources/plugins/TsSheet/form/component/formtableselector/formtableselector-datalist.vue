@@ -9,14 +9,6 @@
         :config="formItem.config"
         @changeConditionValue="changeConditionValue"
       ></CommonSearch>
-      <!-- <div
-        :is="formItem.config.matrixType === 'cmdbci'?'CmdbciSearch':'CommonSearch'"
-        :searchColumnDetailList="matrixData.searchColumnDetailList"
-        :filter="filter"
-        :searchConditionValueList="searchConditionValueList"
-        :config="formItem.config"
-        @changeConditionValue="changeConditionValue"
-      ></div> -->
     </template>
     <TsTable
       v-model="selectedIndexList"
@@ -424,18 +416,6 @@ export default {
       deep: true,
       immediate: true
     }
-    // 'matrixData.tbodyList': {
-    //   handler: function(val) {
-    //     if (val && val.length > 0) {
-    //       const selectedList = val.filter(d => d['_selected']);
-    //       this.$emit('change', selectedList);
-    //     } else {
-    //       this.$emit('change', []);
-    //     }
-    //   },
-    //   deep: true
-    // }
-
   }
 };
 </script>

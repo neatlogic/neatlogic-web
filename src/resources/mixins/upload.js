@@ -1,4 +1,5 @@
 import axios from '@/resources/api/http.js';
+import { $t } from '@/resources/init.js';
 export default {
   methods: {
     upload(url, params, headers, successFn, failedFn, startFn, processingFn) {
@@ -78,7 +79,7 @@ export default {
             const jsonText = await JSON.parse(text);
             ViewUI.Notice.error({
               title: '',
-              desc: jsonText.Message || '上传失败'
+              desc: jsonText.Message || $t('message.uploadfailed')
             });
             if (failedFn && typeof failedFn == 'function') {
               failedFn(jsonText);

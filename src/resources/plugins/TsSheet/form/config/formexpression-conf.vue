@@ -30,9 +30,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-    
-  },
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -41,9 +39,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-   
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

@@ -31,7 +31,6 @@ export default {
   name: '',
   components: {
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
-
   },
   props: {},
   data() {

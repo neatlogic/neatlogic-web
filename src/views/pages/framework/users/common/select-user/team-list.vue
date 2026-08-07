@@ -59,29 +59,18 @@ export default {
       setIsCheck: this.setIsCheck
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getTeamList();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getTeamList(param) {
       this.search = false;
@@ -159,11 +148,8 @@ export default {
       this.$emit('getSelect', this.selectList);
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

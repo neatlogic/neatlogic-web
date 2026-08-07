@@ -73,8 +73,8 @@
 <script>
 import formMixins from '@/resources/mixins/formMixins.js';
 import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker.vue';
-import TransferDom from '../../directives/transfer-dom.js';
-import { directive as ClickOutside } from '../../directives/v-click-outside-x.js';
+import TransferDom from '@/resources/directives/transfer-dom.js';
+import { directive as ClickOutside } from '@/resources/directives/v-click-outside-x.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
 export default {
   name: 'TimeSelect',
@@ -139,9 +139,6 @@ export default {
   },
   data() {
     var datetimerange = { value: '_datetimerange', text: this.$t('page.custom') };
-    // if (this.isMore) {
-    //   dataList.push(datetimerange);
-    // }
     return {
       datetimerange: datetimerange,
       isVisible: false,
@@ -351,7 +348,6 @@ export default {
       //更新dropdown，下拉框的位置
       if (this.$el) {
         setWidth(this.$el.querySelector('.select-body') || null, this.$refs.dropdown ? this.$refs.dropdown.$el : null, this.transfer);
-        // this.$refs.dropdownContain && this.$refs.dropdownContain.$children[0].update();
         this.$refs.dropdownContain && this.$refs.dropdownContain.$refs.drop && this.$refs.dropdownContain.$refs.drop.update();
       }
     },
@@ -361,7 +357,7 @@ export default {
       let currentValidList = this.filterValid(this.validateList) || [];
       if (this.$utils.isEmpty(currentValue) && !this.$utils.isEmpty(currentValidList) && (currentValidList instanceof Array) && currentValidList.find((item) => item.name == 'required')) {
         if (!currentValue || (!currentValue.timeRange && !currentValue.startTime)) {
-          this.validMesage = '请选择时间范围';
+          this.validMesage = this.$t('form.placeholder.pleaseselect', {'target': this.$t('page.timerange')});
           isValid = false;
         }
       } else {
@@ -419,9 +415,6 @@ function setWidth($contain, $target, transfer) {
       $target.parentNode.style.minWidth = newWidth + 'px';
     }
     $target.parentNode.style.width = 'auto';
-    // if (transfer) {
-    //   $target.parentNode.style.width = 'auto';
-    // }
   }
 }
 </script>

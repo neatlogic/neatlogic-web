@@ -77,28 +77,18 @@ export default {
     };
   },
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     !this.roleUuid && (this.teamList = this.$utils.deepClone(this.value) || []);
     this.getTeamList();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     onOk(type) {
       this.$emit('on-ok', type);
@@ -252,11 +242,8 @@ export default {
       return this.teamList;
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

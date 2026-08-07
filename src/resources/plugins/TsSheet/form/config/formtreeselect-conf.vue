@@ -74,7 +74,7 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {},
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

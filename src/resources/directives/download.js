@@ -1,6 +1,7 @@
 import axios from '@/resources/api/http.js';
 import qs from 'qs';
 import ViewUI from 'neatlogic-ui/iview/index.js';
+import { $t } from '@/resources/init.js';
 import { downloadBlobFile } from '@/resources/assets/js/downloadUtil.js';
 const download = {
   bind(el, binding) {
@@ -49,7 +50,7 @@ const download = {
                 duration: 0,
                 title: '',
                 render: h => {
-                  return h('span', ['已切换到后台导出，请到', h('a', {attrs: {href: HOME + '/framework.html#/user-export-file-manage', target: '_blank'}}, '导出管理'), '查看']);
+                  return h('span', [$t('page.backgroundexportprefix'), h('a', {attrs: {href: HOME + '/framework.html#/user-export-file-manage', target: '_blank'}}, $t('page.exportmanage')), $t('page.backgroundexportsuffix')]);
                 }
               });
             }
@@ -63,10 +64,10 @@ const download = {
               const jsonText = await JSON.parse(text);
               ViewUI.Notice.error({
                 title: '',
-                desc: jsonText.Message || '下载失败'
+                desc: jsonText.Message || $t('page.downloadfailed')
               });
             } else {
-              console.error('文件下载失败：', error);
+              console.error($t('page.filedownloadfailed'), error);
             }
             params.changeStatus && params.changeStatus('error', null);
           });
@@ -80,7 +81,7 @@ const download = {
         if (el.downparam) {
           downloadUrl(el.downparam);
         } else {
-          console.error('缺少下载地址');
+          console.error($t('page.missingdownloadurl'));
         }
       } else {
         if (binding.arg) {

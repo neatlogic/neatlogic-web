@@ -36,11 +36,6 @@
               class="login-int"
             />
           </div>
-          <!-- <div>
-            <Checkbox v-model="remember">
-              <span class="text-grey">Remember me</span>
-            </Checkbox>
-          </div> -->
           <div>
             <Button id="btnLogin" :loading="loading" @click="handleLogin">{{ $t('page.login') }}</Button>
           </div>

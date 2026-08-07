@@ -112,7 +112,6 @@ export default {
                 this.$Message.success(this.$t('message.deletesuccess'));
                 vnode.isShow = false;
                 this.tableData.tbodyList.splice(index, 1);
-              //this.searchData();
               }
             });
           }

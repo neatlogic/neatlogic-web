@@ -104,29 +104,6 @@ export default {
     this.$addWatchData(this.solutionConfig);
     this.getTree();
   },
-  /*beforeRouteLeave(to, from, next, url) {
-    let isSame = this.$utils.isSame(JSON.parse(this.initialSolution), this.solutionConfig);
-    if (isSame) {
-      url ? this.$utils.gotoHref(url) : next();
-    } else {
-      let _this = this;
-      this.$utils.jumpDialog.call(
-        this,
-        {
-          save: {
-            //保存数据
-            fn: async vnode => {
-              return await _this.saveSolution();
-            }
-          }
-        },
-        to,
-        from,
-        next,
-        url
-      );
-    }
-  },*/
   methods: {
     async beforeLeave() {
       return await this.saveSolution();
@@ -239,7 +216,6 @@ export default {
     },
     toEventTypeManage() {
       this.$router.push({path: '/event-type-manage'});
-      //window.open(HOME + '/process.html#/event-type-manage', '_blank');
     }
   }
 };

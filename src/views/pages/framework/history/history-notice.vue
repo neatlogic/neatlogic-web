@@ -188,7 +188,6 @@ export default {
 <style lang="less" scoped>
 .history-notice {
   overflow: hidden;
-  // height: calc(100vh - 56px - 56px - 2px);
   .top-container {
     height: 52px;
     position: sticky;

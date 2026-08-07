@@ -77,8 +77,7 @@ export default {
       isSubmitting: false
     };
   },
-  created() {
-  },
+  created() {},
   methods: {
     submit() {
       if (this.isSubmitting) {

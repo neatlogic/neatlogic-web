@@ -1,7 +1,5 @@
 export const WidgetBaseConfig = {
-  props: {
-   
-  },
+  props: {},
   data() {
     return {
       axisFontSizeList: [

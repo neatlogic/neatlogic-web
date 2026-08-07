@@ -178,7 +178,7 @@ export default {
           textConfig: null
         },
         {
-          title: this.$t('page.timeout'),
+          title: this.$t('term.process.timeout'),
           value: 'expireTime',
           textConfig: null
         }

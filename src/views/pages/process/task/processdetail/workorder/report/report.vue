@@ -177,7 +177,6 @@ export default {
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker'),
-    // TsFormSwitch:()=>import('@/resources/plugins/TsForm/TsFormSwitch'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
     ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },

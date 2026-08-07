@@ -102,7 +102,7 @@
                     <span class="cascade-name overflow" :title="node[textName]">{{ node[textName] }}</span>
                     <i v-if="hasChildren(node)" class="ivu-icon tsfont-right cascade-arrow"></i>
                   </div>
-                  <div v-if="!getFilteredColumnNodeList(column.list, columnIndex).length" class="cascade-empty text-tip">暂无数据</div>
+                  <div v-if="!getFilteredColumnNodeList(column.list, columnIndex).length" class="cascade-empty text-tip">{{ $t('page.nodata') }}</div>
                 </div>
               </div>
             </div>

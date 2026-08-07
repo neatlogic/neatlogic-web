@@ -52,7 +52,6 @@ export default {
     id: { type: Number }
   },
   data() {
-    const _this = this;
     return {
       conditionHandlerList: HANDLERS,
       conditionList: [],
@@ -102,9 +101,7 @@ export default {
         }
       }
     },
-    changeConditionHandler() {
-
-    },
+    changeConditionHandler() {},
     getDatasourceById() {
       if (this.id) {
         this.$api.framework.datawarehouse.getDatasourceById(this.id).then(res => {
@@ -137,7 +134,6 @@ export default {
               this.close();
             }
           });
-        //console.log(JSON.stringify(this.dataSourceData, null, 2));
         }
       }
     },

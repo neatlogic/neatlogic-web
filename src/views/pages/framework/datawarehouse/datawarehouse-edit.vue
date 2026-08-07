@@ -130,7 +130,6 @@ export default {
     id: { type: Number }
   },
   data() {
-    const _this = this;
     return {
       systemDsTypeList: ['mysql', 'mongodb', 'elasticsearch'],
       example: null,
@@ -213,16 +212,6 @@ export default {
           },
           desc: this.$t('message.framework.syncmodedesc')
         },
-        // {
-        //   type: 'radio',
-        //   name: 'dbType',
-        //   label: this.$t('page.dbtype'),
-        //   dataList: [],
-        //   validateList: [{ name: 'required' }],
-        //   onChange: dbType => {
-        //     this.reportDataSourceData.dbType = dbType;
-        //   }
-        // },
         {
           type: 'select',
           name: 'dbType',
@@ -288,7 +277,6 @@ export default {
   beforeCreate() {},
   async created() {
     this.getModuleList();
-    // this.getDatabaseList();
     this.getDatasourceById();
     this.getExample();
   },
@@ -306,32 +294,6 @@ export default {
         this.example = res;
       });
     },
-    // getDatabaseList() {
-    //   let params = {
-    //     currentPage: 1,
-    //     pageSize: 100
-    //   };
-    //   this.$api.framework.database.searchDatabaseList(params).then(res => {
-    //     let tbodyList = res.Return.tbodyList;
-    //     const dataList = [];
-    //     this.systemDsTypeList.forEach(d => {
-    //       dataList.push({ value: d, text: d });
-    //     });
-    //     tbodyList.forEach(item => {
-    //       let text = item.name;
-    //       let value = item.type + '-' + item.id;
-    //       dataList.push({
-    //         text: text,
-    //         value: value
-    //       });
-    //     });
-    //     this.formConfig.forEach(element => {
-    //       if (element.name == 'dbType') {
-    //         this.$set(element, 'dataList', dataList);
-    //       }
-    //     });
-    //   });
-    // },
     getModuleList() {
       this.$api.framework.module.searchModule().then(res => {
         if (res.Return) {

@@ -16,8 +16,7 @@
 <script>
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {},
   data() {
     return {

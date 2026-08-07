@@ -360,7 +360,6 @@ export default {
       this.updateRule();
     },
     updateRule() {
-      //console.log(JSON.stringify(this.rule, null, 2));
       this.$emit('input', this.rule);
     },
     isNeedAttrValue(condition) {

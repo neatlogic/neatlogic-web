@@ -130,7 +130,6 @@ export default {
     }
     .card-item {
       height: 48px;
-      // line-height: 56px;
       padding: 0 18px;
       margin-bottom: 8px;
       &:hover {
@@ -161,7 +160,6 @@ export default {
       right: 0;
       width: 99%;
       height: 0px;
-      // min-width: 700px;
     }
     .btn-list {
       min-width: 130px;
@@ -183,32 +181,26 @@ export default {
   }
   .title-block {
     display: inline-block;
-    // min-width: 50px;
-    // padding-top: 6px;
     width: 20%;
   }
   .data-block {
     display: inline-block;
-    // min-width: 70px;
     padding-top: 8px;
     width: 15%;
   }
   .time-block {
     display: inline-block;
-    // min-width: 100px;
     padding-top: 8px;
     width: 15%;
   }
   .files-block {
     display: inline-block;
-    // min-width: 80px;
     padding-top: 8px;
     width: 10%;
   }
   .content-box {
     width: 100%;
     min-height: 100px;
-    // max-height: 260px;
     margin-bottom: 10px;
     border: 1px solid;
     .content-top {

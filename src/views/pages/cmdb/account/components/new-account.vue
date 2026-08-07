@@ -70,6 +70,7 @@ export default {
           type: 'switch',
           name: 'isDefault',
           label: this.$t('page.isdefault'), // 默认账号
+          value: 0,
           validateList: ['required']
         },
         tagIdList: {

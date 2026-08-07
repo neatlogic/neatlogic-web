@@ -7,8 +7,7 @@
 
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
     width: {type: Number}, //真实宽度，减去外层的边距
     height: {tyoe: Number}, //真实高度，减去外层的边距

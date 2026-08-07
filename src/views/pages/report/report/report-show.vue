@@ -219,7 +219,6 @@ export default {
       this.$api.report.report
         .showReportSvg(this.id, this.searchParam, this.cancelAxios.token)
         .then(res => {
-          // _this.$refs['iframe'].src = 'data:text/html;charset=utf-8,' + res.data;
           this.reportContent = res.data || res;
           this.hasExecuted = true;
           if (showStatus) {

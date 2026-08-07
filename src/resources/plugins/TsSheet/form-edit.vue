@@ -142,7 +142,7 @@
                       <span class="action-item tsfont-trash-o" :class="activeVersionUuid == currentVersion.uuid && currentVersion.uuid ? 'disable' : ''" @click="delVersionModal(currentVersion.uuid, currentVersion.text)">{{ $t('page.delete') }}</span>
                     </DropdownItem>
                     <DropdownItem>
-                      <span class="action-item tsfont-chart-table" @click="addExtendConfig()">添加扩展数据</span>
+                      <span class="action-item tsfont-chart-table" @click="addExtendConfig()">{{ $t('page.addextenddata') }}</span>
                     </DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
@@ -309,10 +309,10 @@
       <template v-slot>
         <div>
           <div class="pb-sm">
-            当前表单为旧数据，
-            <span class="text-href" @click.stop="openOldForm">请点击查看</span>
+            {{ $t('page.currentformolddata') }}
+            <span class="text-href" @click.stop="openOldForm">{{ $t('page.clicktoview') }}</span>
           </div>
-          <div class="text-href" @click="$back('/form-overview')">返回表单管理</div>
+          <div class="text-href" @click="$back('/form-overview')">{{ $t('page.returnformmanagement') }}</div>
         </div>
       </template>
     </TsDialog>
@@ -924,8 +924,6 @@ export default {
       if (uuid && this.activeVersionUuid == uuid) {
         return;
       }
-      // '确定要删除' + (uuid == this.currentVersion.uuid ? '当前' : version) + '版本的表单',
-
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deletetargetconfirm', { target: version + this.$t('page.versions') }),
@@ -1213,12 +1211,10 @@ export default {
   top: 0px;
   width: 380px;
   height: 100%;
-  // overflow: auto;
 }
 .form-item {
   text-align: center;
   cursor: move;
-  // width: 50%;
   display: inline-block;
 }
 .customitem-btn {

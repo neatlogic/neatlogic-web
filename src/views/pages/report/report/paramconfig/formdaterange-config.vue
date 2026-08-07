@@ -45,8 +45,7 @@ export default {
   methods: {},
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less">

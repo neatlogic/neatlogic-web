@@ -1,7 +1,7 @@
 
 <template>
   <div class="tagent-manage">
-    <TsContain>
+    <TsContain topLeftWidth="70%" topRightWidth="30%">
       <template v-slot:topLeft>
         <div class="action-group">
           <span class="tsfont-refresh action-item" @click="goPages('batchUpgrade')">{{ $t('term.framework.batchupgrade') }}</span>

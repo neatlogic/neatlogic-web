@@ -4,9 +4,9 @@
       {{ $t('page.help') }}
       <template slot="desc">
         <ul>
-          <li>数据配置是一个json格式的字符串，字段说明如下：</li>
-          <li>this为vue实例对象</li>
-          <li>main为执行方法<span class="text-danger">(该方法名不可更改)</span>，输出数据为：
+          <li>{{ $t('page.dataconfigjsondesc') }}</li>
+          <li>{{ $t('page.thisisvueinstance') }}</li>
+          <li>{{ $t('page.mainmethod') }}<span class="text-danger">{{ $t('page.mainmethodfixedname') }}</span>{{ $t('page.outputdatais') }}
             <Poptip
               trigger="click"
               width="700"
@@ -24,8 +24,8 @@
               </div>
             </Poptip>
           </li>
-          <li>this.$.customFn()为自定义方法。要调用自定义方法，请使用<span class="text-danger">this.$</span>开头，例如：this.$.customFn()</li>
-          <li>示例：  <Poptip
+          <li>{{ $t('page.customfnprefix') }}<span class="text-danger">this.$</span>{{ $t('page.customfnsuffix') }}</li>
+          <li>{{ $t('page.eg') }}{{ $t('page.colon') }}  <Poptip
             trigger="click"
             width="700"
             :transfer="true"
@@ -62,22 +62,22 @@ export default {
       let list = [
       {
         handler: 'formtext',
-        label: '名称',
-        key: 'name',
-        type: 'form', //来源表单组件
-        tag: 'tag1', //自定义标签
+        label: 'label name',
+        key: 'key name',
+        type: 'form', // Source form component
+        tag: 'tag1' // tag name
       },
       {
-        handler: 'formtableinputer', //组件类型
-        label: '数据库', //名称
-        key: 'predistribution_dataBase', //英文名称（唯一标识）
-        type: 'form', //来源表单组件
-        tag: 'tag1', //自定义标签
+        handler: 'formtableinputer', // Component type
+        label: 'datasource', // label name
+        key: 'predistribution_dataBase', // Unique key
+        type: 'form', // Source form component
+        tag: 'tag1', // Custom tag
         config: {
-          dataConfig: [ //表头配置
+          dataConfig: [ // Table header configuration
             {
               handler: 'formtext',
-              label: '用户名',
+              label: 'label name',
               uuid: 'user'
             }
           ]
@@ -88,91 +88,36 @@ export default {
       return list;
     },
     customFn(tag) {
-    console.log(this.formItemList);//formItemList为当前表单引用组件
+      console.log(this.formItemList); // formItemList is the current form reference component list
       let attributeList = [];
-      //根据formItemList当前表单组件写转换代码
-
+      // Write conversion code according to the current form component list in formItemList
       return attributeList;
     }
 }`,
       attributeList: `[
         {
-         //普通组件类型：formselect(下拉)与formtext(文本)/formradio(单选)/formcheckbox(复选)等配置一致
+          // Common component types: formselect(dropdown), formtext(text), formradio(single choice), formcheckbox(multiple choice), etc.
           'handler': 'formselect',
-          'label': '资源规格_1_系统名称',
+          'label': 'label name',
           'key': 'formspecifications_systemName',
           'tag': 'common1',
           'type': 'form'
         },
         {
-         //表格组件配置：formtableinputer(表格数据组件)/formtableselector(表格选择组件)
+          // Table component types: formtableinputer(table data component), formtableselector(table selector component)
           'handler': 'formtableinputer',
-          'label': '资源规格_1_数据库',
-          'key': 'formspecifications_database',
+          'label': 'label name',
+          'key': 'formspecifications_os',
           'tag': 'common1',
           'type': 'form',
           'config': {
-            'dataConfig': [ //表头属性
+            'dataConfig': [
               {
                 'handler': 'formtext',
-                'label': '资源规格_1_数据库_需求编号',
+                'label': 'label name',
                 'uuid': 'xuqiu'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_配置项id',
-                'uuid': 'id'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_uuid',
-                'uuid': 'uuid'
-              },
-              {
-                'handler': 'formselect',
-                'label': '资源规格_1_数据库_模块名称',
-                'uuid': 'name'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_模块类型',
-                'uuid': 'moduleType'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_模块英文名称',
-                'uuid': 'moduleEnName'
-              },
-              {
-                'handler': 'formselect',
-                'label': '资源规格_1_数据库_数据库版本',
-                'uuid': 'dbVer'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_数据库类型',
-                'uuid': 'dbType'
-              },
-              {
-                'handler': 'formselect',
-                'label': '资源规格_1_数据库_交付标准',
-                'uuid': 'baseline'
-              },
-              {
-                'handler': 'formselect',
-                'label': '资源规格_1_数据库_字符集',
-                'uuid': 'charset'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_数据库名称',
-                'uuid': 'dbName'
-              },
-              {
-                'handler': 'formtext',
-                'label': '资源规格_1_数据库_用户名',
-                'uuid': 'userName'
               }
+             
             ]
           }
         }
@@ -189,8 +134,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {}

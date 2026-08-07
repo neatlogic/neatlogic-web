@@ -24,17 +24,14 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   filter: {},
   computed: {},
   watch: {

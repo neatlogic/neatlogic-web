@@ -4,10 +4,10 @@
       <Col :span="24">
         <Alert show-icon>
           <template v-if="formItem.handler && formItem.handler == 'formselect'">
-            对于下拉框组件：{{ $t('term.framework.requiredselectedtips') }}
+            {{ $t('page.formselectautoselecttip') }}
           </template>
           <div :class="formItem.handler && formItem.handler == 'formselect' ? 'mt-xs' : ''">
-            目前可作为组件值的组件有：下拉框、单选框、复选框、用户选择、上报人、日期、时间、表达式、文本框、工单信息。
+            {{ $t('page.availablecomponentvaluetip') }}
           </div>
         </Alert>
       </Col>

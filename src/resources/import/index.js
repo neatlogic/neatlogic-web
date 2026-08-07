@@ -5,5 +5,5 @@ try {
     requireImport(path);
   });
 } catch (error) {
-  console.error('加载import.js文件时发生异常:', error.stack);
+  console.error(error.stack);
 }

@@ -503,7 +503,7 @@ export default {
         } else {
           if (this.isInterface) {
             if (this.config.isLoading) {
-              text = '加载中';
+              text = this.$t('page.loadingtip');
             } else {
               text = this.config.name;
             }

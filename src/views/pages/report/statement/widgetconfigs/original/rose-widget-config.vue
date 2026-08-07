@@ -54,7 +54,6 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
-    //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: { config: { type: Object } },
   data() {
@@ -103,8 +102,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

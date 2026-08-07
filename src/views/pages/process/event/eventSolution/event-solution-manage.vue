@@ -53,7 +53,6 @@ export default {
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     Tsform: () => import('@/resources/plugins/TsForm/TsForm.vue'),
     InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
-    //UserCard:()=>import('@/resources/components/UserCard/UserCard.vue')
   },
   data() {
     const vm = this;

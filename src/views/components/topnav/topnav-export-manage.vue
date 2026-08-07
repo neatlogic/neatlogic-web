@@ -9,13 +9,10 @@
 <script>
 export default {
   name: '',
-  components: {
-
-  },
+  components: {},
   props: {},
   data() {
     return {
-      // unreadCount: 0
     };
   },
   beforeCreate() {},
@@ -34,7 +31,6 @@ export default {
     getUserExportFileUnReadCount() {
       this.$api.framework.userexportfile.getUserExportFileUnReadCount({}).then(res => {
         if (res.Status == 'OK') {
-          // this.unreadCount = res.Return.unreadCount;
           let unreadCount = res.Return.unreadCount;
           this.$store.commit('setUserExportFileUnreadCount', unreadCount);
         }

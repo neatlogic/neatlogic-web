@@ -264,7 +264,6 @@ export default {
       let data = {
         id: row.fileId
       };
-      // this.$utils.download(this, '/api/binary/file/download', data, 'post');
       this.isDownloading = index;
       let url = '/api/binary/file/download';
       this.$https.post(url, data, {responseType: 'blob'}).then(res => {

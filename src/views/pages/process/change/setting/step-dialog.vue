@@ -183,7 +183,6 @@ export default {
           width: '100%',
           format: 'yyyy-MM-dd',
           transfer: true
-          // validateList: [{ name: 'required', message: '请选择时间' }]
         },
         {
           type: 'slot',

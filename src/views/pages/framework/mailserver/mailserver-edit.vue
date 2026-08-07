@@ -3,24 +3,6 @@
     <TsContain>
       <template v-slot:topLeft>
         <span>{{ $t('dialog.title.edittarget',{'target':$t('page.server')}) }}</span>
-        <!-- <div class="action-group">
-          <template v-if="canBack || !uuid">
-            <span class="action-item tsfont-left" @click="goback()">邮件服务器管理</span>
-          </template>
-          <template v-else>
-            <span class="action-item disable tsfont-left">邮件服务器管理</span>
-          </template>
-          <template v-if="uuid">
-            <span class="block-item">
-              编辑服务器
-            </span>
-          </template>
-          <template v-else>
-            <span class="block-item">
-              新建服务器
-            </span>
-          </template>
-        </div> -->
       </template>
       <template v-slot:topRight>
         <div>
@@ -161,9 +143,7 @@ export default {
       disabledTest: false
     };
   },
-
   beforeCreate() {},
-
   created() {
     // this.uuid = this.$route.query.uuid || null;
     // if (this.uuid) {
@@ -171,23 +151,14 @@ export default {
     // }
     this.getData();
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     goback() {
       this.$router.push({
@@ -263,11 +234,8 @@ export default {
       this.$set(this.testVal, 'emailAddress', '');
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

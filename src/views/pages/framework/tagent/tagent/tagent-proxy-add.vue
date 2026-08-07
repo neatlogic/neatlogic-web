@@ -138,7 +138,6 @@ export default {
       if (form.valid()) {
         let params = form.getFormValue();
         this.$https.post('/api/rest/runner/save', params).then((res) => {
-          // console.log('添加代理成功', res);
           this.$emit('update:proxyConfig', 'success');
         });
       }
@@ -148,7 +147,6 @@ export default {
   watch: {
     proxyConfig: {
       handler(val) {
-        // console.log('watch监听的值', val);
         this.$set(this.formConfig.groupId, 'textName', val.name);
         this.$set(this.formConfig.groupId, 'valueName', val.row && val.row.id);
         this.$set(this.formConfig.id, 'value', val.row && val.row.id);
