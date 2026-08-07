@@ -192,11 +192,11 @@
     "reportmanage": "Report Management",
     "reportdetail": "Report Details",
     "reporttemplatemanage": "Report Template Management",
-    "sendplan": "Scheduled Delivery",
-    "editsendplan": "Edit send plan",
+    "sendplan": "Delivery Schedule",
+    "editsendplan": "Edit Delivery Schedule",
     "screendesign": "Large Screen Designer",
-    "screendetail": "Large screen details",
-    "screenmanage": "Large screen management"
+    "screendetail": "Large Screen Details",
+    "screenmanage": "Large Screen Management"
   },
   "pbc": {
     "interfacedata": "Interface Data",
