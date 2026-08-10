@@ -42,6 +42,7 @@
   "fail": "Failure",
   "relationtype": "Relation Type",
   "validate": "Validate",
+  "validationexception": "Validation Exception",
   "isrequired": "Is required",
   "isunique": "Is it unique",
   "ishidden": "Hide?",
@@ -1189,6 +1190,7 @@
   "sendanemail": "Send Email",
   "versionnumber": "Version Number",
   "strategy": "Strategy",
+  "schedulepolicy": "Schedule Policy",
   "filelist": "File List",
   "project": "Project",
   "service": "Service",
@@ -1218,5 +1220,11 @@
   "reenable": "Re-enable",
   "formattr": "Form Attributes",
   "november": "November",
-  "stop": "Stop"
+  "stop": "Stop",
+  "timeplan": "Time Schedule",
+  "adddata": "Add Data",
+  "exporttemplate": "Export Template",
+  "exportdata": "Export Data",
+  "propertyname": "Attribute Name",
+  "nameattribute": "Name Attribute"
 }

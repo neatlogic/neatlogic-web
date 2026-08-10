@@ -37,6 +37,14 @@
    - `zh.json` 与 `en.json` 的 key 必须保持一致。
    - 英文翻译保持清晰业务语义，常用词如 configuration item、mapping、sync、relation、topology。
 
+## i18n 通用翻译要求
+
+- 所有中英文翻译必须结合运维与软件研发专业语境，优先采用业内通用术语，避免脱离业务场景的直译或口语化表达。
+- 同一概念在页面、API、文档及语言包中应保持术语一致。
+- 英文短 UI 文案使用 Title Case。
+- 完整句子使用 Sentence case。
+- `ID`、`IP`、`AI`、`UUID`、`API`、`URL`、`HTTP`、`HTTPS`、`SSH`、`SQL` 等业界通用缩写保持全大写。
+
 ## Key 命名建议
 
 - 使用小写、简短、语义明确的 key。

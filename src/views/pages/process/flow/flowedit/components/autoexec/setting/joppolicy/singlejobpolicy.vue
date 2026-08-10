@@ -566,7 +566,7 @@
                     <span class="text-tip-active tsfont-trash-o delete-condition" @click="delFilterItem(r.filterList, findex)"></span>
                   </Col>
                 </TsRow>
-                <span class="tsfont-plus text-href" @click="addFilter(r.filterList)">{{ $t('term.pbc.adddata') }}</span>
+                <span class="tsfont-plus text-href" @click="addFilter(r.filterList)">{{ $t('page.adddata') }}</span>
               </div>
             </div>
           </Col>

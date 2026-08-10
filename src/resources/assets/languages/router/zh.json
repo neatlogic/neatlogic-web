@@ -249,16 +249,6 @@
     "thresholdrule": "阈值规则",
     "thresholdruledetail": "阈值规则详情"
   },
-  "pbc": {
-    "interfacedata": "接口数据",
-    "policymanage": "策略管理",
-    "executionrecordmanage": "执行记录管理",
-    "interfacemappingmanage": "接口映射管理",
-    "interfacemanage": "接口管理",
-    "propertymanage": "属性管理",
-    "organizationsetting": "机构设置",
-    "categorymanage": "分类标识管理"
-  },
   "globalsearch": {
     "searchcenter": "搜索中心"
   },
