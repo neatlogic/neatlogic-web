@@ -185,6 +185,9 @@
     "log": "View Logs",
     "regionmanage": "Region Management",
     "threadpool": "Thread Pool Monitoring",
+    "workbenchmanage": "Workbench Management",
+    "workbenchconfig": "Workbench Configuration",
+    "personalworkbenchconfig": "Personal Workbench Configuration",
     "ai": "AI"
   },
   "report": {
