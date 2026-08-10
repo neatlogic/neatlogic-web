@@ -5,6 +5,7 @@ export default {
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
     formItem: { type: Object },
     formItemList: { type: Array, default: () => [] },
+    referenceFormItemList: { type: Array, default: () => [] },
     filter: { type: Array }, //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },

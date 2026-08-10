@@ -186,6 +186,7 @@ export default {
       extraFormItemList: this.frozenExtraFormItemList,
       extendConfigList: this.frozenExtendConfigList,
       formItemList: this.frozenFormItemList,
+      referenceFormItemList: this.frozenReferenceFormItemList,
       externalData: this.frozenExternalData,
       isClearSpecifiedAttr: this.isClearSpecifiedAttr,
       isClearEchoFailedDefaultValue: true,
@@ -405,7 +406,7 @@ export default {
           if (extendDefinition?.validTableInputerConfig) {
             const extendErrorList = extendDefinition.validTableInputerConfig({
               formItem: element,
-              formItemList: [...this.config.dataConfig, ...(this.formItemList || [])]
+              formItemList: [...this.config.dataConfig, ...this.effectiveReferenceFormItemList]
             }) || [];
             extendErrorList.forEach(error => {
               errorList.push({ field: 'dataConfig', error: `【${element.label}】${error.error}` });
@@ -720,6 +721,14 @@ export default {
     },
     frozenFormItemList() {
       return Object.freeze([...this.formItemList || []]); // 解构不影响原数据
+    },
+    frozenReferenceFormItemList() {
+      return Object.freeze([...this.effectiveReferenceFormItemList]);
+    },
+    effectiveReferenceFormItemList() {
+      return this.referenceFormItemList && this.referenceFormItemList.length
+        ? this.referenceFormItemList
+        : (this.formItemList || []);
     },
     frozenExtraFormItemList() {
       return Object.freeze([...this.dataConfigList || []]);

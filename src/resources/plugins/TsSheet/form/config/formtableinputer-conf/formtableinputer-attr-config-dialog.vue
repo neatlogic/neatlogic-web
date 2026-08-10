@@ -373,7 +373,8 @@
             <component
               :is="propertyLocal.handler"
               :formItem="propertyLocal"
-              :formItemList="formItemList"
+              :formItemList="outerFormItemList"
+              :initFormItemList="initFormItemList"
               :extraFormItemList="formItemConfig.dataConfig"
               :isTableInputer="true"
               :source="source"
@@ -514,6 +515,10 @@ export default {
       default: true
     },
     formItemList: { //表格外部的组件
+      type: Array,
+      default: () => []
+    },
+    initFormItemList: {
       type: Array,
       default: () => []
     },
@@ -1026,7 +1031,18 @@ export default {
   computed: {
     allFormItemList() {
       //表格输入组件和表格外组件
-      return this.formItemConfig.dataConfig.concat(this.formItemList);
+      return this.formItemConfig.dataConfig.concat(this.outerFormItemList);
+    },
+    outerFormItemList() {
+      const formItemList = [...this.initFormItemList, ...this.formItemList];
+      const uuidSet = new Set();
+      return formItemList.filter(item => {
+        if (!item || !item.uuid || uuidSet.has(item.uuid)) {
+          return false;
+        }
+        uuidSet.add(item.uuid);
+        return true;
+      });
     },
     defaultValueSetting() {
       const setting = {};
