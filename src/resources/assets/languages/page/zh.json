@@ -42,6 +42,7 @@
   "fail": "失败",
   "relationtype": "关系类型",
   "validate": "校验",
+  "validationexception": "校验异常",
   "isrequired": "是否必填",
   "isunique": "是否唯一",
   "ishidden": "是否隐藏",
@@ -1190,6 +1191,7 @@
   "sendanemail": "发送邮件",
   "versionnumber": "版本号",
   "strategy": "策略",
+  "schedulepolicy": "定时策略",
   "filelist": "文件列表",
   "project": "项目",
   "service": "服务",
@@ -1217,5 +1219,11 @@
   "alluser": "所有人",
   "reenable": "重新激活",
   "formatr": "表单属性",
-  "inheritedfrom": "继承自"
+  "inheritedfrom": "继承自",
+  "timeplan": "时间计划",
+  "adddata": "添加数据",
+  "exporttemplate": "导出模板",
+  "exportdata": "导出数据",
+  "propertyname": "属性名称",
+  "nameattribute": "名称属性"
 }

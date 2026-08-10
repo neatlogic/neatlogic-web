@@ -16,7 +16,7 @@
           <div class="list">
             <div class="list-title">
               <div class="item-move">{{ $t('page.sort') }}</div>
-              <div class="item-content">{{ $t('term.pbc.propertyname') }}</div>
+              <div class="item-content">{{ $t('page.propertyname') }}</div>
             </div>
             <div v-if="matrixAttributeList.length > 0">
               <vuedraggable v-model="matrixAttributeList" :options="{ chosenClass: 'choose', animation: '150', handle: '.move' }">

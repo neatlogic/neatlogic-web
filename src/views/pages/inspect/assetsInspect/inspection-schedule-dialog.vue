@@ -173,7 +173,7 @@ export default {
           key: 'isLoad'
         },
         {
-          title: this.$t('term.pbc.timeplan'),
+          title: this.$t('page.timeplan'),
           key: 'cron',
           width: 200
         },

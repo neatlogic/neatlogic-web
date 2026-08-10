@@ -176,7 +176,7 @@ export default {
       attrFormConfig: {
         nameAttrId: {
           type: 'radio',
-          label: this.$t('term.cmdb.nameattribute'),
+          label: this.$t('page.nameattribute'),
           tooltip: this.$t('form.help.nameattribute'),
           descType: 'error',
           dataList: [],
