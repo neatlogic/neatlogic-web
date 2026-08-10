@@ -32,6 +32,11 @@ HistoryUtil.install = function (Vue, options) {
     if (url === path) {
       return true;
     }
+    // 二级路由可显式声明所属主菜单，避免依赖易误判的路径前缀匹配。
+    const activeMenuPath = this.$route.meta && normalizeBackPath(this.$route.meta.activeMenuPath);
+    if (activeMenuPath && url === activeMenuPath) {
+      return true;
+    }
     const fromPageList = this.$route.meta.fromPageList;
 
     if (fromPageList && fromPageList.length > 0) {

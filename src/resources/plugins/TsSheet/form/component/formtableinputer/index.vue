@@ -16,7 +16,7 @@
             formItem: formItem
           })"
         >
-          {{ $t('term.pbc.exporttemplate') }}
+          {{ $t('page.exporttemplate') }}
         </span>
         <span v-else class="action-item">
           <Icon
@@ -24,7 +24,7 @@
             size="18"
             class="loading"
           ></Icon>
-          {{ $t('term.pbc.exporttemplate') }}
+          {{ $t('page.exporttemplate') }}
         </span>
         <span
           v-if="isShowExportExcel"

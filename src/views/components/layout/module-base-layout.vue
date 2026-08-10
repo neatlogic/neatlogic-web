@@ -145,6 +145,11 @@ export default {
       return !!this.keepAliveInclude;
     },
     routerViewKey() {
+      // 路由显式声明固定 key 时，参数变化复用当前页面实例，避免无关区域重复装载。
+      const fixedRouterViewKey = this.$route.meta && this.$route.meta.fixedRouterViewKey;
+      if (fixedRouterViewKey) {
+        return fixedRouterViewKey;
+      }
       const ignoredQueryList = ['hidden-topnav', 'hidden-leftmenu', 'hidden-topnav-leftmenu'];
       const query = this.$route.query || {};
       const queryString = Object.keys(query)

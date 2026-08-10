@@ -230,7 +230,6 @@ export default {
       // 获取当前组件的index，调用父组件删除
       this.$createDialog({
         title: this.$t('page.warning'),
-        // content: '确定删除该组件【' + this.myWidgetName + '】？',
         content: this.$t('term.dashboard.deletewidgetconfirm', {target: this.myWidgetName}),
         btnType: 'error',
         'on-ok': vnode => {
