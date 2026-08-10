@@ -65,7 +65,7 @@ export default {
       ],
       searchConfigText: {
         protocolIdList: this.$t('page.protocol'),
-        stateIdList: this.$t('term.autoexec.assetstatus'),
+        stateIdList: this.$t('page.assetstatus'),
         inspectJobPhaseNodeStatusList: this.$t('page.jobstatus'),
         envIdList: this.$t('page.environment'),
         appSystemIdList: this.$t('page.system'),

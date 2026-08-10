@@ -12,7 +12,7 @@ export const createjobNodeValid = (nodeConfig, d, that) => {
   }
   if (that.$utils.isEmpty(createJobConfig.configList)) {
     validList.push({
-      name: $t('form.validate.leastonetarget', { target: $t('term.autoexec.job') }),
+      name: $t('form.validate.leastonetarget', { target: $t('page.job') }),
       href: '#createJobConfig'
     });
   }

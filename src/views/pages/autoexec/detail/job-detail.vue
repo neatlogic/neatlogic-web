@@ -76,7 +76,7 @@
       <template v-slot:topRight>
         <div ref="topRightRef" class="div-btn-contain action-group">
           <span v-if="jobData.extraInfo && jobData.extraInfo.isHasLock == 1" class="tsfont-lock text-action action-item text-warning" @click="globalLockShow">{{ $t('term.autoexec.resourcelock') }}</span>
-          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">{{ $t('term.deploy.flowchart') }}</span>
+          <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">{{ $t('page.flowchart') }}</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
           <span class="action-item tsfont-config" @click="openShowParam">{{ $t('page.param') }}</span>
           <span v-if="versionId != null" class="action-item tsfont-file-single icon" @click="openProjectDirectoryDialog(versionId)">{{ $t('term.deploy.projectdirectory') }}</span>
@@ -378,7 +378,7 @@ export default {
     abortJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.abort'), name: this.$t('term.autoexec.job') }),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.abort'), name: this.$t('page.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.abortJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -393,7 +393,7 @@ export default {
     pauseJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.pause'), name: this.$t('term.autoexec.job') }),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.pause'), name: this.$t('page.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.pauseJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -408,7 +408,7 @@ export default {
     executeJob() {
       this.$createDialog({
         title: this.$t('dialog.title.updateconfirm'),
-        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.execute'), name: this.$t('term.autoexec.job') }),
+        content: this.$t('dialog.content.tipconfirm', { target: this.$t('page.execute'), name: this.$t('page.job') }),
         'on-ok': vnode => {
           vnode.loading = true;
           this.$api.autoexec.job.executeJob({ jobId: this.jobData.id }).then(res => {
@@ -426,7 +426,7 @@ export default {
     revokeJob() {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', { target: this.$t('term.autoexec.job') }),
+        content: this.$t('dialog.content.revocationconfirm', { target: this.$t('page.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job.revokeJob({ jobId: this.jobData.id }).then(res => {
             if (res.Status == 'OK') {
@@ -551,7 +551,7 @@ export default {
     takeoverFn() {
       this.$createDialog({
         title: this.$t('term.autoexec.takeoverjob'),
-        content: this.$t('dialog.content.takeoverjobconfirm', { target: this.$t('term.autoexec.job') }),
+        content: this.$t('dialog.content.takeoverjobconfirm', { target: this.$t('page.job') }),
         'on-ok': vnode => {
           this.$api.autoexec.job
             .takeoverJob({ jobId: this.jobData.id })

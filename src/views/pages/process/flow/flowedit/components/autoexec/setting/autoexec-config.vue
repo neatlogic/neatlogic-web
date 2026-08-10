@@ -82,10 +82,10 @@
                     <TsTable :theadList="theadList" :tbodyList="tbodyList"></TsTable>
                   </div>
                   <div class="center-text">
-                    {{ $t('dialog.title.batchcreatetarget',{target:$t('term.autoexec.job')}) }}
+                    {{ $t('dialog.title.batchcreatetarget',{target:$t('page.job')}) }}
                   </div>
                   <div style="width:100px">
-                    <TsTable :theadList="[{ title: $t('page.autoexecjob'),key: 'jop'}]" :tbodyList="[{jop:$t('term.autoexec.job') + 'A'},{jop: $t('term.autoexec.job') + 'B'}]"></TsTable>
+                    <TsTable :theadList="[{ title: $t('page.autoexecjob'),key: 'jop'}]" :tbodyList="[{jop:$t('page.job') + 'A'},{jop: $t('page.job') + 'B'}]"></TsTable>
                   </div>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default {
         },
         {
           value: 'batch',
-          text: this.$t('dialog.title.batchcreatetarget', {'target': this.$t('term.autoexec.job')})
+          text: this.$t('dialog.title.batchcreatetarget', {'target': this.$t('page.job')})
         }
       ],
       theadList: [

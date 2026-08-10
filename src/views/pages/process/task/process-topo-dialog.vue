@@ -121,7 +121,7 @@ export default {
       if (this.isFlowReady && this.flowData && this.flowData.process && this.flowData.process.processConfig) {
         return this.flowData.process.processConfig.name;
       }
-      return this.$t('term.process.flowchart');
+      return this.$t('page.flowchart');
     },
     flowUuid() {
       if (this.isFlowReady && this.flowData && this.flowData.process && this.flowData.process.processConfig) {

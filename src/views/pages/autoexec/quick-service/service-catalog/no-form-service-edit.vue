@@ -6,10 +6,10 @@
       <div :class="getFlexClass(unfoldAndFold.jobName)">
         <template v-if="border !='border'">
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.jobName)" @click.stop="handleUnfoldAndFold('jobName')"></span>
-          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('term.autoexec.job') }}<i class="require-label"></i></span></Divider>
+          <Divider orientation="left" style="border-collapse: initial;"><span>{{ $t('page.job') }}<i class="require-label"></i></span></Divider>
         </template>
         <template v-else>
-          <span>{{ $t('term.autoexec.job') }}<i class="require-label"></i></span>
+          <span>{{ $t('page.job') }}<i class="require-label"></i></span>
           <span class="tsfont-down cursor" :class="getDownUpClass(unfoldAndFold.jobName)" @click.stop="handleUnfoldAndFold('jobName')"></span>
         </template>
       </div>

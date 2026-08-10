@@ -46,7 +46,6 @@
     "applicationdetail": "应用清单详情",
     "syncauditmanage": "自动采集同步记录",
     "dsltest": "自动采集同步记录",
-    "inspectstatus": "巡检状态",
     "graphedit": "编辑拓扑视图",
     "graphdata": "拓扑视图",
     "cientitymanage": "配置项",
@@ -269,12 +268,6 @@
     "documentdetail": "文档详情",
     "documentsearch": "文档搜索",
     "directorymanage": "文档目录管理"
-  },
-  "dr": {
-    "dr": "灾切",
-    "basicsetting": "基础设置",
-    "servicemanage": "服务清单",
-    "servicedetail": "服务清单详情"
   },
   "diagram": {
     "diagrammanage": "系统管理",

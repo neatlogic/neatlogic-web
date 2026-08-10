@@ -89,7 +89,7 @@ export default {
       isSaving: false,
       dialogConfig: {
         type: 'modal',
-        title: (this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add')) + this.$t('term.autoexec.job'),
+        title: (this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add')) + this.$t('page.job'),
         maskClose: false,
         isShow: true,
         width: 'medium'
