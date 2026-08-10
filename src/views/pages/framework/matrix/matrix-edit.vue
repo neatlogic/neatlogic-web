@@ -18,13 +18,13 @@
               <span class="tsfont-cloud">{{ $t('page.import') }}/{{ $t('page.export') }}</span>
               <DropdownMenu slot="list" class="dropdown">
                 <DropdownItem v-if="tabledata && tabledata.tbodyList && tabledata.tbodyList.length>0" v-download="downurl">
-                  <div>{{ $t('term.pbc.exportdata') }}</div>
+                  <div>{{ $t('page.exportdata') }}</div>
                 </DropdownItem>
                 <DropdownItem v-else>
-                  <div class="btn-disable">{{ $t('term.pbc.exportdata') }}</div>
+                  <div class="btn-disable">{{ $t('page.exportdata') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="exportAttributeMatrix">
-                  <div>{{ $t('term.pbc.exporttemplate') }}</div>
+                  <div>{{ $t('page.exporttemplate') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="$refs.uploadDialog.showDialog">
                   <span>{{ $t('page.importdata') }}</span>

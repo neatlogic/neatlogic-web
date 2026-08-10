@@ -198,16 +198,6 @@
     "screendetail": "Large Screen Details",
     "screenmanage": "Large Screen Management"
   },
-  "pbc": {
-    "interfacedata": "Interface Data",
-    "policymanage": "Policies",
-    "executionrecordmanage": "Execution Record Manage",
-    "interfacemappingmanage": "Interface Mapping Manage",
-    "interfacemanage": "Interfaces",
-    "propertymanage": "Propertys",
-    "organizationsetting": "Organizations",
-    "categorymanage": "Categories"
-  },
   "deploy": {
     "job": "Job",
     "config": "Configuration",
