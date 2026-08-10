@@ -235,12 +235,6 @@ export default {
       this.$router.push({
         path: 'mailserver-edit'
       });
-      // let _this = this;
-      // _this.formSetting.forEach(item => {
-      //   item.value = item.defaultValue;
-      // });
-      // this.editTsDialog.title = '添加服务器';
-      // this.editTsDialog.isShow = true;
     },
     getRowData(uuid) {
       let _this = this;
@@ -258,7 +252,6 @@ export default {
     },
     editRow(uuid) {
       this.editTsDialog.title = this.$t('dialog.title.edittarget', {'target': this.$t('page.server')});
-      // this.getRowData(uuid);
       this.$router.push({
         path: 'mailserver-edit',
         query: {
@@ -322,7 +315,6 @@ export default {
       }
     },
     cancelEditRow() {
-      // this.$router.push({});
       this.editTsDialog.isShow = false;
     },
     settableheight() {

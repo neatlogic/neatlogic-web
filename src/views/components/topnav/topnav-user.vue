@@ -61,7 +61,6 @@ export default {
     return {
       themeClass: localStorage.getItem('themeClass') || 'theme-default',
       isDropdown: false
-      // env: null
     };
   },
   mounted() {
@@ -72,7 +71,6 @@ export default {
     initLanguage() {
       let lang = BASELANGUAGES;
       this.$i18n.locale = lang;
-      // this.$i18n.locale = 'zh';
     },
     changeLanguage() {
       let lang = this.$i18n.locale;

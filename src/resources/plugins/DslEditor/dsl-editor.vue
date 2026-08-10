@@ -27,7 +27,7 @@
         @input="input"
       /></div>-->
     </div>
-    <div class="text-grey" style="line-height: 20px">帮助：输入表达式进行高级搜索，如果需要搜索关系或引用属性字段，可以使用a.b表示，例如env.name == "STG" && (port == 80 || port == 443 )</div>
+    <div class="text-grey" style="line-height: 20px">{{ $t('page.dsladvancedsearchhelp') }}</div>
     <div style="line-height: 20px">
       <span class="mr-xs text-grey">{{ $t('page.compareexpression') }}:</span>
       <Tag
@@ -138,7 +138,6 @@ export default {
           }
         } catch (e) {
           this.expressionData = null;
-          //console.error('解释异常', e);
         }
       } else {
         this.$emit('input', '');

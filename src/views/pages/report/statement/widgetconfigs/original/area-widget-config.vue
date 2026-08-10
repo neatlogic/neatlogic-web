@@ -136,12 +136,8 @@ export default {
     }
   },
   filter: {},
-  computed: {
-
-  },
-  watch: {
-
-  }
+  computed: {},
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

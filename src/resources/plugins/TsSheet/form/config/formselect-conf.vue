@@ -234,7 +234,7 @@ export default {
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
         { value: 'matrix', text: this.$t('page.matrix') },
-        { value: 'tag', text: this.$t('page.tag'), description: '数据来源为扩展数据'}
+        { value: 'tag', text: this.$t('page.tag'), description: this.$t('page.datasourceisextenddata')}
       ],
       defaultValueTypeList: [
         { value: 'self', text: this.$t('page.custom') },

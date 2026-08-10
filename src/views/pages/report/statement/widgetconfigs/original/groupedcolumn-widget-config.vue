@@ -167,8 +167,6 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
-    //TsFormRadio:()=>import('@/resources/plugins/TsForm/TsFormRadio'),
-    //TsFormInput:()=>import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: WidgetBaseConfig,
   props: { config: { type: Object } },
@@ -209,9 +207,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

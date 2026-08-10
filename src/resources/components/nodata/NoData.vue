@@ -102,7 +102,6 @@ export default {
   position: absolute;
   top: 180px;
   width: 100%;
-  // height: calc(100vh - 56px);
   .content {
     position: absolute;
     top: 40%;
@@ -116,7 +115,6 @@ export default {
     }
   }
 }
-
 .no-data-vertical-center {
     position: absolute;
     top: 50%;

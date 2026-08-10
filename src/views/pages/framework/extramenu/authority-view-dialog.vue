@@ -14,7 +14,7 @@
           <TsContain>
             <template slot="topRight">
               <TsRow>
-                <Col span="6">
+                <Col span="9">
                   <TsFormSelect
                     v-model="moduleName"
                     :dataList="groupList"
@@ -22,7 +22,7 @@
                     border="border"
                   ></TsFormSelect>
                 </Col>
-                <Col span="18">
+                <Col span="15">
                   <InputSearcher
                     v-model="keyword"
                     :placeholder="$t('page.keyword')"

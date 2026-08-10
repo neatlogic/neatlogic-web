@@ -140,31 +140,20 @@ export default {
       disabledTest: false
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.id) {
       this.getData();
     }
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     submit() {
       let form = this.$refs.form;
@@ -225,11 +214,8 @@ export default {
       this.$set(this.testVal, 'emailAddress', '');
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

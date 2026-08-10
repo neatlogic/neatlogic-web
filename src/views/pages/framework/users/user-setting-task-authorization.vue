@@ -167,12 +167,10 @@ export default {
       }
     };
   },
-
   created() {
     this.getAllService();
     this.getAgent();
   },
-
   methods: {
     format(labels, selectedData) {
       return labels[labels.length - 1];
@@ -181,9 +179,7 @@ export default {
       this.getAgent();
       this.authDialog.isShow = true;
     },
-    upClose() {
-
-    },
+    upClose() {},
     save() {
       let changeForm = this.$refs.saveForm;
       let that = this;
@@ -398,14 +394,6 @@ export default {
     margin-left: 16px;
   }
 }
-// ::v-deep .ivu-dropdown .ivu-select-dropdown{
-//   max-height: 300px;
-//   overflow: auto;
-// }
-// ::v-deep .ivu-cascader{
-//   width:calc(100%-140px)!important;
-// }
-
 .dimension-list{
   margin-bottom:10px;
   .dimension-item{
@@ -431,7 +419,6 @@ export default {
         position:absolute;
         right: 5px;
         top:0px;
-        // color:red;
       }
     }
     .itemsBox:hover{
@@ -444,7 +431,6 @@ export default {
       position:absolute;
       right:20px;
       top:-2px;
-      // color:red;
     }
   }
   .dimension-item:hover{

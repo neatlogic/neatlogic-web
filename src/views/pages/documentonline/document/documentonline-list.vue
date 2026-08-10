@@ -15,8 +15,7 @@
 <script>
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
     upwardNameList: Array
   },

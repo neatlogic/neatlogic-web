@@ -69,9 +69,7 @@ export default {
       roleDetail: null
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.uuid != null && this.type == 'user') {
       this.getUserDetail(this.uuid);
@@ -80,23 +78,14 @@ export default {
       this.getRoleDetail(this.uuid);
     }
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     //获取用户信息
     getUserDetail(val) {
@@ -121,9 +110,7 @@ export default {
       });
     }
   },
-
   filter: {},
-
   computed: {
     showRole() {
       return function(list) {
@@ -143,7 +130,6 @@ export default {
       };
     }
   },
-
   watch: {}
 };
 </script>

@@ -131,7 +131,7 @@ export default {
         execUser: '' // 执行用户
       },
       searchConfig: {
-        placeholder: this.$t('term.inspect.inputargetnameip'),
+        placeholder: this.$t('term.inspect.inputtargetnameip'),
         searchList: [
           {
             type: 'select',

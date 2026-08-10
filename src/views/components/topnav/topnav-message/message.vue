@@ -3,19 +3,19 @@
 
     <div v-show="!msgDetail">
       <div v-if="!hasSubscription" class="no-subscription">
-        <NoData text="未订阅任何消息" />
-        <div class="mt-10"><a :href="HOME + '/framework.html#/subscription-setting'" target="_blank">订阅设置</a></div>
+        <NoData :text="$t('page.nosubscribedmessage')" />
+        <div class="mt-10"><a :href="HOME + '/framework.html#/subscription-setting'" target="_blank">{{ $t('page.subscriptionsetting') }}</a></div>
       </div>
 
       <div v-else-if="messageList.length === 0" class="no-message">
-        <NoData text="暂无消息" />
-        <div class="mt-10"><a :href="HOME + '/framework.html#/history-overview?activeTab=HistoryMessage'" target="_blank">查看历史消息</a></div>
+        <NoData :text="$t('page.nomessage')" />
+        <div class="mt-10"><a :href="HOME + '/framework.html#/history-overview?activeTab=HistoryMessage'" target="_blank">{{ $t('page.viewhistorymessage') }}</a></div>
       </div>
 
       <section v-for="(messages, daysAgo) in messagesOfDaysAgo" :key="daysAgo" class="message-group">
         <header v-if="messages.length > 0" class="text-title flex-between border-color days-ago">
-          <span> {{ daysAgo === '0' ? '今天' : daysAgo === '1' ? '昨天' : `${daysAgo}天前` }} </span>
-          <i class="tsfont-close text-action" title="批量标记为已读" @click="readMessage({daysAgo})"></i>
+          <span> {{ getDaysAgoText(daysAgo) }} </span>
+          <i class="tsfont-close text-action" :title="$t('page.batchmarkasread')" @click="readMessage({daysAgo})"></i>
         </header>
         <ol class="message-list">
           <li
@@ -38,18 +38,18 @@
                 <div class="title" :class="{'overflow': !message.expand}" v-html="message.title"></div>
               </Tooltip>
               <time class="time text-title">{{ message.fcd | formatDate }}</time>
-              <i class="read text-action tsfont-close" title="标记为已读" @click="readMessage({messageId: message.id})"></i>
+              <i class="read text-action tsfont-close" :title="$t('page.markasread')" @click="readMessage({messageId: message.id})"></i>
             </header>
             <article v-imgViewer class="text-title content" :class="{'line-2': !message.expand}">
               <div style="verticalAlign: unset" v-html="message.content"></div>
             </article>
             <footer v-if="message.isOverflow" class="text-primary toggle-expand bg-block" @click="$set(message, 'expand', !message.expand)">
-              {{ message.expand ? '收起' : '查看详情' }}
+              {{ message.expand ? $t('page.packup') : $t('page.viewdetails') }}
             </footer>
           </li>
         </ol>
       </section>
-      <Divider v-if="isAllLoaded && messageList.length > 0" size="small" :style="{'margin': '20px 0'}">已经到底了</Divider>
+      <Divider v-if="isAllLoaded && messageList.length > 0" size="small" :style="{'margin': '20px 0'}">{{ $t('page.alreadyatthebottom') }}</Divider>
     </div>
 
     <div v-if="msgDetail" class="message-list">
@@ -62,7 +62,7 @@
         <header class="message-header">
           <div class="title" v-html="msgDetail.title"></div>
           <time class="time text-title">{{ msgDetail.fcd | formatDate }}</time>
-          <i class="read text-action tsfont-close" title="标记为已读" @click="closeMsgDetail(true)"></i>
+          <i class="read text-action tsfont-close" :title="$t('page.markasread')" @click="closeMsgDetail(true)"></i>
         </header>
         <article v-imgViewer class="text-title content" v-html="msgDetail.content"></article>
       </div>
@@ -70,11 +70,11 @@
     </div>
 
     <footer class="bottom-bar dividing-color flex-between">
-      <a class="text-action" :href="HOME + '/framework.html#/history-overview?activeTab=HistoryMessage'" target="_blank">历史消息</a>
-      <span class="text-action dividing-bg-color read-all" :class="{'hidden': messageList.length===0}" @click="readMessage(null)">全部标为已读</span>
+      <a class="text-action" :href="HOME + '/framework.html#/history-overview?activeTab=HistoryMessage'" target="_blank">{{ $t('page.historymessage') }}</a>
+      <span class="text-action dividing-bg-color read-all" :class="{'hidden': messageList.length===0}" @click="readMessage(null)">{{ $t('page.allmarkread') }}</span>
       <a
         class="tsfont-setting text-action"
-        title="订阅设置"
+        :title="$t('page.subscriptionsetting')"
         :href="HOME + '/framework.html#/subscription-setting'"
         target="_blank"
       ></a>
@@ -140,7 +140,7 @@ export default {
       this.contentElem = document.querySelector('.popup-msg-content');
       this.containerElem = this.contentElem.parentElement.parentElement;
       this.containerElem.classList.add('popup-msg-container', 'no-msgs');
-      this.containerElem.title = '打开消息中心查看详情';
+      this.containerElem.title = this.$t('page.openmessagecenterfordetails');
       this.containerElem.addEventListener('click', () => {
         this.msgDetail = {...this.popupMsg};
         this.$emit('update:isDrawerShow', true);
@@ -150,7 +150,7 @@ export default {
 
       const closeAllElem = document.createElement('i');
       closeAllElem.classList.add('tsfont-close', 'text-action', 'close-all');
-      closeAllElem.title = '关闭全部';
+      closeAllElem.title = this.$t('page.closeall');
       closeAllElem.addEventListener('click', event => {
         event.stopPropagation();
         this.closePopupMsg({maxMessageId: this.popupMsg.id});
@@ -159,7 +159,7 @@ export default {
 
       const oldCloseElem = this.containerElem.querySelector('.ivu-notice-notice-close'); 
       this.closeElem = oldCloseElem.cloneNode(true);
-      this.closeElem.title = '标记为已读';
+      this.closeElem.title = this.$t('page.markasread');
       this.closeElem.addEventListener('click', event => {
         event.stopPropagation();
         this.closePopupMsg({messageId: this.popupMsg.id});
@@ -169,6 +169,12 @@ export default {
       this.closingElem = oldCloseElem.cloneNode(false);
       this.closingElem.title = this.$t('page.loadingtip');
       this.closingElem.innerHTML = '<i class="loading ivu-icon ivu-icon-ios-loading popup-msg-closing"></i>';
+    },
+
+    getDaysAgoText(daysAgo) {
+      if (daysAgo === '0') return this.$t('page.today');
+      if (daysAgo === '1') return this.$t('page.yesterday');
+      return this.$t('page.daysago', {target: daysAgo});
     },
 
     async getMessageCount() {

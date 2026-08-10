@@ -67,9 +67,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-
-  },
+  methods: {},
   filter: {},
   computed: {
     config: function() {

@@ -1,8 +1,8 @@
 <template>
   <Scroll class="notice-scroller" v-bind="scrollConfig">
     <div v-if="noticeList.length === 0" class="text-center">
-      <NoData text="暂无公告" />
-      <div class="mt-10"><a :href="HOME + '/framework.html#/history-overview?activeTab=HistoryNotice'" target="_blank">查看历史公告</a></div>
+      <NoData :text="$t('page.noannouncement')" />
+      <div class="mt-10"><a :href="HOME + '/framework.html#/history-overview?activeTab=HistoryNotice'" target="_blank">{{ $t('page.viewhistoryannouncement') }}</a></div>
     </div>
 
     <section v-for="(notice, index) in noticeList" :key="notice.id" class="notice-wrapper">
@@ -23,19 +23,19 @@
     </section>
 
     <div class="bottom-bar dividing-color flex-between">
-      <a class="text-action" :href="HOME + '/framework.html#/history-overview?activeTab=HistoryNotice'" target="_blank">历史公告</a>
-      <span class="text-action dividing-bg-color read-all" :class="{'hidden': noticeList.length===0}" @click="readAll">全部标为已读</span>
+      <a class="text-action" :href="HOME + '/framework.html#/history-overview?activeTab=HistoryNotice'" target="_blank">{{ $t('page.historyannouncement') }}</a>
+      <span class="text-action dividing-bg-color read-all" :class="{'hidden': noticeList.length===0}" @click="readAll">{{ $t('page.allmarkread') }}</span>
       <a
         :href="HOME + '/framework.html#/notice-manage'"
         target="_blank"
-        title="系统公告管理" 
+        :title="$t('page.sysnoticemanagement')"
         :style="{'visibility': hasAuth ? 'visible' : 'hidden'}"
         class="tsfont-setting text-action"
       ></a>
     </div>
 
     <!-- 系统公告弹窗 -->
-    <Modal 
+    <Modal
       v-model="isDialogShow"
       className="notice-popup-dialog"
       width="632px"
@@ -45,7 +45,7 @@
       <div slot="close" class="tsfont-close text-action"></div>
       <div slot="header" class="header flex-center">
         <div><img src="~assets/images/notice.png" class="notice-img" /></div>
-        
+
         <div class="text-center">{{ noticeDetail.title }}</div>
       </div>
       <div
@@ -59,13 +59,13 @@
           v-if="popupIdList.length > 0 && popupIndex !== 0"
           :style="{'margin-right': '10px'}"
           @click="getNotice(popupIdList[--popupIndex])"
-        >上一条</Button>
+        >{{ $t('page.prev') }}</Button>
         <Button
           v-if="popupIndex+1 < popupIdList.length"
           type="primary"
           @click="read(popupIdList[popupIndex]), getNotice(popupIdList[++popupIndex])"
-        >下一条</Button>
-        <Button v-else type="primary" @click="isDialogShow = false">我知道了</Button>
+        >{{ $t('page.next') }}</Button>
+        <Button v-else type="primary" @click="isDialogShow = false">{{ $t('page.iknow') }}</Button>
       </div>
     </Modal>
 
@@ -93,7 +93,6 @@ export default {
       noticeDetail: {},
       scrollConfig: {
         height: null,
-        // onReachTop: () => this.pullNew(),
         onReachBottom: () => this.getOld(),
         distanceToEdge: [0, -100]
       }

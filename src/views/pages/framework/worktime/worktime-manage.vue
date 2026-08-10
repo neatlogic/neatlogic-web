@@ -787,8 +787,6 @@ export default {
 .table > tbody > tr > td {
   padding: 8px;
   vertical-align: top;
-
-  //border-top: 1px solid #ddd;
 }
 .monthTitle {
   text-align: center;

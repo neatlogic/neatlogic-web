@@ -30,24 +30,6 @@
         <i class="tsfont-info-o text-tip-active tips" :style="{ 'margin-left': '3px', transform: 'translateY(-1px)' }"></i>
         <div slot="content" class="tooltip-content" v-html="tooltip"></div>
       </Poptip>
-      <!-- <Tooltip
-        v-if="tooltip"
-        theme="light"
-        :offset="-12"
-        max-width="500"
-        :placement="tipPlacement"
-        transfer
-        style="line-height: initial;"
-        :transfer-class-name="prefixCls + '-label-tooltip'"
-      >
-        <i class="tsfont-info-o text-tip-active tips" :style="{ 'margin-left': '3px', transform: 'translateY(-1px)' }"></i>
-        <div
-          slot="content"
-          class="tooltip-content"
-          style="white-space:normal;word-break:break-all"
-          v-html="tooltip"
-        ></div>
-      </Tooltip>-->
     </label>
     <div :class="[prefixCls + '-content']" :style="contentStyles">
       <slot></slot>
@@ -190,7 +172,6 @@ export default {
     },
     labelStyles() {
       let style = {};
-      //const labelWidth = this.labelWidth === 0 || this.labelWidth ? this.labelWidth : this.FormInstance ? this.FormInstance.labelWidth :0;
       const labelWidth = this.labelWidth || 0;
       if (this.labelPosition != 'top') {
         style.width = `${labelWidth}px`;
@@ -202,7 +183,6 @@ export default {
     },
     contentStyles() {
       let style = {};
-      //const labelWidth = this.labelWidth === 0 || this.labelWidth ? this.labelWidth : this.FormInstance ? this.FormInstance.labelWidth :0;
       const labelWidth = this.labelWidth || 0;
       if (this.labelPosition != 'top') {
         style.marginLeft = `${labelWidth}px !important`;
@@ -262,14 +242,6 @@ function getRequired(validateList, required) {
     line-height: 32px;
     padding: 0px @space-normal 0px 0;
   }
-  // &.ivu-form-item-required{
-  //   .ivu-form-item-label{
-  //     padding-left: 3px;
-  //     &:before{
-
-  //     }
-  //   }
-  // }
 }
 .ivu-form-item .ivu-form-item {
   margin-bottom: @space-sm;

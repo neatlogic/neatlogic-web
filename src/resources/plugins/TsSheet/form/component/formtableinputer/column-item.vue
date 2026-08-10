@@ -11,8 +11,7 @@
         transfer
       >
         <Tag color="error">
-          <b>{{ configErrorList.length }}</b>
-          个异常
+          {{ $t('page.exceptioncounttarget', { target: configErrorList.length }) }}
         </Tag>
         <div slot="content">
           <ul>
@@ -31,8 +30,7 @@
         transfer
       >
         <Tag color="error" closable @on-close="handleCloseErrorMessage">
-          <b>{{ dataErrorList.length }}</b>
-          个异常
+          {{ $t('page.exceptioncounttarget', { target: dataErrorList.length }) }}
         </Tag>
         <div slot="content">
           <ul>

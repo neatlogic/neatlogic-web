@@ -656,10 +656,6 @@ export default {
 function setWidth($contain, $target, transfer) {
   if ($contain && $target) {
     let newWidth = $contain.clientWidth || 0;
-    // let oldWidth = $target.clientWidth || 0;
-    // if (newWidth != oldWidth) {
-    //   $target.parentNode.style.minWidth = newWidth + 'px';
-    // }
     $target.parentNode.style.minWidth = newWidth + 'px';
     $target.parentNode.style.width = 'auto';
   }
@@ -755,7 +751,6 @@ function setWidth($contain, $target, transfer) {
         }
       
         .ivu-tree-title{
-          //width: calc(100% - 20px);
           width:auto !important;
         }
       }

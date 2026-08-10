@@ -76,7 +76,6 @@ export default {
     }
     this.searchMatrixExternal(1);
   },
-
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},

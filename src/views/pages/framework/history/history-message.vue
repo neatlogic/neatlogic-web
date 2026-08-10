@@ -286,10 +286,7 @@ export default {
 
 <style lang="less">
 .history-message {
-  // height: calc(100vh - 56px - 56px - 2px);
   .tree-container {
-    // height: 100%;
-    // border-right: 1px solid;
     .ivu-tree-arrow {
       vertical-align: unset;
       &.all {

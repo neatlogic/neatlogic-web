@@ -146,7 +146,6 @@ export default {
     }
     this.searchMatrixView();
   },
-
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -282,7 +281,6 @@ export default {
       }
     }
   },
-
   filter: {},
   computed: {
     downurl() {

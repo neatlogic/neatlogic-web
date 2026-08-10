@@ -72,27 +72,16 @@ export default {
       }
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     searchkeyWord(value) {
       if (value) {
@@ -135,11 +124,8 @@ export default {
       });
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     tabsName(newVal) {
       this.$nextTick(() => {

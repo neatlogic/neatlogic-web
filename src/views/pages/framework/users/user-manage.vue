@@ -69,7 +69,6 @@
                     ></i-switch>
                     <span class="actionText" v-html="row.isActive == 1 ? $t('page.enable') : $t('page.disable')"></span>
                   </li>
-                  <!-- <li class="tsfont-edit" @click="authDialog(row);getAuthSelect(row)">{{ $t('page.auth') }}</li> -->
                   <li class="tsfont-edit icon" @click.stop="editUser(row, 'user')">{{ $t('page.edit') }}</li>
                   <li class="tsfont-permission icon" @click.stop="editUser(row, 'auth')">{{ $t('page.auth') }}</li>
                   <li class="tsfont-trash-o icon" @click.stop="deleteData(row)">{{ $t('page.delete') }}</li>
@@ -79,11 +78,6 @@
             </template>
           </TsTable>
         </div>
-        <!-- <div class="content-left">
-          <div v-if='authList && authList.length > 0'>
-            <CommonFilter :authList="authList" @filterSelect="filterUser" @filterRole="filterRole" type="user"></CommonFilter>
-          </div>
-        </div>-->
       </div>
     </TsContain>
     <TsDialog
@@ -591,15 +585,7 @@ export default {
     }
   },
   computed: {},
-  watch: {
-    // $route: {
-    //   handler: function(val) {
-    //     if (val) {
-    //       this.initTable();
-    //     }
-    //   }
-    // }
-  }
+  watch: {}
 };
 </script>
 

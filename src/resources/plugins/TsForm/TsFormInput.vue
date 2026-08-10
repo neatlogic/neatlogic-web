@@ -1,7 +1,5 @@
 <template>
   <div class="form-li" :class="borderClass" @keydown.stop>
-    <!-- <input v-if="type == 'password'" type="text" class="hidden" />
-    <input v-if="type == 'password'" type="password" class="hidden" /> -->
     <template v-if="readonly">
       <span
         v-if="type == 'textarea'"
@@ -249,7 +247,6 @@ export default {
       this.$emit('on-enter', value);
     },
     onSearchValue() {
-      //this.$emit('on-enter');
       this.$emit('on-search');
     },
     onClearValue() {

@@ -1644,9 +1644,6 @@ export default {
     value: {
       handler(newValue, oldValue) {
         let isSame = this.$utils.isSame(this.handleCurrentValue(newValue), this.currentValue);
-        // if ((this.multiple && JSON.stringify(newValue) == JSON.stringify(this.currentValue)) || (!this.multiple && newValue === this.currentValue)) {
-        //   isSame = true;
-        // }
         if (!isSame) {
           this.currentValue = this.handleCurrentValue(newValue);
           this.validMesage = '';
@@ -1745,9 +1742,6 @@ function setWidth($contain, $target, transfer) {
       $target.parentNode.style.minWidth = newWidth + 'px';
     }
     $target.parentNode.style.width = 'auto';
-    // if (transfer) {
-    //   $target.parentNode.style.width = 'auto';
-    // }
   }
 }
 </script>

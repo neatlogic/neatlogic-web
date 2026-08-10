@@ -83,12 +83,8 @@ export default {
     close() {
       this.$emit('close');
     },
-    async save() {
+    save() {
       this.$emit('close', this.selectedItemList);
-      // let errorList = await this.$refs.dataList.validData();
-      // if (this.$utils.isEmpty(errorList)) {
-      //   this.$emit('close', this.selectedItemList);
-      // }
     }
   },
   filter: {},
