@@ -37,6 +37,18 @@ const job = {
   searchMemoryJob(params) {
     return axios.post('/api/rest/scheduler/memory/search', params);
   },
+  // 查询定时作业来源列表及已有服务器组
+  searchJobSource(params) {
+    return axios.post('/api/rest/job/source/search', params);
+  },
+  // 单行或批量修改作业来源服务器组
+  updateJobSourceServerGroup(params) {
+    return axios.post('/api/rest/job/source/servergroup/update', params);
+  },
+  // 删除作业来源记录
+  deleteJobSource(params) {
+    return axios.post('/api/rest/job/source/delete', params);
+  },
   //测试定时作业
   test(params) {
     return axios.post('/api/rest/job/test', params);

@@ -8,22 +8,51 @@
           <span v-if="currentTab === 'config'" class="action-item">
             <span class="text-action tsfont-plus" @click="addJob()">{{ $t('term.autoexec.timingjob') }}</span>
           </span>
+          <!-- 执行记录和审计配置属于作业运行管理，不在作业来源页签展示。 -->
           <span class="action-item">
             <span class="text-action tsfont-history" @click="showAudit()">{{ $t('term.autoexec.executionrecord') }}</span>
           </span>
           <span v-auth="['ADMIN']" class="action-item"><AuditConfig auditName="SCHEDULER-AUDIT"></AuditConfig></span>
+          <!-- 来源行被勾选后，在页面左上角显示批量修改服务器组入口。 -->
+          <span
+            v-if="currentTab === 'source' && selectedSourceList.length > 0"
+            class="action-item text-action tsfont-edit"
+            @click="openSourceGroupDialog()"
+          >批量修改服务器组</span>
         </div>
       </template>
       <template slot="topRight">
-        <CombineSearcher v-model="searchVal" v-bind="currentSearchConfig" @change="handleSearchChange"></CombineSearcher>
+        <!-- 配置作业和已加载作业继续使用原组合搜索配置。 -->
+        <CombineSearcher
+          v-if="currentTab !== 'source'"
+          v-model="searchVal"
+          v-bind="currentSearchConfig"
+          @change="handleSearchChange"
+        ></CombineSearcher>
+        <!-- 作业来源搜索器放在父页面，通过组件ref触发子组件查询。 -->
+        <CombineSearcher
+          v-if="currentTab === 'source'"
+          v-model="searchVal"
+          v-bind="searchConfig"
+          @change="searchJobSource(1)"
+        ></CombineSearcher>
       </template>
       <div slot="content">
         <Tabs v-model="currentTab" :animated="false" @on-click="changeTab">
           <TabPane :label="$t('term.framework.configjob')" name="config"></TabPane>
           <TabPane :label="$t('term.framework.loadedjob')" name="memory"></TabPane>
+          <!-- 作业来源页签展示schedule_job_source表的服务器归属信息。 -->
+          <TabPane :label="$t('term.autoexec.jobsource')" name="source"></TabPane>
         </Tabs>
+        <!-- 父页面把搜索值传给来源组件，并接收勾选行以控制左上角批量按钮。 -->
+        <JobSourceManage
+          v-if="currentTab === 'source'"
+          ref="jobSourceManage"
+          :searchVal="searchVal"
+          @selection-change="getSelectedSource"
+        ></JobSourceManage>
         <TsTable
-          v-if="currentTableData"
+          v-else-if="currentTableData"
           :theadList="theadList"
           v-bind="currentTableData"
           hight="600"
@@ -142,7 +171,9 @@ export default {
     TsQuartz: () => import('@/resources/plugins/TsQuartz/TsQuartz.vue'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue'),
-    JobEdit: () => import('./job-edit-dialog.vue')
+    JobEdit: () => import('./job-edit-dialog.vue'),
+    // 作业来源表格与编辑交互由独立组件承载，工具栏由父页面统一展示。
+    JobSourceManage: () => import('./job-source-manage.vue')
   },
   filters: {
   },
@@ -160,6 +191,9 @@ export default {
       auditTableHeight: 0,
       pageSize: 20,
       searchVal: {},
+      // 保存子组件当前勾选行，用于控制左上角批量修改按钮。
+      selectedSourceList: [],
+      // 父页面仅维护配置作业和内存作业共用的表头。
       theadList: [
         {
           title: this.$t('page.name'),
@@ -223,7 +257,15 @@ export default {
         BLOCKED: this.$t('term.framework.blocked'),
         NONE: this.$t('term.framework.notexists')
       },
+      // 作业来源在父页面仅展示关键字搜索器。
       searchConfig: {
+        search: true,
+        labelPosition: 'left',
+        placeholder: this.$t('page.insert') + this.$t('page.name'),
+        searchList: []
+      },
+      // 配置作业和已加载作业使用原有的组合搜索条件。
+      jobSearchConfig: {
         search: true,
         labelPosition: 'left',
         placeholder: this.$t('page.insert') + this.$t('page.name'),
@@ -286,15 +328,36 @@ export default {
           status: null
         };
       }
+      // 切换页签时清空父页面保存的来源勾选行，避免残留显示批量按钮。
+      this.selectedSourceList = [];
+      // 作业来源组件挂载后会自行查询数据，父页面仅刷新自身维护的两个作业列表。
       this.searchCurrentTab(1);
     },
     handleSearchChange() {
       this.searchCurrentTab(1);
     },
+    // 父页面的来源搜索器通过ref调用子组件查询方法，接口调用仍由子组件封装。
+    searchJobSource(currentPage) {
+      const jobSourceManage = this.$refs.jobSourceManage;
+      if (jobSourceManage) {
+        jobSourceManage.searchJobSource(currentPage);
+      }
+    },
+    // 接收子组件勾选行，用于控制左上角批量修改按钮是否显示。
+    getSelectedSource(selectedSourceList) {
+      this.selectedSourceList = selectedSourceList || [];
+    },
+    // 左上角批量按钮调用子组件弹窗方法，服务器组保存逻辑继续复用子组件实现。
+    openSourceGroupDialog() {
+      const jobSourceManage = this.$refs.jobSourceManage;
+      if (jobSourceManage) {
+        jobSourceManage.openSourceGroupDialog(this.selectedSourceList);
+      }
+    },
     searchCurrentTab(currentPage, pageSize) {
       if (this.currentTab === 'memory') {
         this.searchMemoryJob(currentPage, pageSize);
-      } else {
+      } else if (this.currentTab === 'config') {
         this.searchJob(currentPage, pageSize);
       }
     },
@@ -469,6 +532,7 @@ export default {
 
   computed: {
     currentSearchConfig() {
+      // 父页面仅计算配置作业和内存作业使用的组合搜索条件。
       const statusList = this.currentTab === 'memory'
         ? Object.keys(this.jobStateMap).map(key => ({ value: key, text: this.jobStateMap[key] }))
         : [
@@ -476,9 +540,9 @@ export default {
           { value: 0, text: this.$t('page.disable') }
         ];
       return {
-        ...this.searchConfig,
+        ...this.jobSearchConfig,
         searchList: [
-          ...this.searchConfig.searchList,
+          ...this.jobSearchConfig.searchList,
           {
             type: 'radio',
             name: 'status',
