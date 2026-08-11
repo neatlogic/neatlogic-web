@@ -166,6 +166,7 @@ import validmixin from '../common/validate-mixin.js';
 import conditionMixin from './condition-mixin.js';
 import expressionMixin from './expression-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
+import { FORMITEMS } from '@/resources/plugins/TsSheet/form/formitem-list.js';
 export default {
   name: '',
   components: {
@@ -185,6 +186,7 @@ export default {
       extraFormItemList: this.frozenExtraFormItemList,
       extendConfigList: this.frozenExtendConfigList,
       formItemList: this.frozenFormItemList,
+      referenceFormItemList: this.frozenReferenceFormItemList,
       externalData: this.frozenExternalData,
       isClearSpecifiedAttr: this.isClearSpecifiedAttr,
       isClearEchoFailedDefaultValue: true,
@@ -399,6 +401,16 @@ export default {
             if (!config.format) {
               errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.format') }) });
             }
+          }
+          const extendDefinition = FORMITEMS.find(item => item.handler === element.handler && item.supportTableInputer);
+          if (extendDefinition?.validTableInputerConfig) {
+            const extendErrorList = extendDefinition.validTableInputerConfig({
+              formItem: element,
+              formItemList: [...this.config.dataConfig, ...this.effectiveReferenceFormItemList]
+            }) || [];
+            extendErrorList.forEach(error => {
+              errorList.push({ field: 'dataConfig', error: `【${element.label}】${error.error}` });
+            });
           }
         });
         if (!isKey) {
@@ -709,6 +721,14 @@ export default {
     },
     frozenFormItemList() {
       return Object.freeze([...this.formItemList || []]); // 解构不影响原数据
+    },
+    frozenReferenceFormItemList() {
+      return Object.freeze([...this.effectiveReferenceFormItemList]);
+    },
+    effectiveReferenceFormItemList() {
+      return this.referenceFormItemList && this.referenceFormItemList.length
+        ? this.referenceFormItemList
+        : (this.formItemList || []);
     },
     frozenExtraFormItemList() {
       return Object.freeze([...this.dataConfigList || []]);
