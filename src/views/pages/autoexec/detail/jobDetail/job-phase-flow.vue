@@ -36,7 +36,7 @@ export default {
       dialogConfig: {
         type: 'modal',
         isShow: true,
-        title: this.$t('term.deploy.flowchart'),
+        title: this.$t('page.flowchart'),
         width: 'medium'
       }
     };

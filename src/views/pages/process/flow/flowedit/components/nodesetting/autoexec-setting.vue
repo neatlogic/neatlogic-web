@@ -50,7 +50,7 @@
         </div>
       </div>
       <div v-if="!isValid && $utils.isEmpty(autoexecConfig.configList)" class="form-error-tip pl-nm">
-        {{ $t('form.validate.leastonetarget', {'target': $t('term.autoexec.job')}) }}
+        {{ $t('form.validate.leastonetarget', {'target': $t('page.job')}) }}
       </div>
     </div>
     <ConfigListDialog

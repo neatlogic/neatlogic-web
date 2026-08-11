@@ -217,16 +217,16 @@ export default {
       // theadList: [
       //   { key: 'ip', title: this.$t('page.ipaddress')},
       //   { key: 'name', title: this.$t('page.name')},
-      //   { key: 'monitorStatus', title: this.$t('term.inspect.monitoringstate')},
-      //   { key: 'inspectStatus', title: this.$t('term.autoexec.inspectstatus')},
-      //   { key: 'stateName', title: this.$t('term.autoexec.assetstatus')},
+      //   { key: 'monitorStatus', title: this.$t('page.monitoringstate')},
+      //   { key: 'inspectStatus', title: this.$t('page.inspectstatus')},
+      //   { key: 'stateName', title: this.$t('page.assetstatus')},
       //   { key: 'envName', title: this.$t('term.inspect.envname')},
-      //   { key: 'clusterName', title: this.$t('term.inspect.clustername')},
-      //   { key: 'dataCenterName', title: this.$t('term.inspect.datacenter')},
+      //   { key: 'clusterName', title: this.$t('page.clustername')},
+      //   { key: 'dataCenterName', title: this.$t('page.datacenter')},
       //   { key: 'networkArea', title: this.$t('page.networkarea')},
       //   { key: 'ownerList', title: this.$t('page.owner')},
-      //   { key: 'bgList', title: this.$t('term.autoexec.subordinatedepartment')},
-      //   { key: 'maintenanceWindow', title: this.$t('term.deploy.maintenancewindow')}
+      //   { key: 'bgList', title: this.$t('page.subordinatedepartment')},
+      //   { key: 'maintenanceWindow', title: this.$t('page.maintenancewindow')}
       // ]
     };
   },
