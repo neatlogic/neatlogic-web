@@ -318,8 +318,12 @@ export default {
       // 作业来源组件挂载后会自行查询数据，父页面仅刷新自身维护的两个作业列表。
       this.searchCurrentTab(1);
     },
-    handleSearchChange() {
-      this.searchCurrentTab(1);
+    handleSearchChange(searchValue) {
+      // CombineSearcher的change事件同时承担v-model更新，先保存事件中的最新条件，再等待子组件prop完成更新后查询。
+      this.searchVal = searchValue || {};
+      this.$nextTick(() => {
+        this.searchCurrentTab(1);
+      });
     },
     // 接收子组件勾选行，用于控制左上角批量修改按钮是否显示。
     getSelectedSource(selectedSourceList) {
