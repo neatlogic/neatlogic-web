@@ -257,11 +257,11 @@ export default {
             key: 'description'
           },
           {
-            title: this.$t('term.inspect.monitoringstate'),
+            title: this.$t('page.monitoringstate'),
             key: 'monitorTime'
           },
           {
-            title: this.$t('term.autoexec.inspectstatus'),
+            title: this.$t('page.inspectstatus'),
             key: 'inspectTime'
           },
           {
@@ -275,7 +275,7 @@ export default {
             valueKey: 'ip'
           },
           {
-            title: this.$t('term.autoexec.subordinatedepartment'),
+            title: this.$t('page.subordinatedepartment'),
             key: 'bgList',
             type: 'tag',
             valueKey: 'bgName'
@@ -286,7 +286,7 @@ export default {
             type: 'usercards'
           },
           {
-            title: this.$t('term.autoexec.assetstatus'),
+            title: this.$t('page.assetstatus'),
             key: 'stateName'
           },
           {
@@ -299,7 +299,7 @@ export default {
             type: 'tag'
           },
           {
-            title: this.$t('term.deploy.maintenancewindow'),
+            title: this.$t('page.maintenancewindow'),
             key: 'maintenanceWindow'
           },
           {
@@ -373,7 +373,7 @@ export default {
           {
             type: 'checkbox',
             name: 'inspectStatusList',
-            label: this.$t('term.autoexec.inspectstatus'),
+            label: this.$t('page.inspectstatus'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'InspectStatus' },
             dealDataByUrl: (nodeList) => this.dealInspectStatusDataByUrl(nodeList),
@@ -435,7 +435,7 @@ export default {
           {
             type: 'checkbox',
             name: 'stateIdList',
-            label: this.$t('term.autoexec.assetstatus'),
+            label: this.$t('page.assetstatus'),
             multiple: true,
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false },

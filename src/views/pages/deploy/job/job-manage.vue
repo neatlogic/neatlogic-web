@@ -6,7 +6,7 @@
           <template v-if="canExecuteAuth">
             <template v-if="searchParam.appSystemId">
               <template v-if="canAddJob">
-                <span class="tsfont-plus text-action action-item" @click="addJob">{{ $t('term.autoexec.job') }}</span>
+                <span class="tsfont-plus text-action action-item" @click="addJob">{{ $t('page.job') }}</span>
               </template>
               <template v-else>
                 <Tooltip
@@ -14,7 +14,7 @@
                   placement="right"
                   transfer
                 >
-                  <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
+                  <span class="tsfont-plus text-disabled action-item">{{ $t('page.job') }}</span>
                   <ul slot="content">
                     <li v-if="!selectedApp.isConfig"><span>{{ $t('term.deploy.currentapplynoconfig') }}</span>,<span v-if="canEditAuth" class="text-href" @click="toPipeline()">{{ $t('dialog.title.addtarget', {target: $t('page.config')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.config')})}) }}</span></li>
                     <li v-else-if="!selectedApp.isHasModule"><span>{{ $t('term.deploy.applynoconfigmodule') }}</span>,<span v-if="canEditAuth" class="text-href" @click="addModule()">{{ $t('dialog.title.addtarget', {target: $t('page.module')}) }}</span><span v-else>{{ $t('page.deploy.contactwithadmin',{target: $t('dialog.title.addtarget', {target: $t('page.module')})}) }}</span></li>
@@ -47,7 +47,7 @@
               placement="right"
               transfer
             >
-              <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
+              <span class="tsfont-plus text-disabled action-item">{{ $t('page.job') }}</span>
             </Tooltip>
           </template>
           <template v-else>
@@ -56,7 +56,7 @@
               placement="right"
               transfer
             >
-              <span class="tsfont-plus text-disabled action-item">{{ $t('term.autoexec.job') }}</span>
+              <span class="tsfont-plus text-disabled action-item">{{ $t('page.job') }}</span>
               <ul slot="content">
                 <li v-if="!searchParam.appSystemId">{{ $t('term.deploy.pleaseselectmoduleenvaddjob') }}</li>
                 <li v-else-if="!canEditAuth">{{ $t($t('page.deploynoexecuteconfigauthtip')) }}</li>

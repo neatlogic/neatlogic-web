@@ -57,7 +57,7 @@
       </div>
       <span class="tsfont-plus text-href" @click="addAutoexecList">{{ $t('term.autoexec.addjob') }}</span>
       <div v-if="!isValid && $utils.isEmpty(configList)" class="form-error-tip pl-nm">
-        {{ $t('form.validate.leastonetarget', {'target': $t('term.autoexec.job')}) }}
+        {{ $t('form.validate.leastonetarget', {'target': $t('page.job')}) }}
       </div>
     </TsDialog>
   </div>

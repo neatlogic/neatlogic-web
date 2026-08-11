@@ -26,7 +26,7 @@
         </TsFormItem>
       </template>
       <template v-else-if="editType=='takeover'">
-        {{ $t('dialog.content.takeoverjobconfirm', {target: $t('term.autoexec.job')}) }}
+        {{ $t('dialog.content.takeoverjobconfirm', {target: $t('page.job')}) }}
       </template>
     </TsDialog>
   </div>

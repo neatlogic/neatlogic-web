@@ -119,7 +119,7 @@
                         size="small"
                         type="default"
                         @click="resetUserToken(uuid)"
-                      >{{ $t('term.framework.recreate') }}</Button></span>
+                      >{{ $t('page.recreate') }}</Button></span>
                     </div>
                   </template>
                 </TsForm>

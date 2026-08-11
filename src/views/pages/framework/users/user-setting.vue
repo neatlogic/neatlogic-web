@@ -46,7 +46,7 @@
                   <div>
                     <span class="mr-md">{{ userToken }}</span>
                     <span>
-                      <Button size="small" type="default" @click="resetCurrentUserToken()">{{ $t('term.framework.recreate') }}</Button>
+                      <Button size="small" type="default" @click="resetCurrentUserToken()">{{ $t('page.recreate') }}</Button>
                     </span>
                   </div>
                 </template>

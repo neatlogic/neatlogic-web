@@ -56,9 +56,9 @@ export default {
         { title: this.$t('term.cmdb.citype'), key: 'typeLabel'},
         { title: this.$t('page.module'), key: 'appModuleName'},
         { title: this.$t('page.apply'), key: 'appSystemName'},
-        { title: this.$t('term.autoexec.assetstatus'), key: 'stateName'},
+        { title: this.$t('page.assetstatus'), key: 'stateName'},
         { title: this.$t('page.networkarea'), key: 'networkArea'},
-        { title: this.$t('term.autoexec.subordinatedepartment'), key: 'bgList', type: 'usercards'},
+        { title: this.$t('page.subordinatedepartment'), key: 'bgList', type: 'usercards'},
         { title: this.$t('page.owner'), key: 'ownerList', type: 'usercards'},
         { title: this.$t('term.autoexec.maintenanceperiod'), key: 'maintenanceWindow'},
         { title: this.$t('page.description'), key: 'description'}

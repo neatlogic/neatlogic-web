@@ -71,7 +71,7 @@
                     transfer-class-name="poptip-topo"
                     transfer
                   >
-                    <span class="text-action">{{ $t('term.deploy.flowchart') }}</span>
+                    <span class="text-action">{{ $t('page.flowchart') }}</span>
                     <div slot="content" class="step-topo">
                       <StepTopo :stepList="stepList" :execModeList="execModeList" @jumpToStep="jumpToStep"></StepTopo>
                     </div>

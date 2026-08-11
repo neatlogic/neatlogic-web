@@ -73,7 +73,7 @@
                     ></PrestepassignDialog>
                   </div>
                   <div class="text-list">
-                    <div class="title text-left text-tip form-label">{{ $t('term.process.assigngoals') }}</div>
+                    <div class="title text-left text-tip form-label overflow" :title="$t('term.process.assigngoals')">{{ $t('term.process.assigngoals') }}</div>
                     <div class="text custom-select">
                       <TsFormSelect
                         v-model="item.config.groupList"
@@ -86,7 +86,7 @@
                     </div>
                   </div>
                   <div class="text-list">
-                    <div class="title text-left text-tip form-label">{{ $t('term.process.assignscope') }}</div>
+                    <div class="title text-left text-tip form-label overflow" :title="$t('term.process.assignscope')">{{ $t('term.process.assignscope') }}</div>
                     <div class="text custom-select">
                       <div class="input-border">
                         <UserSelect
@@ -123,7 +123,7 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <div class="title text-left require-label text-tip form-label">{{ $t('term.process.prestep') }}</div>
+                    <div class="title text-left require-label text-tip form-label overflow" :title="$t('term.process.prestep')">{{ $t('term.process.prestep') }}</div>
                     <div class="text custom-select">
                       <div class="input-border">
                         <TsFormSelect
@@ -168,7 +168,7 @@
                       {{ $t('term.process.reviserelform') }}
                     </div>
                     <div v-else>
-                      <div class="title text-left require-label text-tip form-label">{{ $t('term.process.formvalue') }}</div>
+                      <div class="title text-left require-label text-tip form-label overflow" :title="$t('term.process.formvalue')">{{ $t('term.process.formvalue') }}</div>
                       <div class="text input-border custom-select">
                         <TsFormSelect
                           ref="dealValue"
@@ -203,7 +203,7 @@
                 <div v-if="item.isChecked == 1" class="content">
                   <div>
                     <div class="text-list">
-                      <div class="title text-left require-label text-tip form-label">{{ $t('term.process.dispatcher') }}</div>
+                      <div class="title text-left require-label text-tip form-label overflow" :title="$t('term.process.dispatcher')">{{ $t('term.process.dispatcher') }}</div>
                       <div class="text custom-select">
                         <div class="input-border">
                           <TsFormSelect
@@ -247,7 +247,7 @@
                 </div>
                 <div v-if="item.isChecked == 1" class="content">
                   <div class="text-list">
-                    <div class="title text-left require-label text-tip form-label">{{ $t('term.process.dealwithuser') }}</div>
+                    <div class="title text-left require-label text-tip form-label overflow" :title="$t('term.process.dealwithuser')">{{ $t('term.process.dealwithuser') }}</div>
                     <div class="text custom-select">
                       <div class="input-border" style="width:100%;">
                         <UserSelect

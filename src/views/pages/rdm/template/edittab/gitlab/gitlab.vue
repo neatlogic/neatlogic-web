@@ -8,7 +8,7 @@
         </Code>
       </div>
       <div>
-        <a @click="createWebhookUrl()">{{ $t('term.framework.recreate') }}</a>
+        <a @click="createWebhookUrl()">{{ $t('page.recreate') }}</a>
       </div>
     </TsFormItem>
     <TsFormItem label="Secret Token" labelPosition="top">
@@ -20,7 +20,7 @@
       </div>
       <div>
         <a v-if="appType.config.secretToken" class="mr-sm" @click="clearSecretToken()">{{ $t('page.clear') }}</a>
-        <a @click="createSecretToken()">{{ $t('term.framework.recreate') }}</a>
+        <a @click="createSecretToken()">{{ $t('page.recreate') }}</a>
       </div>
     </TsFormItem>
   </div>

@@ -2,7 +2,7 @@ import { $t } from '@/resources/init.js';
 
 export default {
   name: 'autoexec',
-  label: $t('term.deploy.flowchart'),
+  label: $t('page.flowchart'),
   type: 'autoexec',
   icon: 'tsfont-topo',
   widgetType: 'other',

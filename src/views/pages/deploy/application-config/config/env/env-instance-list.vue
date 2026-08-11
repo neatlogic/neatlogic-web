@@ -153,7 +153,7 @@ export default {
           key: 'port'
         },
         {
-          title: this.$t('term.deploy.maintenancewindow'),
+          title: this.$t('page.maintenancewindow'),
           key: 'maintenanceWindow'
         },
         {
