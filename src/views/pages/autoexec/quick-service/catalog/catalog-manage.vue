@@ -257,7 +257,7 @@ export default {
     },
     //搜索服务点击
     handleChange(id) {
-      if (id == null || id === '') {
+      if (this.$utils.isEmpty(id)) {
         return;
       }
       const zTreeObj = this.$refs.ztree && this.$refs.ztree.getZTreeObj();
