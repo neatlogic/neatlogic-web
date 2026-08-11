@@ -24,18 +24,17 @@
       <template slot="topRight">
         <!-- 配置作业和已加载作业继续使用原组合搜索配置。 -->
         <CombineSearcher
-          v-if="currentTab !== 'source'"
           v-model="searchVal"
           v-bind="currentSearchConfig"
           @change="handleSearchChange"
         ></CombineSearcher>
         <!-- 作业来源搜索器放在父页面，通过组件ref触发子组件查询。 -->
-        <CombineSearcher
+        <!-- <CombineSearcher
           v-if="currentTab === 'source'"
           v-model="searchVal"
           v-bind="searchConfig"
           @change="searchJobSource(1)"
-        ></CombineSearcher>
+        ></CombineSearcher> -->
       </template>
       <div slot="content">
         <Tabs v-model="currentTab" :animated="false" @on-click="changeTab">
@@ -258,12 +257,12 @@ export default {
         NONE: this.$t('term.framework.notexists')
       },
       // 作业来源在父页面仅展示关键字搜索器。
-      searchConfig: {
-        search: true,
-        labelPosition: 'left',
-        placeholder: this.$t('page.insert') + this.$t('page.name'),
-        searchList: []
-      },
+      // searchConfig: {
+      //   search: true,
+      //   labelPosition: 'left',
+      //   placeholder: this.$t('page.insert') + this.$t('page.name'),
+      //   searchList: []
+      // },
       // 配置作业和已加载作业使用原有的组合搜索条件。
       jobSearchConfig: {
         search: true,
@@ -337,12 +336,12 @@ export default {
       this.searchCurrentTab(1);
     },
     // 父页面的来源搜索器通过ref调用子组件查询方法，接口调用仍由子组件封装。
-    searchJobSource(currentPage) {
-      const jobSourceManage = this.$refs.jobSourceManage;
-      if (jobSourceManage) {
-        jobSourceManage.searchJobSource(currentPage);
-      }
-    },
+    // searchJobSource(currentPage) {
+    //   const jobSourceManage = this.$refs.jobSourceManage;
+    //   if (jobSourceManage) {
+    //     jobSourceManage.searchJobSource(currentPage);
+    //   }
+    // },
     // 接收子组件勾选行，用于控制左上角批量修改按钮是否显示。
     getSelectedSource(selectedSourceList) {
       this.selectedSourceList = selectedSourceList || [];
@@ -359,6 +358,11 @@ export default {
         this.searchMemoryJob(currentPage, pageSize);
       } else if (this.currentTab === 'config') {
         this.searchJob(currentPage, pageSize);
+      } else if (this.currentTab === 'source') {
+        const jobSourceManage = this.$refs.jobSourceManage;
+        if (jobSourceManage) {
+          jobSourceManage.searchJobSource(currentPage);
+        }
       }
     },
     changePage(currentPage) {
