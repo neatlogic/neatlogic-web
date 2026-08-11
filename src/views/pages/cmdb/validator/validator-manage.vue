@@ -81,7 +81,7 @@ export default {
       invokeId: null,
       isEditValidatorShow: false,
       attrList: [], //引用的属性列表
-      theadList: [{ key: 'name', title: this.$t('page.name'), type: 'linktext', textValue: 'view' }, { key: 'isActive', title: this.$t('term.report.isactive') }, { key: 'handlerName', title: this.$t('page.component') }, { key: 'invokeCount', title: this.$t('page.invokecount') }, { key: 'description', title: this.$t('page.description') }, { key: 'action' }]
+      theadList: [{ key: 'name', title: this.$t('page.name'), type: 'linktext', textValue: 'view' }, { key: 'isActive', title: this.$t('page.isactive') }, { key: 'handlerName', title: this.$t('page.component') }, { key: 'invokeCount', title: this.$t('page.invokecount') }, { key: 'description', title: this.$t('page.description') }, { key: 'action' }]
     };
   },
   beforeCreate() {},

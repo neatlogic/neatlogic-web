@@ -87,7 +87,7 @@ export default {
           {
             type: 'radio',
             name: 'isActive',
-            label: this.$t('term.report.isactive'),
+            label: this.$t('page.isactive'),
             dataList: [
               {
                 text: this.$t('page.yes'),
@@ -107,7 +107,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.report.isactive'),
+          title: this.$t('page.isactive'),
           key: 'isActive'
         },
         {

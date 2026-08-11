@@ -271,11 +271,5 @@
     "documentdetail": "文档详情",
     "documentsearch": "文档搜索",
     "directorymanage": "文档目录管理"
-  },
-  "diagram": {
-    "diagrammanage": "系统管理",
-    "catalogmanage": "目录管理",
-    "catalogdetail": "目录详情",
-    "diagramdetail": "架构图详情"
   }
 }
