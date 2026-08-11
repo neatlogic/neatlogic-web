@@ -852,8 +852,8 @@ export default {
 
     .add-btn {
       position: absolute;
-      left: 80px;
-      top: -60px;
+      left: 110px;
+      top: -58px;
       cursor: pointer;
       line-height: 20px;
     }
