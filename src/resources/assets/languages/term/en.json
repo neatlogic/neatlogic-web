@@ -4283,7 +4283,7 @@
     "boolean": "Boolean",
     "array": "Array",
     "authtype": "Authentication Method",
-    "mcpendpointexample": "For example, /mcp/api/{tenant} or https://example.com/mcp/api/{tenant}",
+    "mcpendpointexample": "For example, /api/mcp/{tenant} or https://example.com/api/mcp/{tenant}",
     "username": "Username",
     "password": "Password",
     "defaultmcppendpoint": "Use MCP endpoint by default",

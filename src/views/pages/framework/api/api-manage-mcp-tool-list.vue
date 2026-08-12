@@ -82,7 +82,7 @@ export default {
   },
   computed: {
     endpoint() {
-      return this.moduleScope ? `/mcp/api/${TENANT}/${this.moduleScope}` : `/mcp/api/${TENANT}`;
+      return this.moduleScope ? `/api/mcp/${TENANT}/${this.moduleScope}` : `/api/mcp/${TENANT}`;
     },
     requestBody() {
       return {

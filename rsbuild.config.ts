@@ -231,11 +231,11 @@ export default defineConfig({
         pathRewrite: { [`^/${tenantName}/public/api/(.*)`]: '/neatlogic/public/api/$1' },
         headers: { Tenant: tenantName }
       },
-      [`/${tenantName}/mcp/api/`]: {
+      [`/${tenantName}/api/mcp/`]: {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
-        pathRewrite: { '^/([^/]+)/mcp/api/(.*)': '/neatlogic/mcp/api/$2' }
+        pathRewrite: { '^/([^/]+)/api/mcp/(.*)': '/neatlogic/api/mcp/$2' }
       },
       [`/${tenantName}/api/`]: {
         target: urlPrefix,
