@@ -526,10 +526,9 @@ export default {
           { value: 1, text: this.$t('page.enable') },
           { value: 0, text: this.$t('page.disable') }
         ];
-      return {
-        ...this.jobSearchConfig,
-        searchList: [
-          ...this.jobSearchConfig.searchList,
+      const statusAndNeedAuditConfigList = this.currentTab === 'source'
+        ? []
+        : [
           {
             type: 'radio',
             name: 'status',
@@ -549,6 +548,12 @@ export default {
             transfer: true,
             allowToggle: true
           }
+        ];
+      return {
+        ...this.jobSearchConfig,
+        searchList: [
+          ...this.jobSearchConfig.searchList,
+          ...statusAndNeedAuditConfigList
         ]
       };
     },

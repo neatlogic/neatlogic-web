@@ -124,6 +124,8 @@ export default {
       }
       this.sourceSearchParam.pageSize = pageSize || this.pageSize;
       this.sourceSearchParam.keyword = this.searchVal.keyword || this.searchVal.searchWord || null;
+      this.sourceSearchParam.handler = this.searchVal.handler || null;
+      this.sourceSearchParam.moduleId = this.searchVal.moduleId || null;
       // 先卸载旧表格实例，同时清除TsTable内部保留的勾选状态。
       this.sourceTableData = null;
       this.selectedSourceList = [];
