@@ -93,7 +93,7 @@ export default {
         {
           name: 'isActive',
           type: 'switch',
-          label: this.$t('term.report.isactive'),
+          label: this.$t('page.isactive'),
           trueValue: 1,
           falseValue: 0
         },
@@ -107,7 +107,7 @@ export default {
         {
           name: 'relList',
           type: 'slot',
-          label: this.$t('term.diagram.relpath')
+          label: this.$t('page.relpath')
         }
       ]
     };

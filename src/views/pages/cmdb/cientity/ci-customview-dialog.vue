@@ -90,7 +90,7 @@ export default {
           validateList: ['required']
         },
         path: {
-          label: this.$t('term.diagram.relpath'),
+          label: this.$t('page.relpath'),
           type: 'slot',
           isHidden: !!this.viewId
         },

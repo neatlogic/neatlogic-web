@@ -57,6 +57,7 @@
           :style="{ width: mode != 'defaultvalue' ? (formItem.config && formItem.config.width) || '100%' : '100%' }"
           :formItem="formItem"
           :formItemList="formItemList"
+          :referenceFormItemList="referenceFormItemList"
           :value="formItemValue"
           :mode="mode"
           :filter="filter"
@@ -168,6 +169,7 @@ export default {
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition或defaultvalue,edit模式才会显示异常、联动等辅助图标
     formItem: { type: Object },
     formItemList: { type: Array }, //所有表单组件列表，用于filter联动
+    referenceFormItemList: { type: Array, default: () => [] }, //仅用于跨场景来源回显及配置校验
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
     formData: { type: Object }, //所有表单控件的值，用于联动时监听其他组件的数据，不传入这个参数不会激活监听
     customFormItem: { type: Object }, //测试时直接从外部传入的组件数据

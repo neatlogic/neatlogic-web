@@ -257,8 +257,17 @@ export default {
     },
     //搜索服务点击
     handleChange(id) {
-      this.selectedTreeId = id;
-      this.$set(this.serviceData, 'id', id);
+      if (this.$utils.isEmpty(id)) {
+        return;
+      }
+      const zTreeObj = this.$refs.ztree && this.$refs.ztree.getZTreeObj();
+      const treeNode = zTreeObj && zTreeObj.getNodeByParam('id', id, null);
+      if (treeNode) {
+        this.clickNode(zTreeObj, treeNode);
+      } else {
+        this.selectedTreeId = id;
+        this.$set(this.serviceData, 'id', id);
+      }
     },
     //保存信息
     handleSave() {

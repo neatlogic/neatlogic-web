@@ -100,7 +100,7 @@ export default {
       pageSize: 20,
       theadList: [
         { title: this.$t('page.name'), key: 'name', minWidth: 300, resizable: true },
-        { title: this.$t('term.report.isactive'), key: 'isActive', minWidth: 300, resizable: true },
+        { title: this.$t('page.isactive'), key: 'isActive', minWidth: 300, resizable: true },
         { title: this.$t('page.description'), key: 'desc', minWidth: 300, resizable: true },
         { key: 'action', title: '', type: 'action', operations: [{ icon: 'tsfont-trash-o', name: this.$t('page.delete'), action: 'del', type: 'text', style: '' }] }
       ],
@@ -174,7 +174,7 @@ export default {
           {
             type: 'radio',
             name: 'isActive',
-            label: this.$t('term.report.isactive'),
+            label: this.$t('page.isactive'),
             dataList: [
               {
                 text: this.$t('page.yes'),
