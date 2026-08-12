@@ -31,7 +31,7 @@
           ></TsFormRadio>
           <span v-else class="text-grey">{{ $t('term.framework.noavailablemq') }}</span>
         </TsFormItem>
-        <TsFormItem :label="$t('term.report.isactive')">
+        <TsFormItem :label="$t('page.isactive')">
           <TsFormSwitch
             v-model="topicData.isActive"
             :trueValue="1"

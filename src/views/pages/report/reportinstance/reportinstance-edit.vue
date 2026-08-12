@@ -161,7 +161,7 @@ export default {
         },
         isActive: {
           type: 'slot',
-          label: this.$t('term.report.isactive')
+          label: this.$t('page.isactive')
         },
         config: {
           type: 'slot',
@@ -183,7 +183,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.report.isactive'),
+          title: this.$t('page.isactive'),
           key: 'isActive'
         },
         {

@@ -62,8 +62,19 @@ const apiManage = {
     return axios.post('/api/rest/apimanage/mcp/help/get', params);
   },
   // 按MCP协议调用tool
-  mcpCall(endpoint, params) {
-    return axios.post(endpoint || '/api/mcp', params);
+  async mcpCall(endpoint, params) {
+    const tokenResponse = await axios.get('/api/rest/user/current/token/get');
+    const token = tokenResponse.Return || '';
+    return axios.post(endpoint, params, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json, text/event-stream',
+        'Content-Type': 'application/json',
+        'MCP-Protocol-Version': '2025-11-25',
+        AuthType: undefined,
+        AuthValue: undefined
+      }
+    });
   },
   // 获取接口的使用帮助
   help(url) {

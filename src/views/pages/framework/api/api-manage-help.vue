@@ -69,6 +69,9 @@
               <span>{{ mcpHelpData.scopedEndpoint || '-' }}</span>
               <span v-if="mcpHelpData.scopedEndpoint" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.scopedEndpoint)">{{ $t('page.copy') }}</span>
             </TsFormItem>
+            <TsFormItem :label="$t('term.framework.head')" :labelWidth="100">
+              <JsonViewer boxed copyable :value="mcpHelpData.requestHeaders || {}"></JsonViewer>
+            </TsFormItem>
             <TsFormItem :label="$t('term.framework.toolname')" :labelWidth="100">
               <span>{{ mcpHelpData.toolName || '-' }}</span>
               <span v-if="mcpHelpData.toolName" class="text-action tsfont-copy mcp-copy" @click="copyText(mcpHelpData.toolName)">{{ $t('page.copy') }}</span>

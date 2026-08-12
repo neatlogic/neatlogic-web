@@ -57,7 +57,7 @@ export default {
         {
           type: 'radio',
           name: 'isActive',
-          label: this.$t('term.report.isactive'),
+          label: this.$t('page.isactive'),
           dataList: [{value: 1, text: this.$t('page.yes')}, {value: 0, text: this.$t('page.no')}],
           validateList: ['required'],
           onChange: (isActive) => {

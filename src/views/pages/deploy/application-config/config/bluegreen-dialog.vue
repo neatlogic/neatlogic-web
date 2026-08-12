@@ -95,7 +95,7 @@ export default {
           key: 'name'
         },
         {
-          title: this.$t('term.report.isactive'),
+          title: this.$t('page.isactive'),
           key: 'isActive'
         },
         { key: 'action', title: ''}

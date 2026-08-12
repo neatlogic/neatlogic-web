@@ -317,7 +317,7 @@ export default {
           value: 1,
           trueValue: 1,
           falseValue: 0,
-          label: this.$t('term.report.isactive')
+          label: this.$t('page.isactive')
         },
         {
           type: 'userselect',
