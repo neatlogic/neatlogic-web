@@ -101,7 +101,6 @@ export default {
       ],
       sourceTableData: null,
       selectedSourceList: [],
-      sourceServerGroupList: [],
       isSourceGroupDialogShow: false,
       editingSourceList: [],
       sourceGroupFormData: {
@@ -140,10 +139,6 @@ export default {
               sourceKey: JSON.stringify([row.jobName, row.jobGroup])
             }))
           };
-          this.sourceServerGroupList = (result.serverGroupList || []).map(serverGroup => ({
-            text: serverGroup,
-            value: serverGroup
-          }));
         }
       }).finally(() => {
         this.loadingShow = false;
@@ -229,25 +224,15 @@ export default {
         ? '批量修改服务器组'
         : this.$t('page.edit') + this.$t('page.servergroup');
     },
-    // 服务器组使用TsFormSelect，允许选择已有分组或录入新分组，并限制数据库字段长度。
+    // 服务器组使用指定控件目录提供的TsFormInput，并与数据库varchar(100)字段保持相同长度限制。
     sourceGroupFormSetting() {
       return {
         serverGroup: {
-          type: 'select',
+          type: 'text',
           label: this.$t('page.servergroup'),
-          dataList: this.sourceServerGroupList,
-          search: true,
-          allowCreate: true,
-          transfer: true,
+          maxlength: 100,
           clearable: true,
-          forbidContent: '<>&',
-          validateList: [
-            {
-              name: 'custom',
-              message: '服务器组长度不能超过100个字符',
-              validator: (rule, value) => !value || value.length <= 100
-            }
-          ]
+          forbidContent: '<>&'
         }
       };
     }
