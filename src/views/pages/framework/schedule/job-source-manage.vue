@@ -196,8 +196,8 @@ export default {
     // 对话框标题区分单行编辑和批量修改场景。
     sourceGroupDialogTitle() {
       return this.editingSourceList.length > 1
-        ? '批量修改服务器组'
-        : this.$t('page.edit') + this.$t('page.servergroup');
+        ? this.$t('page.batchedit')
+        : this.$t('page.edit');
     },
     // 服务器组使用指定控件目录提供的TsFormInput，并与数据库varchar(100)字段保持相同长度限制。
     sourceGroupFormSetting() {

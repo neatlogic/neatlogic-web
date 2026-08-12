@@ -18,7 +18,7 @@
             v-if="currentTab === 'source' && selectedSourceList.length > 0"
             class="action-item text-action tsfont-edit"
             @click="openSourceGroupDialog()"
-          >批量修改服务器组</span>
+          >{{ $t('page.batchedit') }}</span>
         </div>
       </template>
       <template slot="topRight">
