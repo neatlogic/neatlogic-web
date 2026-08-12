@@ -50,6 +50,7 @@
           :style="componentStyle"
           :formItem="formItem"
           :formItemList="formItemList"
+          :referenceFormItemList="referenceFormItemList"
           :value="formItemValue"
           :mode="mode"
           :filter="filter"
@@ -93,6 +94,7 @@ export default {
     'extraFormItemList',
     'extendConfigList',
     'formItemList',
+    'referenceFormItemList',
     'externalData',
     'isClearSpecifiedAttr',
     'isClearEchoFailedDefaultValue',

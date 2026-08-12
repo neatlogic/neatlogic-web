@@ -177,7 +177,7 @@ export default {
       combopPhaseList: [],
       isModuleLoading: false,
       dialogConfig: {
-        title: this.$t('dialog.title.addtarget', {target: this.$t('term.autoexec.job')}),
+        title: this.$t('dialog.title.addtarget', {target: this.$t('page.job')}),
         type: 'modal',
         width: 'large',
         isShow: true

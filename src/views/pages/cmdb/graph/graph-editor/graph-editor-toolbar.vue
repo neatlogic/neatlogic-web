@@ -6,8 +6,8 @@
         :showStatus="true"
         :trueValue="true"
         :falseValue="false"
-        :trueText="$t('term.diagram.edgemode')"
-        :falseText="$t('term.diagram.edgemode')"
+        :trueText="$t('page.edgemode')"
+        :falseText="$t('page.edgemode')"
       ></TsFormSwitch>
     </div>
     <div v-if="!readonly" class="action-item"><Divider type="vertical"></Divider></div>

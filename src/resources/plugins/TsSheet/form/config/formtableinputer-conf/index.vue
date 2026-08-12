@@ -156,6 +156,7 @@
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"
+      :initFormItemList="initFormItemList"
       :formItemUuid="formItem.uuid"
       :source="source"
       :extendConfigList="extendConfigList"

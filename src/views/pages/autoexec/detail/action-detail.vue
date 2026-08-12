@@ -73,7 +73,7 @@
                   :title="!isActive ? $t('term.autoexec.activecombinetooltip') : !executable ? $t('term.autoexec.noexecuteauthrelateadmin') : ''"
                   ghost
                   @click="toExecute"
-                >{{ $t('term.autoexec.job') }}</Button>
+                >{{ $t('page.job') }}</Button>
               </span>
               <span v-if="!isActive && editable == 1" class="action-item">
                 <Button

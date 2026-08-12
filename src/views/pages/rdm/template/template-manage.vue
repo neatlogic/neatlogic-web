@@ -43,7 +43,7 @@ export default {
         },
         {
           key: 'isActive',
-          title: this.$t('term.report.isactive')
+          title: this.$t('page.isactive')
         },
         {
           key: 'action'

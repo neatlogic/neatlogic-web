@@ -244,6 +244,7 @@
                   :formItem="cell.component"
                   :formData="formData"
                   :formItemList="formItemList"
+                  :referenceFormItemList="effectiveReferenceFormItemList"
                   :formDataForWatch="formData"
                   :mode="mode"
                   :disabled="disabled"
@@ -338,6 +339,7 @@
             :formData="formData"
             :formDataForWatch="formData"
             :formItemList="formItemList"
+            :referenceFormItemList="effectiveReferenceFormItemList"
             :mode="mode"
             :isCustomValue="true"
             :formExtendData="formExtendData"
@@ -447,6 +449,10 @@ export default {
     rowUuid: String, //表单子组件行uuid
     defaultExtendConfigList: {
       // 扩展配置列表
+      type: Array,
+      default: () => []
+    },
+    referenceFormItemList: {
       type: Array,
       default: () => []
     }
@@ -2477,6 +2483,24 @@ export default {
         formItemList.push(...this.hideComponentList);
       }
       return Object.freeze(formItemList);
+    },
+    effectiveReferenceFormItemList() {
+      if (this.referenceFormItemList.length) {
+        return Object.freeze([...this.referenceFormItemList]);
+      }
+      if (this.formSceneUuid && this.value) {
+        const formItemList = [];
+        (this.value.tableList || []).forEach(item => {
+          if (item && item.component) {
+            formItemList.push(item.component);
+          }
+        });
+        formItemList.push(...(this.value.hideComponentList || []));
+        if (formItemList.length) {
+          return Object.freeze(formItemList);
+        }
+      }
+      return this.formItemList;
     },
     //能否回退
     canFallback() {

@@ -46,7 +46,6 @@
     "applicationdetail": "应用清单详情",
     "syncauditmanage": "自动采集同步记录",
     "dsltest": "自动采集同步记录",
-    "inspectstatus": "巡检状态",
     "graphedit": "编辑拓扑视图",
     "graphdata": "拓扑视图",
     "cientitymanage": "配置项",
@@ -182,6 +181,9 @@
     "log": "查看日志",
     "regionmanage": "地域管理",
     "threadpool": "线程池监控",
+    "workbenchmanage": "工作台管理",
+    "workbenchconfig": "工作台配置",
+    "personalworkbenchconfig": "个人工作台配置",
     "ai": "AI"
   },
   "report": {
@@ -269,17 +271,5 @@
     "documentdetail": "文档详情",
     "documentsearch": "文档搜索",
     "directorymanage": "文档目录管理"
-  },
-  "dr": {
-    "dr": "灾切",
-    "basicsetting": "基础设置",
-    "servicemanage": "服务清单",
-    "servicedetail": "服务清单详情"
-  },
-  "diagram": {
-    "diagrammanage": "系统管理",
-    "catalogmanage": "目录管理",
-    "catalogdetail": "目录详情",
-    "diagramdetail": "架构图详情"
   }
 }

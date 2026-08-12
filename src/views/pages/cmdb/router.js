@@ -534,7 +534,7 @@ let routerArr = [
     name: 'inspect-status-detail',
     component: inspectStatusDetail,
     meta: {
-      title: $t('router.cmdb.inspectstatus'),
+      title: $t('page.inspectstatus'),
       ismenu: false,
       authority: ['CMDB_BASE', 'INSPECT_BASE']
     }

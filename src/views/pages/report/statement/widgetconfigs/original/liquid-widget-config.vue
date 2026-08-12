@@ -51,7 +51,7 @@
           :value="config.pattern?.type"
           :dataList="[
             { value: '', text: $t('term.report.purecolor') },
-            { value: 'dot', text: $t('term.report.dot') },
+            { value: 'dot', text: $t('page.dot') },
             { value: 'line', text: $t('term.report.line') },
             { value: 'square', text: $t('page.square') }
           ]"

@@ -93,7 +93,7 @@ export default {
       default: ''
     },
     processTaskId: { type: [Number, String] }, // 流程任务id
-    processName: { type: String, default: () => $t('term.process.flowchart') }, // 流程名称
+    processName: { type: String, default: () => $t('page.flowchart') }, // 流程名称
     needExportFlow: { type: Boolean, default: false } // 是否需要导出流程图
   },
   data() {

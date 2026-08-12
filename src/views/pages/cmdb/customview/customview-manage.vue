@@ -153,7 +153,7 @@ export default {
       searchGraphParam: { currentPage: 1 },
       theadList: [
         { key: 'name', title: this.$t('page.name') },
-        { key: 'isActive', title: this.$t('term.report.isactive') },
+        { key: 'isActive', title: this.$t('page.isactive') },
         { key: 'fcu', title: this.$t('page.creator') },
         { key: 'fcd', title: this.$t('page.createdate') },
         { key: 'lcu', title: this.$t('page.fcu') },
