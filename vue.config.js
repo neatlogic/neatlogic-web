@@ -287,15 +287,12 @@ module.exports = {
           Tenant: tenantName
         }
       },
-      '/([^/]+)/mcp': {
+      '/([^/]+)/mcp/api/': {
         target: urlPrefix,
         changeOrigin: true,
         secure: false,
         pathRewrite: {
-          '^/([^/]+)/mcp(.*)': '/neatlogic/api/mcp$2'
-        },
-        headers: {
-          Tenant: tenantName
+          '^/([^/]+)/mcp/api/(.*)': '/neatlogic/mcp/api/$2'
         }
       },
       '/([^/]+)/api/': {

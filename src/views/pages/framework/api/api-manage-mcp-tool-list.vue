@@ -82,14 +82,13 @@ export default {
   },
   computed: {
     endpoint() {
-      return this.moduleScope ? `/api/mcp/${this.moduleScope}` : '/api/mcp';
+      return this.moduleScope ? `/mcp/api/${TENANT}/${this.moduleScope}` : `/mcp/api/${TENANT}`;
     },
     requestBody() {
       return {
         jsonrpc: '2.0',
         id: 2,
-        method: 'tools/list',
-        endpoint: this.endpoint
+        method: 'tools/list'
       };
     }
   }

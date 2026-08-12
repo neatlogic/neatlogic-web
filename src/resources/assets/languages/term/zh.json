@@ -4434,7 +4434,7 @@
     "boolean": "布尔值",
     "array": "数组",
     "authtype": "认证方式",
-    "mcpendpointexample": "例如 /api/mcp 或 https://example.com/mcp",
+    "mcpendpointexample": "例如 /mcp/api/{tenant} 或 https://example.com/mcp/api/{tenant}",
     "username": "用户名",
     "password": "密码",
     "defaultmcppendpoint": "默认使用 MCP endpoint",
