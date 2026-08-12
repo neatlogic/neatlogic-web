@@ -13,18 +13,18 @@
       @changeCurrent="changePage"
       @changePageSize="changePageSize"
     >
-      <template slot="handlerName" slot-scope="{ row }">
+      <!-- <template slot="handlerName" slot-scope="{ row }">
         <span>{{ row.handlerName || row.jobGroup || '-' }}</span>
-      </template>
-      <template slot="serverGroup" slot-scope="{ row }">
+      </template> -->
+      <!-- <template slot="serverGroup" slot-scope="{ row }">
         <span>{{ row.serverGroup || '-' }}</span>
-      </template>
+      </template> -->
       <template slot="action" slot-scope="{ row }">
         <!-- 只允许编辑服务器组或删除来源，避免修改复合主键破坏调度关联。 -->
         <div class="tstable-action">
           <ul class="tstable-action-ul">
             <li class="tsfont-edit" @click="openSourceGroupDialog([row])">{{ $t('page.edit') }}</li>
-            <li class="tsfont-trash-o" @click="deleteJobSource(row)">{{ $t('page.delete') }}</li>
+            <!-- <li class="tsfont-trash-o" @click="deleteJobSource(row)">{{ $t('page.delete') }}</li> -->
           </ul>
         </div>
       </template>
@@ -75,6 +75,10 @@ export default {
         {
           title: this.$t('page.name'),
           key: 'jobName'
+        },
+        {
+          title: this.$t('page.jobgroupname'),
+          key: 'jobGroup'
         },
         {
           title: this.$t('term.autoexec.jobmodule'),
@@ -196,27 +200,27 @@ export default {
           this.searchJobSource(this.sourceSearchParam.currentPage);
         }
       });
-    },
+    }//,
     // 删除来源记录不会删除作业配置，确认文案使用当前行显示名称便于核对。
-    deleteJobSource(row) {
-      this.$createDialog({
-        title: this.$t('dialog.title.deleteconfirm'),
-        content: this.$t('dialog.content.deletetargetconfirm', {target: row.name || row.jobName}),
-        btnType: 'error',
-        'on-ok': vnode => {
-          vnode.isShow = false;
-          this.$api.framework.schedule.deleteJobSource({
-            jobName: row.jobName,
-            jobGroup: row.jobGroup
-          }).then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.deletesuccess'));
-              this.searchJobSource(1);
-            }
-          });
-        }
-      });
-    }
+    // deleteJobSource(row) {
+    //   this.$createDialog({
+    //     title: this.$t('dialog.title.deleteconfirm'),
+    //     content: this.$t('dialog.content.deletetargetconfirm', {target: row.name || row.jobName}),
+    //     btnType: 'error',
+    //     'on-ok': vnode => {
+    //       vnode.isShow = false;
+    //       this.$api.framework.schedule.deleteJobSource({
+    //         jobName: row.jobName,
+    //         jobGroup: row.jobGroup
+    //       }).then(res => {
+    //         if (res.Status == 'OK') {
+    //           this.$Message.success(this.$t('message.deletesuccess'));
+    //           this.searchJobSource(1);
+    //         }
+    //       });
+    //     }
+    //   });
+    // }
   },
   computed: {
     // 对话框标题区分单行编辑和批量修改场景。
