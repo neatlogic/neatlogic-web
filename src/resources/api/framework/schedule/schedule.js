@@ -45,10 +45,6 @@ const job = {
   updateJobSourceServerGroup(params) {
     return axios.post('/api/rest/job/source/servergroup/update', params);
   },
-  // 删除作业来源记录
-  deleteJobSource(params) {
-    return axios.post('/api/rest/job/source/delete', params);
-  },
   //测试定时作业
   test(params) {
     return axios.post('/api/rest/job/test', params);

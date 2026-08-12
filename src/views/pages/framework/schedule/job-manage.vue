@@ -250,7 +250,7 @@ export default {
         NONE: this.$t('term.framework.notexists')
       },
       // 配置作业和已加载作业使用原有的组合搜索条件。
-      jobSearchConfig: {
+      searchConfig: {
         search: true,
         labelPosition: 'left',
         placeholder: this.$t('page.insert') + this.$t('page.name'),
@@ -550,9 +550,9 @@ export default {
           }
         ];
       return {
-        ...this.jobSearchConfig,
+        ...this.searchConfig,
         searchList: [
-          ...this.jobSearchConfig.searchList,
+          ...this.searchConfig.searchList,
           ...statusAndNeedAuditConfigList
         ]
       };
