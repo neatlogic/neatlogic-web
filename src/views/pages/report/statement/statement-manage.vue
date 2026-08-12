@@ -73,7 +73,7 @@ export default {
           title: this.$t('term.report.canvassize'),
           key: 'area'},
         {
-          title: this.$t('term.report.isactive'),
+          title: this.$t('page.isactive'),
           key: 'isActive'
         },
         {
@@ -101,7 +101,7 @@ export default {
           {
             type: 'radio',
             name: 'isActive',
-            label: this.$t('term.report.isactive'),
+            label: this.$t('page.isactive'),
             dataList: [
               {
                 text: this.$t('page.yes'),

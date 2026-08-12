@@ -53,7 +53,7 @@ export default {
         },
         isActive: {
           type: 'radio',
-          label: this.$t('term.report.isactive'),
+          label: this.$t('page.isactive'),
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.status')}) }],
           dataList: [
             {
