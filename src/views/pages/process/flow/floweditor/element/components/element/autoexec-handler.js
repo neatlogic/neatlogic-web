@@ -69,7 +69,7 @@ export default {
     if (view.$utils.isEmpty(autoexecConfig.configList)) {
       validList.push({
         type: 'error',
-        msg: $t('form.validate.leastonetarget', { target: $t('term.autoexec.job') }),
+        msg: $t('form.validate.leastonetarget', { target: $t('page.job') }),
         href: '#autoexecCombop'
       });
     }

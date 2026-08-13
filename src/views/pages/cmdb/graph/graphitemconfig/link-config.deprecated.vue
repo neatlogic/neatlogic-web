@@ -80,7 +80,7 @@
         "
       ></Slider>
     </TsFormItem>
-    <TsFormItem :label="$t('term.diagram.sourcemarker')" labelPosition="top">
+    <TsFormItem :label="$t('page.sourcemarker')" labelPosition="top">
       <TsFormSelect
         v-model="sourceMarker"
         :dataList="markerList"
@@ -93,7 +93,7 @@
         "
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem :label="$t('term.diagram.targetmarker')" labelPosition="top">
+    <TsFormItem :label="$t('page.targetmarker')" labelPosition="top">
       <TsFormSelect
         v-model="targetMarker"
         :dataList="markerList"

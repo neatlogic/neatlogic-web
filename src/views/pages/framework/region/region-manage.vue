@@ -209,8 +209,7 @@ export default {
     this.teamLabel = this.getLabel(this.$t('page.group'), 'team');
   },
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   methods: {
     //获取服务目录服务树
     async getTreeList(isFirst) {

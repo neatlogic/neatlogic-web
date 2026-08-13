@@ -73,8 +73,14 @@ export function buildMergedRoutes(moduleName, routers = [], commonRouters = []) 
   return mergeModuleRoutes(base, extra);
 }
 
-export function buildMergedMenuType(moduleName, baseConfig = {}) {
+export function buildMergedMenuType(moduleName, baseConfig = {}, isExtraFirst = false) {
   const extraConfig = ComponentManager.getMenuTypeConfig(moduleName) || {};
+  if (isExtraFirst) {
+    return {
+      ...(extraConfig.menuType || {}),
+      ...(baseConfig.menuType || {})
+    };
+  }
   return {
     ...(baseConfig.menuType || {}),
     ...(extraConfig.menuType || {})
@@ -113,4 +119,3 @@ export function geRouterMenuTypeList() {
   });
   return Object.keys(menuTypeMap).map(moduleName => menuTypeMap[moduleName]);
 }
-

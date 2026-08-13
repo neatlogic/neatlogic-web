@@ -120,7 +120,7 @@
                       </Col>
                     </TsRow>
                   </TsFormItem>
-                  <TsFormItem v-if="ciData.createPolicy==='batch'" :label="$t('term.dashboard.datafilter')" labelPosition="left">
+                  <TsFormItem v-if="ciData.createPolicy==='batch'" :label="$t('page.datafilter')" labelPosition="left">
                     <FilterList
                       ref="filterList"
                       :defaultFilterList="ciData.batchDataSource && ciData.batchDataSource.filterList"

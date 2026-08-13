@@ -68,7 +68,12 @@ let routerList = [
   {
     path: '/welcome',
     name: 'welcome',
-    component: welcome
+    component: welcome,
+    meta: {
+      title: 'IT 服务',
+      authority: 'PROCESS_BASE',
+      type: 'task'
+    }
   },
   {
     path: '/task-overview-:taskTypeid?',
@@ -80,7 +85,6 @@ let routerList = [
       icon: 'tsfont-task',
       authority: 'PROCESS_BASE',
       type: 'task',
-      keepAlive: false,
       isBack: false,
       istitle: true
     }
@@ -95,7 +99,6 @@ let routerList = [
       icon: 'tsfont-task',
       authority: 'PROCESS_BASE',
       type: 'task',
-      keepAlive: false,
       isBack: false,
       istitle: true
     }

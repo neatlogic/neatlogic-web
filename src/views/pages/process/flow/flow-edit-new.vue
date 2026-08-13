@@ -1674,7 +1674,7 @@ export default {
         width: 100%;
         height: 40px;
         line-height: 40px;
-        padding-right: 60px;
+        padding-right: 50px;
 
         .edit-icon {
           position: absolute;

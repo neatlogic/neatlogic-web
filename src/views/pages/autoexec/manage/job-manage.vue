@@ -3,7 +3,7 @@
     <TsContain border="border">
       <template v-slot:topLeft>
         <div v-if="canAddJob" class="action-group">
-          <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('term.autoexec.job') }}</span>
+          <span class="tsfont-plus icon-right text-action" @click="openPortfolioToolsDialog">{{ $t('page.job') }}</span>
           <span v-auth="['AUTOEXEC_MODIFY']" class="action-item">
             <AuditConfig auditName="AUTOEXEC-JOB"></AuditConfig>
           </span>
@@ -212,7 +212,7 @@ export default {
       ],
       searchConfig: {
         search: true,
-        placeholder: this.$t('term.autoexec.job'),
+        placeholder: this.$t('page.job'),
         searchList: [
           {
             type: 'text',
@@ -534,7 +534,7 @@ export default {
     revokedRow(row) {
       this.$createDialog({
         title: this.$t('dialog.title.revocationconfirm'),
-        content: this.$t('dialog.content.revocationconfirm', { target: this.$t('term.autoexec.job') }),
+        content: this.$t('dialog.content.revocationconfirm', { target: this.$t('page.job') }),
         btnType: 'error',
         'on-ok': vnode => {
           this.$api.autoexec.job

@@ -125,6 +125,7 @@
       :is="autoexecToolUsageAiAssistantComponent"
       v-if="autoexecToolUsageAiAssistantComponent"
       ref="toolUsageAiAssistant"
+      @availability-change="handleAiAssistantAvailability"
     ></component>
     <component
       :is="autoexecScriptExecrtoolAuthorityComponent"
@@ -208,11 +209,18 @@
           v-download:prevent="helpLoading || downloadLoading"
           :loading="helpLoading || downloadLoading"
         >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
-        <Button
+        <Tooltip
           v-if="autoexecToolUsageAiAssistantComponent"
-          type="primary"
-          @click="openToolUsageAiFromHelp"
-        >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+          :content="aiAssistantDisabledReason"
+          :disabled="!aiAssistantDisabledReason"
+          transfer
+        >
+          <Button
+            type="primary"
+            :disabled="!aiAssistantEnabled"
+            @click="openToolUsageAiFromHelp"
+          >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+        </Tooltip>
       </template>
     </TsDialog>
     <TsDialog
@@ -260,6 +268,8 @@ export default {
       helpLoading: false,
       onlineHelpContent: '',
       isExecrtoolActionVisible: false,
+      aiAssistantEnabled: false,
+      aiAssistantDisabledReason: '',
       paramMode: {
         input: {
           mode: 'input'
@@ -405,6 +415,9 @@ export default {
       });
     },
     openToolUsageAiAssistant() {
+      if (!this.aiAssistantEnabled) {
+        return;
+      }
       const assistant = this.$refs.toolUsageAiAssistant;
       if (!assistant || !assistant.openDialog) {
         return;
@@ -413,6 +426,10 @@ export default {
         toolContext: this.buildToolUsageContext(),
         documentContent: this.onlineHelpContent
       });
+    },
+    handleAiAssistantAvailability({ enabled, disabledReason }) {
+      this.aiAssistantEnabled = enabled;
+      this.aiAssistantDisabledReason = disabledReason || '';
     },
     handleExecrtoolVisibleChange(isVisible) {
       this.isExecrtoolActionVisible = isVisible;
@@ -478,7 +495,7 @@ export default {
       const toolNameList = (this.toolConfig.name || 'tool').split('/');
       const fileName = toolNameList[toolNameList.length - 1];
       downloadBlobFile(this.onlineHelpContent, {
-        defaultFileName: `[${fileName}]帮助.md`,
+        defaultFileName: `[${fileName}]${this.$t('term.autoexec.toolhelpfilename')}`,
         type: 'text/markdown;charset=utf-8'
       });
     },

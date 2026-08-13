@@ -12,7 +12,6 @@
             <Tag><strong>'</strong> <i class="text-grey tsfont-arrow-right"></i> <strong>&amp;apos;</strong></Tag>
           </div>
           <div>
-            <!-- <div v-highlight>{{ datasourceHelp }}</div>-->
             <TsCodemirror codeMode="xml" height="auto" :value="datasourceHelp"></TsCodemirror>
           </div>
         </div>
@@ -20,7 +19,6 @@
       <Panel name="2">
         {{ $t('term.report.contentconfigexample') }}
         <div slot="content">
-          <!-- <div v-highlight>{{ contentHelp }}</div>-->
           {{ $t('term.report.contenthelpsupport') }} <b>freemarker</b>{{ $t('term.report.syntaxvia') }}<b>report.xxx</b>{{ $t('term.report.getspecifiedresultset') }}<br>
           {{ $t('term.report.contenthelpexampleprefix') }}<b>${report.userList }</b>{{ $t('term.report.and') }} <b>${report.teamList }</b> {{ $t('term.report.getresultset') }}<br>
           {{ $t('term.report.chartfunctiondesc') }}
@@ -45,7 +43,6 @@
 </template>
 <script>
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
-
 export default {
   name: '',
   components: {

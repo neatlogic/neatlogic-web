@@ -21,7 +21,7 @@
               </div>
               <div>
                 <a href="javascript:void(0)" class="tsfont-plus" @click="addCron">
-                  {{ $t('term.pbc.cromexpression') }}
+                  {{ $t('page.schedulepolicy') }}
                 </a>
               </div>
             </div>

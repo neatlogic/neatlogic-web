@@ -50,10 +50,6 @@ export default {
   height: calc(100vh - 120px);
   .error-message {
     text-align: center;
-    // display: flex;
-    // justify-content: center;
-    // align-items: center;
-    // flex-direction: column;
     position: relative;
     top: 30%;
     .h2{

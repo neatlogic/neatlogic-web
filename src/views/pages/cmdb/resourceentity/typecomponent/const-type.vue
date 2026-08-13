@@ -76,7 +76,7 @@ export default {
         },
         {
           'value': '_inspectStatus',
-          'text': this.$t('term.autoexec.inspectstatus')
+          'text': this.$t('page.inspectstatus')
         },
         {
           'value': '_inspectTime',
@@ -84,7 +84,7 @@ export default {
         },
         {
           'value': '_monitorStatus',
-          'text': this.$t('term.inspect.monitoringstate')
+          'text': this.$t('page.monitoringstate')
         },
         {
           'value': '_monitorTime',

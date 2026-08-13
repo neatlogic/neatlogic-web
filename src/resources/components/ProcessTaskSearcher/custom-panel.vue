@@ -136,25 +136,25 @@ export default {
         expressionList: [
           {
             expression: 'include',
-            expressionName: '包括'
+            expressionName: this.$t('term.expression.include')
           },
           {
             expression: 'exclude',
-            expressionName: '不包括'
+            expressionName: this.$t('term.expression.exclude')
           },
           {
             expression: 'is-null',
-            expressionName: '为空'
+            expressionName: this.$t('term.expression.empty')
           },
           {
             expression: 'is-not-null',
-            expressionName: '不为空'
+            expressionName: this.$t('term.expression.notempty')
           }
         ],
         handlerType: 'select',
         defaultExpression: 'include',
         conditionModel: 'select',
-        handlerName: '流程步骤',
+        handlerName: this.$t('term.process.stepfilter'),
         isMultiple: true,
         sort: 20,
         type: 'common',

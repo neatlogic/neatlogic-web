@@ -69,7 +69,7 @@ export default {
       path: '*',
       component: () => import('@/views/pages/common/no-authority.vue'),
       meta: {
-        title: '页面不存在'
+        title: this.$t('page.pagenotvalid')
       }
     });
   },

@@ -72,10 +72,6 @@
                 <li class="tsfont-test" @click="testApi(row)">{{ $t('page.test') }}</li>
                 <li class="tsfont-question-o" @click="showApiHelp(row)">{{ $t('page.help') }}</li>
                 <li v-if="row.needAudit" class="tsfont-putongjigui" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
-                <!-- <li class="tsfont-edit icon" @click="">{{ $t('page.edit') }}</li> -->
-                <!--<li v-if="!row.isPrivate" class="tsfont-copy icon" @click="showApiForm(row)">
-                  {{ $t('page.copy') }}
-                </li>-->
               </ul>
             </div>
           </template>
@@ -123,9 +119,7 @@ export default {
     McpToolList: () => import('./api-manage-mcp-tool-list.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
-  filters: {
-
-  },
+  filters: {},
   mixins: [download],
   data() {
     return {
@@ -152,7 +146,6 @@ export default {
         { title: this.$t('page.needaudit'), key: 'needAudit', minWidth: 80 },
         { title: this.$t('term.framework.mcpservice'), key: 'isMcp', minWidth: 80 },
         { title: this.$t('page.authtype'), key: 'authTypeNameList', minWidth: 80 },
-        // { title: this.$t('page.status'), key: 'isActive', minWidth: 60 },
         { title: this.$t('page.module'), key: 'moduleGroupName', minWidth: 60 },
         { title: this.$t('page.visittimes'), key: 'visitTimes', minWidth: 60 },
         { title: ' ', key: 'action', align: 'right', width: 10 }
@@ -186,7 +179,6 @@ export default {
       searchVal: {},
       searchConfig: {
         labelWidth: 100,
-        // placeholder: '请输入节点ip、端口、名称',
         searchList: [
           {
             type: 'radio',

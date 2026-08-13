@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsFormItem :label="$t('term.pbc.adddata')" labelPosition="left" contentAlign="right">
+    <TsFormItem :label="$t('dialog.title.addtarget',{'target':$t('page.data')})" labelPosition="left" contentAlign="right">
       <TsFormSwitch
         v-model="config.isCanAdd"
         :trueValue="true"
@@ -156,6 +156,7 @@
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"
+      :initFormItemList="initFormItemList"
       :formItemUuid="formItem.uuid"
       :source="source"
       :extendConfigList="extendConfigList"
@@ -187,7 +188,7 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {},
+  created() {},
   beforeMount() {},
   mounted() {
     if (!this.config.hasOwnProperty('isCanAdd')) {
@@ -271,8 +272,7 @@ export default {
       return dataList.length > 0 ? dataList : [];
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

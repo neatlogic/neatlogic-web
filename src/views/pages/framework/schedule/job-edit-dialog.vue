@@ -89,7 +89,7 @@ export default {
       isSaving: false,
       dialogConfig: {
         type: 'modal',
-        title: (this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add')) + this.$t('term.autoexec.job'),
+        title: (this.jobUuid && this.isCopy ? this.$t('page.copy') : this.jobUuid && !this.isCopy ? this.$t('page.edit') : this.$t('page.add')) + this.$t('page.job'),
         maskClose: false,
         isShow: true,
         width: 'medium'
@@ -236,9 +236,6 @@ export default {
         await this.$api.framework.schedule.classGet(params).then(res => {
           if (res.Status == 'OK') {
             this.propList = res.Return.propList;
-            // res.Return.inputList.forEach(item => {
-            //   this.propList.push(this.$utils.deepClone(item));
-            // });
           }
         });
       }
@@ -282,23 +279,6 @@ export default {
     closeDialog(needRefresh) {
       this.$emit('close', needRefresh);
     },
-    // MergeData: function(rsPropList) {
-    //   console.log(rsPropList, 'rsPropList');
-    //   console.log(this.propList, 'this.propList');
-    //   let mergePropList = [];
-    //   let propList = this.propList;
-    //   propList.forEach(function(defineProp) {
-    //     rsPropList.forEach(function(rsProp) {
-    //       if (defineProp.name === rsProp.name) {
-    //         defineProp['value'] = rsProp.value;
-    //         defineProp['id'] = rsProp.id;
-    //         mergePropList.push(defineProp);
-    //       }
-    //     });
-    //   });
-    //   this.propList = mergePropList;
-    //   console.log(this.propList, 'this.propList2');
-    // },
     getJobByUuid: function() {
       if (this.jobUuid) {
         let params = {
@@ -306,12 +286,6 @@ export default {
         };
         this.$api.framework.schedule.get(params).then(async res => {
           if (res.Status == 'OK') {
-            // let rsPropList = res.Return.propList || [];
-            // console.log('a');
-            // await this.changeJobClass(res.Return.handler);
-            // console.log('b');
-            // this.MergeData(rsPropList);
-            // console.log('c');
             this.propList = res.Return.propList || [];
             for (let key in this.formSetting) {
               this.formSetting[key].value = res.Return[key];
@@ -324,18 +298,7 @@ export default {
           }
         });
       }
-    } //,
-    // addProp: function() {
-    //   //添加属性
-    //   let objProp = {
-    //     name: '',
-    //     value: ''
-    //   };
-    //   this.propList.push(objProp);
-    // },
-    // deleteProp: function(index) {
-    //   this.propList.splice(index, 1);
-    // }
+    }
   },
   filter: {},
   computed: {},

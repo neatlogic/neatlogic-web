@@ -339,7 +339,7 @@ export default {
       searchConfig: {
         isShowAdvanceMode: true,
         searchMode: 'clickBtnSearch',
-        placeholder: this.$t('term.inspect.inputargetnameip'),
+        placeholder: this.$t('term.inspect.inputtargetnameip'),
         searchList: [
           {
             type: 'select',
@@ -398,7 +398,7 @@ export default {
           {
             type: 'checkbox',
             name: 'inspectStatusList',
-            label: this.$t('term.autoexec.inspectstatus'),
+            label: this.$t('page.inspectstatus'),
             url: '/api/rest/universal/enum/get',
             params: { enumClass: 'neatlogic.framework.common.constvalue.InspectStatus' },
             multiple: true,
@@ -450,7 +450,7 @@ export default {
           {
             type: 'checkbox',
             name: 'stateIdList',
-            label: this.$t('term.autoexec.assetstatus'),
+            label: this.$t('page.assetstatus'),
             multiple: true,
             url: '/api/rest/resourcecenter/state/list/forselect',
             params: { needPage: false },
@@ -527,7 +527,7 @@ export default {
         {
           type: 'checkbox',
           name: 'inspectStatusList',
-          label: this.$t('term.autoexec.inspectstatus'),
+          label: this.$t('page.inspectstatus'),
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'neatlogic.framework.common.constvalue.InspectStatus' },
           multiple: true,
@@ -595,7 +595,7 @@ export default {
         {
           name: 'stateIdList',
           type: 'select',
-          label: this.$t('term.autoexec.assetstatus'),
+          label: this.$t('page.assetstatus'),
           search: true,
           transfer: true,
           defaultValue: [],
@@ -685,26 +685,26 @@ export default {
         { key: 'ip', title: this.$t('page.ipaddress') },
         { key: 'typeLabel', title: this.$t('page.type') },
         { key: 'name', title: this.$t('page.name') },
-        { key: 'monitorTime', title: this.$t('term.inspect.monitoringstate') },
-        { key: 'inspectTime', title: this.$t('term.autoexec.inspectstatus') },
+        { key: 'monitorTime', title: this.$t('page.monitoringstate') },
+        { key: 'inspectTime', title: this.$t('page.inspectstatus') },
         { key: 'envName', title: this.$t('page.environment') },
         { key: 'appModuleName', title: this.$t('page.module') },
         { key: 'appSystemName', title: this.$t('page.apply') },
         { key: 'allIp', title: this.$t('term.inspect.iplist'), type: 'tag', valueKey: 'ip' },
-        { key: 'bgList', title: this.$t('term.autoexec.subordinatedepartment'), type: 'tag', valueKey: 'bgName' },
+        { key: 'bgList', title: this.$t('page.subordinatedepartment'), type: 'tag', valueKey: 'bgName' },
         { key: 'ownerList', title: this.$t('page.owner'), type: 'usercards' },
-        { key: 'stateName', title: this.$t('term.autoexec.assetstatus') },
+        { key: 'stateName', title: this.$t('page.assetstatus') },
         { key: 'networkArea', title: this.$t('page.networkarea') },
         // { key: 'vendorName', title: this.$t('page.manufacturer') },
-        // { key: 'dataCenterName', title: this.$t('term.inspect.datacenter') },
+        // { key: 'dataCenterName', title: this.$t('page.datacenter') },
         { key: 'tagList', title: this.$t('page.tag'), type: 'tag' },
-        { key: 'maintenanceWindow', title: this.$t('term.deploy.maintenancewindow') },
+        { key: 'maintenanceWindow', title: this.$t('page.maintenancewindow') },
         { key: 'accountList', title: this.$t('page.account') },
         { key: 'description', title: this.$t('page.description') }
-        // { key: 'fcu', title: '创建者' },
-        // { key: 'fcd', title: '创建日期', type: 'time' },
-        // { key: 'lcu', title: '修改者' },
-        // { key: 'lcd', title: '修改日期', type: 'time' }
+        // { key: 'fcu', title: this.$t('page.creator') },
+        // { key: 'fcd', title: this.$t('page.createdate'), type: 'time' },
+        // { key: 'lcu', title: this.$t('term.deploy.modifier') },
+        // { key: 'lcd', title: this.$t('page.lcu'), type: 'time' }
       ];
     },
     applyAssetTheadSetting(config = {}) {

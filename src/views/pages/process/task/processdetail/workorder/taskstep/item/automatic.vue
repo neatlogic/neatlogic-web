@@ -54,7 +54,6 @@ export default {
     AutoDetail: () => import('../../taskdetail-auto.vue'),
     CommonStatus: () => import('@/resources/components/Status/CommonStatus.vue'),
     StepLogCommon: () => import('./step-log-common')
-
   },
   filters: {},
   props: {
@@ -74,11 +73,9 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {
-  },
+  methods: {},
   computed: {},
   watch: {}
-
 };
 
 </script>

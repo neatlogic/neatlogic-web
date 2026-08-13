@@ -190,8 +190,7 @@ export default {
       return [columnData, lineData];
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

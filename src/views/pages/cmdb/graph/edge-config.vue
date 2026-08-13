@@ -80,7 +80,7 @@
         "
       ></Slider>
     </TsFormItem>
-    <TsFormItem :label="$t('term.diagram.sourcemarker')" labelPosition="top">
+    <TsFormItem :label="$t('page.sourcemarker')" labelPosition="top">
       <TsFormSelect
         v-model="sourceMarker"
         :dataList="markerList"
@@ -93,7 +93,7 @@
         "
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem :label="$t('term.diagram.targetmarker')" labelPosition="top">
+    <TsFormItem :label="$t('page.targetmarker')" labelPosition="top">
       <TsFormSelect
         v-model="targetMarker"
         :dataList="markerList"
@@ -141,11 +141,11 @@ export default {
   data() {
     return {
       routerTypeList: [
-        { value: 'normal', text: this.$t('term.diagram.line') },
-        { value: 'orth', text: this.$t('term.diagram.orth') },
+        { value: 'normal', text: this.$t('page.straightline') },
+        { value: 'orth', text: this.$t('page.orth') },
         { value: 'er', text: this.$t('page.relation') },
-        { value: 'metro', text: this.$t('term.diagram.metro') },
-        { value: 'manhattan', text: this.$t('term.diagram.manhattan') },
+        { value: 'metro', text: this.$t('page.metro') },
+        { value: 'manhattan', text: this.$t('page.manhattan') },
         { value: '', text: this.$t('page.custom') }
       ],
       arrowWidthRate: 0,
@@ -157,10 +157,10 @@ export default {
       text: null,
       markerList: [
         { value: null, text: this.$t('page.nothave') },
-        { value: 'classic', text: this.$t('term.diagram.classic') },
-        { value: 'block', text: this.$t('term.diagram.block') },
-        { value: 'cross', text: this.$t('term.diagram.cross') },
-        { value: 'circle', text: this.$t('term.report.dot') }
+        { value: 'classic', text: this.$t('page.classic') },
+        { value: 'block', text: this.$t('page.block') },
+        { value: 'cross', text: this.$t('page.cross') },
+        { value: 'circle', text: this.$t('page.dot') }
       ]
     };
   },

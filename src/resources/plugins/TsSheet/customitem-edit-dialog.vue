@@ -11,7 +11,7 @@
             </template>
             <template v-slot:viewTemplate>
               <Tabs v-model="viewTemplateTab">
-                <TabPane label="模板" name="viewTemplate">
+                <TabPane :label="$t('page.template')" name="viewTemplate">
                   <div>
                     <Poptip
                       word-wrap
@@ -138,7 +138,7 @@
                   </div>
                   <TsCodemirror ref="configTemplateConfig" v-model="customItemData.configTemplateConfig" codeMode="javascript"></TsCodemirror>
                 </TabPane>
-                <TabPane label="测试" name="configTemplateTest">
+                <TabPane :label="$t('page.test')" name="configTemplateTest">
                   <FormItemConfig
                     v-if="configTemplateTab === 'configTemplateTest'"
                     :formItem="formItem"
@@ -335,7 +335,7 @@ export default {
     return {
       isReady: false,
       isIconDialogShow: false,
-      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name是数据中的属性\n\t\t}\n\t}\n}',
+      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name is data attribute\n\t\t}\n\t}\n}',
       dialogConfig: {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.framework.customitem')}) : this.$t('dialog.title.addtarget', {'target': this.$t('term.framework.customitem')}),
         type: 'slider',
@@ -374,7 +374,7 @@ export default {
         label: {
           type: 'text',
           validateList: ['required'],
-          label: this.$t('term.autoexec.displayname'),
+          label: this.$t('page.displayname'),
           maxlength: 50
         },
         icon: {

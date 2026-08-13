@@ -353,8 +353,7 @@ export default {
 
     };
   },
-  created() {
-  },
+  created() {},
   mounted() {
     this.getAllData();
   },
@@ -492,7 +491,6 @@ export default {
       return this.handlerStepInfo && (!this.$utils.isEmpty(this.handlerStepInfo.jobList) || !this.$utils.isEmpty(this.handlerStepInfo.errorList));
     }
   },
-
   watch: {}
 };
 </script>

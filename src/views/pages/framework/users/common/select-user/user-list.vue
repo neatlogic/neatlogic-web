@@ -74,29 +74,18 @@ export default {
       selectList: [] // 存放当前页选中项
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getTable();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getTable(param) {
       // this.tabledata = null;
@@ -161,11 +150,8 @@ export default {
       return textList;
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

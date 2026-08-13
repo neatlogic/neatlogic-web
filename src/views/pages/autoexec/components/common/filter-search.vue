@@ -261,7 +261,7 @@ export default {
         {
           name: 'inspectStatusList',
           type: 'select',
-          label: this.$t('term.autoexec.inspectstatus'),
+          label: this.$t('page.inspectstatus'),
           search: true,
           transfer: true,
           defaultValue: [],
@@ -335,7 +335,7 @@ export default {
         {
           name: 'stateIdList',
           type: 'select',
-          label: this.$t('term.autoexec.assetstatus'),
+          label: this.$t('page.assetstatus'),
           search: true,
           transfer: true,
           defaultValue: [],

@@ -20,31 +20,50 @@
           v-if="dashboardData.tbodyList && dashboardData.tbodyList.length > 0"
           :padding="false"
           v-bind="dashboardData"
-          :xl="6"
-          :sm="8"
+          :xxl="8"
+          :xl="12"
+          :lg="12"
+          :md="24"
+          :sm="24"
           :xs="24"
           @updatePage="searchDashboard"
         >
           <template slot="header" slot-scope="{ row }">
-            <div class="text-right"></div>
-            <div class="overflow h3">{{ row.name }}</div>
-            <div style="font-size:13px">
-              <span>
-                <UserCard v-bind="row.lcuVo" hideAvatar class="m-users"></UserCard>
-              </span>
-              <span>{{ $t('page.in') }}：</span>
-              <span v-if="row.lcd">{{ row.lcd | formatDate }}</span>
-              <span v-else>{{ row.fcd | formatDate }}</span>
-              <span v-if="row.lcd" class="text-grey">{{ $t('page.update') }}</span>
-              <span v-else class="text-grey">{{ $t('page.created') }}</span>
+            <div class="dashboard-card-header">
+              <div class="dashboard-card-heading">
+                <div class="dashboard-card-title overflow">{{ row.name }}</div>
+                <div class="dashboard-card-meta text-grey">
+                  <span>
+                    <UserCard v-bind="row.lcuVo" hideAvatar class="m-users"></UserCard>
+                  </span>
+                  <span>{{ $t('page.in') }}：</span>
+                  <span v-if="row.lcd">{{ row.lcd | formatDate }}</span>
+                  <span v-else>{{ row.fcd | formatDate }}</span>
+                  <span v-if="row.lcd">{{ $t('page.update') }}</span>
+                  <span v-else>{{ $t('page.created') }}</span>
+                </div>
+              </div>
+              <div class="dashboard-card-actions">
+                <span
+                  class="dashboard-enter tsfont-search text-action"
+                  role="button"
+                  tabindex="0"
+                  :title="$t('page.viewdetails')"
+                  :aria-label="$t('page.viewdetails')"
+                  @click.stop="toDashboard('detail', row.id)"
+                  @keydown.enter.stop="toDashboard('detail', row.id)"
+                ></span>
+              </div>
             </div>
           </template>
           <template slot-scope="{ row }">
             <div class="dashbord-overview" @click="toDashboard('detail', row.id)">
-              <widget-overview v-if="row.widgetList && row.widgetList.length > 0" :widgetList="row.widgetList"></widget-overview>
-              <div class="slider-container text-op">
+              <widget-overview
+                v-if="row.widgetList && row.widgetList.length > 0"
+                :widgetList="row.widgetList"
+              ></widget-overview>
+              <div v-if="row.description" class="slider-container text-op">
                 <div>{{ row.description }}</div>
-                <div class="icon-enter tsfont-search"></div>
               </div>
             </div>
           </template>

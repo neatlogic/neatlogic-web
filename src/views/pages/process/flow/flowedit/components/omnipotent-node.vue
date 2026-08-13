@@ -128,6 +128,7 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
+    <MobileProcessSetting v-model="configData.stepConfig.isAllowProcessOnMobile"></MobileProcessSetting>
     <!-- 初步处理人 -->
     <div v-if="!isStart">
       <AssignSetting
@@ -159,6 +160,7 @@ export default {
     ReplySetting: () => import('./nodesetting/reply-setting.vue'), // 回复模板
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'), // 创建子任务
     TagSetting: () => import('./nodesetting/tag-setting.vue'), // 标签
+    MobileProcessSetting: () => import('./nodesetting/mobile-process-setting.vue'),
     CompleteSetting: () => import('./nodesetting/complete-setting.vue'), // 自动流转
     ApprovalSetting: () => import('./nodesetting/approval-setting.vue'), // 自动审批
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
@@ -354,4 +356,3 @@ export default {
   }
 };
 </script>
-

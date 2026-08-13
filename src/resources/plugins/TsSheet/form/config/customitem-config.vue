@@ -130,7 +130,6 @@ export default {
       return this.formItem.config || {};
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>

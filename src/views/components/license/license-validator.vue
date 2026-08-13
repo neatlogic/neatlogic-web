@@ -1,6 +1,5 @@
 <template>
   <div v-if="licenseInvalidTips && isShow" class="license-container">
-    <!---->
     <div v-if="licenseInvalidTips&&licenseInvalidTips.length > 0" style="position: relative;" class="pr-nm">
       <div class="cursor h1 text-grey" @click="toLicenseManage">{{ $t('page.license') }}</div>
       <div v-for="(tip,index) in licenseInvalidTips" :key="index">
@@ -39,8 +38,7 @@ export default {
       this.timer.clear();
     }
   },
-  destroyed() {
-  },
+  destroyed() {},
   methods: {
     toLicenseManage() {
       window.location.href = HOME + '/framework.html#/license-manage';

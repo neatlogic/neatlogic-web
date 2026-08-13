@@ -16,8 +16,7 @@
 
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   props: {
     isFile: {
       type: Boolean,

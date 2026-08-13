@@ -16,7 +16,7 @@
             formItem: formItem
           })"
         >
-          {{ $t('term.pbc.exporttemplate') }}
+          {{ $t('page.exporttemplate') }}
         </span>
         <span v-else class="action-item">
           <Icon
@@ -24,7 +24,7 @@
             size="18"
             class="loading"
           ></Icon>
-          {{ $t('term.pbc.exporttemplate') }}
+          {{ $t('page.exporttemplate') }}
         </span>
         <span
           v-if="isShowExportExcel"
@@ -166,6 +166,7 @@ import validmixin from '../common/validate-mixin.js';
 import conditionMixin from './condition-mixin.js';
 import expressionMixin from './expression-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
+import { FORMITEMS } from '@/resources/plugins/TsSheet/form/formitem-list.js';
 export default {
   name: '',
   components: {
@@ -185,6 +186,7 @@ export default {
       extraFormItemList: this.frozenExtraFormItemList,
       extendConfigList: this.frozenExtendConfigList,
       formItemList: this.frozenFormItemList,
+      referenceFormItemList: this.frozenReferenceFormItemList,
       externalData: this.frozenExternalData,
       isClearSpecifiedAttr: this.isClearSpecifiedAttr,
       isClearEchoFailedDefaultValue: true,
@@ -377,7 +379,7 @@ export default {
               //选择表单输入组件
               let findItem = this.formItemList.find(item => item.uuid === config.formtableinputerUuid);
               if (!findItem) {
-                errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('message.framework.datasourceselectmessage') });
+                errorList.push({ field: 'dataConfig', error: this.$t('page.columndatasourcedeleted', { label: element.label }) });
               } else {
                 if (findItem.config && findItem.config.dataConfig) {
                   let isValidMapping = true;
@@ -390,7 +392,7 @@ export default {
                     isValidMapping = false;
                   }
                   if (!isValidMapping) {
-                    errorList.push({ field: 'dataConfig', error: '【' + element.label + '】' + this.$t('form.placeholder.pleaseselect', { target: this.$t('page.fieldmapping') }) });
+                    errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: `${element.label}${this.$t('page.colon')}${this.$t('page.fieldmapping')}` }) });
                   }
                 }
               }
@@ -399,6 +401,16 @@ export default {
             if (!config.format) {
               errorList.push({ field: 'dataConfig', error: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.format') }) });
             }
+          }
+          const extendDefinition = FORMITEMS.find(item => item.handler === element.handler && item.supportTableInputer);
+          if (extendDefinition?.validTableInputerConfig) {
+            const extendErrorList = extendDefinition.validTableInputerConfig({
+              formItem: element,
+              formItemList: [...this.config.dataConfig, ...this.effectiveReferenceFormItemList]
+            }) || [];
+            extendErrorList.forEach(error => {
+              errorList.push({ field: 'dataConfig', error: `【${element.label}】${error.error}` });
+            });
           }
         });
         if (!isKey) {
@@ -455,9 +467,9 @@ export default {
                       if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
                         findItem.errorPageList.push(pageCount);
                         findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-                        findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${findUnunique.label}】属性必须唯一`;
+                        findItem.error = this.$t('page.attrmustbeunique', { label: this.formItem.label, page: findItem.errorPageList.join(','), attr: findUnunique.label });
                       } else {
-                        errorList.push({ uuid: this.formItem.uuid, attrUuid: key, errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${findUnunique.label}】属性必须唯一` });
+                        errorList.push({ uuid: this.formItem.uuid, attrUuid: key, errorPageList: [pageCount], error: this.$t('page.attrmustbeunique', { label: this.formItem.label, page: pageCount, attr: findUnunique.label }) });
                       }
                     } else {
                       existMap[key] = existMap[key] ? [...existMap[key], value] : [value];
@@ -492,9 +504,9 @@ export default {
                 if (findItem && !findItem.errorPageList.find(d => d === pageCount)) {
                   findItem.errorPageList.push(pageCount);
                   findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-                  findItem.error = `${this.formItem.label}：第${findItem.errorPageList.join(',')}页【${attrLabel}】属性必须唯一`;
+                  findItem.error = this.$t('page.attrmustbeunique', { label: this.formItem.label, page: findItem.errorPageList.join(','), attr: attrLabel });
                 } else {
-                  errorList.push({ uuid: uniqueRuleConfig[0], errorPageList: [pageCount], error: `${this.formItem.label}：第${pageCount}页【${attrLabel}】属性必须唯一` });
+                  errorList.push({ uuid: uniqueRuleConfig[0], errorPageList: [pageCount], error: this.$t('page.attrmustbeunique', { label: this.formItem.label, page: pageCount, attr: attrLabel }) });
                 }
               } else {
                 existList.push(tempValue);
@@ -587,13 +599,13 @@ export default {
             label: th.title,
             uuid: this.formItem.key,
             attrUuid: th.key,
-            error: this.formItem.label + '：第' + pageCount + '页' + this.$t('message.completerequired', {'target': '【' + th.title + '】'})
+            error: this.$t('page.fieldcompleterequired', { label: this.formItem.label, page: pageCount, attr: th.title })
           });
         } else {
           if (!findItem.errorPageList.find(d => d === pageCount)) {
             findItem.errorPageList.push(pageCount);
             findItem.errorPageList = findItem.errorPageList.sort(this.$utils.sortNumber());
-            findItem.error = this.formItem.label + '：第' + findItem.errorPageList.join(',') + '页' + this.$t('message.completerequired', {'target': '【' + th.title + '】'});
+            findItem.error = this.$t('page.fieldcompleterequired', { label: this.formItem.label, page: findItem.errorPageList.join(','), attr: th.title });
           }
         }
       }
@@ -709,6 +721,14 @@ export default {
     },
     frozenFormItemList() {
       return Object.freeze([...this.formItemList || []]); // 解构不影响原数据
+    },
+    frozenReferenceFormItemList() {
+      return Object.freeze([...this.effectiveReferenceFormItemList]);
+    },
+    effectiveReferenceFormItemList() {
+      return this.referenceFormItemList && this.referenceFormItemList.length
+        ? this.referenceFormItemList
+        : (this.formItemList || []);
     },
     frozenExtraFormItemList() {
       return Object.freeze([...this.dataConfigList || []]);
@@ -876,10 +896,10 @@ export default {
         this.validateMap = {};
         if (!this.disabled && !this.readonly) {
           if (this.config.isCanDrag) {
-            this.theadList.push({ key: 'drag', title: '拖拽行' });
+            this.theadList.push({ key: 'drag', title: this.$t('page.dragrow') });
           }
           if (!this.config.hasOwnProperty('isCanAdd') || this.config.isCanAdd) {
-            this.theadList.push({ key: 'delete', title: '操作' });
+            this.theadList.push({ key: 'delete', title: this.$t('page.action') });
             this.theadList.push({ key: 'selection' });
           }
         }

@@ -1,6 +1,11 @@
 <template>
-  <div>
-    <TsContain v-if="reportData" :hasContentPadding="false">
+  <div class="report-edit">
+    <TsContain
+      v-if="reportData"
+      topLeftWidth="80%"
+      topRightWidth="20%"
+      :hasContentPadding="false"
+    >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/report-manage')">{{ $getFromPage() }}</span>
       </template>
@@ -39,6 +44,7 @@
               :groupList="['common', 'user', 'team', 'role']"
               transfer
               :width="200"
+              class="userselect-wrap"
               border="border"
             ></UserSelect>
           </div>
@@ -241,3 +247,10 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+.userselect-wrap {
+  ::v-deep .userselect-top {
+    overflow: auto;
+  }
+}
+</style>

@@ -110,6 +110,7 @@
       :defaultIsActive="activeSetting.tagSetting"
       :list="tagList"
     ></TagSetting>
+    <MobileProcessSetting v-model="configData.stepConfig.isAllowProcessOnMobile"></MobileProcessSetting>
     <!-- 初步处理人 -->
     <div v-if="!isStart">
       <AssignSetting
@@ -140,6 +141,7 @@ export default {
     AssignSetting,
     ReplySetting: () => import('./nodesetting/reply-setting.vue'),
     TagSetting: () => import('./nodesetting/tag-setting.vue'),
+    MobileProcessSetting: () => import('./nodesetting/mobile-process-setting.vue'),
     FormsceneSetting: () => import('./nodesetting/formscene-setting') // 表单场景
   },
   mixins: [nodemixin, itemmixin],
@@ -293,4 +295,3 @@ export default {
   }
 };
 </script>
-

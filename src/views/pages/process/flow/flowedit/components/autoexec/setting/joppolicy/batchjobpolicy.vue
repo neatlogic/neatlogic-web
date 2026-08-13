@@ -14,7 +14,7 @@
         @on-change="changeAttributeUuid"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem :label="$t('term.dashboard.datafilter')" labelPosition="left" required>
+    <TsFormItem :label="$t('page.datafilter')" labelPosition="left" required>
       <TsFormSwitch v-model="isActive" @on-change="changeActive"></TsFormSwitch>
       <div v-if="isActive">
         <TsRow
@@ -57,7 +57,7 @@
             <span class="text-tip-active tsfont-trash-o delete-condition" @click="delFilterItem(filterList, findex)"></span>
           </Col>
         </TsRow>
-        <span class="tsfont-plus text-href" @click="addFilter(filterList)">{{ $t('term.pbc.adddata') }}</span>
+        <span class="tsfont-plus text-href" @click="addFilter(filterList)">{{ $t('page.adddata') }}</span>
       </div>
     </TsFormItem>
     <div v-if="autoexecConfig.scenarioParamList.length > 0">

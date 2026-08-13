@@ -10,7 +10,7 @@
       <Tabs v-model="activeTab" :animated="false">
         <TabPane :label="$t('term.cmdb.assetlist')" name="tableSetting">
           <div>
-            <Button class="mb-sm" @click="addData()">{{ $t('term.pbc.adddata') }}</Button>
+            <Button class="mb-sm" @click="addData()">{{ $t('page.adddata') }}</Button>
           </div>
           <draggable
             v-if="tableSettingList && tableSettingList.length"

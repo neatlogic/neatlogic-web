@@ -17,14 +17,21 @@
       >
         <template slot="topLeft">
           <div style="padding:0 12px;">
-            <Button
+            <Tooltip
               v-if="autoexecToolRecommendAiAssistantComponent"
-              type="primary"
-              ghost
-              @click="openToolRecommendAiAssistant"
+              :content="aiAssistantDisabledReason"
+              :disabled="!aiAssistantDisabledReason"
+              transfer
             >
-              <span class="tsfont-ai">{{ $t('term.autoexec.toolrecommendaiassistant') }}</span>
-            </Button>
+              <Button
+                type="primary"
+                ghost
+                :disabled="!aiAssistantEnabled"
+                @click="openToolRecommendAiAssistant"
+              >
+                <span class="tsfont-ai">{{ $t('term.autoexec.toolrecommendaiassistant') }}</span>
+              </Button>
+            </Tooltip>
           </div>
         </template>
         <template slot="topRight">
@@ -60,6 +67,7 @@
             ref="toolRecommendAiAssistant"
             :selectedOperationIdList="recommendSelectedOperationIdList"
             @select-candidate="selectRecommendCandidate"
+            @availability-change="handleAiAssistantAvailability"
           ></component>
         </template>
       </TsContain>
@@ -125,6 +133,8 @@ export default {
       },
       loading: true,
       firstInit: true, //第一次初始化的时候需要加个判断不然会有个无数据的效果
+      aiAssistantEnabled: false,
+      aiAssistantDisabledReason: '',
       searchVal: {}, //搜索下拉插件的值
       isAutoAddFlag: false, // 用于判断，选择工具目录时，默认勾选自定义工具
       searchConfig: {
@@ -337,6 +347,9 @@ export default {
       this.selectedItem = items;
     },
     openToolRecommendAiAssistant() {
+      if (!this.aiAssistantEnabled) {
+        return;
+      }
       const assistant = this.$refs.toolRecommendAiAssistant;
       if (!assistant || !assistant.openDialog) {
         return;
@@ -344,6 +357,10 @@ export default {
       assistant.openDialog({
         recommendContext: this.buildToolRecommendContext()
       });
+    },
+    handleAiAssistantAvailability({ enabled, disabledReason }) {
+      this.aiAssistantEnabled = enabled;
+      this.aiAssistantDisabledReason = disabledReason || '';
     },
     buildToolRecommendContext() {
       return {

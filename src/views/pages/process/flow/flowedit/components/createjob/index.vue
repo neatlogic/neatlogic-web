@@ -24,6 +24,7 @@
           :defaultCreateJobConfig="createJobConfig"
           :formUuid="formUuid"
         ></CreatejobSetting>
+        <MobileProcessSetting v-model="configData.stepConfig.isAllowProcessOnMobile"></MobileProcessSetting>
       </template>
     </BaseConfig>
   
@@ -35,7 +36,8 @@ export default {
   name: '',
   components: {
     BaseConfig: () => import('../base-config.vue'),
-    CreatejobSetting: () => import('./createjob-setting.vue')
+    CreatejobSetting: () => import('./createjob-setting.vue'),
+    MobileProcessSetting: () => import('../nodesetting/mobile-process-setting.vue')
   },
   filters: {},
   mixins: [],
@@ -101,6 +103,7 @@ export default {
       if (this.$refs.baseConfig) {
         Object.assign(stepConfig, this.$refs.baseConfig.saveNodeBaseData());
       }
+      stepConfig.isAllowProcessOnMobile = this.configData.stepConfig.isAllowProcessOnMobile;
       if (this.$refs.createJobConfig) { //组合工具
         let createJobConfig = this.$refs.createJobConfig.saveData();
         this.$set(stepConfig, 'createJobConfig', createJobConfig);

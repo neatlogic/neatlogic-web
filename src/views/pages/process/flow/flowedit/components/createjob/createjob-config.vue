@@ -86,7 +86,7 @@
           </TsFormItem>
           <TsFormItem
             v-if="createjobConfig.batchDataSourceMapping.value"
-            :label="$t('term.dashboard.datafilter')"
+            :label="$t('page.datafilter')"
             labelPosition="left"
             required
           >
@@ -222,7 +222,7 @@ export default {
             },
             {
               value: 'batch',
-              text: this.$t('dialog.title.batchcreatetarget', {'target': this.$t('term.autoexec.job')})
+              text: this.$t('dialog.title.batchcreatetarget', {'target': this.$t('page.job')})
             }
           ]
         }

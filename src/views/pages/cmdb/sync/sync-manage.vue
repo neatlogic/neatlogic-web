@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TsContain :enableCollapse="true">
+    <TsContain :enableCollapse="true" topLeftWidth="82%" topRightWidth="18%">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back('/discovery-manage')">{{ $getFromPage() }}</span>
       </template>
@@ -154,7 +154,7 @@
                   <li v-if="row.collectMode == 'initiative' && row.status === 'doing' && row.lastAuditId" class="tsfont-pause" @click="pauseSync(row.lastAuditId)">{{ $t('page.pause') }}</li>
                   <li v-if="row.collectMode == 'initiative' && row.status === 'paused' && row.lastAuditId" class="tsfont-restart" @click="resumeSync(row.lastAuditId)">{{ $t('page.recover') }}</li>
                   <li v-if="row.collectMode == 'initiative' && !['doing', 'pausing'].includes(row.status)" class="tsfont-play-o" @click="execCiCollection(row)">{{ $t('page.execute') }}</li>
-                  <li v-if="row.collectMode == 'initiative'" class="tsfont-timer" @click="addSchedulePolicy(row)">{{ $t('term.pbc.cromexpression') }}</li>
+                  <li v-if="row.collectMode == 'initiative'" class="tsfont-timer" @click="addSchedulePolicy(row)">{{ $t('page.schedulepolicy') }}</li>
                   <li v-if="!['doing', 'pausing'].includes(row.status)" class="tsfont-edit" @click="editCiCollection(row)">{{ $t('page.edit') }}</li>
                   <li v-if="!['doing', 'pausing'].includes(row.status)" class="tsfont-trash-o" @click="deleteCiCollection(row)">{{ $t('page.delete') }}</li>
                 </ul>

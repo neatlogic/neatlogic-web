@@ -43,7 +43,8 @@
     "canceleditconfirm": "退出编辑确认",
     "lockconfirm": "锁定确认",
     "testconfirm": "测试确认",
-    "restartconfirm": "重启确认"
+    "restartconfirm": "重启确认",
+    "pauseconfirm": "暂停确认"
   },
   "content": {
     "pausecomfirm": "是否确认暂停当前{target}？",
@@ -92,6 +93,8 @@
     "canceleditconfirm": "是否确认退出编辑并解除锁定当前架构图？",
     "lockconfirm": "是否确认锁定当前{target}？",
     "testconfirm": "是否确认测试当前{target}？",
-    "restartconfirm": "是否确认重启当前{target}？"
+    "restartconfirm": "是否确认重启当前{target}？",
+    "pauseconfirm": "是否确认暂停当前{target}？",
+    "disassociateddialog": "是否确认解除与该工单的关联？"
   }
 }

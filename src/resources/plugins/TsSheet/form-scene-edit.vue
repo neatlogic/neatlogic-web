@@ -113,6 +113,7 @@
             v-model="formData.formConfig"
             :readonly="readOnly"
             :disabledHideComponent="true"
+            :referenceFormItemList="sceneReferenceFormItemList"
             :defaultExtendConfigList="extendConfigList"
             @selectCell="selectCell"
             @removeComponent="removeComponent"
@@ -681,6 +682,17 @@ export default {
         formItemList.push(...this.hideComponentList);
       }
       return formItemList;
+    },
+    sceneReferenceFormItemList() {
+      const formItemList = [...this.initFormItemList, ...this.hideComponentList];
+      const uuidSet = new Set();
+      return formItemList.filter(item => {
+        if (!item || !item.uuid || uuidSet.has(item.uuid)) {
+          return false;
+        }
+        uuidSet.add(item.uuid);
+        return true;
+      });
     }
   },
   watch: {}
@@ -699,7 +711,6 @@ export default {
 .form-item {
   text-align: center;
   cursor: move;
-  // width: 50%;
   display: inline-block;
 }
 .customitem-btn {

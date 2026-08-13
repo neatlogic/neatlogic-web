@@ -392,9 +392,6 @@ export default {
     },
     //下载请求
     fileDownload: function(item) {
-      let data = {
-        id: item.id
-      };
       //默认下载的用get
       const aLink = document.createElement('a');
       aLink.download = item.name;
@@ -402,9 +399,6 @@ export default {
       document.body.appendChild(aLink);
       aLink.click();
       aLink.remove();
-      // this.$api.common.downLoad(data).then(res => {
-      //   this.download(res.data, item.name);
-      // });
     },
     //下载
     download(data, fileName) {
@@ -536,20 +530,12 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .upload {
-  // ::v-deep .ivu-upload {
-  //   width: 125px;
-  //   height: 125px;
-  // }
   .title {
     color: @text-color;
     padding-top: 20px;
   }
   .upload-icon {
-    //width: 96px;
-    //height: 95px;
     margin: auto;
-    //margin-top: 60px;
-    //margin-bottom: 100px;
   }
   .text-btn {
     display: inline-block;
@@ -557,8 +543,6 @@ export default {
     white-space: nowrap;
   }
   .drag {
-    // padding: 20px 0;
-    // color: @primary-color;
     .icon-tip {
       font-size: 24px;
       padding-bottom: 10px;
@@ -587,7 +571,6 @@ export default {
         cursor: pointer;
       }
       .file_del {
-        // padding-left: 8%; // 距离左边间隙过大
         display: none;
         cursor: pointer;
       }

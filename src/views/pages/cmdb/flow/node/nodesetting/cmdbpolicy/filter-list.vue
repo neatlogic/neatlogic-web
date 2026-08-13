@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="filter-top">
-      <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
+      <span class="pr-sm label">{{ $t('page.datafilter') }}</span>
       <TsFormSwitch
         v-model="isActive"
         :disabled="disabled"

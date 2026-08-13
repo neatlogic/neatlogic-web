@@ -63,7 +63,7 @@
               >
                 <CenterDetail
                   ref="TaskCenterDetail"
-                  :slotList="[{ name: 'createjob', label: $t('dialog.title.createtarget',{'target':$t('term.autoexec.job')}) }]"
+                  :slotList="[{ name: 'createjob', label: $t('dialog.title.createtarget',{'target':$t('page.job')}) }]"
                   :actionConfig="actionConfig"
                   :formConfig="formConfig"
                   :processTaskConfig="processTaskConfig"

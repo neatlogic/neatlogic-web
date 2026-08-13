@@ -87,9 +87,7 @@ export default {
       selectList: []
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (!this.search) {
       this.childrenList.forEach(item => {
@@ -100,23 +98,14 @@ export default {
       });
     }
   },
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     isOpen(cd) {
       this.$set(cd, 'isShow', !cd.isShow);
@@ -179,11 +168,8 @@ export default {
       this.$emit('getSelect', item);
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {
     children: {
       handler(newVal) {

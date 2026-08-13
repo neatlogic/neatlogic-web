@@ -26,7 +26,6 @@ export default {
     id: { type: Number }
   },
   data() {
-    const _this = this;
     return {
       dialogConfig: {
         title: this.$t('page.test'),

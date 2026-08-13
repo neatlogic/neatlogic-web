@@ -30,17 +30,6 @@
                 <span class="text-tip tips tsfont-info-o"></span>
               </Tooltip>
             </span>
-            <!-- <span v-if="vertical && data[descName]" class="description-text">
-              <Tooltip
-                max-width="660"
-                :content="data[descName]"
-                theme="light"
-                placement="right"
-                :transfer="true"
-              >
-                <span class="text-tip tips tsfont-info-o"></span>
-              </Tooltip>
-            </span> -->
           </span>
         </Radio>
       </RadioGroup>

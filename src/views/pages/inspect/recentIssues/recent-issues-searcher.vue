@@ -25,7 +25,7 @@
               <TsFormInput
                 v-model="keyword"
                 border="none"
-                :placeholder="$t('term.inspect.inputargetnameip')"
+                :placeholder="$t('term.inspect.inputtargetnameip')"
                 width="250px"
                 @on-enter="enterKeword"
               ></TsFormInput>
@@ -218,7 +218,7 @@ export default {
         {
           type: 'checkbox',
           name: 'inspectStatusList',
-          label: this.$t('term.autoexec.inspectstatus'),
+          label: this.$t('page.inspectstatus'),
           url: '/api/rest/universal/enum/get',
           params: { enumClass: 'InspectStatus' },
           dealDataByUrl: (nodeList) => this.dealInspectStatusDataByUrl(nodeList),
@@ -295,7 +295,7 @@ export default {
         {
           type: 'checkbox',
           name: 'stateIdList',
-          label: this.$t('term.autoexec.assetstatus'),
+          label: this.$t('page.assetstatus'),
           multiple: true,
           url: '/api/rest/resourcecenter/state/list/forselect',
           params: { needPage: false },

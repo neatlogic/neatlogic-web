@@ -129,10 +129,10 @@
                       <span class="padding-text tsfont-option-horizontal hover-color"></span>
                       <DropdownMenu slot="list" class="dropdown">
                         <DropdownItem>
-                          <div @click="exportMatrixData(row.uuid, row.name)">{{ $t('term.pbc.exportdata') }}</div>
+                          <div @click="exportMatrixData(row.uuid, row.name)">{{ $t('page.exportdata') }}</div>
                         </DropdownItem>
                         <DropdownItem>
-                          <div @click="exportAttributeMatrix(row.uuid)">{{ $t('term.pbc.exporttemplate') }}</div>
+                          <div @click="exportAttributeMatrix(row.uuid)">{{ $t('page.exporttemplate') }}</div>
                         </DropdownItem>
                         <DropdownItem>
                           <Upload
@@ -156,7 +156,7 @@
                       <span class="padding-text tsfont-option-horizontal hover-color"></span>
                       <DropdownMenu slot="list" class="dropdown">
                         <DropdownItem>
-                          <div @click="exportMatrixData(row.uuid, row.name)">{{ $t('term.pbc.exportdata') }}</div>
+                          <div @click="exportMatrixData(row.uuid, row.name)">{{ $t('page.exportdata') }}</div>
                         </DropdownItem>
                         <DropdownItem>
                           <div @click="exportMatrix(row.uuid)">{{ $t('page.export') }}</div>
@@ -391,23 +391,7 @@ export default {
           type: 'radio',
           label: this.$t('page.type'),
           name: 'type',
-          dataList: [
-            // {
-            //   text: '自定义数据源',
-            //   value: 'custom',
-            //   key: 'custom'
-            // },
-            // {
-            //   text: '外部数据源',
-            //   value: 'integrationUuid11',
-            //   key: 'fileId'
-            // },
-            // {
-            //   text: '视图数据源',
-            //   value: 'fileId22',
-            //   key: 'integrationUuid'
-            // }
-          ],
+          dataList: [],
           value: 'custom',
           onChange: val => {
             _this.allHidden(val);
@@ -743,8 +727,8 @@ export default {
                 {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr:
                   [
                     {name: this.$t('page.copy'), value: 'copy', type: 'text'},
-                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'},
-                    {name: this.$t('term.pbc.exporttemplate'), value: 'exportAttr', type: 'text'},
+                    {name: this.$t('page.exportdata'), value: 'exportData', type: 'download'},
+                    {name: this.$t('page.exporttemplate'), value: 'exportAttr', type: 'text'},
                     {name: this.$t('page.export'), value: 'export', type: 'download'}
                   ],
                 upload: true, actionUrl: this.actionUrl
@@ -754,7 +738,7 @@ export default {
               v.btnList.push(
                 {name: this.$t('term.framework.multi'), value: 'dropdown', icon: '', type: 'dropdown', menuArr:
                   [
-                    {name: this.$t('term.pbc.exportdata'), value: 'exportData', type: 'download'},
+                    {name: this.$t('page.exportdata'), value: 'exportData', type: 'download'},
                     {name: this.$t('page.export'), value: 'export', type: 'download'}
                   ]
                 }

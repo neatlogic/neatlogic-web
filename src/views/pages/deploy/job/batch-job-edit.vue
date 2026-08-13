@@ -62,7 +62,7 @@
                 <div>
                   <div class="grouptitle-grid">
                     <div class="pl-sm text-info">#{{ gindex + 1 }}</div>
-                    <div class="pr-sm text-href" style="text-align:right" @click="showJobDialog(lane, group)"><span class="tsfont-plus">{{ $t('term.autoexec.job') }}</span></div>
+                    <div class="pr-sm text-href" style="text-align:right" @click="showJobDialog(lane, group)"><span class="tsfont-plus">{{ $t('page.job') }}</span></div>
                   </div>
                   <draggable
                     v-model="group.jobList"

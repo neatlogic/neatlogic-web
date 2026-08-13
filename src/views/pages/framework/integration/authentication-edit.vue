@@ -77,12 +77,6 @@ export default {
       },
       deep: true
     }
-    // ,
-    // authType: {
-    //   handler: function(val) {
-    //     this.authConfig = {};
-    //   }
-    // }
   }
 };
 </script>

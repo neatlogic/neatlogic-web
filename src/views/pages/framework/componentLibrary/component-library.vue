@@ -88,7 +88,6 @@
       <template v-slot:header>
         <div>{{ alertTitle }}</div>
       </template>
-      <!-- <TsForm ref="addTacticsForm" :itemList="tacticsForm" type="type"></TsForm> -->
       <addComponent ref="addComponent"></addComponent>
       <template v-slot:footer>
         <Button @click="alertDialog = false">{{ $t('page.cancel') }}</Button>
@@ -114,27 +113,16 @@ export default {
       alertTitle: this.$t('page.newtarget', {target: this.$t('page.component')})
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {},
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     addCom() {
       this.alertDialog = true;
@@ -148,11 +136,8 @@ export default {
       this.$refs.addComponent.submit();
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

@@ -35,6 +35,9 @@ const runner = {
   },
   getRunnerStatus(params) {
     return axios.post('/api/rest/runner/status/check', params);
+  },
+  getRunnerVersion(params) {
+    return axios.post('/api/rest/runner/version/get', params);
   }
 };
 export default runner;

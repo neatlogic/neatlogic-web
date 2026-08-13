@@ -11,8 +11,8 @@
       </div>
       <div slot="topRight">
         <div class="action-group text-right">
-          <span v-if="tableData && tableData.tbodyList && tableData.tbodyList.length>0" v-download="downurl" class="action-item tsfont-download">{{ $t('term.pbc.exportdata') }}</span>
-          <span v-else class="action-item disable tsfont-download">{{ $t('term.pbc.exportdata') }}</span>
+          <span v-if="tableData && tableData.tbodyList && tableData.tbodyList.length>0" v-download="downurl" class="action-item tsfont-download">{{ $t('page.exportdata') }}</span>
+          <span v-else class="action-item disable tsfont-download">{{ $t('page.exportdata') }}</span>
           <span class="action-item tsfont-download" @click="exportMatrix">{{ $t('page.export') }}</span>
           <span class="action-item tsfont-edit" @click="editMatrix()">{{ $t('page.edit') }}</span>
           <span v-if="tableData" class="action-item block-item">
@@ -146,7 +146,6 @@ export default {
     }
     this.searchMatrixView();
   },
-
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -282,7 +281,6 @@ export default {
       }
     }
   },
-
   filter: {},
   computed: {
     downurl() {

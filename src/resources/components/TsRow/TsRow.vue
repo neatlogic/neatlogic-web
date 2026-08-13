@@ -9,7 +9,6 @@
 <script>
 export default {
   name: '',
-
   components: {},
   props: {
     gutter: {
@@ -25,15 +24,10 @@ export default {
   data() {
     return {};
   },
-
   beforeMount() {},
-
   mounted() {},
-
   methods: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

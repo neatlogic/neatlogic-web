@@ -56,7 +56,7 @@ export default {
           key: 'inspect_resultName'
         },
         {
-          title: this.$t('term.autoexec.inspectstatus'),
+          title: this.$t('page.inspectstatus'),
           key: '_report_timeStatus'
         },
         {

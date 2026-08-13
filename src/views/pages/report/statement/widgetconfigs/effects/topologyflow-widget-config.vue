@@ -196,7 +196,7 @@ export default {
         { value: 'butt', text: this.$t('term.report.buttcap') }
       ],
       nodeStyleList: [
-        { value: 'dot', text: this.$t('term.report.dot') },
+        { value: 'dot', text: this.$t('page.dot') },
         { value: 'ring', text: this.$t('term.report.halo') },
         { value: 'pulse', text: this.$t('term.report.pulse') }
       ]

@@ -4,8 +4,8 @@
       v-model="isFilter"
       :trueValue="true"
       :falseValue="false"
-      :trueText="$t('term.dashboard.datafilter')"
-      :falseText="$t('term.dashboard.datafilter')"
+      :trueText="$t('page.datafilter')"
+      :falseText="$t('page.datafilter')"
       :showStatus="showStatus"
       @on-change="(val)=>{changeFilter(val);}"
     ></TsFormSwitch>

@@ -102,7 +102,7 @@
                     <span class="cascade-name overflow" :title="node[textName]">{{ node[textName] }}</span>
                     <i v-if="hasChildren(node)" class="ivu-icon tsfont-right cascade-arrow"></i>
                   </div>
-                  <div v-if="!getFilteredColumnNodeList(column.list, columnIndex).length" class="cascade-empty text-tip">暂无数据</div>
+                  <div v-if="!getFilteredColumnNodeList(column.list, columnIndex).length" class="cascade-empty text-tip">{{ $t('page.nodata') }}</div>
                 </div>
               </div>
             </div>
@@ -198,6 +198,10 @@ export default {
       type: Boolean,
       default: false
     },
+    allowParentCheckLevelList: {
+      type: Array,
+      default: null
+    },
     onChange: Function
   },
   data() {
@@ -248,7 +252,19 @@ export default {
       return !!(node && node[this.childrenKey] && node[this.childrenKey].length);
     },
     isNodeSelectable(node) {
-      return this.allowParentCheck || !this.hasChildren(node);
+      if (node && node.disabled) {
+        return false;
+      }
+      if (!this.hasChildren(node)) {
+        return true;
+      }
+      if (!this.allowParentCheck) {
+        return false;
+      }
+      if (Array.isArray(this.allowParentCheckLevelList)) {
+        return this.allowParentCheckLevelList.includes((node._pathValueList || []).length - 1);
+      }
+      return true;
     },
     ensureActivePath() {
       if (this.activeValueList.length && this.getNodeByValue(this.activeValueList[this.activeValueList.length - 1])) {
@@ -286,6 +302,10 @@ export default {
       return false;
     },
     handleNodeClick(node) {
+      this.$emit('node-click', node);
+      if (node && node.disabled) {
+        return;
+      }
       if (this.hasChildren(node)) {
         this.activeValueList = node._pathValueList;
       } else {

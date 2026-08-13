@@ -74,11 +74,6 @@
           </div>
         </div>
       </div>
-      <!--<Table class="slaContent" :max-height="660" :columns="columns" :data="slaList">-->
-      <!--<div slot="header">-->
-
-      <!--</div>-->
-      <!--</Table>-->
       <div class="slaContent">
         <div class="header flex">
           <div class="col1">#</div>
@@ -594,7 +589,6 @@ export default {
 }
 
 .slaContent {
-  /*max-height: calc(100% - 176px);*/
   margin-top: 24px;
   font-size: 13px;
   .flex {

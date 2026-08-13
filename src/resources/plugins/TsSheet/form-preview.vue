@@ -46,7 +46,7 @@
         </TabPane>
         <TabPane
           v-if="!$utils.isEmpty(emitData)"
-          label="触发结果"
+          :label="$t('page.triggerresult')"
           name="emit"
           tab="preview"
         >

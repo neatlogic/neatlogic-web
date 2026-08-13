@@ -61,29 +61,18 @@ export default {
       selectList: []
     };
   },
-
   beforeCreate() {},
-
   created() {},
-
   beforeMount() {},
-
   mounted() {
     this.getTable();
   },
-
   beforeUpdate() {},
-
   updated() {},
-
   activated() {},
-
   deactivated() {},
-
   beforeDestroy() {},
-
   destroyed() {},
-
   methods: {
     getPagedata(current) {
       let _this = this;
@@ -146,11 +135,8 @@ export default {
       this.$emit('getSelect', this.selectList);
     }
   },
-
   filter: {},
-
   computed: {},
-
   watch: {}
 };
 </script>

@@ -33,7 +33,7 @@ export default {
     return {
       dialogConfig: {
         type: 'modal',
-        title: this.$t('term.pbc.cromexpression'),
+        title: this.$t('page.schedulepolicy'),
         maskClose: false,
         isShow: true,
         width: 'medium'
@@ -53,7 +53,7 @@ export default {
         },
         isActive: {
           type: 'radio',
-          label: this.$t('term.report.isactive'),
+          label: this.$t('page.isactive'),
           validateList: [{ name: 'required', message: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.status')}) }],
           dataList: [
             {
@@ -68,7 +68,7 @@ export default {
         },
         cron: {
           type: 'quartz',
-          label: this.$t('term.pbc.timeplan'),
+          label: this.$t('page.timeplan'),
           showType: 'edit',
           validateList: ['required'],
           config: {direction: 'down'}

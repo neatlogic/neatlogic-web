@@ -75,14 +75,12 @@ export default {
       authUserIdList: [] //批量添加用户列表
     };
   },
-
   created() {
     // 修复切换到基本信息，选择不保存，再次切换到授权tab时，没有恢复为原始数据
     if (!this.$utils.isEmptyObj(this.authUserSelectList)) {
       this.authSelectList = this.$utils.deepClone(this.authUserSelectList);
     }
   },
-
   beforeMount() {},
   mounted() {},
   methods: {

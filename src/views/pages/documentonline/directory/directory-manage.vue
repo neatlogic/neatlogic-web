@@ -125,8 +125,7 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {
-  },
+  created() {},
   beforeMount() {},
   mounted() {
     this.getDocumentList();
@@ -314,7 +313,6 @@ export default {
     border-bottom: 1px solid;
     .item {
       flex: 1;
-      // border-bottom: 1px solid;
       overflow: hidden;
       .title {
         display: flex;

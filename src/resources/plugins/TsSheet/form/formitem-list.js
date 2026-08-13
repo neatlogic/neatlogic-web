@@ -38,7 +38,7 @@ for (let key in ComponentManager.getFormDefineComponent()) {
 }
 export const FORMITEM_CATEGORY = [
   { value: 'basic', text: $t('term.report.basicwidget') },
-  { value: 'hide', text: '隐藏组件' },
+  { value: 'hide', text: $t('page.hiddencomponent') },
   { value: 'layout', text: $t('term.framework.layoutwidget') },
   { value: 'autoexec', text: $t('term.framework.automationwidget') },
   { value: 'cmdb', text: $t('term.framework.cmdbwidget') }

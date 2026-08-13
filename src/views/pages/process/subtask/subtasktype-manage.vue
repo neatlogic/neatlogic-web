@@ -149,9 +149,6 @@ export default {
           key: 'fcd'
         },
         {title: '', key: 'action'}
-        // {
-        //   key: 'action', title: '', type: 'action', operations: [{icon: 'tsfont-trash-s', name: '删除', action: 'del', type: 'text', style: ''}]
-        // }
       ],
       tabledata: {},
       pageSize: 20,

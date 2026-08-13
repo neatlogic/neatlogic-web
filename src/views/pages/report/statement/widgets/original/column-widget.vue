@@ -10,8 +10,7 @@ export default {
   name: '',
   components: {},
   extends: WidgetBase,
-  props: {
-  },
+  props: {},
   data() {
     return {
       plot: null,
@@ -42,8 +41,7 @@ export default {
   beforeCreate() {},
   created() {},
   beforeMount() {},
-  mounted() {
-  },
+  mounted() {},
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -94,8 +92,7 @@ export default {
       return data;
     }
   },
-  watch: {
-  }
+  watch: {}
 };
 </script>
 <style lang="less"></style>

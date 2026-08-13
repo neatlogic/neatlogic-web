@@ -10,8 +10,7 @@
 import download from '@/resources/mixins/download.js';
 export default {
   name: '',
-  components: {
-  },
+  components: {},
   mixins: [download],
   props: {},
   data() {

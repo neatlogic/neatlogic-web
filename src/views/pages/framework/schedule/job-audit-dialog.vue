@@ -193,7 +193,7 @@ export default {
   beforeCreate() {},
   created() {
     if (!this.jobUuid) {
-      this.theadList.unshift({title: this.$t('term.autoexec.job'), key: 'jobUuid'});
+      this.theadList.unshift({title: this.$t('page.job'), key: 'jobUuid'});
     }
     this.searchAudit();
   },

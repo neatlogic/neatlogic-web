@@ -6,15 +6,28 @@
       :style="{ top: toolbar.top + 'px', left: toolbar.left + 'px' }"
       @mousedown.prevent.stop
     >
-      <button class="log-selection-action" type="button" @click="openLogAiAssistant">
-        <span class="log-selection-icon tsfont-ai"></span>
-        <span>{{ $t('term.autoexec.askinlogai') }}</span>
-      </button>
+      <Tooltip
+        :content="aiAssistantDisabledReason"
+        :disabled="!aiAssistantDisabledReason"
+        transfer
+        max-width="320"
+      >
+        <button
+          class="log-selection-action"
+          type="button"
+          :disabled="!aiAssistantEnabled"
+          @click="openLogAiAssistant"
+        >
+          <span class="log-selection-icon tsfont-ai"></span>
+          <span>{{ $t('term.autoexec.askinlogai') }}</span>
+        </button>
+      </Tooltip>
     </div>
     <component
       :is="autoexecJobLogAiAssistantComponent"
       v-if="hasLogAiAssistant"
       ref="jobLogAiAssistant"
+      @availability-change="handleAiAssistantAvailability"
     ></component>
   </div>
 </template>
@@ -37,7 +50,9 @@ export default {
         top: 0,
         left: 0
       },
-      activeContainer: null
+      activeContainer: null,
+      aiAssistantEnabled: false,
+      aiAssistantDisabledReason: ''
     };
   },
   mounted() {
@@ -101,6 +116,9 @@ export default {
       this.activeContainer = null;
     },
     openLogAiAssistant() {
+      if (!this.aiAssistantEnabled) {
+        return;
+      }
       const assistant = this.$refs.jobLogAiAssistant;
       if (!assistant || !assistant.openDialog) {
         this.hideToolbar();
@@ -115,6 +133,10 @@ export default {
       if (window.getSelection) {
         window.getSelection().removeAllRanges();
       }
+    },
+    handleAiAssistantAvailability({ enabled, disabledReason }) {
+      this.aiAssistantEnabled = enabled;
+      this.aiAssistantDisabledReason = disabledReason || '';
     },
     isSelectionInContainer(selection, container) {
       const anchorNode = selection.anchorNode;
@@ -202,6 +224,13 @@ html.theme-dark {
     font-weight: 500;
     &:hover {
       background: rgba(45, 118, 255, 0.08);
+    }
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      &:hover {
+        background: transparent;
+      }
     }
   }
   .log-selection-icon {

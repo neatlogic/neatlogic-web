@@ -18,13 +18,13 @@
               <span class="tsfont-cloud">{{ $t('page.import') }}/{{ $t('page.export') }}</span>
               <DropdownMenu slot="list" class="dropdown">
                 <DropdownItem v-if="tabledata && tabledata.tbodyList && tabledata.tbodyList.length>0" v-download="downurl">
-                  <div>{{ $t('term.pbc.exportdata') }}</div>
+                  <div>{{ $t('page.exportdata') }}</div>
                 </DropdownItem>
                 <DropdownItem v-else>
-                  <div class="btn-disable">{{ $t('term.pbc.exportdata') }}</div>
+                  <div class="btn-disable">{{ $t('page.exportdata') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="exportAttributeMatrix">
-                  <div>{{ $t('term.pbc.exporttemplate') }}</div>
+                  <div>{{ $t('page.exporttemplate') }}</div>
                 </DropdownItem>
                 <DropdownItem @click.native="$refs.uploadDialog.showDialog">
                   <span>{{ $t('page.importdata') }}</span>
@@ -122,12 +122,10 @@ export default {
     ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     ColumnEdit: () => import('./components/column-edit.vue'),
     RowEdit: () => import('./components/row-edit.vue')
-    // UserSelect:()=>import("@/resources/components/UserSelect/UserSelect.vue")
   },
   directives: { download },
   props: [''],
   data() {
-    let _this = this;
     return {
       currentData: null, //当前编辑行
       isCopy: false,
@@ -157,9 +155,7 @@ export default {
       processMatrixAttributeList: []
     };
   },
-
   beforeCreate() {},
-
   created() {
     if (this.$route.query.name) {
       this.matrixName = this.$route.query.name;
@@ -403,8 +399,6 @@ export default {
     },*/
     //编辑行数据
     editMatrixData(val) {
-      //this.getMatrixAttrList(false, val);
-      //this.matrixDataDialogTitle = '编辑行';
       this.matrixDataDialog = true;
       this.currentData = val || null;
       this.isCopy = false;
@@ -454,12 +448,6 @@ export default {
     isUserSelect() {
       return function(val) {
         let KEY = false;
-        // if (val  && (val.indexOf('user#') != '-1' || val.indexOf('role#') != '-1' || val.indexOf('team#') != '-1')) {
-        //   KEY = true;
-        // }
-        // else {
-        //   KEY = false;
-        // }
         if (val != undefined) {
           KEY = true;
         } else {

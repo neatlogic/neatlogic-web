@@ -5,6 +5,7 @@ export default {
       extraFormItemList: this.frozenExtraFormItemList,
       extendConfigList: this.frozenExtendConfigList,
       formItemList: this.frozenFormItemList,
+      referenceFormItemList: this.frozenReferenceFormItemList,
       externalData: this.frozenExternalData,
       isClearSpecifiedAttr: this.isClearSpecifiedAttr,
       isClearEchoFailedDefaultValue: true,
@@ -177,6 +178,9 @@ export default {
     },
     frozenFormItemList() {
       return Object.freeze([...this.formItemList || []]);
+    },
+    frozenReferenceFormItemList() {
+      return Object.freeze([...(this.referenceFormItemList || [])]);
     },
     frozenExtraFormItemList() {
       return Object.freeze([...this.$utils.deepClone(this.config.dataConfig) || []]);
