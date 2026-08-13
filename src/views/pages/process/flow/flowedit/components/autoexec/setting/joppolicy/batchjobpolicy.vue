@@ -14,7 +14,7 @@
         @on-change="changeAttributeUuid"
       ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem :label="$t('term.dashboard.datafilter')" labelPosition="left" required>
+    <TsFormItem :label="$t('page.datafilter')" labelPosition="left" required>
       <TsFormSwitch v-model="isActive" @on-change="changeActive"></TsFormSwitch>
       <div v-if="isActive">
         <TsRow

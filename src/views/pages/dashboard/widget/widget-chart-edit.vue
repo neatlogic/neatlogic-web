@@ -109,7 +109,7 @@ export default {
           isActive: true
         },
         {
-          text: this.$t('term.dashboard.datafilter'),
+          text: this.$t('page.datafilter'),
           isActive: false
         },
         {
