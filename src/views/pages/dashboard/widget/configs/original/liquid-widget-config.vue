@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="ivu-form-item tsform-item ivu-form-label-top">
-      <label class="ivu-form-item-label overflow">{{ $t('term.report.shape') }}</label>
+      <label class="ivu-form-item-label overflow">{{ $t('page.shape') }}</label>
       <div class="ivu-form-item-content">
         <TsFormSelect
           :value="config.shape"

@@ -123,7 +123,7 @@
             </TsRow>
             <div v-if="r.mappingMode === 'formTableComponent'" class="filter-box pt-sm">
               <div class="filter-top pb-sm">
-                <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
+                <span class="pr-sm label">{{ $t('page.datafilter') }}</span>
                 <TsFormSwitch
                   v-model="r.isActive"
                   @on-change="(val)=>{
@@ -316,7 +316,7 @@
             </TsRow>
             <div v-if="e.mappingMode === 'formTableComponent'" class="filter-box pt-sm">
               <div class="filter-top pb-sm">
-                <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
+                <span class="pr-sm label">{{ $t('page.datafilter') }}</span>
                 <TsFormSwitch
                   v-model="e.isActive"
                   @on-change="(val)=>{
@@ -520,7 +520,7 @@
             </TsRow>
             <div v-if="r.mappingMode === 'formTableComponent'" class="filter-box pt-sm">
               <div class="filter-top pb-sm">
-                <span class="pr-sm label">{{ $t('term.dashboard.datafilter') }}</span>
+                <span class="pr-sm label">{{ $t('page.datafilter') }}</span>
                 <TsFormSwitch
                   v-model="r.isActive"
                   @on-change="(val)=>{

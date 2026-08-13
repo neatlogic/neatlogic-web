@@ -494,6 +494,9 @@
   "emailaddress": "Email Address",
   "phonenumber": "Phone Number",
   "ipaddress": "IP Address",
+  "iconcolor": "Icon Color",
+  "iconsize": "Icon Size",
+  "icontext": "Icon Text",
   "defaultscenario": "Default Scenario",
   "history": "History",
   "hierarchydescandeditauthority": "Hierarchy Description and Edit Authority",
@@ -1273,5 +1276,10 @@
   "lanesetting": "Lane Settings",
   "verticalline": "Vertical Line",
   "dot": "Dot",
-  "isactive": "Active"
+  "isactive": "Active",
+  "rectangle": "Rectangle",
+  "radius": "Corner Radius",
+  "shape": "Shape",
+  "datafilter": "Data Filter",
+  "displayname": "Display Name"
 }

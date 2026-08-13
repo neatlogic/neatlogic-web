@@ -374,7 +374,7 @@ export default {
         label: {
           type: 'text',
           validateList: ['required'],
-          label: this.$t('term.autoexec.displayname'),
+          label: this.$t('page.displayname'),
           maxlength: 50
         },
         icon: {
