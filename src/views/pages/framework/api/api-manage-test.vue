@@ -37,15 +37,22 @@
           </TsFormItem>
           <TsFormItem v-if="helpData.input && tab === 'form'" :label="$t('page.inputparam')" :labelWidth="80">
             <Table
-              v-if="helpData.input"
-              :columns="inputColumns"
+              class="api-input-table"
+              :columns="displayInputColumns"
               :data="helpData.input"
               border
             >
               <template v-slot:input="{ row }">
                 <div>
+                  <TsFormSwitch
+                    v-if="row.type.toLowerCase().includes('boolean')"
+                    :value="testData.param[row.name]"
+                    :trueValue="true"
+                    :falseValue="false"
+                    @on-change="value => setValue(row, value)"
+                  ></TsFormSwitch>
                   <TsFormInput
-                    v-if="!row.type.startsWith('file')"
+                    v-else-if="!row.type.startsWith('file')"
                     :value="testData.param[row.name]"
                     width="100%"
                     @on-change="
@@ -83,18 +90,19 @@
               v-if="apiType === 'rest'"
               style="width:100%"
               type="primary"
+              :loading="isApiTestLoading"
               @click="executeTest"
             >{{ $t('page.sendrequest') }}</Button>
             <Button
               v-if="apiType === 'binary'"
               style="width:100%"
               type="primary"
+              :loading="isApiTestLoading"
               @click="executeDownload"
             >{{ $t('page.sendrequest') }}</Button>
           </TsFormItem>
           <TsFormItem v-if="testData.result" :label="$t('page.outputresults')" :labelWidth="80">
             <JsonViewer
-              v-if="testData.result"
               boxed
               copyable
               :value="testData.result"
@@ -146,7 +154,6 @@
 
 <script>
 import * as authHandler from './authhandler/index.js';
-import download from '@/resources/mixins/download.js';
 
 export default {
   name: 'ApiTest',
@@ -154,12 +161,12 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     JsonViewer: () => import('vue-json-viewer'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ...authHandler
   },
-  mixins: [download],
   props: {
     rowData: {
       type: Object,
@@ -173,7 +180,7 @@ export default {
         type: 'slider',
         isShow: true,
         maskClose: false,
-        width: 'large',
+        width: '1100px',
         hasFooter: false
       },
       activeTab: 'api',
@@ -184,20 +191,20 @@ export default {
       tab: 'form',
       helpData: {},
       testData: {},
-      helpMessage: '',
       error: '',
       mcpHelpData: {},
       mcpHelpMessage: '',
       argumentText: '{}',
       argumentError: '',
       mcpDebugResult: null,
+      isApiTestLoading: false,
       isMcpDebugLoading: false,
       inputColumns: Object.freeze([
         { title: this.$t('page.name'), key: 'name' },
         { title: this.$t('page.description'), key: 'description' },
         { title: this.$t('page.type'), key: 'type' },
         { title: this.$t('page.rule'), key: 'rule' },
-        { title: this.$t('page.isrequired'), key: 'isRequired', width: 100, render: (h, params) => {
+        { title: this.$t('page.isrequired'), key: 'isRequired', render: (h, params) => {
           if (params.row.isRequired) {
             return h('div', {class: 'text-success'}, this.$t('page.yes'));
           } else {
@@ -206,20 +213,10 @@ export default {
         } },
         { title: this.$t('page.explain'), key: 'help' },
         { title: this.$t('page.insert'), key: 'input', slot: 'input' }
-      ]),
-      outputColumns: Object.freeze([
-        { title: this.$t('page.name'), key: 'name', tree: true },
-        { title: this.$t('page.type'), key: 'type' },
-        { title: this.$t('page.explain'), key: 'description' }
       ])
     };
   },
   created() {
-    // eslint-disable-next-line generator-star-spacing
-    this.counter = (function*() {
-      let i = 1;
-      while (true) yield i++;
-    })();
     this.getHelpData(this.rowData);
     this.testData.token = this.rowData.url;
     this.testData.param = {};
@@ -227,7 +224,6 @@ export default {
       this.getMcpHelp();
     }
   },
-  mounted() {},
   methods: {
     close() {
       this.$emit('close');
@@ -271,36 +267,41 @@ export default {
       }
     },
     async executeDownload() {
-      let header = null;
-      if (this.rowData.apiType == 'custom') {
-        //如果是公共接口，需要将认证信息送进后台生成认证Header才能调用测试接口
-        const res = await this.$api.framework.apiManage.getAuthHeader(this.rowData.authtype, this.testData.authData);
-        if (res.Status == 'OK') {
-          header = res.Return;
-        }
+      if (this.isApiTestLoading) {
+        return;
+      }
+      this.isApiTestLoading = true;
+      this.$delete(this.testData, 'result');
+      try {
+        let header = null;
+        if (this.rowData.apiType == 'custom') {
+          //如果是公共接口，需要将认证信息送进后台生成认证Header才能调用测试接口
+          const res = await this.$api.framework.apiManage.getAuthHeader(this.rowData.authtype, this.testData.authData);
+          if (res.Status == 'OK') {
+            header = res.Return;
+          }
 
-        if (this.testData.authData.method == 'get') {
-          header.type = 'get';
+          if (this.testData.authData.method == 'get') {
+            header.type = 'get';
+          }
         }
-      }
-      const formData = new FormData();
-      for (let k in this.testData.param) {
-        let paramValue = this.testData.param[k];
-        if (Array.isArray(paramValue)) {
-          paramValue.forEach((item, index) => {
-            formData.append(k, item);
-          });
-        } else {
-          formData.append(k, paramValue);
+        const formData = new FormData();
+        for (let k in this.testData.param) {
+          let paramValue = this.testData.param[k];
+          if (Array.isArray(paramValue)) {
+            paramValue.forEach(item => {
+              formData.append(k, item);
+            });
+          } else {
+            formData.append(k, paramValue);
+          }
         }
-      }
-      const _this = this;
-      this.$api.framework.apiManage.upload(this.rowData.url, formData, header).then(async res => {
+        const res = await this.$api.framework.apiManage.upload(this.rowData.url, formData, header);
         if (res.status == '200') {
           if (res.data.type == 'application/json') {
             //处理返回的文本
             const text = await res.data.text();
-            const jsonText = await JSON.parse(text);
+            const jsonText = JSON.parse(text);
             this.$set(this.testData, 'result', jsonText);
           } else {
             //处理返回的文件流
@@ -313,7 +314,7 @@ export default {
             let fileName = this.$t('term.framework.apitestdownloaddata');
             let filePath = '';
             filePath = contentDisposition.indexOf('filename=') > -1 ? contentDisposition.split('filename=')[1] : contentDisposition.split('fileName=')[1];
-            if (!_this.$utils.isEmpty(filePath)) {
+            if (!this.$utils.isEmpty(filePath)) {
               fileName = filePath.substring(1, filePath.length - 1);
             }
             aLink.download = fileName;
@@ -322,50 +323,52 @@ export default {
             aLink.remove();
           }
         }
-      });
+      } finally {
+        this.isApiTestLoading = false;
+      }
     },
     setAuthConfig(authData) {
       this.testData.authData = authData;
     },
     async executeTest() {
-      let header = {};
-      if (this.rowData.apiType == 'custom') {
-        //如果是公共接口，需要将认证信息送进后台生成认证Header才能调用测试接口
-        const res = await this.$api.framework.apiManage.getAuthHeader(this.rowData.authtype, this.testData.authData);
-        if (res.Status == 'OK') {
-          header = res.Return;
-        }
+      if (this.isApiTestLoading) {
+        return;
+      }
+      this.isApiTestLoading = true;
+      this.$delete(this.testData, 'result');
+      try {
+        let header = {};
+        if (this.rowData.apiType == 'custom') {
+          //如果是公共接口，需要将认证信息送进后台生成认证Header才能调用测试接口
+          const res = await this.$api.framework.apiManage.getAuthHeader(this.rowData.authtype, this.testData.authData);
+          if (res.Status == 'OK') {
+            header = res.Return;
+          }
 
-        if (this.testData.authData.method == 'get') {
-          header.type = 'get';
+          if (this.testData.authData.method == 'get') {
+            header.type = 'get';
+          }
         }
+        if (this.rowData.type === 'raw') {
+          header['Content-Type'] = 'text/plain';
+        }
+        const res = await this.$api.framework.apiManage.test(this.testData.token, this.testData.param, header);
+        this.$set(this.testData, 'result', res);
+      } catch (error) {
+        this.$set(this.testData, 'result', error && error.data ? error.data : error);
+      } finally {
+        this.isApiTestLoading = false;
       }
-      if (this.rowData.type === 'raw') {
-        header['Content-Type'] = 'text/plain';
-      }
-      this.$api.framework.apiManage
-        .test(this.testData.token, this.testData.param, header)
-        .then(res => {
-          this.$set(this.testData, 'result', res);
-        })
-        .catch(error => {
-          this.$set(this.testData, 'result', error.data);
-        });
     },
     getHelpData({ helpUrl }) {
-      this.helpMessage = this.$t('page.loading');
       //help接口返回无return层和status层
       return this.$api.framework.apiManage
         .help(helpUrl)
         .then(res => {
-          this.helpData = this.addId(res);
-          if (!Object.values(this.helpData).length) {
-            this.helpMessage = this.$t('message.framework.notapihelp', {'target': this.rowData.token});
-          }
+          this.helpData = res;
         })
         .catch(error => {
           this.$Notice.error({ title: this.$t('message.framework.apihelperror'), desc: error });
-          this.helpMessage = this.$t('message.framework.apihelperror');
         });
     },
     getMcpHelp() {
@@ -407,25 +410,14 @@ export default {
         .finally(() => {
           this.isMcpDebugLoading = false;
         });
-    },
-    addId(res) {
-      // https://www.iviewui.com/components/table#SXSJ
-      // table组件使用树形数据时，必须指定 row-key，比如 id
-      // id必须唯一，不能重复，不然控制台会提示key重复的报错，而且鼠标悬浮高亮行会出错
-      // 这里用生成器counter给有children的output表格数据添加唯一的id
-      if (!res.output) return res;
-      res.output.forEach(item => {
-        item.id = this.counter.next().value;
-        if (item.children) {
-          item.children.forEach(child => {
-            child.id = this.counter.next().value;
-          });
-        }
-      });
-      return res;
     }
   },
   computed: {
+    displayInputColumns() {
+      const inputList = Array.isArray(this.helpData.input) ? this.helpData.input : [];
+      const hiddenColumnKeyList = ['rule', 'help'].filter(key => !inputList.some(item => !this.$utils.isEmpty(item[key])));
+      return this.inputColumns.filter(column => !hiddenColumnKeyList.includes(column.key));
+    },
     apiType() {
       if (this.rowData.url.startsWith('api/binary')) {
         return 'binary';
@@ -458,4 +450,10 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.api-input-table {
+  ::v-deep .ivu-table-tbody .ivu-table-cell {
+    line-height: 22px;
+  }
+}
+</style>
