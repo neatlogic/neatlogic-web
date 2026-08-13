@@ -80,7 +80,7 @@ export default {
           ]
         },
         name: {
-          label: this.$t('term.autoexec.displayname'),
+          label: this.$t('page.displayname'),
           type: 'text',
           maxlength: 50,
           validateList: ['required',
@@ -89,7 +89,7 @@ export default {
               name: 'searchUrl',
               url: '/api/rest/autoexec/global/param/save',
               key: 'name',
-              message: this.$t('message.targetisexists', {target: this.$t('term.autoexec.displayname')}),
+              message: this.$t('message.targetisexists', {target: this.$t('page.displayname')}),
               params: { id: '' }
             }
           ]

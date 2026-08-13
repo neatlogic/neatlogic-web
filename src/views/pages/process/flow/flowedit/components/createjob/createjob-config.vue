@@ -86,7 +86,7 @@
           </TsFormItem>
           <TsFormItem
             v-if="createjobConfig.batchDataSourceMapping.value"
-            :label="$t('term.dashboard.datafilter')"
+            :label="$t('page.datafilter')"
             labelPosition="left"
             required
           >

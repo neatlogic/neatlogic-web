@@ -82,7 +82,7 @@ export default {
       tableConfig: {
         theadList: [
           { title: this.$t('term.autoexec.paramsname'), key: 'key', type: 'linktext', textValue: 'edit'},
-          { title: this.$t('term.autoexec.displayname'), key: 'name' },
+          { title: this.$t('page.displayname'), key: 'name' },
           { title: this.$t('term.autoexec.valuetype'), key: 'typeText' },
           { title: this.$t('term.autoexec.paramsvalue'), key: 'defaultValue' },
           { title: this.$t('term.autoexec.associatedobject'), key: 'referredCount' },

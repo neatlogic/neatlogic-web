@@ -480,6 +480,8 @@
   "positiveinteger": "正整数",
   "triggercondition": "触发条件",
   "text": "文本",
+  "textcolor": "文本颜色",
+  "textsize": "文本大小",
   "dateandtime": "日期时间",
   "dropdownanoption": "下拉单选",
   "dropdownmultipleselection": "下拉多选",
@@ -494,6 +496,9 @@
   "emailaddress": "邮箱地址",
   "phonenumber": "电话号码",
   "ipaddress": "IP地址",
+  "iconcolor": "图标颜色",
+  "iconsize": "图标大小",
+  "icontext": "图标文字",
   "defaultscenario": "默认场景",
   "history": "历史",
   "hierarchydescandeditauthority": "层级描述与编辑授权",
@@ -1273,5 +1278,10 @@
   "lanesetting": "泳道设置",
   "verticalline": "垂直线",
   "dot": "圆点",
-  "isactive": "是否激活"
+  "isactive": "是否激活",
+  "rectangle": "矩形",
+  "radius": "圆角",
+  "shape": "形状",
+  "datafilter": "数据过滤",
+  "displayname": "显示名"
 }
