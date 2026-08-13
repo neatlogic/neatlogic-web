@@ -1,7 +1,8 @@
 <template>
   <div>
     <component
-      :is="attrData.type + 'attr'"
+      :is="handlerComponent"
+      v-if="handlerComponent"
       ref="attrHandler"
       :disabled="disabled"
       :valueList="valueList"
@@ -17,12 +18,11 @@
   </div>
 </template>
 <script>
-import * as handlers from '@/views/pages/cmdb/ci/attrhandler/input/index.js';
+import * as coreHandlers from '@/views/pages/cmdb/ci/attrhandler/input/index.js';
+import { getAttrHandlerComponentMap } from '@/views/pages/cmdb/ci/attrhandler/attrhandler-extension.js';
+
 export default {
   name: '',
-  components: {
-    ...handlers
-  },
   props: {
     disabled: { type: Boolean, default: false },
     allowBatchAdd: { type: Boolean, default: true },
@@ -73,11 +73,18 @@ export default {
     },
     valid() {
       const handler = this.$refs.attrHandler;
-      return handler.valid();
+      return !handler || !handler.valid || handler.valid();
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    handlerComponent() {
+      if (!this.attrData || !this.attrData.type) {
+        return null;
+      }
+      return getAttrHandlerComponentMap('input', coreHandlers)[this.attrData.type + 'attr'];
+    }
+  },
   watch: {}
 };
 </script>

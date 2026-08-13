@@ -1,8 +1,8 @@
 <template>
   <div>
-    <div v-if="handlers[handler + 'attr']">
+    <div v-if="handlerComponent">
       <component
-        :is="handler + 'attr'"
+        :is="handlerComponent"
         ref="attrHandler"
         :handler="handler"
         :mode="mode"
@@ -30,13 +30,11 @@
   </div>
 </template>
 <script>
-import * as handlers from '../ci/attrhandler/view/index.js';
+import * as coreHandlers from '../ci/attrhandler/view/index.js';
+import { getAttrHandlerComponentMap } from '../ci/attrhandler/attrhandler-extension.js';
 
 export default {
   name: 'AttrViewer',
-  components: {
-    ...handlers
-  },
   props: {
     mode: { type: String, default: 'list' }, //显示模式，只有list和detail两种，某些组件在不同显示模式下会有不同的展示方式
     handler: { type: String },
@@ -46,9 +44,7 @@ export default {
     authData: { type: Object } //权限数据
   },
   data() {
-    return {
-      handlers: handlers
-    };
+    return {};
   },
   beforeCreate() {},
   created() {},
@@ -62,7 +58,14 @@ export default {
   destroyed() {},
   methods: {},
   filter: {},
-  computed: {},
+  computed: {
+    handlerComponent() {
+      if (!this.handler) {
+        return null;
+      }
+      return getAttrHandlerComponentMap('view', coreHandlers)[this.handler + 'attr'];
+    }
+  },
   watch: {}
 };
 </script>
