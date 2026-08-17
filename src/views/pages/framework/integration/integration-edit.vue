@@ -41,7 +41,7 @@
                 tab="integrationEditTabs"
               >
                 <ParamEdit
-                  :allow-edit-param="allowEditParam"
+                  :allow-edit-param="allowEditInputParam"
                   :integration="integrationData"
                   :handler-pattern="handlerPattern"
                   @setParam="setParam"
@@ -65,7 +65,7 @@
               >
                 <InputTransform
                   :integration="integrationData"
-                  :allow-edit-param="allowEditParam"
+                  :allow-edit-param="allowEditInputParam"
                   :handler-pattern="handlerInputPattern"
                   @setInput="setInput"
                 ></InputTransform>
@@ -79,7 +79,7 @@
               >
                 <OutputTransform
                   :integration="integrationData"
-                  :allow-edit-param="allowEditParam"
+                  :allow-edit-param="allowEditOutputParam"
                   :handler-pattern="handlerOutputPattern"
                   @setOutput="setOutput"
                 ></OutputTransform>
@@ -161,7 +161,8 @@ export default {
       integrationData: { config: {} },
       handlerInputPattern: [],
       handlerOutputPattern: [],
-      allowEditParam: 0,
+      allowEditInputParam: 0,
+      allowEditOutputParam: 0,
       methodList: [
         { value: 'get', text: 'GET' },
         { value: 'post', text: 'POST' }
@@ -238,14 +239,16 @@ export default {
             if (res.Status == 'OK') {
               _this.handlerInputPattern = res.Return['inputPattern'] || [];
               _this.handlerOutputPattern = res.Return['outputPattern'] || [];
-              _this.allowEditParam = res.Return['hasPattern'] == 0 ? 1 : 0;
+              _this.allowEditInputParam = res.Return['hasInputPattern'] == 0 ? 1 : 0;
+              _this.allowEditOutputParam = res.Return['hasOutputPattern'] == 0 ? 1 : 0;
               _this.setMethodList(res.Return['methodList']);
             }
           });
       } else {
         _this.handlerInputPattern = [];
         _this.handlerOutputPattern = [];
-        _this.allowEditParam = 1;
+        _this.allowEditInputParam = 1;
+        _this.allowEditOutputParam = 1;
         _this.setMethodList();
       }
     },
