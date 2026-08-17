@@ -33,7 +33,7 @@
     </div>
     <div ref="searchContainer" style="position:relative;text-align:right">
       <!--主搜索框-->
-      <div v-if="searchWidth > 0" class="radius-sm bg-op border-color searcher-inputer" :style="{ width: searchWidth + 'px' }">
+      <div v-if="searchWidth > 0" class="radius-sm bg-op border-color searcher-inputer">
         <!--已选择的搜索条件-->
         <div style="white-space: nowrap;overflow-x: auto;">
           <div style="display:inline-block">
