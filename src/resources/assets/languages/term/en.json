@@ -1150,6 +1150,7 @@
     "toolrecommendaifailed": "Tool recommendation failed.",
     "toolrecommendaimissinganswer": "The recommendation result is missing answer content.",
     "toolrecommendairesultempty": "Recommended tools will appear here after you enter a requirement.",
+    "toolrecommendbutton": "Tool Recommendation",
     "recommendedtools": "Recommended Tools",
     "norecommendreason": "No Recommendation Reason",
     "confidence": "Confidence",

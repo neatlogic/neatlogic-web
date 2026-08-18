@@ -1148,6 +1148,7 @@
     "toolrecommendaifailed": "工具推荐失败。",
     "toolrecommendaimissinganswer": "推荐结果缺少回答内容。",
     "toolrecommendairesultempty": "输入需求后，这里会显示推荐工具。",
+    "toolrecommendbutton": "工具推荐",
     "recommendedtools": "推荐工具",
     "norecommendreason": "暂无推荐理由",
     "confidence": "置信度",
