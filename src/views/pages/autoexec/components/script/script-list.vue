@@ -147,10 +147,15 @@
       <template v-slot>
         <div class="tool-help-content">
           <Loading :loadingShow="helpLoading" type="fix"></Loading>
-          <DocumentonlineContent
+          <TsMarkdownEditor
             v-if="onlineHelpContent"
-            :content="onlineHelpContent"
-          ></DocumentonlineContent>
+            class="tool-help-markdown"
+            :value="onlineHelpContent"
+            model="previewOnly"
+            readonly
+            :toolbar="false"
+            height="auto"
+          ></TsMarkdownEditor>
           <template v-else-if="!helpLoading">
             <div class="tool-help-overview bg-op padding radius-lg mb-md">
               <div class="tool-help-overview-item">
@@ -193,30 +198,32 @@
         </div>
       </template>
       <template v-slot:footer>
-        <Button @click="closeToolHelpDialog">{{ $t('page.close') }}</Button>
-        <Button
-          v-if="onlineHelpContent"
-          :disabled="helpLoading"
-          @click="downloadOnlineHelp"
-        >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
-        <Button
-          v-else
-          v-download="helpExportWord"
-          v-download:prevent="helpLoading || downloadLoading"
-          :loading="helpLoading || downloadLoading"
-        >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
-        <Tooltip
-          v-if="autoexecToolUsageAiAssistantComponent"
-          :content="aiAssistantDisabledReason"
-          :disabled="!aiAssistantDisabledReason"
-          transfer
-        >
+        <div class="tool-help-footer">
+          <Button @click="closeToolHelpDialog">{{ $t('page.close') }}</Button>
           <Button
-            type="primary"
-            :disabled="!aiAssistantEnabled"
-            @click="openToolUsageAiFromHelp"
-          >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
-        </Tooltip>
+            v-if="onlineHelpContent"
+            :disabled="helpLoading"
+            @click="downloadOnlineHelp"
+          >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
+          <Button
+            v-else
+            v-download="helpExportWord"
+            v-download:prevent="helpLoading || downloadLoading"
+            :loading="helpLoading || downloadLoading"
+          >{{ $t('term.autoexec.downloadtoolhelp') }}</Button>
+          <Tooltip
+            v-if="autoexecToolUsageAiAssistantComponent"
+            :content="aiAssistantDisabledReason"
+            :disabled="!aiAssistantDisabledReason"
+            transfer
+          >
+            <Button
+              type="primary"
+              :disabled="!aiAssistantEnabled"
+              @click="openToolUsageAiFromHelp"
+            >{{ $t('term.autoexec.toolusageaihelp') }}</Button>
+          </Tooltip>
+        </div>
       </template>
     </TsDialog>
     <component
@@ -248,7 +255,7 @@ export default {
     ...item,
     RiskItem,
     ParamsReadonly,
-    DocumentonlineContent: () => import('@/views/pages/documentonline/document/documentonline-content.vue'),
+    TsMarkdownEditor: () => import('@/resources/components/TsMarkdownEditor/index.vue'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
@@ -1002,6 +1009,17 @@ export default {
 
   .item-list {
     padding-bottom: 16px;
+  }
+}
+.tool-help-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  ::v-deep button {
+    margin-left: 0 !important;
   }
 }
 .tool-help-overview {
