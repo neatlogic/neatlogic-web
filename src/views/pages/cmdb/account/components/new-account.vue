@@ -136,9 +136,8 @@ export default {
             // 密码未修改时直接回传原始密文，同时兼容历史RC4密文和新的RSA密文。
             requestData.passwordCipher = this.passwordCipherBackup;
           } else {
-            // 用户输入新密码时，提交前获取公钥并生成新的RSA密文。
-            const publicKeyRes = await this.$api.cmdb.accountManage.getAccountPasswordPublicKey();
-            requestData.passwordCipher = await this.encryptPassword(requestData.passwordPlain, publicKeyRes.Return.publicKey);
+            // 用户输入新密码时，由全局工具内部获取公钥并生成新的RSA密文。
+            requestData.passwordCipher = await this.$utils.encryptPassword(requestData.passwordPlain);
           }
           delete requestData.passwordPlain;
         }
@@ -154,42 +153,6 @@ export default {
           this.$Message.error(error.message || this.$t('message.savefailed'));
         }
       }
-    },
-    async encryptPassword(password, publicKey) {
-      if (password.startsWith('{RSA}')) {
-        return password;
-      }
-      if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
-        throw new Error('当前浏览器不支持密码安全加密');
-      }
-      const publicKeyBinary = window.atob(publicKey);
-      const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
-      for (let i = 0; i < publicKeyBinary.length; i++) {
-        publicKeyBytes[i] = publicKeyBinary.charCodeAt(i);
-      }
-      const cryptoKey = await window.crypto.subtle.importKey(
-        'spki',
-        publicKeyBytes.buffer,
-        {name: 'RSA-OAEP', hash: 'SHA-256'},
-        false,
-        ['encrypt']
-      );
-      const passwordBytes = new TextEncoder().encode(password);
-      if (passwordBytes.length > 190) {
-        throw new Error('密码内容过长，无法进行安全加密');
-      }
-      const encrypted = await window.crypto.subtle.encrypt(
-        {name: 'RSA-OAEP'},
-        cryptoKey,
-        passwordBytes
-      );
-      const encryptedBytes = new Uint8Array(encrypted);
-      let encryptedBinary = '';
-      for (let i = 0; i < encryptedBytes.length; i++) {
-        encryptedBinary += String.fromCharCode(encryptedBytes[i]);
-      }
-      let passwordEncrypt = window.btoa(encryptedBinary);
-      return '{RSA}' + passwordEncrypt;
     },
     close: function(needRefresh, formValue = null) {
       this.$emit('close', needRefresh, formValue);
