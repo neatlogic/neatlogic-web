@@ -246,8 +246,8 @@ const common = {
     return axios.post('/api/rest/portal/currentuser/get', withCurrentModuleGroup({}, moduleGroup));
   },
   getPasswordPublicKey() {
-    // 获取账号密码加密公钥
-    return axios.post('api/rest/resourcecenter/account/password/publickey/get');
+    // 获取密码加密公钥
+    return axios.post('api/rest/password/publickey/get');
   }
 };
 
