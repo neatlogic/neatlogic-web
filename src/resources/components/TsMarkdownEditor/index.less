@@ -27,6 +27,8 @@
   --ts-md-content-padding-x: 36px;
   border-radius: var(--ts-md-border-radius);
   overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
 
   .cherry {
     --primary-color: var(--ts-md-primary-color);
@@ -223,6 +225,12 @@
   .cherry .cherry-previewer {
     padding: var(--ts-md-content-padding-y) var(--ts-md-content-padding-x) !important;
     border-left-color: var(--ts-md-border-color);
+    min-width: 0;
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
 
     video {
       max-width: 100%;
