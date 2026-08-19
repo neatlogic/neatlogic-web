@@ -64,7 +64,6 @@
     "event-source-polyfill": "^1.0.31",
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
-    "github-markdown-css": "^5.2.0",
     "handsontable": "^14.5.0",
     "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
