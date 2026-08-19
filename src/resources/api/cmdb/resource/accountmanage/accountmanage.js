@@ -8,10 +8,6 @@ const accountManage = {
   getAccountById(id) {
     return axios.post('api/rest/resourcecenter/account/get', { id: id });
   },
-  // 获取账号密码加密公钥
-  getAccountPasswordPublicKey() {
-    return axios.post('api/rest/resourcecenter/account/password/publickey/get');
-  },
   // 查询资源中心数据列表
   getAccountList(params) {
     return axios.post('api/rest/resourcecenter/resource/list', params);

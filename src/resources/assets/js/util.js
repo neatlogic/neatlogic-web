@@ -689,11 +689,11 @@ const methods = {
     if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
       throw new Error('当前浏览器不支持密码安全加密');
     }
-    if (!this.$api || !this.$api.cmdb || !this.$api.cmdb.accountManage) {
+    if (!this.$api || !this.$api.common) {
       throw new Error('密码加密接口未初始化');
     }
     // 每次加密前从后端获取当前公钥，调用页面无需感知或传递公钥。
-    const publicKeyRes = await this.$api.cmdb.accountManage.getAccountPasswordPublicKey();
+    const publicKeyRes = await this.$api.common.getPasswordPublicKey();
     const publicKey = publicKeyRes && publicKeyRes.Return && publicKeyRes.Return.publicKey;
     if (!publicKey) {
       throw new Error('密码加密公钥不能为空');
