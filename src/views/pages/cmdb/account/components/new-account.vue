@@ -25,6 +25,8 @@ export default {
       tableData: {
         dataList: []
       },
+      // 备份查询接口返回的原始密码密文，避免用户编辑密码框时覆盖原值。
+      passwordCipherBackup: '',
       formConfig: {
         id: {
           type: 'text',
@@ -115,27 +117,79 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    save() {
+    async save() {
       const form = this.$refs['form'];
       let data = this.$refs.form.getFormValue();
       if (!form.valid()) {
         return;
       }
-      this.$api.cmdb.accountManage
-        .saveAccount({...data, type: 'public'})
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.close(true);
+      try {
+        const requestData = {...data, type: 'public'};
+        if (requestData.passwordPlain) {
+          const isRsaPassword = requestData.passwordPlain.startsWith('{RSA}');
+          // 以{RSA}开头的内容只能是查询接口回显的原始密文，禁止伪造或修改密文。
+          if (isRsaPassword && requestData.passwordPlain !== this.passwordCipherBackup) {
+            this.$Message.error('密码不合法');
+            return;
           }
-        })
-        .catch(error => {
-          if (error.data.Message) {
-            this.$Message.error(error.data.Message);
+          if (this.passwordCipherBackup && requestData.passwordPlain === this.passwordCipherBackup) {
+            // 密码未修改时直接回传原始密文，同时兼容历史RC4密文和新的RSA密文。
+            requestData.passwordCipher = this.passwordCipherBackup;
           } else {
-            this.$Message.error(this.$t('message.savesuccess'));
+            // 用户输入新密码时，提交前获取公钥并生成新的RSA密文。
+            const publicKeyRes = await this.$api.cmdb.accountManage.getAccountPasswordPublicKey();
+            requestData.passwordCipher = await this.encryptPassword(requestData.passwordPlain, publicKeyRes.Return.publicKey);
           }
-        });
+          delete requestData.passwordPlain;
+        }
+        const res = await this.$api.cmdb.accountManage.saveAccount(requestData);
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        }
+      } catch (error) {
+        if (error.data && error.data.Message) {
+          this.$Message.error(error.data.Message);
+        } else {
+          this.$Message.error(error.message || this.$t('message.savefailed'));
+        }
+      }
+    },
+    async encryptPassword(password, publicKey) {
+      if (password.startsWith('{RSA}')) {
+        return password;
+      }
+      if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
+        throw new Error('当前浏览器不支持密码安全加密');
+      }
+      const publicKeyBinary = window.atob(publicKey);
+      const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
+      for (let i = 0; i < publicKeyBinary.length; i++) {
+        publicKeyBytes[i] = publicKeyBinary.charCodeAt(i);
+      }
+      const cryptoKey = await window.crypto.subtle.importKey(
+        'spki',
+        publicKeyBytes.buffer,
+        {name: 'RSA-OAEP', hash: 'SHA-256'},
+        false,
+        ['encrypt']
+      );
+      const passwordBytes = new TextEncoder().encode(password);
+      if (passwordBytes.length > 190) {
+        throw new Error('密码内容过长，无法进行安全加密');
+      }
+      const encrypted = await window.crypto.subtle.encrypt(
+        {name: 'RSA-OAEP'},
+        cryptoKey,
+        passwordBytes
+      );
+      const encryptedBytes = new Uint8Array(encrypted);
+      let encryptedBinary = '';
+      for (let i = 0; i < encryptedBytes.length; i++) {
+        encryptedBinary += String.fromCharCode(encryptedBytes[i]);
+      }
+      let passwordEncrypt = window.btoa(encryptedBinary);
+      return '{RSA}' + passwordEncrypt;
     },
     close: function(needRefresh, formValue = null) {
       this.$emit('close', needRefresh, formValue);
@@ -145,8 +199,14 @@ export default {
       if (this.id) {
         this.$api.cmdb.accountManage.getAccountById(this.id).then(res => {
           this.tableData = res.Return;
+          // 单独备份接口返回的passwordCipher，表单中的密码值变化不会修改该备份。
+          this.passwordCipherBackup = this.tableData.passwordCipher || '';
           for (let key in this.formConfig) {
             this.$set(this.formConfig[key], 'value', this.tableData[key]);
+          }
+          if (this.passwordCipherBackup) {
+            // 编辑已有账号时，在密码控件中回显接口返回的密文。
+            this.$set(this.formConfig.passwordPlain, 'value', this.passwordCipherBackup);
           }
           if (this.tableData.tagList && this.tableData.tagList.length > 0) {
             let idList = [];
