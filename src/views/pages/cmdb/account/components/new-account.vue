@@ -144,7 +144,7 @@ export default {
       }
       // 提交前再次校验两次密码，避免绕过控件校验后发送不一致的数据。
       if (data.passwordPlain !== data.passwordConfirm) {
-        this.$Message.error(this.$t('term.pwdnotsame'));
+        this.$Message.error(this.$t('term.framework.pwdnotsame'));
         return;
       }
       try {
