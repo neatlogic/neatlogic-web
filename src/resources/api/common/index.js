@@ -244,6 +244,10 @@ const common = {
   getCurrentUserPortal(moduleGroup) {
     // 获取当前用户可用的工作台
     return axios.post('/api/rest/portal/currentuser/get', withCurrentModuleGroup({}, moduleGroup));
+  },
+  getPasswordPublicKey() {
+    // 获取密码加密公钥
+    return axios.post('api/rest/password/publickey/get');
   }
 };
 

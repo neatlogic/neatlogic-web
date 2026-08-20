@@ -1283,5 +1283,6 @@
   "radius": "圆角",
   "shape": "形状",
   "datafilter": "数据过滤",
-  "displayname": "显示名"
+  "displayname": "显示名",
+  "passwordinvalid": "密码不合法"
 }

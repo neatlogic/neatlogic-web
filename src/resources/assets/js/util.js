@@ -76,13 +76,19 @@ deepRemoveEmptyValues(data)                  深度移除对象中的空值
 getUserInfo()                                获取用户信息
 getInstanceIpPort()                          获取实例ip和端口
 highlightTextByKeywords                      高亮文字根据关键字
+encryptPassword(password)                    获取RSA公钥并加密密码，返回带{RSA}前缀的密文
 */
+import Vue from 'vue';
 import _ from 'lodash';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
 const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
+// RSA密码密文统一使用该前缀，供前后端识别密码加密格式。
+const RSA_ENCRYPTED_PREFIX = 'RSA:';
+// 2048位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为190字节。
+const RSA_OAEP_MAX_PLAINTEXT_BYTES = 190;
 const methods = {
   getCookie: function (name) {
     if (name) {
@@ -664,6 +670,63 @@ const methods = {
         columlist.push({ text: text, value: v.id, config: v });
       });
     return columlist;
+  },
+  /**
+   * 获取后端SPKI公钥并加密密码，所有页面均可通过this.$utils.encryptPassword调用。
+   *
+   * @param {String} password 待加密的明文密码或已经加密的RSA密码
+   * @returns {Promise<String>} 带RSA:前缀的Base64密文
+   */
+  async encryptPassword(password) {
+    // 全局方法对调用参数做统一校验，避免不同页面产生不可识别的密码密文。
+    if (typeof password !== 'string') {
+      throw new Error('待加密密码格式不正确');
+    }
+    // 已加密密码直接返回，避免编辑场景对回显密文重复加密。
+    if (password.startsWith(RSA_ENCRYPTED_PREFIX)) {
+      return password;
+    }
+    if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
+      throw new Error('当前浏览器不支持密码安全加密');
+    }
+    if (!this.$api || !this.$api.common) {
+      throw new Error('密码加密接口未初始化');
+    }
+    // 每次加密前从后端获取当前公钥，调用页面无需感知或传递公钥。
+    const publicKeyRes = await this.$api.common.getPasswordPublicKey();
+    const publicKey = publicKeyRes && publicKeyRes.Return && publicKeyRes.Return.publicKey;
+    if (!publicKey) {
+      throw new Error('密码加密公钥不能为空');
+    }
+    // 将后端返回的Base64 SPKI公钥转换为Web Crypto可导入的二进制格式。
+    const publicKeyBinary = window.atob(publicKey);
+    const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
+    for (let i = 0; i < publicKeyBinary.length; i++) {
+      publicKeyBytes[i] = publicKeyBinary.charCodeAt(i);
+    }
+    const cryptoKey = await window.crypto.subtle.importKey(
+      'spki',
+      publicKeyBytes.buffer,
+      {name: 'RSA-OAEP', hash: 'SHA-256'},
+      false,
+      ['encrypt']
+    );
+    const passwordBytes = new TextEncoder().encode(password);
+    if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
+      throw new Error('密码内容过长，无法进行安全加密');
+    }
+    const encrypted = await window.crypto.subtle.encrypt(
+      {name: 'RSA-OAEP'},
+      cryptoKey,
+      passwordBytes
+    );
+    // 将加密结果转换为Base64，并增加与后端约定的RSA格式前缀。
+    const encryptedBytes = new Uint8Array(encrypted);
+    let encryptedBinary = '';
+    for (let i = 0; i < encryptedBytes.length; i++) {
+      encryptedBinary += String.fromCharCode(encryptedBytes[i]);
+    }
+    return RSA_ENCRYPTED_PREFIX + window.btoa(encryptedBinary);
   },
   getRunnerGroupList(list) {
     let columlist = [];
@@ -1314,4 +1377,12 @@ const methods = {
     return text.replace(regex, '<span class="highlight-search-keyword text-error">$1</span>'); // 使用span加上高亮样式
   }
 };
+// $utils方法的this指向工具对象，通过只读桥接访问各页面挂载到Vue原型上的全局API。
+Object.defineProperty(methods, '$api', {
+  configurable: false,
+  enumerable: false,
+  get() {
+    return Vue.prototype.$api;
+  }
+});
 export default methods;
