@@ -284,13 +284,5 @@
   "commentsucces": "Commented successfully",
   "syncsuccess": "Synchronized successfully",
   "downloadsuccessful": "Downloaded successfully",
-  "runsuccess": "Executed successfully",
-  "ai": {
-    "voiceinputnotsupported": "Voice input is not supported by this browser",
-    "voiceinputpermissiondenied": "Microphone permission was denied. Please check browser permission settings.",
-    "voiceinputnospeech": "No speech was recognized",
-    "voiceinputnospeechcheckdevice": "No speech was recognized. Current browser microphone: {target}. Check the browser or system input device and start again.",
-    "voiceinputdeviceunavailable": "Unable to access microphone input. Current browser microphone: {target}. Switch the browser or system input device and start again.",
-    "voiceinputfailed": "Voice input failed"
-  }
+  "runsuccess": "Executed successfully"
 }
