@@ -86,7 +86,7 @@ import { $t } from '@/resources/init.js';
 const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
 // RSA密码密文统一使用该前缀，供前后端识别密码加密格式。
-const RSA_ENCRYPTED_PREFIX = '{RSA}';
+const RSA_ENCRYPTED_PREFIX = 'RSA:';
 // 2048位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为190字节。
 const RSA_OAEP_MAX_PLAINTEXT_BYTES = 190;
 const methods = {
@@ -675,7 +675,7 @@ const methods = {
    * 获取后端SPKI公钥并加密密码，所有页面均可通过this.$utils.encryptPassword调用。
    *
    * @param {String} password 待加密的明文密码或已经加密的RSA密码
-   * @returns {Promise<String>} 带{RSA}前缀的Base64密文
+   * @returns {Promise<String>} 带RSA:前缀的Base64密文
    */
   async encryptPassword(password) {
     // 全局方法对调用参数做统一校验，避免不同页面产生不可识别的密码密文。
