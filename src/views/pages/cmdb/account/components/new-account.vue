@@ -155,7 +155,7 @@ export default {
           const isRsaPassword = requestData.passwordPlain.startsWith('RSA:');
           // 以RSA:开头的内容只能是查询接口回显的原始密文，禁止伪造或修改密文。
           if (isRsaPassword && requestData.passwordPlain !== this.passwordCipherBackup) {
-            this.$Message.error('密码不合法');
+            this.$Message.error(this.$t('page.passwordinvalid'));
             return;
           }
           if (this.passwordCipherBackup && requestData.passwordPlain === this.passwordCipherBackup) {
