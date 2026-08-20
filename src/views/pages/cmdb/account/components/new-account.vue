@@ -53,6 +53,7 @@ export default {
           type: 'password',
           name: 'passwordPlain',
           width: '100%',
+          showPassword: false,
           label: this.$t('page.password')
         },
         protocolId: {
