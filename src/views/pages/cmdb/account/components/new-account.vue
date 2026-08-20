@@ -53,8 +53,26 @@ export default {
           type: 'password',
           name: 'passwordPlain',
           width: '100%',
-          showPassword: false,
+          showPassword: false, // 密码框始终隐藏明文，不提供明文切换。
           label: this.$t('page.password')
+        },
+        passwordConfirm: {
+          type: 'password',
+          name: 'passwordConfirm',
+          width: '100%',
+          showPassword: false, // 确认密码框同样始终隐藏明文。
+          label: this.$t('term.framework.confirmpwd'),
+          validateList: [
+            {
+              name: 'custom',
+              message: this.$t('term.framework.pwdnotsame'),
+              // 两个密码都为空时允许保存；任意一个有值时必须完全一致。
+              validator: (rule, value) => {
+                const formValue = this.$refs.form ? this.$refs.form.getFormValue() : {};
+                return value === formValue.passwordPlain;
+              }
+            }
+          ]
         },
         protocolId: {
           type: 'select',
@@ -124,8 +142,15 @@ export default {
       if (!form.valid()) {
         return;
       }
+      // 提交前再次校验两次密码，避免绕过控件校验后发送不一致的数据。
+      if (data.passwordPlain !== data.passwordConfirm) {
+        this.$Message.error(this.$t('term.pwdnotsame'));
+        return;
+      }
       try {
         const requestData = {...data, type: 'public'};
+        // 确认密码仅用于前端一致性校验，禁止传递到后端接口。
+        delete requestData.passwordConfirm;
         if (requestData.passwordPlain) {
           const isRsaPassword = requestData.passwordPlain.startsWith('RSA:');
           // 以RSA:开头的内容只能是查询接口回显的原始密文，禁止伪造或修改密文。
@@ -169,8 +194,9 @@ export default {
             this.$set(this.formConfig[key], 'value', this.tableData[key]);
           }
           if (this.passwordCipherBackup) {
-            // 编辑已有账号时，在密码控件中回显接口返回的密文。
+            // 编辑已有账号时，两个密码控件同步回显密文，未修改时可直接通过一致性校验。
             this.$set(this.formConfig.passwordPlain, 'value', this.passwordCipherBackup);
+            this.$set(this.formConfig.passwordConfirm, 'value', this.passwordCipherBackup);
           }
           if (this.tableData.tagList && this.tableData.tagList.length > 0) {
             let idList = [];
