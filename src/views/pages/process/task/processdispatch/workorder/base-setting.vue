@@ -36,9 +36,11 @@
               <TsAvatar v-else v-bind="userDetail" size="40"></TsAvatar>
             </div>
             <div class="infor-right">
+              <!-- 无代报权限时只能使用初始化的当前登录人，禁止修改上报人。 -->
               <UserSelect
                 ref="owner"
                 v-model="dispatch.owner"
+                :disabled="!isDelegateAuthority"
                 :groupList="groupList"
                 :multiple="false"
                 border="none"
@@ -296,6 +298,10 @@ export default {
   },
   filter: {},
   computed: {
+    // 草稿查询已按当前用户、服务和全部父目录计算有效代报权限。
+    isDelegateAuthority() {
+      return !!(this.draftData && this.draftData.channelVo && this.draftData.channelVo.isDelegateAuthority);
+    },
     getRegionSetting() {
       this.$set(this.regionSelectConfig, 'params', {owner: this.dispatch.owner});
       return this.regionSelectConfig;
