@@ -89,7 +89,9 @@ export default {
       loadingShow: true,
       searchConditionValueList: [], //搜索条件的值列表
       searchConditionConfig: {},
-      matrixAttrUuidMap: {} //矩阵属性uuid与uuid的映射，用于获取矩阵属性
+      matrixAttrUuidMap: {}, //矩阵属性uuid与uuid的映射，用于获取矩阵属性
+      matrixRequestId: 0, //矩阵请求序号，确保只有最后一次请求可以更新数据
+      matrixAbortController: null //用于取消上一次尚未完成的矩阵请求
     };
   },
   beforeCreate() {},
@@ -102,7 +104,15 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    //组件销毁后使当前请求失效，避免异步响应继续更新已销毁组件的数据
+    this.matrixRequestId += 1;
+    if (this.matrixAbortController) {
+      //释放尚未完成的请求，避免组件销毁后继续占用网络资源
+      this.matrixAbortController.abort();
+      this.matrixAbortController = null;
+    }
+  },
   destroyed() {},
   methods: {
     init() {
@@ -116,6 +126,13 @@ export default {
       }
     },
     searchMatrixData(currentPage) {
+      //每次查询生成递增序号；即使旧请求未能及时取消，也只有最新序号可以更新页面
+      const requestId = ++this.matrixRequestId;
+      if (this.matrixAbortController) {
+        //新查询开始时取消上一次尚未完成的查询，连续快速触发时始终保留最后一次
+        this.matrixAbortController.abort();
+        this.matrixAbortController = null;
+      }
       //编辑模式
       if (this.mode.includes('edit')) {
         this.loadingShow = false;
@@ -168,7 +185,16 @@ export default {
       if (this.searchConditionConfig && this.searchConditionConfig.sourceColumnList) {
         this.searchParam.filterList.push(...this.searchConditionConfig.sourceColumnList);
       }
-      this.$api.framework.matrix.getNewMatrixDataForTable(this.searchParam).then(res => {
+      //使用独立参数快照，避免后续查询修改同一个searchParam对象
+      const searchParam = this.$utils.deepClone(this.searchParam);
+      //每次请求使用独立的AbortController，后续查询可通过signal取消当前请求
+      const abortController = new AbortController();
+      this.matrixAbortController = abortController;
+      this.$api.framework.matrix.getNewMatrixDataForTable(searchParam, { signal: abortController.signal }).then(res => {
+        //取消请求或过期请求均不处理，防止旧响应覆盖最后一次查询结果
+        if (abortController.signal.aborted || requestId !== this.matrixRequestId || !res) {
+          return;
+        }
         this.matrixData = res.Return;
         if (!this.$utils.isEmpty(this.matrixData.tbodyList)) {
           let tbodyList = [];
@@ -231,8 +257,20 @@ export default {
             }
           });
         }
+      }).catch(error => {
+        //主动取消属于正常流程，不作为接口异常继续抛出
+        if (abortController.signal.aborted || (error && error.code === 'ERR_CANCELED')) {
+          return;
+        }
+        return Promise.reject(error);
       }).finally(() => {
-        this.loadingShow = false;
+        //旧请求结束时不能关闭新请求的loading，也不能清理新请求的Controller
+        if (requestId === this.matrixRequestId) {
+          this.loadingShow = false;
+          if (this.matrixAbortController === abortController) {
+            this.matrixAbortController = null;
+          }
+        }
       });
     },
     changePageSize(pageSize) {
@@ -392,6 +430,7 @@ export default {
   watch: {
     filter: {
       handler: function(val) {
+        console.log('----filter-watch', val);
         this.searchMatrixData(1);
       },
       deep: true,
@@ -409,6 +448,7 @@ export default {
             if (!this.searchParam.pageSize) {
               this.searchParam.pageSize = this.config.pageSize || 20;
             }
+            console.log('config---watch');
             this.searchMatrixData(1);
           }
         }
