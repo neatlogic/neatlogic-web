@@ -430,7 +430,6 @@ export default {
   watch: {
     filter: {
       handler: function(val) {
-        console.log('----filter-watch', val);
         this.searchMatrixData(1);
       },
       deep: true,
@@ -448,7 +447,6 @@ export default {
             if (!this.searchParam.pageSize) {
               this.searchParam.pageSize = this.config.pageSize || 20;
             }
-            console.log('config---watch');
             this.searchMatrixData(1);
           }
         }
