@@ -355,7 +355,6 @@
 
       .cherry-mermaid-source-toolbar-panel[data-mode='source'] code.language-mermaid,
       .cherry-mermaid-source-toolbar-panel[data-mode='source'] pre.language-mermaid {
-        font-family: Consolas, 'Courier New', monospace;
         font-size: 12px;
         line-height: 20px;
       }
@@ -503,20 +502,21 @@ html.theme-dark .ts-markdown-editor {
   .cherry .cherry-previewer[data-code-block-theme='default'] div[data-type='codeBlock'] .code-line::before {
     color: var(--ts-md-code-line-number-color);
   }
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] pre[class*='language-'] > code {
+  div[data-type='codeBlock'] pre[class*='language-'] > code {
     background-color: var(--ts-md-code-bg) !important;
     color: var(--ts-md-text-color);
     border-left: 10px solid var(--ts-md-code-bg);
     box-shadow: none !important;
+    text-shadow: 0 1px var(--ts-md-code-bg);
   }
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] :not(pre) > code[class*='language-'],
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] pre[class*='language-'] {
+  div[data-type='codeBlock'] :not(pre) > code[class*='language-'],
+  div[data-type='codeBlock'] pre[class*='language-'] {
     background-color: var(--ts-md-code-bg) !important;
   }
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] .token.operator,
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] .token.entity,
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] .token.url,
-  [data-code-block-theme='coy'] div[data-type='codeBlock'] .token.variable {
+  div[data-type='codeBlock'] .token.operator,
+  div[data-type='codeBlock'] .token.entity,
+  div[data-type='codeBlock'] .token.url,
+  div[data-type='codeBlock'] .token.variable {
     background: transparent;
   }
 }
@@ -601,7 +601,7 @@ html.theme-dark .ts-markdown-editor {
   cursor: ew-resize;
 }
 
-[data-code-block-theme='coy'] div[data-type='codeBlock'] pre[class*='language-'] > code {
+div[data-type='codeBlock'] pre[class*='language-'] > code {
   border-left: 10px solid transparent;
   background-image: none;
 }
