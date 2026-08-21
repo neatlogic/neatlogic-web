@@ -43,15 +43,13 @@
       </template>
       <template v-slot:sider>
         <div class="widget-library padding-sm">
-          <div class="widget-library__search mb-sm">
-            <TsFormInput
+          <div class="widget-library__search mb-sm pl-sm">
+            <InputSearcher
               v-model.trim="widgetKeyword"
               :placeholder="$t('term.workbench.searchwidgets')"
-              clearable
-              border="border"
-            ></TsFormInput>
+            ></InputSearcher>
           </div>
-          <div class="widget-library__body">
+          <div class="widget-library__body pl-sm">
             <div v-if="availableWidgetLoading" class="library-state flex-center text-center">
               <Loading :loadingShow="true"></Loading>
             </div>
@@ -65,6 +63,7 @@
               <Collapse
                 v-if="!$utils.isEmpty(visibleModuleGroups)"
                 v-model="expandedModuleGroupList"
+                simple
               >
                 <Panel v-for="module in visibleModuleGroups" :key="module.name" :name="module.name">
                   <span class="module-title">{{ module.label }}</span>
@@ -74,36 +73,42 @@
                       v-for="definition in module.widgetList"
                       :key="definition.name"
                       :class="[
-                        'widget-option radius-sm bg-op text-default border-base padding-xs mb-sm',
+                        'widget-option radius-sm bg-op text-default padding-xs mb-sm',
                         isDefinitionAvailable(definition) ? 'bg-hover-grey' : 'is-disabled'
                       ]"
                       :draggable="isDefinitionAvailable(definition)"
                       @dragstart="startDrag($event, definition)"
                     >
                       <i :class="[definition.icon, 'widget-option-icon flex-center radius-md bg-selected text-primary']"></i>
-                      <div class="widget-option-main">
-                        <div class="widget-option-heading">
-                          <div class="widget-option-title overflow">{{ definition.label }}</div>
-                        </div>
-                        <div class="widget-option-desc overflow text-grey mt-xs">{{ definition.description }}</div>
-                        <div
-                          v-if="getAddedCount(definition.name) || definition.__authorizationUnchecked || !isDefinitionAvailable(definition)"
-                          class="widget-option-meta text-grey mt-xs"
-                        >
-                          <span v-if="getAddedCount(definition.name)">{{ $t('term.workbench.addedcount', { count: getAddedCount(definition.name) }) }}</span>
-                          <span v-if="definition.__authorizationUnchecked" class="text-warning">{{ $t('term.workbench.authorizationunchecked') }}</span>
-                          <span v-else-if="!isDefinitionAvailable(definition)" class="text-danger">
-                            {{ definition.__unavailableReason || $t('term.workbench.unavailable') }}
-                          </span>
-                        </div>
-                        <div class="widget-option-actions mt-xs">
-                          <span
-                            :class="isDefinitionAvailable(definition) ? 'text-action' : 'text-disabled'"
-                            @click.stop="addWidget(definition)"
-                          >
-                            {{ $t('page.add') }}
-                          </span>
-                        </div>
+                      <Tooltip
+                        :disabled="$utils.isEmpty(getDefinitionTooltip(definition))"
+                        :content="getDefinitionTooltip(definition)"
+                        placement="right"
+                        max-width="300"
+                        transfer
+                        theme="light"
+                        class="widget-option-tooltip"
+                      >
+                        <div class="widget-option-title overflow">{{ definition.label }}</div>
+                      </Tooltip>
+                      <div class="widget-option-actions">
+                        <span
+                          v-if="getAddedCount(definition.name)"
+                          class="widget-option-count bg-primary-grey text-primary radius-sm"
+                        >{{ getAddedCount(definition.name) }}</span>
+                        <button
+                          type="button"
+                          :class="[
+                            'widget-option-add tsfont-plus-o text-tip-active',
+                            isDefinitionAvailable(definition) ? 'text-action' : 'text-disabled'
+                          ]"
+                          :disabled="!isDefinitionAvailable(definition)"
+                          :aria-label="$t('page.add')"
+                          :title="$t('page.add')"
+                          draggable="false"
+                          @mousedown.stop
+                          @click.stop="addWidget(definition)"
+                        ></button>
                       </div>
                     </div>
                   </div>
@@ -288,7 +293,8 @@ export default {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
-    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue')
   },
   props: {
     value: {
@@ -371,6 +377,21 @@ export default {
         const definition = this.getWidgetByName(widget.type);
         return definition ? definition.name === name : widget.type === name;
       }).length;
+    },
+    getDefinitionTooltip(definition) {
+      if (!definition) {
+        return '';
+      }
+      const messageList = [];
+      if (definition.description) {
+        messageList.push(definition.description);
+      }
+      if (definition.__authorizationUnchecked) {
+        messageList.push(this.$t('term.workbench.authorizationunchecked'));
+      } else if (!this.isDefinitionAvailable(definition)) {
+        messageList.push(definition.__unavailableReason || this.$t('term.workbench.unavailable'));
+      }
+      return messageList.join(' · ');
     },
     startDrag(event, definition) {
       if (!this.isDefinitionAvailable(definition)) {
@@ -705,12 +726,16 @@ export default {
     font-size: 11px;
   }
   .widget-option {
-    min-height: 74px;
+    height: 58px;
     display: grid;
-    grid-template-columns: 30px minmax(0, 1fr);
-    gap: 9px;
-    align-items: start;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    box-sizing: border-box;
     cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
     &.is-disabled {
       opacity: 0.72;
       cursor: not-allowed;
@@ -721,34 +746,45 @@ export default {
     height: 28px;
     font-size: 16px;
   }
-  .widget-option-main {
+  .widget-option-tooltip {
     min-width: 0;
-  }
-  .widget-option-heading {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 5px;
-    align-items: center;
+    width: 100%;
+    ::v-deep .ivu-tooltip-rel {
+      display: block;
+      width: 100%;
+    }
   }
   .widget-option-title {
     line-height: 18px;
   }
-  .widget-option-desc {
-    font-size: 12px;
-    line-height: 16px;
-  }
-  .widget-option-meta {
-    display: flex;
-    gap: 7px;
-    flex-wrap: wrap;
-    font-size: 10px;
-    line-height: 14px;
-  }
   .widget-option-actions {
     display: flex;
-    gap: 12px;
-    justify-content: flex-end;
+    align-items: center;
+    gap: 2px;
+  }
+  .widget-option-count {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    box-sizing: border-box;
     font-size: 11px;
+    line-height: 20px;
+    text-align: center;
+  }
+  .widget-option-add {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-size: 15px;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
   .text-disabled {
     cursor: not-allowed;
@@ -817,5 +853,19 @@ export default {
     font-size: 12px;
     line-height: 18px;
   }
+}
+::v-deep .ivu-collapse-simple {
+  border: 0 !important;
+}
+::v-deep .ivu-collapse-header{
+  padding: 0 !important;
+  border: 0 !important;
+}
+::v-deep .ivu-collapse-content {
+  border: 0 !important;
+  padding: 0 !important;
+}
+::v-deep .ivu-collapse-item  {
+  border: 0 !important;
 }
 </style>
