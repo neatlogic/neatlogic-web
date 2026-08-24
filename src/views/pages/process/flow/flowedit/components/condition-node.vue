@@ -505,12 +505,12 @@ export default {
     },
     delGroup(index) {
       //删除组合
-      const uuid = this.editRuleConfig.conditionGroupList[index].uuid;
+      const relIndex = Math.min(index, this.editRuleConfig.conditionGroupRelList.length - 1);
       this.$delete(this.editRuleConfig.conditionGroupList, index);
-      const relindex = this.editRuleConfig.conditionGroupRelList.findIndex(d => d.from === uuid || d.to === uuid);
-      if (relindex >= 0) {
-        this.$delete(this.editRuleConfig.conditionGroupRelList, relindex);
+      if (relIndex >= 0) {
+        this.$delete(this.editRuleConfig.conditionGroupRelList, relIndex);
       }
+      this.rebuildRelList(this.editRuleConfig.conditionGroupList, this.editRuleConfig.conditionGroupRelList);
     },
     addCondition(item, type) {
       //条件节点规则：添加条件
@@ -536,12 +536,23 @@ export default {
     },
     delCondition(item, index) {
       //删除条件
-      const uuid = item.conditionList[index].uuid;
+      const relIndex = Math.min(index, item.conditionRelList.length - 1);
       this.$delete(item.conditionList, index);
-      const relindex = item.conditionRelList.findIndex(d => d.from === uuid || d.to === uuid);
-      if (relindex >= 0) {
-        this.$delete(item.conditionRelList, relindex);
+      if (relIndex >= 0) {
+        this.$delete(item.conditionRelList, relIndex);
       }
+      this.rebuildRelList(item.conditionList, item.conditionRelList);
+    },
+    rebuildRelList(itemList, relList) {
+      itemList.forEach((item, index) => {
+        if (index < itemList.length - 1) {
+          const rel = relList[index] || { joinType: 'and' };
+          this.$set(rel, 'from', item.uuid);
+          this.$set(rel, 'to', itemList[index + 1].uuid);
+          this.$set(relList, index, rel);
+        }
+      });
+      relList.splice(Math.max(itemList.length - 1, 0));
     },
     delRule(index) {
       //删除条件节点规则
