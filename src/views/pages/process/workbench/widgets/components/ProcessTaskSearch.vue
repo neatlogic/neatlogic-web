@@ -132,7 +132,7 @@ export default {
         return;
       }
       if (!this.theadRequest) {
-        this.theadRequest = this.$api.process.searchWorkbenchWidgetData({
+        this.theadRequest = this.$api.tenant.searchWorkbenchWidgetData({
           handler: PROCESS_TASK_THEAD_HANDLER,
           portalWidgetName: PROCESS_TASK_WIDGET_NAME,
           param: {}
@@ -156,7 +156,7 @@ export default {
         if (requestSequence !== this.requestSequence) {
           return;
         }
-        const res = await this.$api.process.searchWorkbenchWidgetData({
+        const res = await this.$api.tenant.searchWorkbenchWidgetData({
           handler: PROCESS_TASK_SEARCH_HANDLER,
           portalWidgetName: PROCESS_TASK_WIDGET_NAME,
           param: createProcessTaskSearchParam({
