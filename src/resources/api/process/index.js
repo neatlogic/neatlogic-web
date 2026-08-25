@@ -1,4 +1,5 @@
 //api接口的出口
+import axios from '../http';
 import service from './catalog/service'; //服务目录
 import { default as processProcess } from './process/process'; //流程
 import priority from './priority/priority'; //优先级
@@ -16,6 +17,9 @@ import strategy from './strategy/strategy'; //子策略任务
 import integration from './integration/integration'; //集成
 
 export default {
+  searchWorkbenchWidgetData(data = {}) {
+    return axios.post('/api/rest/portal/widget/data/search', data);
+  },
   process: processProcess,
   service,
   priority,

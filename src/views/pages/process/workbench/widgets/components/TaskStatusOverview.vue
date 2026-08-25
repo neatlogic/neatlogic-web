@@ -67,7 +67,7 @@ export default {
     loadData() {
       this.loading = true;
       this.error = '';
-      this.$api.common.searchWorkbenchWidgetData({
+      this.$api.process.searchWorkbenchWidgetData({
         portalWidgetName: PERSONAL_PROCESS_TASK_OVERVIEW_WIDGET_NAME,
         handler: PERSONAL_PROCESS_TASK_OVERVIEW_HANDLER,
         param: this.queryTimeRange
