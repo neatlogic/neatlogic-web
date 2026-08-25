@@ -17,8 +17,8 @@ const matrix = {
   getMatrixDataForTable(params) { //已弃用
     return axios.post('/api/rest/matrix/column/data/search/fortable', params);
   },
-  getNewMatrixDataForTable(params) { //新表单表格选择组件获取数据时调用接口
-    return axios.post('/api/rest/matrix/column/data/search/fortable/new', params);
+  getNewMatrixDataForTable(params, cancelRequest = {}) { //新表单表格选择组件获取数据时调用接口
+    return axios.post('/api/rest/matrix/column/data/search/fortable/new', params, cancelRequest);
   },
   //矩阵删除接口
   deleteMatrix(params) {

@@ -284,13 +284,5 @@
   "commentsucces": "评论成功",
   "syncsuccess": "同步成功",
   "downloadsuccessful": "下载成功",
-  "runsuccess": "执行成功",
-  "ai": {
-    "voiceinputnotsupported": "当前浏览器不支持语音输入",
-    "voiceinputpermissiondenied": "麦克风权限被拒绝，请检查浏览器权限设置",
-    "voiceinputnospeech": "未识别到语音内容",
-    "voiceinputnospeechcheckdevice": "未识别到语音内容。当前浏览器麦克风：{target}，请检查浏览器或系统输入设备后重新开始",
-    "voiceinputdeviceunavailable": "无法获取麦克风输入。当前浏览器麦克风：{target}，请切换浏览器或系统输入设备后重新开始",
-    "voiceinputfailed": "语音输入失败"
-  }
+  "runsuccess": "执行成功"
 }

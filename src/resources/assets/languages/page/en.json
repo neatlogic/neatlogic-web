@@ -1281,5 +1281,6 @@
   "radius": "Corner Radius",
   "shape": "Shape",
   "datafilter": "Data Filter",
-  "displayname": "Display Name"
+  "displayname": "Display Name",
+  "passwordinvalid": "The password is invalid."
 }

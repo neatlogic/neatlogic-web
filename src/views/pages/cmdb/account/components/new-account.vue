@@ -25,6 +25,8 @@ export default {
       tableData: {
         dataList: []
       },
+      // 备份查询接口返回的原始密码密文，避免用户编辑密码框时覆盖原值。
+      passwordCipherBackup: '',
       formConfig: {
         id: {
           type: 'text',
@@ -51,7 +53,26 @@ export default {
           type: 'password',
           name: 'passwordPlain',
           width: '100%',
+          showPassword: false, // 密码框始终隐藏明文，不提供明文切换。
           label: this.$t('page.password')
+        },
+        passwordConfirm: {
+          type: 'password',
+          name: 'passwordConfirm',
+          width: '100%',
+          showPassword: false, // 确认密码框同样始终隐藏明文。
+          label: this.$t('term.framework.confirmpwd'),
+          validateList: [
+            {
+              name: 'custom',
+              message: this.$t('term.framework.pwdnotsame'),
+              // 两个密码都为空时允许保存；任意一个有值时必须完全一致。
+              validator: (rule, value) => {
+                const formValue = this.$refs.form ? this.$refs.form.getFormValue() : {};
+                return value === formValue.passwordPlain;
+              }
+            }
+          ]
         },
         protocolId: {
           type: 'select',
@@ -115,27 +136,49 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    save() {
+    async save() {
       const form = this.$refs['form'];
       let data = this.$refs.form.getFormValue();
       if (!form.valid()) {
         return;
       }
-      this.$api.cmdb.accountManage
-        .saveAccount({...data, type: 'public'})
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.savesuccess'));
-            this.close(true);
+      // 提交前再次校验两次密码，避免绕过控件校验后发送不一致的数据。
+      if (data.passwordPlain !== data.passwordConfirm) {
+        this.$Message.error(this.$t('term.framework.pwdnotsame'));
+        return;
+      }
+      try {
+        const requestData = {...data, type: 'public'};
+        // 确认密码仅用于前端一致性校验，禁止传递到后端接口。
+        delete requestData.passwordConfirm;
+        if (requestData.passwordPlain) {
+          const isRsaPassword = requestData.passwordPlain.startsWith('RSA:');
+          // 以RSA:开头的内容只能是查询接口回显的原始密文，禁止伪造或修改密文。
+          if (isRsaPassword && requestData.passwordPlain !== this.passwordCipherBackup) {
+            this.$Message.error(this.$t('page.passwordinvalid'));
+            return;
           }
-        })
-        .catch(error => {
-          if (error.data.Message) {
-            this.$Message.error(error.data.Message);
+          if (this.passwordCipherBackup && requestData.passwordPlain === this.passwordCipherBackup) {
+            // 密码未修改时，将查询接口返回的原始RSA密文通过专用字段回传。
+            requestData.passwordCipher = this.passwordCipherBackup;
           } else {
-            this.$Message.error(this.$t('message.savesuccess'));
+            // 用户输入新密码时，由全局工具内部获取公钥并生成新的RSA密文。
+            requestData.passwordCipher = await this.$utils.encryptPassword(requestData.passwordPlain);
           }
-        });
+          delete requestData.passwordPlain;
+        }
+        const res = await this.$api.cmdb.accountManage.saveAccount(requestData);
+        if (res.Status == 'OK') {
+          this.$Message.success(this.$t('message.savesuccess'));
+          this.close(true);
+        }
+      } catch (error) {
+        if (error.data && error.data.Message) {
+          this.$Message.error(error.data.Message);
+        } else {
+          this.$Message.error(error.message || this.$t('message.savefailed'));
+        }
+      }
     },
     close: function(needRefresh, formValue = null) {
       this.$emit('close', needRefresh, formValue);
@@ -145,8 +188,15 @@ export default {
       if (this.id) {
         this.$api.cmdb.accountManage.getAccountById(this.id).then(res => {
           this.tableData = res.Return;
+          // 单独备份接口返回的passwordCipher，表单中的密码值变化不会修改该备份。
+          this.passwordCipherBackup = this.tableData.passwordCipher || '';
           for (let key in this.formConfig) {
             this.$set(this.formConfig[key], 'value', this.tableData[key]);
+          }
+          if (this.passwordCipherBackup) {
+            // 编辑已有账号时，两个密码控件同步回显密文，未修改时可直接通过一致性校验。
+            this.$set(this.formConfig.passwordPlain, 'value', this.passwordCipherBackup);
+            this.$set(this.formConfig.passwordConfirm, 'value', this.passwordCipherBackup);
           }
           if (this.tableData.tagList && this.tableData.tagList.length > 0) {
             let idList = [];

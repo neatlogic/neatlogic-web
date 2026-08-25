@@ -29,7 +29,7 @@
                 :disabled="!aiAssistantEnabled"
                 @click="openToolRecommendAiAssistant"
               >
-                <span class="tsfont-ai">{{ $t('term.autoexec.toolrecommendaiassistant') }}</span>
+                <span class="tsfont-ai">{{ $t('term.autoexec.toolrecommendbutton') }}</span>
               </Button>
             </Tooltip>
           </div>
@@ -38,6 +38,11 @@
           <CombineSearcher v-model="searchVal" v-bind="searchConfig" @change="getScriptList(1)"></CombineSearcher>
         </template>
         <template slot="content">
+          <SelectedToolBar
+            class="pt-xs pl-md pr-md"
+            :toolList="selectedToolList"
+            @remove="removeSelectedTool"
+          ></SelectedToolBar>
           <TsCard
             v-model="selectOperation"
             v-bind="cardConfig"
@@ -77,11 +82,13 @@
 <script>
 import CombineSearcher from '@/resources/components/CombineSearcher/CombineSearcher.vue';
 import ImportComponent from '@/views/components/import-component.js';
+import SelectedToolBar from '@/views/pages/autoexec/components/common/selected-tool-bar.vue';
 export default {
   name: 'OperationAdd',
   components: {
     TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
-    CombineSearcher
+    CombineSearcher,
+    SelectedToolBar
   },
   filters: {},
   props: {
@@ -116,7 +123,7 @@ export default {
         title: this.$t('page.newtarget', {target: this.$t('term.autoexec.tool')})
       },
       selectOperation: [], //选中的uk列表
-      selectedItem: [], //选中的列表完整数据
+      selectedOperationMap: {}, //缓存本次选择的完整工具信息，避免分页或搜索后已选项丢失
       currentPage: 1,
       pageSize: 24,
       cardConfig: {
@@ -344,7 +351,27 @@ export default {
         });
     },
     getSelected(val, items) {
-      this.selectedItem = items;
+      const selectedIdMap = (Array.isArray(val) ? val : []).reduce((map, id) => {
+        map[id] = true;
+        return map;
+      }, {});
+      Object.keys(this.selectedOperationMap).forEach(id => {
+        if (!selectedIdMap[id]) {
+          this.$delete(this.selectedOperationMap, id);
+        }
+      });
+      (Array.isArray(items) ? items : []).forEach(item => {
+        if (item && item.id != null && selectedIdMap[item.id]) {
+          this.$set(this.selectedOperationMap, item.id, item);
+        }
+      });
+    },
+    removeSelectedTool(item) {
+      if (!item || item.id == null) {
+        return;
+      }
+      this.selectOperation = this.selectOperation.filter(id => id !== item.id);
+      this.$delete(this.selectedOperationMap, item.id);
     },
     openToolRecommendAiAssistant() {
       if (!this.aiAssistantEnabled) {
@@ -384,6 +411,7 @@ export default {
       if (id == null || this.selectOperation.includes(id)) {
         return;
       }
+      this.$set(this.selectedOperationMap, id, candidate);
       this.selectOperation.push(id);
     }
   },
@@ -394,6 +422,11 @@ export default {
     recommendSelectedOperationIdList() {
       const selectedList = Array.isArray(this.selectedOption) ? this.selectedOption : [];
       return Array.from(new Set([...selectedList, ...this.selectOperation]));
+    },
+    selectedToolList() {
+      return this.selectOperation
+        .map(id => this.selectedOperationMap[id])
+        .filter(Boolean);
     }
   },
   watch: {

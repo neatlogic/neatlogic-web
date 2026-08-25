@@ -4165,45 +4165,6 @@
     }
   }
 
-  //markdown
-  .markdown-body {
-    background-color: transparent !important;
-    color: @text-color;
-    h1,
-    h2 {
-      border: none;
-    }
-    pre,
-    code {
-      background-color: @op-color !important;
-    }
-    pre {
-      color: @text-color;
-    }
-    .hljs,
-    blockquote {
-      color: @text-color;
-    }
-    table {
-      tr {
-        background-color: @op-color;
-        border-top: 1px solid var(--border-color, @border-color-base) !important;
-        &:nth-child(2n) {
-          background-color: var(--table-stripe-color, @table-stripe-color);
-        }
-      }
-      th,
-      td {
-        border: 1px solid var(--border-color, @border-color-base) !important;
-      }
-    }
-    ol li {
-      list-style: decimal; // 有序列表前面需要加数字
-    }
-    ul li {
-      list-style: disc;
-    }
-  }
   // 自定义滚动条样式
   .custom-scrollbar-box {
     position: absolute;

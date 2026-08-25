@@ -1026,13 +1026,13 @@ export default {
                 let findSelect = selectedList.find(sel => sel[this.valueName] == item);
                 findSelect && list.push(findSelect);
               });
-            const tempList = this.handleEnterDisplayValue();
+            const tempList = this.handleEnterDisplayValue(selectedList);
             if (tempList.length > 0) {
               list.unshift(...tempList);
               list = this.$utils.uniqueByField(list, this.valueName);
             }
           } else {
-            const tempList = this.handleEnterDisplayValue();
+            const tempList = this.handleEnterDisplayValue(selectedList);
             if (tempList.length > 0) {
               selectedList.unshift(...tempList);
               selectedList = this.$utils.uniqueByField(selectedList, this.valueName);
@@ -1060,26 +1060,20 @@ export default {
         }
       });
     },
-    handleEnterDisplayValue() {
+    handleEnterDisplayValue(selectedList = this.selectedList) {
       // 处理回车创建值回显问题
       let tempList = [];
       if (this.allowCreate && !this.$utils.isEmpty(this.currentValue)) {
-        if (Array.isArray(this.currentValue)) {
-          this.currentValue.forEach(item => {
-            const findItem = this.selectedList.find(v => v[this.valueName] == item);
-            if (!findItem && !this.$utils.isEmpty(item)) {
-              tempList.unshift({
-                [this.valueName]: item,
-                [this.textName]: item
-              });
-            }
-          });
-        } else {
-          tempList.unshift({
-            [this.valueName]: this.currentValue,
-            [this.textName]: this.currentValue
-          });
-        }
+        const valueList = Array.isArray(this.currentValue) ? this.currentValue : [this.currentValue];
+        valueList.forEach(item => {
+          const findItem = selectedList.find(v => v[this.valueName] == item);
+          if (!findItem && !this.$utils.isEmpty(item)) {
+            tempList.push({
+              [this.valueName]: item,
+              [this.textName]: item
+            });
+          }
+        });
       }
       return tempList;
     },
