@@ -8,6 +8,7 @@
       :valueList="valueList"
       :attrData="attrData"
       :attrEntity="attrEntity"
+      :ciEntityId="ciEntityId"
       :allowBatchAdd="allowBatchAdd"
       @setData="setData"
       @new="addNewCiEntity"
@@ -28,7 +29,8 @@ export default {
     allowBatchAdd: { type: Boolean, default: true },
     attrData: { type: Object },
     valueList: { type: Array },
-    attrEntity: { type: Object }
+    attrEntity: { type: Object },
+    ciEntityId: { type: [String, Number] }
   },
   data() {
     return {};
