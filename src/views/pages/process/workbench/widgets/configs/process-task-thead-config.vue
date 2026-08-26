@@ -97,7 +97,7 @@ export default {
       this.theadLoading = true;
       this.theadError = '';
       try {
-        const res = await this.$api.common.searchWorkbenchWidgetData({
+        const res = await this.$api.tenant.workbench.searchWorkbenchWidgetData({
           handler: this.handler,
           portalWidgetName: this.portalWidgetName,
           param: {}

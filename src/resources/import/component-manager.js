@@ -37,6 +37,8 @@
  * knowledgeDocumentView 知识库文档查看
  * aiToolConfig AI工具扩展配置
  * ragConfig RAG数据集扩展配置
+ * workbenchRuntime 可选工作台首页运行时组件
+ * userSettingTab 用户设置扩展页签（name、label/labelKey、component）
  * router 跨模块路由
  *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
  *   注册方法：registerRouterComponent({

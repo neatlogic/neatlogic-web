@@ -159,7 +159,7 @@ export default {
         return;
       }
       if (!this.conditionRequestMap[conditionMode]) {
-        const request = this.$api.common.searchWorkbenchWidgetData({
+        const request = this.$api.tenant.workbench.searchWorkbenchWidgetData({
           portalWidgetName: this.portalWidgetName,
           handler: this.handler,
           param: {

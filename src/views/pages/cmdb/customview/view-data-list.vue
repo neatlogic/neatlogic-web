@@ -140,6 +140,7 @@
         v-bind="viewData"
         :showPager="false"
         :hideAction="false"
+        :fixedHeader="false"
       >
         <template v-for="(head, index) in viewData.theadList" :slot="head.key" slot-scope="{ row }">
           <div v-if="row[head.key] && row[head.key].length > 0" :key="index">

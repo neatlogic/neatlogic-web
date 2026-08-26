@@ -109,7 +109,7 @@ export default {
     loadData() {
       this.loading = true;
       this.error = '';
-      this.$api.common.searchWorkbenchWidgetData({
+      this.$api.tenant.workbench.searchWorkbenchWidgetData({
         handler: PROCESS_FAVORITE_SERVICE_HANDLER,
         portalWidgetName: PROCESS_FAVORITE_SERVICE_WIDGET_NAME,
         param: {
