@@ -35,6 +35,7 @@ export default {
         name: '',
         isActive: 1,
         reportAuthorityList: null,
+        delegateAuthorityList: null, // 代报授权数据由目录保存接口写入 catalog_authority。
         viewAuthorityList: null,
         desc: '',
         uuid: this.uuid
@@ -66,6 +67,17 @@ export default {
           validateList: ['required'],
           tooltip: this.$t('term.process.reportauthtooltip')
         },
+        // 代报授权沿用现有授权选择控件，并位于上报授权与查看授权之间。
+        {
+          type: 'userselect',
+          name: 'delegateAuthorityList',
+          label: this.$t('term.process.delegateauth'),
+          width: '75%',
+          groupList: ['user', 'team', 'role', 'common'],
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.delegateauthtooltip')
+        },
         {
           type: 'userselect',
           name: 'viewAuthorityList',
@@ -88,6 +100,7 @@ export default {
         name: '',
         isActive: 1,
         reportAuthorityList: ['common#alluser'],
+        delegateAuthorityList: ['common#alluser'], // 新目录默认保持升级前所有人均可代报的行为。
         viewAuthorityList: ['common#alluser'],
         desc: ''
       }
@@ -124,6 +137,7 @@ export default {
             name: itemValue.name || '',
             isActive: itemValue.isActive || 0,
             reportAuthorityList: itemValue.reportAuthorityList,
+            delegateAuthorityList: itemValue.delegateAuthorityList, // 回显 action=delegate 的目录授权。
             viewAuthorityList: itemValue.viewAuthorityList,
             desc: itemValue.desc || '',
             uuid: this.uuid   

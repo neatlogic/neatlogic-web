@@ -351,6 +351,17 @@ export default {
           validateList: ['required'],
           tooltip: this.$t('term.process.reportauthtooltip')
         },
+        // 代报授权沿用现有授权选择控件，并位于上报授权与查看授权之间。
+        {
+          type: 'userselect',
+          name: 'delegateAuthorityList',
+          label: this.$t('term.process.delegateauth'),
+          width: '75%',
+          groupList: ['user', 'team', 'role', 'common'],
+          value: ['common#alluser'],
+          validateList: ['required'],
+          tooltip: this.$t('term.process.delegateauthtooltip')
+        },
         {
           type: 'userselect',
           name: 'viewAuthorityList',
@@ -415,6 +426,7 @@ export default {
         processUuid: this.processUuid, //工作流uuid
         isActive: 1,
         reportAuthorityList: ['common#alluser'],
+        delegateAuthorityList: ['common#alluser'], // 新服务默认保持升级前所有人均可代报的行为。
         viewAuthorityList: ['common#alluser'],
         worktimeUuid: '', //工作时间窗口uuid
         desc: '',
@@ -506,6 +518,7 @@ export default {
             processUuid = '',
             isActive = 0,
             reportAuthorityList = [],
+            delegateAuthorityList = [], // action=delegate 的服务授权。
             viewAuthorityList = [],
             worktimeUuid = '',
             desc = '',
@@ -527,6 +540,7 @@ export default {
             titleTemplate: !this.$utils.isEmpty(config) ? config.titleTemplate : '',
             isActive: isActive,
             reportAuthorityList: reportAuthorityList,
+            delegateAuthorityList: delegateAuthorityList, // 回显服务代报授权。
             viewAuthorityList: viewAuthorityList,
             worktimeUuid: worktimeUuid,
             desc: desc,
