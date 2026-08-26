@@ -1,19 +1,5 @@
 import axios from '../http';
 
-function withCurrentModuleGroup(data = {}, moduleGroup) {
-  return {
-    ...data,
-    moduleGroup: moduleGroup || data.moduleGroup || MODULEID
-  };
-}
-
-function withWorkbenchType(data = {}, type = 'global') {
-  return {
-    ...data,
-    type: data.type || type
-  };
-}
-
 const common = {
   getModule(data) {
     return axios.post('/api/rest/module/list', data);
@@ -202,48 +188,6 @@ const common = {
   getCurrentUser() {
     // 仅用于刷新页面获取用户基本信息，以及权限信息
     return axios.get('/api/rest/user/current/get');
-  },
-  searchWorkbenchList(data = {}) {
-    // 工作台列表查询接口
-    return axios.post('/api/rest/portal/list', withCurrentModuleGroup(withWorkbenchType(data)));
-  },
-  getWorkbenchDetail(id, moduleGroup, type = 'global') {
-    // 工作台详情查询接口
-    return axios.post('/api/rest/portal/get', withCurrentModuleGroup(withWorkbenchType({ id }, type), moduleGroup));
-  },
-  saveWorkbench(data = {}) {
-    return axios.post('/api/rest/portal/save', withCurrentModuleGroup(withWorkbenchType(data)));
-  },
-  deleteWorkbench(id, moduleGroup, type = 'global') {
-    return axios.post('/api/rest/portal/delete', withCurrentModuleGroup(withWorkbenchType({ id }, type), moduleGroup));
-  },
-  updateWorkbenchActive(id, isActive, moduleGroup, type = 'global') {
-    return axios.post('/api/rest/portal/toggleactive', withCurrentModuleGroup(withWorkbenchType({ id, isActive }, type), moduleGroup));
-  },
-  toggleWorkbenchEnable(id, action) {
-    return axios.post('/api/rest/portal/toggleenable', { id, action });
-  },
-  searchWorkbenchWidgetManageList(data = {}) {
-    return axios.post('/api/rest/portal/widget/list/manage', withCurrentModuleGroup(withWorkbenchType(data)));
-  },
-  searchAvailableWorkbenchWidgetList(data = {}) {
-    return axios.post('/api/rest/portal/widget/list/hasauthority', withCurrentModuleGroup(withWorkbenchType(data)));
-  },
-  getWorkbenchWidget(name, moduleGroup, type = 'global') {
-    return axios.post('/api/rest/portal/widget/get', withCurrentModuleGroup(withWorkbenchType({ name }, type), moduleGroup));
-  },
-  saveWorkbenchWidgetAuthority(name, authorityList = [], moduleGroup, type = 'global') {
-    return axios.post('/api/rest/portal/widget/save', withCurrentModuleGroup(withWorkbenchType({ name, authorityList }, type), moduleGroup));
-  },
-  batchSaveWorkbenchWidgetAuthority(nameList = [], authorityList = []) {
-    return axios.post('/api/rest/portal/widget/authority/batchsave', { nameList, authorityList });
-  },
-  searchWorkbenchWidgetData(data = {}) {
-    return axios.post('/api/rest/portal/widget/data/search', data);
-  },
-  getCurrentUserPortal(moduleGroup) {
-    // 获取当前用户可用的工作台
-    return axios.post('/api/rest/portal/currentuser/get', withCurrentModuleGroup({}, moduleGroup));
   },
   getPasswordPublicKey() {
     // 获取密码加密公钥
