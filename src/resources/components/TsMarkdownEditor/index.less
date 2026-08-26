@@ -397,6 +397,13 @@
       background-clip: padding-box;
     }
   }
+
+  .cherry .cherry-markdown div[data-type='codeBlock'] > pre code[class*='language-'] .code-line {
+    height: auto;
+    line-height: inherit;
+    min-height: 1.3em;
+  }
+
   .cherry .cherry-flex-toc {
     color: var(--ts-md-text-color);
     background-color: var(--ts-md-toc-bg);
