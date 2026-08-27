@@ -1,120 +1,66 @@
 <template>
   <div class="global-home">
-    <Loading v-if="loading" :loadingShow="true" type="fix"></Loading>
-    <div v-else-if="loadError" class="global-home-state flex-center text-center">
-      <NoData :text="loadError"></NoData>
-      <Button type="primary" ghost @click="loadWorkbench">重新加载</Button>
-    </div>
-    <PortalWorkbench
-      v-else-if="workbench"
-      :widgetList="widgetList"
-      class="global-workbench"
+    <Loading v-if="!isReady" :loadingShow="true" type="fix"></Loading>
+    <component
+      :is="workbenchRuntime || 'div'"
+      v-else
+      scope="global"
+      moduleGroup="index"
+      class="global-home-content"
     >
-      <template v-slot:widget="{ widget }">
-        <WorkbenchWidgetHost
-          :widget="widget"
-          :widgetDefinitions="widgetDefinitions"
-        ></WorkbenchWidgetHost>
-      </template>
-    </PortalWorkbench>
-    <div v-else-if="moduleList.length" class="navigation">
-      <h2 class="title text-default">What can we do</h2>
-      <h3 class="subtitle text-title">{{ $t('message.whatdo') }}</h3>
-      <div class="module-list">
-        <a
-          v-for="module in moduleList"
-          :key="module.moduleId"
-          :href="`${home}/${module.moduleId}.html`"
-          class="module-link"
-        >
-          <Card
-            class="module-item"
-            :style="getModuleBackgroundStyle(module.moduleId)"
-            :bordered="false"
+      <div v-if="moduleList.length" class="navigation">
+        <h2 class="title text-default">What can we do</h2>
+        <h3 class="subtitle text-title">{{ $t('message.whatdo') }}</h3>
+        <div class="module-list">
+          <a
+            v-for="module in moduleList"
+            :key="module.moduleId"
+            :href="`${home}/${module.moduleId}.html`"
+            class="module-link"
           >
-            <div class="module-name text-default">{{ module.moduleName }}</div>
-            <div class="module-desc text-title">{{ module.description }}</div>
-          </Card>
-        </a>
+            <Card
+              class="module-item"
+              :style="getModuleBackgroundStyle(module.moduleId)"
+              :bordered="false"
+            >
+              <div class="module-name text-default">{{ module.moduleName }}</div>
+              <div class="module-desc text-title">{{ module.description }}</div>
+            </Card>
+          </a>
+        </div>
       </div>
-    </div>
+    </component>
   </div>
 </template>
 <script>
 import imageThemeMixins from '@/resources/mixins/imageThemeMixins.js';
-import PortalWorkbench from '@/views/components/portal/workbench.vue';
-import WorkbenchWidgetHost from '@/views/components/portal/components/workbench-widget-host.vue';
-import {
-  createWorkbenchWidgetDefinitionMap,
-  getWorkbenchWidgetDefinitions
-} from '@/views/components/portal/workbench-provider-registry.js';
-import { filterValidWorkbenchWidgetList } from '@/views/components/portal/utils/workbench-layout.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   name: 'Navigation',
-  components: {
-    PortalWorkbench,
-    WorkbenchWidgetHost
-  },
   mixins: [imageThemeMixins],
   data() {
     return {
       moduleList: [],
       home: HOME,
-      workbench: null,
-      loading: true,
-      loadError: '',
-      widgetDefinitions: []
+      isReady: false
     };
   },
   async created() {
     await this.$store.state.topMenu.gettingModuleList;
     if (this.defaultModuleId === 'index') {
       this.moduleList = this.$store.state.topMenu.moduleList;
-      this.widgetDefinitions = getWorkbenchWidgetDefinitions({
-        scope: 'global',
-        moduleList: this.moduleList
-      });
-      this.loadWorkbench();
+      this.isReady = true;
     } else {
       location.assign(HOME + '/' + this.defaultModuleId + '.html');
-    }
-  },
-  methods: {
-    loadWorkbench() {
-      this.loading = true;
-      this.loadError = '';
-      this.$api.common.getCurrentUserPortal('index').then(res => {
-        if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '总工作台加载失败');
-        }
-        const workbench = res.Return || null;
-        const widgetList = filterValidWorkbenchWidgetList(workbench && workbench.config && workbench.config.widgetList);
-        const definitionMap = createWorkbenchWidgetDefinitionMap(this.widgetDefinitions);
-        const hasAvailableWidget = widgetList.some(widget => definitionMap.has(widget.type));
-        this.workbench = workbench && widgetList.length && hasAvailableWidget
-          ? {
-            ...workbench,
-            config: {
-              ...(workbench.config || {}),
-              widgetList
-            }
-          }
-          : null;
-      }).catch(error => {
-        this.workbench = null;
-        this.loadError = (error && (error.Message || error.message)) || '总工作台加载失败';
-      }).finally(() => {
-        this.loading = false;
-      });
     }
   },
   computed: {
     defaultModuleId() {
       return this.$store.getters.defaultModule.moduleId;
     },
-    widgetList() {
-      return this.workbench && this.workbench.config ? this.workbench.config.widgetList : [];
+    workbenchRuntime() {
+      return ComponentManager.getComponent('workbenchRuntime') || null;
     }
   }
 };
@@ -122,16 +68,10 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .global-home,
-.global-workbench {
+.global-home-content {
   position: relative;
   height: 100%;
   min-height: 100%;
-}
-.global-home-state {
-  height: 100%;
-  min-height: 320px;
-  flex-direction: column;
-  gap: 12px;
 }
 .navigation {
   min-height: 100%;

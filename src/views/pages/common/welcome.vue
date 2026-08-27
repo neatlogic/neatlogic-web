@@ -1,94 +1,35 @@
 <template>
   <div class="module-home">
-    <Loading v-if="loading" :loadingShow="true" type="fix"></Loading>
-    <div v-else-if="loadError" class="module-home-state flex-center text-center">
-      <NoData :text="loadError"></NoData>
-      <Button type="primary" ghost @click="loadWorkbench">重新加载</Button>
-    </div>
-    <PortalWorkbench
-      v-else-if="workbench"
-      :widgetList="widgetList"
-      class="module-workbench"
+    <component
+      :is="workbenchRuntime || 'div'"
+      scope="module"
+      :moduleGroup="moduleGroup"
+      class="module-home-content"
     >
-      <template v-slot:widget="{ widget }">
-        <WorkbenchWidgetHost
-          :widget="widget"
-          :widgetDefinitions="widgetDefinitions"
-        ></WorkbenchWidgetHost>
-      </template>
-    </PortalWorkbench>
-    <div v-else class="welcome">
-      <div class="welcome-content">
-        <p class="text-title description">{{ description }}</p>
-        <Button class="setting-button" type="primary" @click="toUsersetting">{{ $t('page.homepagesettings') }}</Button>
+      <div class="welcome">
+        <div class="welcome-content">
+          <p class="text-title description">{{ description }}</p>
+          <Button class="setting-button" type="primary" @click="toUsersetting">{{ $t('page.homepagesettings') }}</Button>
+        </div>
+        <div class="welcome-img">
+          <img :src="imgSrc" alt="img" />
+        </div>
       </div>
-      <div class="welcome-img">
-        <img :src="imgSrc" alt="img" />
-      </div>
-    </div>
+    </component>
   </div>
 </template>
 
 <script>
-import PortalWorkbench from '@/views/components/portal/workbench.vue';
-import WorkbenchWidgetHost from '@/views/components/portal/components/workbench-widget-host.vue';
-import {
-  createWorkbenchWidgetDefinitionMap,
-  getWorkbenchWidgetDefinitions
-} from '@/views/components/portal/workbench-provider-registry.js';
-import { filterValidWorkbenchWidgetList } from '@/views/components/portal/utils/workbench-layout.js';
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   name: 'Welcome',
-  components: {
-    PortalWorkbench,
-    WorkbenchWidgetHost
-  },
   data() {
     return {
-      workbench: null,
-      widgetDefinitions: [],
-      loading: true,
-      loadError: ''
+      moduleGroup: MODULEID
     };
   },
-  async created() {
-    await this.$store.state.topMenu.gettingModuleList;
-    this.widgetDefinitions = getWorkbenchWidgetDefinitions({
-      scope: 'module',
-      targetModuleGroup: MODULEID,
-      moduleList: this.$store.state.topMenu.moduleList || []
-    });
-    this.loadWorkbench();
-  },
   methods: {
-    loadWorkbench() {
-      this.loading = true;
-      this.loadError = '';
-      this.$api.common.getCurrentUserPortal(MODULEID).then(res => {
-        if (!res || res.Status !== 'OK') {
-          throw new Error((res && res.Message) || '模块工作台加载失败');
-        }
-        const workbench = res.Return || null;
-        const widgetList = filterValidWorkbenchWidgetList(workbench && workbench.config && workbench.config.widgetList);
-        const definitionMap = createWorkbenchWidgetDefinitionMap(this.widgetDefinitions);
-        const hasAvailableWidget = widgetList.some(widget => definitionMap.has(widget.type));
-        this.workbench = workbench && widgetList.length && hasAvailableWidget
-          ? {
-            ...workbench,
-            config: {
-              ...(workbench.config || {}),
-              widgetList
-            }
-          }
-          : null;
-      }).catch(error => {
-        this.workbench = null;
-        this.loadError = (error && (error.Message || error.message)) || '模块工作台加载失败';
-      }).finally(() => {
-        this.loading = false;
-      });
-    },
     toUsersetting() {
       if (MODULEID === 'framework') {
         this.$router.push({ name: 'user-setting', query: { paneName: 'convenience' } });
@@ -98,8 +39,8 @@ export default {
     }
   },
   computed: {
-    widgetList() {
-      return this.workbench && this.workbench.config ? this.workbench.config.widgetList : [];
+    workbenchRuntime() {
+      return ComponentManager.getComponent('workbenchRuntime') || null;
     },
     description() {
       let moduleList = [];
@@ -125,16 +66,10 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .module-home,
-.module-workbench {
+.module-home-content {
   position: relative;
   height: 100%;
   min-height: 100%;
-}
-.module-home-state {
-  height: 100%;
-  min-height: 320px;
-  flex-direction: column;
-  gap: 12px;
 }
 .welcome {
   height: 100%;

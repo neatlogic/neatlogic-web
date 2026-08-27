@@ -99,8 +99,17 @@
                 <DefaultpageManage />
               </div>
             </TabPane>
-            <TabPane :label="$t('term.workbench.workbenchsettings')" name="workbench" :tab="userSettingTabsName">
-              <UserSettingWorkbenchManage v-if="paneName === 'workbench'"></UserSettingWorkbenchManage>
+            <TabPane
+              v-for="tab in userSettingTabList"
+              :key="tab.name"
+              :label="tab.labelKey ? $t(tab.labelKey) : tab.label"
+              :name="tab.name"
+              :tab="userSettingTabsName"
+            >
+              <component
+                :is="tab.component"
+                v-if="paneName === tab.name"
+              ></component>
             </TabPane>
             <TabPane
               v-if="canShow"
@@ -124,6 +133,7 @@ import DefaultpageManage from './user-setting-defaultpage-manage';
 import TaskAuthorization from './user-setting-task-authorization';
 import AvatarSetting from './user-setting-avatar';
 import TsAvatar from 'components/TsAvatar/TsAvatar';
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: 'UserSetting',
   components: {
@@ -134,12 +144,12 @@ export default {
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     TsAvatar,
     ViewAuthorizationDialog: () => import('./user-setting-view-authorization-dialog.vue'),
-    PasswordSetting: () => import('./user-setting-password.vue'),
-    UserSettingWorkbenchManage: () => import('./user-setting-workbench-manage.vue')
+    PasswordSetting: () => import('./user-setting-password.vue')
   },
   data() {
     return {
       userSettingTabsName: `userSettingTabs-${this.$utils.setUuid()}`,
+      userSettingTabList: (ComponentManager.getComponent('userSettingTab') || []).filter(tab => tab && tab.name && tab.component),
       tableConfig: {
         rowNum: 0,
         pageSize: 20,
@@ -274,11 +284,30 @@ export default {
   },
 
   created() {
+    this.normalizePaneName(this.paneName);
     this.getProfileList();
     this.getCurrentUserToken();
     this.getUserInfo();
   },
   methods: {
+    normalizePaneName(paneName) {
+      const basePaneNameList = ['usersetting', 'password', 'convenience', 'task'];
+      const extensionPaneNameList = this.userSettingTabList.map(tab => tab.name);
+      if (basePaneNameList.includes(paneName) || extensionPaneNameList.includes(paneName)) {
+        this.paneName = paneName;
+        return;
+      }
+      this.paneName = 'usersetting';
+      if (this.$route.query.paneName !== 'usersetting') {
+        this.$router.replace({
+          name: 'user-setting',
+          query: {
+            ...this.$route.query,
+            paneName: 'usersetting'
+          }
+        });
+      }
+    },
     changePane(paneName) {
       if (this.$route.query.paneName === paneName) {
         return;
@@ -441,7 +470,7 @@ export default {
     '$route.query.paneName'(paneName) {
       const targetPaneName = paneName || 'usersetting';
       if (targetPaneName !== this.paneName) {
-        this.paneName = targetPaneName;
+        this.normalizePaneName(targetPaneName);
       }
     }
   }
