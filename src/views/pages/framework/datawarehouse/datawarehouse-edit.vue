@@ -218,7 +218,7 @@ export default {
           label: this.$t('page.dbtype'),
           mode: 'group',
           search: true,
-          url: 'api/rest/datawarehouse/datasource/dbtype/search',
+          dynamicUrl: 'api/rest/datawarehouse/datasource/dbtype/search',
           rootName: 'tbodyList',
           transfer: true,
           validateList: [{ name: 'required' }],
