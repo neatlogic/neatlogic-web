@@ -121,13 +121,16 @@
           <p v-if="ishowUploadFileTip" class="form-error-tip">{{ $t('term.autoexec.pleaseselectuploadfile') }}</p>
         </div>
         <template v-else>
-          <TsCodemirror
-            ref="TsCodemirror"
+          <TsMonacoEditor
+            ref="TsMonacoEditor"
             v-model="versionVo.codeValue"
-            :config="{mode:versionVo.parser}"
-            :disabled="!isEdit"
+            :codeMode="versionVo.parser"
+            :config="{ renderLineHighlightOnlyWhenFocus: true }"
+            :isReadOnly="!isEdit"
+            autoHeight
+            height="300px"
             @onBlur="onBlur"
-          ></TsCodemirror>
+          ></TsMonacoEditor>
           <p v-if="isInfoCode" class="form-error-tip">{{ $t('form.placeholder.pleaseinput', {target: $t('term.autoexec.scriptcontent')}) }}</p>
         </template>
       </div>
@@ -143,7 +146,7 @@ export default {
   components: {
     TsFormSelect,
     ParamDetail,
-    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror.vue'),
+    TsMonacoEditor: () => import('@/resources/plugins/TsMonacoEditor/TsMonacoEditor.vue'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     ParamsReadonly,
     ArgumentEdit: () => import('./argument/argument-edit'),
@@ -235,7 +238,6 @@ export default {
   beforeMount() {},
   mounted() {
     this.isShow = true;
-    // 在切换草稿的时候，要把TsCodemirror模板重新渲染一遍,不然高亮会不显示,TsCodemirror 里面的方法 refresh 不起作用
   },
   beforeUpdate() {},
   updated() {},
@@ -278,7 +280,7 @@ export default {
         this.ishowUploadFileTip = true;
       }
     },
-    codemirrorValInit() {
+    editorValueInit() {
       let lineList = this.versionVo.lineList;
       // 兼容老数据
       if (lineList && lineList.length) {
@@ -294,7 +296,7 @@ export default {
       }
     },
     onBlur() {
-      let temList = this.$refs.TsCodemirror.codemirror.getValue().split('\n');
+      let temList = this.getCurrentCode().split('\n');
       let newList = [];
       temList.forEach(v => {
         if (v) {
@@ -305,8 +307,8 @@ export default {
         this.isInfoCode = false;
       }
     },
-    codemirrorGetValue() {
-      let temList = this.$refs.TsCodemirror ? this.$refs.TsCodemirror.codemirror.getValue().split('\n') : [];
+    getEditorLineList() {
+      let temList = this.getCurrentCode().split('\n');
       let newList = [];
       if (temList.length > 0) {
         temList.forEach(v => {
@@ -370,7 +372,7 @@ export default {
             }
           }
           this.parserConfig.dataList = parserList;
-          this.codemirrorValInit();
+          this.editorValueInit();
         }
       });
     },
@@ -385,7 +387,7 @@ export default {
       if (this.$refs.versionParser && !this.$refs.versionParser.valid()) {
         validList.push({focus: '#versionParser', text: this.$t('term.autoexec.selectparser'), type: 'error'});
       }
-      if (this.versionVo.parser != 'package' && this.codemirrorGetValue().length === 0) {
+      if (this.versionVo.parser != 'package' && this.getEditorLineList().length === 0) {
         // 脚本解析器不是package时，需要验证必填
         validList.push({focus: '#codeLinelist', text: this.$t('term.autoexec.inputscriptcontent'), type: 'error'});
       }
@@ -412,7 +414,7 @@ export default {
         parser: this.versionVo.parser,
         useLib: this.versionVo.useLib,
         // encoding: this.versionVo.encoding,
-        lineList: this.codemirrorGetValue()
+        lineList: this.getEditorLineList()
         // lineList: this.$refs.codeLinelist.getValue()
       };
       if (inputParamList.length > 0) {
@@ -448,23 +450,20 @@ export default {
       };
     },
     getCurrentCode() {
-      if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
-        return this.$refs.TsCodemirror.codemirror.getValue();
+      if (this.$refs.TsMonacoEditor) {
+        return this.$refs.TsMonacoEditor.saveData();
       }
       return this.versionVo.codeValue || '';
     },
     replaceCode(code) {
       this.versionVo.codeValue = code || '';
-      if (this.$refs.TsCodemirror && this.$refs.TsCodemirror.codemirror) {
-        this.$refs.TsCodemirror.codemirror.setValue(this.versionVo.codeValue);
-      }
       this.isInfoCode = false;
     },
     validCheck() {
       if (this.versionVo.parser) {
         let data = {
           parser: this.versionVo.parser,
-          lineList: this.codemirrorGetValue()
+          lineList: this.getEditorLineList()
           // lineList: this.$refs.codeLinelist.getValue()
         };
         let validList = [];

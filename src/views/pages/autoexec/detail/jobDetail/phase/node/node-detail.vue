@@ -442,7 +442,8 @@ export default {
       if (operation) {
         this.operationData = {
           operationId: operation.id,
-          jobId: this.jobData.id
+          jobId: this.jobData.id,
+          parser: operation.parser
         };
         this.operationTitle = operation.name || '';
       } else {

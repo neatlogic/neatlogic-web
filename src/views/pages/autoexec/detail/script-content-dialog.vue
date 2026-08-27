@@ -8,11 +8,14 @@
       <template v-slot>
         <Loading :loadingShow="isLoading" type="fix"></Loading>
         <div v-if="scriptContent" class="script-content-box">
-          <TsCodemirror
+          <TsMonacoEditor
             v-model="scriptContent"
-            mode="shell"
-            :disabled="true"
-          ></TsCodemirror>
+            :codeMode="scriptData.parser || 'shell'"
+            :config="{ renderLineHighlightOnlyWhenFocus: true }"
+            :isReadOnly="true"
+            autoHeight
+            height="300px"
+          ></TsMonacoEditor>
           <div class="operation-box action-group">
             <span v-clipboard="scriptContent" v-clipboard:success="clipboardSuccess" class="action-item tsfont-copy">{{ $t('page.copy') }}</span>
             <span
@@ -34,7 +37,7 @@ import clipboard from '@/resources/directives/clipboard.js';
 export default {
   name: 'ScriptContentDialog',
   components: {
-    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
+    TsMonacoEditor: () => import('@/resources/plugins/TsMonacoEditor/TsMonacoEditor')
   },
   filters: {},
   directives: { download, clipboard},
@@ -90,6 +93,8 @@ export default {
           ...this.scriptData,
           isActive: 0
         };
+        // parser仅用于前端语法高亮，不传递给脚本内容查询接口。
+        delete param.parser;
         this.$api.autoexec.script
           .getJobScriptContent(param)
           .then(res => {
@@ -148,9 +153,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .script-content-box {
-  height: calc(100vh - 80px - 24px);
-  overflow: scroll;
-   &:hover {
+  &:hover {
     .operation-box {
       opacity: 1;
     }

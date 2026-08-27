@@ -55,6 +55,7 @@ export default {
     codeMode: { type: String, default: 'javascript' },
     isReadOnly: { type: Boolean, default: false },
     height: { type: String, default: '220px' },
+    autoHeight: { type: Boolean, default: false },
     lineNumbers: { type: Boolean, default: true },
     placeholder: { type: String, default: '' },
     isCopy: { type: Boolean, default: false },
@@ -78,6 +79,7 @@ export default {
       editorLoading: true,
       loadError: '',
       applyingExternalValue: false,
+      autoHeightValue: this.height,
       resizeObserver: null,
       disposableList: [],
       languageDisposableList: [],
@@ -103,6 +105,19 @@ export default {
         this.monaco = module.loadMonaco();
         this.registerLanguageDefinition();
         this.modelInstance = this.getOrCreateModel();
+        const autoHeightConfig = this.autoHeight
+          ? {
+            wordWrap: 'on',
+            scrollBeyondLastLine: false,
+            overviewRulerLanes: 0,
+            scrollbar: {
+              vertical: 'hidden',
+              horizontal: 'hidden',
+              handleMouseWheel: false,
+              alwaysConsumeMouseWheel: false
+            }
+          }
+          : {};
         const editorConfig = Object.assign(
           {
             model: this.modelInstance,
@@ -133,6 +148,7 @@ export default {
             placeholder: this.placeholder
           },
           this.config || {},
+          autoHeightConfig,
           {
             model: this.modelInstance,
             theme: this.editorTheme,
@@ -146,6 +162,7 @@ export default {
         this.applyMarkers();
         this.resizeObserver = new ResizeObserver(() => this.refresh());
         this.resizeObserver.observe(this.$refs.editorContainer);
+        this.updateAutoHeight();
         this.$emit('ready', this.editor);
       } catch (error) {
         this.loadError = error && error.message ? error.message : String(error);
@@ -176,6 +193,13 @@ export default {
         }
       }));
       this.disposableList.push(this.editor.onDidScrollChange(event => this.$emit('onScroll', event)));
+      if (this.autoHeight) {
+        this.disposableList.push(this.editor.onDidContentSizeChange(event => {
+          if (event.contentHeightChanged) {
+            this.updateAutoHeight(event.contentHeight);
+          }
+        }));
+      }
     },
     /** 输入标识符或点号时主动唤起候选，避免隐藏页签恢复后首次自动补全不触发。 */
     triggerSuggest(event) {
@@ -310,6 +334,24 @@ export default {
         this.editor.layout();
       }
     },
+    /** 自动高度模式下按实际内容增高编辑器，并避免相同高度反复触发布局。 */
+    updateAutoHeight(contentHeight) {
+      if (!this.autoHeight || !this.editor) {
+        return;
+      }
+      const configuredHeight = Number.parseFloat(this.height);
+      const minHeight = Number.isFinite(configuredHeight) ? configuredHeight : 0;
+      const nextHeight = `${Math.max(minHeight, Math.ceil(contentHeight || this.editor.getContentHeight()))}px`;
+      if (this.autoHeightValue === nextHeight) {
+        return;
+      }
+      this.autoHeightValue = nextHeight;
+      this.$nextTick(() => {
+        if (this.editor) {
+          this.editor.layout();
+        }
+      });
+    },
     insertText(text) {
       if (!this.editor || this.isReadOnly || this.disabled || !text) {
         return;
@@ -396,14 +438,20 @@ export default {
   },
   computed: {
     containerStyle() {
-      return { height: this.height };
+      return { height: this.autoHeight ? this.autoHeightValue : this.height };
     },
     currentLanguage() {
       const modeMap = {
         js: 'javascript',
         'text/javascript': 'javascript',
         javascript: 'javascript',
-        json: 'json'
+        json: 'json',
+        bash: 'shell',
+        ksh: 'shell',
+        csh: 'shell',
+        sh: 'shell',
+        cmd: 'bat',
+        vbscript: 'vb'
       };
       return modeMap[this.codeMode] || this.codeMode || 'javascript';
     },
@@ -416,6 +464,13 @@ export default {
         json: 'json',
         xml: 'xml',
         freemarker: 'ftl',
+        python: 'py',
+        ruby: 'rb',
+        perl: 'pl',
+        powershell: 'ps1',
+        shell: 'sh',
+        bat: 'cmd',
+        vb: 'vbs',
         'approval-drl': 'drl'
       };
       const extension = extensionMap[this.currentLanguage] || 'txt';

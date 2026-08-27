@@ -9,6 +9,13 @@ import { conf as xmlConf, language as xmlLanguage } from 'monaco-editor/language
 import { conf as freemarkerConf, language as freemarkerLanguage } from './freemarker-language.js';
 import 'monaco-editor/languages/definitions/javascript/register.js';
 import 'monaco-editor/languages/definitions/html/register.js';
+import 'monaco-editor/languages/definitions/python/register.js';
+import 'monaco-editor/languages/definitions/ruby/register.js';
+import 'monaco-editor/languages/definitions/perl/register.js';
+import 'monaco-editor/languages/definitions/powershell/register.js';
+import 'monaco-editor/languages/definitions/shell/register.js';
+import 'monaco-editor/languages/definitions/bat/register.js';
+import 'monaco-editor/languages/definitions/vb/register.js';
 import 'monaco-editor/features/suggest/register.js';
 import 'monaco-editor/editor/contrib/suggest/browser/suggestController.js';
 import 'monaco-editor/features/snippet/register.js';
