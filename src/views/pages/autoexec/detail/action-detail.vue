@@ -3,8 +3,10 @@
     <Loading :loadingShow="loading" type="fix"></Loading>
     <TsContain
       v-if="dataConfig"
-      :rightWidth="280"
-      :siderWidth="230"
+      ref="actionContain"
+      :rightWidth="isVersionEditorActive ? versionEditorExtension.rightWidth : 280"
+      :rightBtn="isVersionEditorActive"
+      :siderWidth="isVersionEditorActive ? 0 : 230"
       enableDivider
     >
       <template v-slot:navigation>
@@ -38,8 +40,8 @@
           </Col>
           <Col span="12" class="text-right" style="white-space: nowrap;">
             <div class="action-group">
-              <span class="action-item tsfont-blocks" @click="openExecuteSetting">{{ $t('term.autoexec.executetarget') }}</span>
-              <span class="action-item tsfont-config" @click="openParamsSetting">{{ $t('term.autoexec.jobparam') }}</span>
+              <span v-if="editMode == 'graph'" class="action-item tsfont-blocks" @click="openExecuteSetting">{{ $t('term.autoexec.executetarget') }}</span>
+              <span v-if="editMode == 'graph'" class="action-item tsfont-config" @click="openParamsSetting">{{ $t('term.autoexec.jobparam') }}</span>
               <span v-if="effectiveEditable" class="action-item tsfont-check" @click="openValid()">{{ $t('page.validate') }}</span>
               <span v-if="effectiveEditable" class="action-item tsfont-test" @click="testVersionAction()">{{ $t('page.test') }}</span>
               <span v-if="effectiveCancelable" class="action-item tsfont-close-o" @click="cancelVersionAction()">{{ $t('page.cancel') }}</span>
@@ -119,6 +121,7 @@
       <!-- 左侧步骤列表 -->
       <template v-slot:sider>
         <StepList
+          v-if="editMode == 'graph'"
           :id="id"
           v-model="currentStep"
           :currentScriptLength="currentScriptLength"
@@ -132,6 +135,16 @@
         ></StepList>
       </template>
       <template v-slot:content>
+        <div v-if="operationType == 'combop' && versionEditorExtension" class="editor-mode-switch text-right">
+          <ButtonGroup size="small">
+            <Button :type="editMode == 'graph' ? 'primary' : 'default'" :loading="editorSwitching" @click="switchEditorMode('graph')">
+              {{ $t(versionEditorExtension.graphLabelKey) }}
+            </Button>
+            <Button :type="isVersionEditorActive ? 'primary' : 'default'" :loading="editorSwitching" @click="switchEditorMode(versionEditorExtension.key)">
+              {{ $t(versionEditorExtension.labelKey) }}
+            </Button>
+          </ButtonGroup>
+        </div>
         <ExpiredReasonAlert
           v-if="configExpired == 1"
           class="pl-md pr-md"
@@ -140,8 +153,13 @@
           type="self"
         ></ExpiredReasonAlert>
         <!--校验 -->
-        <ActionValid v-model="validVisible" :validList="validList" @on-click="selectValidItem"></ActionValid>
-        <div class="padding-md" style="padding-top:0;padding-bottom:0;">
+        <ActionValid
+          v-if="editMode == 'graph'"
+          v-model="validVisible"
+          :validList="validList"
+          @on-click="selectValidItem"
+        ></ActionValid>
+        <div v-if="editMode == 'graph'" class="padding-md" style="padding-top:0;padding-bottom:0;">
           <div v-if="currentConfig && currentConfig.uuid == currentStep">
             <StepConfig
               ref="stepConfig"
@@ -163,8 +181,20 @@
             <NoData></NoData>
           </div>
         </div>
+        <component
+          :is="versionEditorExtension.editorComponent"
+          v-else-if="versionEditorExtension"
+          ref="versionEditor"
+          :combopId="id"
+          :readonly="!effectiveEditable"
+          @dirty-change="versionEditorDirty = $event"
+          @help-change="versionEditorHelp = $event"
+          @help-status="versionEditorHelpStatus = $event"
+          @help-locate="locateVersionEditorHelp"
+          @help-location-clear="clearVersionEditorHelpLocation"
+        ></component>
       </template>
-      <div slot="right">
+      <div v-if="editMode == 'graph'" slot="right">
         <Tabs v-model="tabValue" class="block-tabs" :animated="false">
           <TabPane :label="effectiveBaseInfoEditable ? getBasicInfoLabel($t('page.basicinfo')) : $t('page.basicinfo')" name="basicInfo">
             <div class="setting-main bg-op block-large">
@@ -213,6 +243,17 @@
           </TabPane>
         </Tabs>
       </div>
+      <component
+        :is="versionEditorExtension.helpComponent"
+        v-else-if="versionEditorExtension"
+        ref="versionEditorHelp"
+        slot="right"
+        :fields="versionEditorHelp.fields"
+        :guides="versionEditorHelp.guides"
+        :loading="versionEditorHelpStatus == 'loading'"
+        :unavailable="versionEditorHelpStatus == 'unavailable'"
+        @reveal="revealVersionEditorHelp"
+      ></component>
     </TsContain>
     <!-- 参数 -->
     <ParamsSetting
@@ -294,6 +335,7 @@ import StepConfig from './actionDetail/step/step-config.vue';
 import ActionValid from './actionDetail/action-valid.vue';
 import BasicInfo from './actionDetail/basic-info.vue';
 import TimeJobClickText from 'pages/autoexec/manage/job/time-job-click-text.vue'; // 添加定时作业
+import ImportComponent from '@/views/components/import-component.js';
 import { store, mutations } from './actionDetail/actionState.js';
 import actionMixins from './actionDetail/mixins/actionMixins.js';
 export default {
@@ -499,7 +541,12 @@ export default {
       configExpired: 0,
       configExpiredReason: {},
       opType: 'readonly', //操作类型
-      validPhaseOperationUuidList: [] //校验定位工具列表
+      validPhaseOperationUuidList: [], //校验定位工具列表
+      editMode: 'graph',
+      editorSwitching: false,
+      versionEditorDirty: false,
+      versionEditorHelp: { fields: [], guides: null },
+      versionEditorHelpStatus: 'ready'
     };
   },
   beforeCreate() {},
@@ -536,6 +583,18 @@ export default {
     this.clearObservable();
   },
   methods: {
+    // 可选编辑器帮助只影响右侧栏，不触发配置提交。
+    revealVersionEditorHelp() {
+      const contain = this.$refs.actionContain;
+      if (contain && contain.rightSiderHide) contain.rightSiderToggle();
+    },
+    locateVersionEditorHelp(location) {
+      this.$nextTick(() => { if (this.$refs.versionEditorHelp) this.$refs.versionEditorHelp.locate(location); });
+    },
+    clearVersionEditorHelpLocation() {
+      const help = this.$refs.versionEditorHelp;
+      help && help.clearLocation && help.clearLocation();
+    },
     getParamsTypeLit() {
       //选择组件类型
       let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.ParamType' };
@@ -557,6 +616,8 @@ export default {
     async getAction(isFirst) {
       this.loading = true;
       this.dataConfig = null;
+      this.editMode = 'graph';
+      this.versionEditorDirty = false;
       let param = {
         id: this.id
       };
@@ -723,7 +784,81 @@ export default {
       });
       return phaseOperationList;
     },
+    async switchEditorMode(mode) {
+      if (this.editMode == mode || this.editorSwitching) {
+        return;
+      }
+      const extension = this.versionEditorExtension;
+      if (mode != 'graph' && (!extension || mode != extension.key)) {
+        this.editMode = 'graph';
+        return;
+      }
+      this.editorSwitching = true;
+      try {
+        if (extension && mode == extension.key) {
+          const data = this.getData();
+          this.editMode = extension.key;
+          await this.$nextTick();
+          const editor = this.$refs.versionEditor;
+          const loaded = editor && typeof editor.load == 'function' && await editor.load(data.config);
+          if (!loaded) {
+            this.editMode = 'graph';
+          }
+        } else {
+          if (this.effectiveEditable && !(await this.syncVersionEditorConfig())) {
+            return;
+          }
+          this.editMode = 'graph';
+        }
+      } catch (error) {
+        // 请求层负责提示，基础页面只保证商业扩展失败时安全回退。
+        if (mode != 'graph') this.editMode = 'graph';
+      } finally {
+        this.editorSwitching = false;
+      }
+    },
+    async syncVersionEditorConfig() {
+      if (!this.isVersionEditorActive) {
+        return true;
+      }
+      const editor = this.$refs.versionEditor;
+      if (!editor || typeof editor.commit != 'function') {
+        return false;
+      }
+      const data = this.getData();
+      let config = null;
+      try {
+        config = await editor.commit(data.config);
+      } catch (error) {
+        // 请求层负责提示；不将未完成的转换结果应用到图形化配置。
+        return false;
+      }
+      if (!config) {
+        return false;
+      }
+      this.applyVersionEditorConfig(config);
+      return true;
+    },
+    applyVersionEditorConfig(config) {
+      this.runtimeParamList = config.runtimeParamList || [];
+      this.scenarioList = config.scenarioList || [];
+      this.defaultScenarioId = config.defaultScenarioId;
+      this.executeConfig = config.executeConfig || null;
+      this.stepList = this.initStepList(config.combopPhaseList || []);
+      this.sortList = this.getSortList();
+      if (!this.stepList.some(item => item.uuid == this.currentStep)) {
+        this.currentStep = this.stepList.length ? this.stepList[0].uuid : null;
+      }
+      const combopGroupList = config.combopGroupList || [];
+      mutations.setCombopGroupList(combopGroupList);
+      const currentStep = this.stepList.find(item => item.uuid == this.currentStep);
+      this.currentGroupConfig = combopGroupList.find(item => item.uuid == currentStep?.groupUuid) || combopGroupList[0] || null;
+      this.combopConfig.phaseList = this.stepList;
+      this.clearRuntimeParamValue();
+    },
     createVersionAction() {
+      this.editMode = 'graph';
+      this.versionEditorDirty = false;
       this.versionId = null;
       this.versionName = this.name + '_' + this.$utils.getCurrenttime('MMdd');
       this.versionIsActive = 0;
@@ -732,6 +867,9 @@ export default {
     async saveVersionAction(isShowMessage = true) {
       // isShowMessage 是否需要弹出操作提示，默认true
       let canSave = false;
+      if (!(await this.syncVersionEditorConfig())) {
+        return canSave;
+      }
       if (this.valid()) {
         this.currentStep = null;
         let data = this.getData();
@@ -823,6 +961,9 @@ export default {
     async submitVersionAction() {
       // isShowMessage 是否需要弹出操作提示，默认true
       let canSave = false;
+      if (!(await this.syncVersionEditorConfig())) {
+        return canSave;
+      }
       if (this.valid()) {
         let data = this.getData();
         this.$set(data, 'status', 'submitted');
@@ -849,9 +990,12 @@ export default {
       }
       return canSave;
     },
-    testVersionAction() {
+    async testVersionAction() {
       //执行
       if (this.executable) {
+        if (!(await this.syncVersionEditorConfig())) {
+          return;
+        }
         let data = this.getData();
         if (this.$utils.isSame(this.initData, data)) {
           sessionStorage.setItem('action_versionId', this.versionId);
@@ -1014,6 +1158,9 @@ export default {
       // }
       if (this.validList.find(item => item.type == 'error')) {
         this.validVisible = true;
+        if (this.isVersionEditorActive) {
+          this.editMode = 'graph';
+        }
         isValid = false;
       }
       return isValid;
@@ -1079,8 +1226,11 @@ export default {
         }
       }
     },
-    openValid() {
+    async openValid() {
       if (!this.effectiveEditable) {
+        return;
+      }
+      if (!(await this.syncVersionEditorConfig())) {
         return;
       }
       if (this.valid()) {
@@ -1564,6 +1714,16 @@ export default {
     }
   },
   computed: {
+    // 商业模块缺失或扩展描述不完整时返回 null，社区页面保持原图形化行为。
+    versionEditorExtension() {
+      const extension = ImportComponent && ImportComponent.autoexecCombopVersionEditor;
+      if (!extension || typeof extension.key != 'string' || !extension.key || !extension.editorComponent || !extension.helpComponent ||
+        !extension.labelKey || !extension.graphLabelKey) return null;
+      return { ...extension, rightWidth: Number(extension.rightWidth) > 0 ? Number(extension.rightWidth) : 360 };
+    },
+    isVersionEditorActive() {
+      return Boolean(this.versionEditorExtension && this.editMode == this.versionEditorExtension.key);
+    },
     getPrev() {
       return function(config, list) {
         let uk = config.uuid;
@@ -1646,7 +1806,7 @@ export default {
       delete data.name;
       delete this.initData.id;
       delete this.initData.name;
-      if (!this.effectiveEditable || !this.initData || this.$utils.isSame(this.initData, data)) {
+      if (!this.effectiveEditable || !this.initData || (!this.versionEditorDirty && this.$utils.isSame(this.initData, data))) {
         url ? this.$utils.gotoHref(url) : next(true);
       } else {
         let _this = this;
@@ -1674,6 +1834,9 @@ export default {
 <style lang="less" scoped>
 .action-detail {
   height: 100%;
+  .editor-mode-switch {
+    padding: 0 16px 12px;
+  }
   .action-title {
     width: 100%;
     display: inline-flex;
