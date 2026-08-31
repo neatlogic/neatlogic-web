@@ -1716,6 +1716,16 @@ export default {
       return arr;
     },
     formSheetEmitData(data) {
+      // 非优先级联动不能重置当前优先级。
+      if (this.$utils.isEmpty(data) || !Object.prototype.hasOwnProperty.call(data, 'changePriority')) {
+        return;
+      }
+      // 初始化阶段以工单已保存的优先级为准；页面就绪后由表单修改触发的新联动才生效。
+      if (!this.isCenterDetailReady || this.$utils.isEmpty(this.priorityList)) {
+        return;
+      }
+      this.rightsettingVue = this.rightsettingVue || getParent(this);
+      let rightSetting = this.rightsettingVue && this.rightsettingVue.$refs && this.rightsettingVue.$refs.RightSetting;
       let defaultPriorityConfig = null;
       let messageConfig = {
         content: '',
@@ -1761,9 +1771,8 @@ export default {
           }
         }
       }
-      this.rightsettingVue = this.rightsettingVue || getParent(this);
-      if (this.rightsettingVue && this.rightsettingVue.$refs.RightSetting) {
-        this.rightsettingVue.$refs.RightSetting.setPriorityByForm(!this.$utils.isEmpty(defaultPriorityConfig) ? [defaultPriorityConfig] : []);
+      if (rightSetting) {
+        rightSetting.setPriorityByForm(!this.$utils.isEmpty(defaultPriorityConfig) ? [defaultPriorityConfig] : []);
       }
     },
     showRelationDetail(tranferreport, processTaskRelationCount) {
