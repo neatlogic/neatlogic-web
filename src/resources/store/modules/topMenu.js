@@ -91,7 +91,6 @@ const actions = {
   // 更新模块菜单
   updateMenu({ dispatch, commit, state, rootState }, { forceUpdate = false } = {}) {
     dispatch('updateProcessMenu', { forceUpdate });
-    dispatch('updateKnowledgeMenu', { forceUpdate });
     dispatch('updateDashboardMenu', { forceUpdate });
     dispatch('updateReportMenu', { forceUpdate });
     dispatch('updateCmdbMenu', { forceUpdate });
@@ -136,31 +135,6 @@ const actions = {
     commit('updateMenu', { module: processModule, startIndex: 0, newMenuGroup });
     return res;
   },
-  // knowledge
-  async updateKnowledgeMenu({ commit, state, rootState }, { forceUpdate = true } = {}) {
-    await state.gettingModuleList;
-    const knowledgeModule = state.moduleList.find(item => item.moduleId === 'knowledge');
-    if (!knowledgeModule) return;
-    if (!knowledgeModule || (!forceUpdate && state.dynamicMenu.hasOwnProperty('knowledge')) || !hasCustomMenuAuthority('knowledge', 'knowledge-overview')) {
-      return;
-    }
-    const res = await commonApi.updateKnowledgeMenu();
-    if (!res.Return || res.Return.length === 0) return;
-    const knowledgeType = res.Return.map(type => ({
-      name: type.text,
-      path: `/knowledge-overview-${type.value}`,
-      icon: 'tsfont-book'
-    }));
-    const newMenuGroup = [
-      {
-        menuTypeName: $t('term.knowledge.knowtype'),
-        menuList: knowledgeType
-      }
-    ];
-    commit('updateMenu', { module: knowledgeModule, startIndex: 0, newMenuGroup });
-    return res;
-  },
-
   // dashboard
   async updateDashboardMenu({ commit, state, rootState }, { forceUpdate = true } = {}) {
     await state.gettingModuleList;
