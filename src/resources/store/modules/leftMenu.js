@@ -9,8 +9,6 @@ const state = {
   taskTypeId: null, //当前工单分类id
   taskViewType: 'table', //工单中心展示类型
   dashboardAddData: null, // dashboard
-  knowledgeTypeMenu: [], // 知识分类
-  isKnowledgeCircleUpdated: true, //知识圈是否更新了Data
   cmdbCustomViewCount: 0, //CMDB自定义视图数量
   rdmProjectCount: 0, //RDM项目数量
   alertViewCount: 0, //告警视图数量
@@ -36,24 +34,11 @@ const getters = {
   },
   getWorkerMenuIsWillDo(state, getters, rootState) {
     return state.workerMenuIsWillDo;
-  },
-  getKnowLedgeTypeName(state) {
-    const knowledgeTypeConfig = state.knowledgeTypeMenu.reduce((result, current) => {
-      result[current.value] = current.text;
-      return result;
-    }, {});
-    return value => {
-      return knowledgeTypeConfig[value] || '知识分类';
-    };
   }
 };
 
 // actions
 const actions = {
-  async getKnowledgeTypeMenu({ commit, state }) {
-    const res = await menuApi.updateKnowledgeMenu();
-    commit('setKnowledgeTypeMenu', res.Return || []);
-  },
   async getWorkCenterMenuData({ commit, state }) {
     const res = await menuApi.updateProcessMenu();
     if (res && res.Status == 'OK') {
@@ -149,12 +134,6 @@ const mutations = {
     } else {
       state.workerMenuIsWillDo = 0;
     }
-  },
-  setKnowledgeTypeMenu(state, data) {
-    state.knowledgeTypeMenu = data;
-  },
-  isKnowledgeCircleUpdated(state, updated) {
-    state.isKnowledgeCircleUpdated = updated;
   },
   setRecentIssuesMenuData(state, data) {
     state.recentIssuesMenuData = data;

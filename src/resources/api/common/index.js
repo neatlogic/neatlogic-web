@@ -155,10 +155,6 @@ const common = {
   updateDashboardMenu(params) {
     return axios.post('/api/rest/dashboard/search', params);
   },
-  // 获取知识库的知识分类列表
-  updateKnowledgeMenu(params) {
-    return axios.get('api/rest/knowledge/type/list', params);
-  },
   // 获取报表实例列表
   updateReportMenu(params) {
     return axios.post('/api/rest/reportinstance/list', params);
