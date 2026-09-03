@@ -370,9 +370,15 @@ export default {
       //初始化数据
       this.baseInfoList = [];
       let processTaskConfig = this.processTaskConfig;
+      let processTaskStepConfig = processTaskConfig.currentProcessTaskStep || null;
+      let processTaskStepId = processTaskStepConfig ? processTaskStepConfig.id : null;
+      let isTaskContextChanged = this.processTaskId != processTaskConfig.id || this.processTaskStepId != processTaskStepId;
       this.processTaskId = processTaskConfig.id;
       this.channelUuid = processTaskConfig.channelUuid;
       this.defaultPriorityUuid = processTaskConfig.defaultPriorityUuid;
+      if (isTaskContextChanged) {
+        this.priorityUuid = (processTaskConfig.priority && processTaskConfig.priority.uuid) || processTaskConfig.priorityUuid || this.defaultPriorityUuid;
+      }
       let processTaskArr = [];
       if (processTaskConfig.tagVoList && processTaskConfig.tagVoList.length > 0) {
         this.tagVoList = processTaskConfig.tagVoList.map(item => item && item.name);
@@ -398,16 +404,17 @@ export default {
         }
       });
       this.baseInfoList = this.$utils.deepClone(processTaskArr) || [];
-      if (processTaskConfig.currentProcessTaskStep) {
-        let processTaskStepConfig = processTaskConfig.currentProcessTaskStep;
-        this.currentProcessTaskStep = processTaskConfig.currentProcessTaskStep;
+      this.currentProcessTaskStep = processTaskStepConfig;
+      this.processTaskStepId = processTaskStepId;
+      if (processTaskStepConfig) {
         this.handler = this.currentProcessTaskStep.handler;
-        this.processTaskStepId = processTaskStepConfig.id;
       }
       this.rightLoading = false;
     },
     setPriorityByForm(list) {
       //如果list存在则通过list赋值过去 ，list 主要是为了表单规则时修改优先级下拉数据
+      // 避免下拉框 v-model 修改联动选项的 uuid，污染服务优先级列表。
+      list = this.$utils.deepClone(list);
       let priority = null;//优先级数据
       let findPriorityItem = this.baseInfoList.find((v) => v.value == 'priority');
       if (list.length == 0) {
