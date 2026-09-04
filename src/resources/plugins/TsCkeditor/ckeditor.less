@@ -30,7 +30,7 @@
   }
 }
 .ck-content {
-  min-height: 130px;
+  min-height: auto;
   ul,
   ol {
     padding-inline-start: 40px;
@@ -62,7 +62,7 @@
   display: none; // 隐藏右小角版权信息logo
 }
 .ck.ck-sticky-panel .ck-sticky-panel__content_sticky {
-  position: static; // ckeditor计算top有问题，导致工具栏位置偏移
+  position: static !important; // ckeditor计算top有问题，导致工具栏位置偏移
 }
 .theme(
   @op-color,

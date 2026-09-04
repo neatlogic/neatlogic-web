@@ -1410,6 +1410,8 @@
     "ignoreall": "Ignore all nodes?"
   },
   "framework": {
+    "accesstype": "Access Type",
+    "allaccesstype": "All Access Types",
     "roleauth": "Authorize After Role Creation",
     "rolename": "Role Name",
     "roledesc": "Role Description",
