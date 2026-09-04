@@ -3695,7 +3695,7 @@
     "enterwidgetname": "Enter a widget name",
     "enabled": "Enabled",
     "applicableusers": "Applies To",
-    "itemsperpageoption": "{count} per Page",
+    "itemsperpageoption": "{count}/Page",
     "widgetauthorization": "Widget Authorization - {name}",
     "clearauthorization": "Clear Authorization Confirmation",
     "clearauthorizationcontent": "Clear the existing authorization for the selected {count} widget? | Clear the existing authorization for the selected {count} widgets?",

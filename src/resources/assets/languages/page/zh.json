@@ -815,7 +815,7 @@
   "nonexistent": "不存在",
   "list": "列表",
   "intotaltarget": "共{target}条",
-  "itemspagetarget": "{target}条/页",
+  "itemspagetarget": "{target}/页",
   "homepagesettings": "首页设置",
   "returntohomepage": "返回首页",
   "filepreviewfailed": "文件预览失败",

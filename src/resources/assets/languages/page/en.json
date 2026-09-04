@@ -811,7 +811,7 @@
   "nonexistent": "Nonexistent",
   "list": "List",
   "intotaltarget": "{target} in total",
-  "itemspagetarget": "{target} items/page",
+  "itemspagetarget": "{target}/Page",
   "homepagesettings": "Home Page Settings",
   "returntohomepage": "Return to Homepage",
   "filepreviewfailed": "File Preview Failed",
