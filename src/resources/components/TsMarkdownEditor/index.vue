@@ -133,6 +133,10 @@ export default {
       type: Boolean,
       default: false
     },
+    autofocus: {
+      type: Boolean,
+      default: false
+    },
     toolbar: {
       type: [Array, Boolean],
       default() {
@@ -214,7 +218,10 @@ export default {
         },
         fileUpload: this.handleFileUpload,
         editor: {
-          defaultModel: this.model
+          defaultModel: this.model,
+          codemirror: {
+            autofocus: this.autofocus
+          }
         },
         toolbars: this.getDefaultToolbars(),
         callback: {
