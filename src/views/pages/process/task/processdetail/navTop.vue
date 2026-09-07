@@ -249,6 +249,12 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    actionConfig: {
+      handler() {
+        this.getElementWidth();
+      },
+      deep: true
     }
   }
 };
