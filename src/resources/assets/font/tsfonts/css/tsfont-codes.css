@@ -612,3 +612,5 @@
 .tsfont-state-machine:before { content: '\ea66'; } /* '' */
 .tsfont-column:before { content: '\ea67'; } /* '' */
 .tsfont-link:before { content: '\ea68'; } /* '' */
+.tsfont-memo:before { content: '\ea69'; } /* '' */
+.tsfont-whiteboard:before { content: '\ea6a'; } /* '' */
