@@ -1408,6 +1408,8 @@
     "ignoreall": "是否忽略所有节点"
   },
   "framework": {
+    "accesstype": "访问类型",
+    "allaccesstype": "全部访问类型",
     "roleauth": "创建完角色立即授权",
     "rolename": "角色名",
     "roledesc": "角色描述",
@@ -3688,7 +3690,7 @@
     "enterwidgetname": "请输入组件名称",
     "enabled": "是否启用",
     "applicableusers": "适用用户",
-    "itemsperpageoption": "{count} 条/页",
+    "itemsperpageoption": "{count}/页",
     "widgetauthorization": "组件授权 - {name}",
     "clearauthorization": "清空授权确认",
     "clearauthorizationcontent": "确定清空所选 {count} 个组件的原有授权吗？",
