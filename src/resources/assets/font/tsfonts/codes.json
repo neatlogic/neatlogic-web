@@ -3664,5 +3664,17 @@
     "css": "tsfont-link",
     "hexCodepoint": "0xea68",
     "codepoint": 60008
+  },
+  {
+    "name": "memo",
+    "css": "tsfont-memo",
+    "hexCodepoint": "0xea69",
+    "codepoint": 60009
+  },
+  {
+    "name": "whiteboard",
+    "css": "tsfont-whiteboard",
+    "hexCodepoint": "0xea6a",
+    "codepoint": 60010
   }
 ]
