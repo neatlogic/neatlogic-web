@@ -88,8 +88,8 @@ const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
 // RSA密码密文统一使用该前缀，供前后端识别密码加密格式。
 const RSA_ENCRYPTED_PREFIX = 'RSA:';
-// 2048位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为190字节。
-const RSA_OAEP_MAX_PLAINTEXT_BYTES = 190;
+// 8192位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为1024-2*32-2=958字节。
+const RSA_OAEP_MAX_PLAINTEXT_BYTES = 958;
 
 /**
  * 使用浏览器Web Crypto执行RSA-OAEP加密。
