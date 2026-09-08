@@ -76,10 +76,11 @@ deepRemoveEmptyValues(data)                  深度移除对象中的空值
 getUserInfo()                                获取用户信息
 getInstanceIpPort()                          获取实例ip和端口
 highlightTextByKeywords                      高亮文字根据关键字
-encryptPassword(password)                    获取RSA公钥并加密密码，返回带{RSA}前缀的密文
+encryptPassword(password)                    获取RSA公钥并加密密码，返回带RSA:前缀的密文
 */
 import Vue from 'vue';
 import _ from 'lodash';
+import forge from 'node-forge';
 import store from '@/resources/store';
 import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
@@ -89,6 +90,71 @@ const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_
 const RSA_ENCRYPTED_PREFIX = 'RSA:';
 // 2048位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为190字节。
 const RSA_OAEP_MAX_PLAINTEXT_BYTES = 190;
+
+/**
+ * 使用浏览器Web Crypto执行RSA-OAEP加密。
+ *
+ * @param {String} password 待加密的明文密码
+ * @param {String} publicKey Base64编码的SPKI格式RSA公钥
+ * @returns {Promise<String>} Base64编码的RSA密文
+ */
+async function encryptPasswordByWebCrypto(password, publicKey) {
+  // 将后端返回的Base64 SPKI公钥转换为Web Crypto可导入的二进制格式。
+  const publicKeyBinary = window.atob(publicKey);
+  const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
+  for (let i = 0; i < publicKeyBinary.length; i++) {
+    publicKeyBytes[i] = publicKeyBinary.charCodeAt(i);
+  }
+  const cryptoKey = await window.crypto.subtle.importKey(
+    'spki',
+    publicKeyBytes.buffer,
+    {name: 'RSA-OAEP', hash: 'SHA-256'},
+    false,
+    ['encrypt']
+  );
+  const passwordBytes = new TextEncoder().encode(password);
+  if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
+    throw new Error('密码内容过长，无法进行安全加密');
+  }
+  const encrypted = await window.crypto.subtle.encrypt(
+    {name: 'RSA-OAEP'},
+    cryptoKey,
+    passwordBytes
+  );
+  const encryptedBytes = new Uint8Array(encrypted);
+  let encryptedBinary = '';
+  for (let i = 0; i < encryptedBytes.length; i++) {
+    encryptedBinary += String.fromCharCode(encryptedBytes[i]);
+  }
+  return window.btoa(encryptedBinary);
+}
+
+/**
+ * 在非安全HTTP环境中使用纯JavaScript实现RSA-OAEP加密。
+ *
+ * @param {String} password 待加密的明文密码
+ * @param {String} publicKey Base64编码的SPKI格式RSA公钥
+ * @returns {String} Base64编码的RSA密文
+ */
+function encryptPasswordByForge(password, publicKey) {
+  // Forge按PEM格式导入后端返回的SPKI公钥，每64个字符进行一次换行。
+  const publicKeyRows = publicKey.match(/.{1,64}/g) || [];
+  const publicKeyPem = ['-----BEGIN PUBLIC KEY-----', ...publicKeyRows, '-----END PUBLIC KEY-----'].join('\n');
+  const passwordBytes = forge.util.encodeUtf8(password);
+  if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
+    throw new Error('密码内容过长，无法进行安全加密');
+  }
+  const forgePublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
+  // 摘要及MGF1均使用SHA-256，与后端OAEPParameterSpec保持一致。
+  const encryptedBinary = forgePublicKey.encrypt(passwordBytes, 'RSA-OAEP', {
+    md: forge.md.sha256.create(),
+    mgf1: {
+      md: forge.md.sha256.create()
+    }
+  });
+  return forge.util.encode64(encryptedBinary);
+}
+
 const methods = {
   getCookie: function (name) {
     if (name) {
@@ -686,9 +752,6 @@ const methods = {
     if (password.startsWith(RSA_ENCRYPTED_PREFIX)) {
       return password;
     }
-    if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
-      throw new Error('当前浏览器不支持密码安全加密');
-    }
     if (!this.$api || !this.$api.common) {
       throw new Error('密码加密接口未初始化');
     }
@@ -698,35 +761,15 @@ const methods = {
     if (!publicKey) {
       throw new Error('密码加密公钥不能为空');
     }
-    // 将后端返回的Base64 SPKI公钥转换为Web Crypto可导入的二进制格式。
-    const publicKeyBinary = window.atob(publicKey);
-    const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
-    for (let i = 0; i < publicKeyBinary.length; i++) {
-      publicKeyBytes[i] = publicKeyBinary.charCodeAt(i);
+    let encryptedPassword;
+    if (window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
+      // 安全上下文优先使用浏览器原生Web Crypto实现。
+      encryptedPassword = await encryptPasswordByWebCrypto(password, publicKey);
+    } else {
+      // HTTP等非安全上下文无法使用SubtleCrypto时，回退到纯JavaScript实现。
+      encryptedPassword = encryptPasswordByForge(password, publicKey);
     }
-    const cryptoKey = await window.crypto.subtle.importKey(
-      'spki',
-      publicKeyBytes.buffer,
-      {name: 'RSA-OAEP', hash: 'SHA-256'},
-      false,
-      ['encrypt']
-    );
-    const passwordBytes = new TextEncoder().encode(password);
-    if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
-      throw new Error('密码内容过长，无法进行安全加密');
-    }
-    const encrypted = await window.crypto.subtle.encrypt(
-      {name: 'RSA-OAEP'},
-      cryptoKey,
-      passwordBytes
-    );
-    // 将加密结果转换为Base64，并增加与后端约定的RSA格式前缀。
-    const encryptedBytes = new Uint8Array(encrypted);
-    let encryptedBinary = '';
-    for (let i = 0; i < encryptedBytes.length; i++) {
-      encryptedBinary += String.fromCharCode(encryptedBytes[i]);
-    }
-    return RSA_ENCRYPTED_PREFIX + window.btoa(encryptedBinary);
+    return RSA_ENCRYPTED_PREFIX + encryptedPassword;
   },
   getRunnerGroupList(list) {
     let columlist = [];

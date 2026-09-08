@@ -82,6 +82,7 @@
     "monaco-editor": "0.56.0",
     "navigator": "^1.0.1",
     "neatlogic-ui": "^1.0.7",
+    "node-forge": "^1.4.0",
     "particles.vue": "^2.42.2",
     "prosemirror-model": "^1.25.4",
     "prosemirror-schema-basic": "^1.2.4",
