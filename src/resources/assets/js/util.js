@@ -88,8 +88,6 @@ const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
 // RSA密码密文统一使用该前缀，供前后端识别密码加密格式。
 const RSA_ENCRYPTED_PREFIX = 'RSA:';
-// 8192位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为1024-2*32-2=958字节。
-const RSA_OAEP_MAX_PLAINTEXT_BYTES = 958;
 
 /**
  * 使用浏览器Web Crypto执行RSA-OAEP加密。
@@ -98,7 +96,7 @@ const RSA_OAEP_MAX_PLAINTEXT_BYTES = 958;
  * @param {String} publicKey Base64编码的SPKI格式RSA公钥
  * @returns {Promise<String>} Base64编码的RSA密文
  */
-async function encryptPasswordByWebCrypto(password, publicKey) {
+async function encryptPasswordByWebCrypto(password, publicKey, maxPlaintextByteLength) {
   // 将后端返回的Base64 SPKI公钥转换为Web Crypto可导入的二进制格式。
   const publicKeyBinary = window.atob(publicKey);
   const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
@@ -113,8 +111,8 @@ async function encryptPasswordByWebCrypto(password, publicKey) {
     ['encrypt']
   );
   const passwordBytes = new TextEncoder().encode(password);
-  if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
-    throw new Error('密码内容过长，无法进行安全加密');
+  if (passwordBytes.length > maxPlaintextByteLength) {
+    throw new Error('密码内容过长，无法进行安全加密，最大长度为' + maxPlaintextByteLength);
   }
   const encrypted = await window.crypto.subtle.encrypt(
     {name: 'RSA-OAEP'},
@@ -136,13 +134,13 @@ async function encryptPasswordByWebCrypto(password, publicKey) {
  * @param {String} publicKey Base64编码的SPKI格式RSA公钥
  * @returns {String} Base64编码的RSA密文
  */
-function encryptPasswordByForge(password, publicKey) {
+function encryptPasswordByForge(password, publicKey, maxPlaintextByteLength) {
   // Forge按PEM格式导入后端返回的SPKI公钥，每64个字符进行一次换行。
   const publicKeyRows = publicKey.match(/.{1,64}/g) || [];
   const publicKeyPem = ['-----BEGIN PUBLIC KEY-----', ...publicKeyRows, '-----END PUBLIC KEY-----'].join('\n');
   const passwordBytes = forge.util.encodeUtf8(password);
-  if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
-    throw new Error('密码内容过长，无法进行安全加密');
+  if (passwordBytes.length > maxPlaintextByteLength) {
+    throw new Error('密码内容过长，无法进行安全加密，最大长度为' + maxPlaintextByteLength);
   }
   const forgePublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
   // 摘要及MGF1均使用SHA-256，与后端OAEPParameterSpec保持一致。
@@ -758,16 +756,17 @@ const methods = {
     // 每次加密前从后端获取当前公钥，调用页面无需感知或传递公钥。
     const publicKeyRes = await this.$api.common.getPasswordPublicKey();
     const publicKey = publicKeyRes && publicKeyRes.Return && publicKeyRes.Return.publicKey;
+    const maxPlaintextByteLength = publicKeyRes && publicKeyRes.Return && publicKeyRes.Return.maxPlaintextByteLength;
     if (!publicKey) {
       throw new Error('密码加密公钥不能为空');
     }
     let encryptedPassword;
     if (window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
       // 安全上下文优先使用浏览器原生Web Crypto实现。
-      encryptedPassword = await encryptPasswordByWebCrypto(password, publicKey);
+      encryptedPassword = await encryptPasswordByWebCrypto(password, publicKey, maxPlaintextByteLength);
     } else {
       // HTTP等非安全上下文无法使用SubtleCrypto时，回退到纯JavaScript实现。
-      encryptedPassword = encryptPasswordByForge(password, publicKey);
+      encryptedPassword = encryptPasswordByForge(password, publicKey, maxPlaintextByteLength);
     }
     return RSA_ENCRYPTED_PREFIX + encryptedPassword;
   },
