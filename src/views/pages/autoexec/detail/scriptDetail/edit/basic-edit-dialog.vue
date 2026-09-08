@@ -15,6 +15,14 @@
             labelPosition="top"
             :item-list="settingForm"
           >
+            <template v-slot:name="{ valueConfig }">
+              <TsFormInput
+                ref="nameInput"
+                v-model="valueConfig.name"
+                v-bind="nameFormConfig"
+                type="text"
+              ></TsFormInput>
+            </template>
             <template v-slot:defaultProfileId>
               <div>
                 <TsFormSelect v-model="settingConfig.defaultProfileId" v-bind="profileForm" @first="gotoProfile()"></TsFormSelect>
@@ -39,6 +47,7 @@ export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
@@ -60,7 +69,7 @@ export default {
       settingConfig: {},
       formList: [
         {
-          type: 'text',
+          type: 'slot',
           name: 'name',
           value: '',
           maxlength: 50,
@@ -71,7 +80,7 @@ export default {
             'name-special',
             { name: 'searchUrl',
               url: '/api/rest/autoexec/script/save',
-              params: {id: this.id || this.$route.query.versionId || ''},
+              params: () => ({catalogId: this.$toolCatalogUtils.handleCatalogIdAlltoZero(this.settingConfig), id: this.id}),
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }
@@ -387,8 +396,22 @@ export default {
     }
   },
   filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    // Keep the name field's existing rules and presentation when rendered through the form slot.
+    nameFormConfig() {
+      return this.formList.find(item => item.name === 'name');
+    }
+  },
+  watch: {
+    'settingConfig.catalogId'(value, previous) {
+      // Directory changes invalidate the name check even when the name itself has not changed.
+      if (value !== previous && this.settingConfig.name) {
+        this.$nextTick(() => {
+          this.$refs.nameInput && this.$refs.nameInput.valid(null, true);
+        });
+      }
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

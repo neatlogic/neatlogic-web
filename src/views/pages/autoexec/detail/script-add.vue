@@ -31,7 +31,16 @@
             </Steps>
           </div>
           <div v-show="current == 0" class="form">
-            <TsForm ref="settingForm" v-model="settingConfig" :itemList="settingForm"></TsForm>
+            <TsForm ref="settingForm" v-model="settingConfig" :itemList="settingForm">
+              <template v-slot:name="{ valueConfig }">
+                <TsFormInput
+                  ref="nameInput"
+                  v-model="valueConfig.name"
+                  v-bind="nameFormConfig"
+                  type="text"
+                ></TsFormInput>
+              </template>
+            </TsForm>
           </div>
           <div v-show="current == 1" class="auth btn">
             <div class="item-list">
@@ -90,7 +99,7 @@ export default {
       },
       formList: [
         {
-          type: 'text',
+          type: 'slot',
           name: 'name',
           value: '',
           maxlength: 50,
@@ -101,6 +110,7 @@ export default {
             'name-special',
             { name: 'searchUrl',
               url: '/api/rest/autoexec/script/save',
+              params: () => ({catalogId: this.$toolCatalogUtils.handleCatalogIdAlltoZero(this.settingConfig)}),
               key: 'name',
               message: this.$t('message.targetisexists', {target: this.$t('page.name')})
             }
@@ -428,8 +438,22 @@ export default {
       return columlist;
     }
   },
-  computed: {},
-  watch: {},
+  computed: {
+    // Keep the name field's existing rules and presentation when rendered through the form slot.
+    nameFormConfig() {
+      return this.formList.find(item => item.name === 'name');
+    }
+  },
+  watch: {
+    'settingConfig.catalogId'(value, previous) {
+      // Directory changes invalidate the name check even when the name itself has not changed.
+      if (value !== previous && this.settingConfig.name) {
+        this.$nextTick(() => {
+          this.$refs.nameInput && this.$refs.nameInput.valid(null, true);
+        });
+      }
+    }
+  },
   beforeRouteEnter(to, from, next) {
     //获取前一个路由信息，用来返回
     from.path != '/' && sessionStorage.setItem(to.path, JSON.stringify({ router: from.path, name: from.meta.title }));
