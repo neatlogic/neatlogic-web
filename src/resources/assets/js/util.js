@@ -752,6 +752,10 @@ const methods = {
     if (password.startsWith(RSA_ENCRYPTED_PREFIX)) {
       return password;
     }
+    // 超过190位的密码，不加密
+    if (password.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
+      return password;
+    }
     if (!this.$api || !this.$api.common) {
       throw new Error('密码加密接口未初始化');
     }
