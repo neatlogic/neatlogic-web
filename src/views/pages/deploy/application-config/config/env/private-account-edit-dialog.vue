@@ -100,6 +100,7 @@ export default {
           validateList: [
             {
               name: 'custom',
+              trigger: 'change', // 输入或删除确认密码时触发校验，避免校验组件读取空trigger。
               message: this.$t('term.framework.pwdnotsame'),
               // 两个密码都为空时允许保存；任意一个有值时必须完全一致。
               validator: (rule, value) => {
