@@ -281,15 +281,23 @@
               tab="tab1"
             >
               <!--步骤日志 -->
-              <div v-if="tabValue === 'step' && stepData && stepData.length > 0">
-                <StepOverview
-                  :processTaskId="processTaskId"
-                  :processTaskStepId="processTaskStepId"
-                  :defaultStepData="stepData"
-                  :currentStepId="defaultProcessTaskStepId"
-                  :processTaskConfig="processTaskConfig"
-                ></StepOverview>
-              </div>
+              <template v-if="tabValue === 'step'">
+                <Loading
+                  v-if="stepLoading"
+                  :loadingShow="true"
+                  :text="false"
+                  class="tab-local-loading"
+                ></Loading>
+                <div v-else-if="stepData && stepData.length > 0">
+                  <StepOverview
+                    :processTaskId="processTaskId"
+                    :processTaskStepId="processTaskStepId"
+                    :defaultStepData="stepData"
+                    :currentStepId="defaultProcessTaskStepId"
+                    :processTaskConfig="processTaskConfig"
+                  ></StepOverview>
+                </div>
+              </template>
             </TabPane>
           </template>
           <template v-else-if="!tab.top && tab.key === 'activity'">
@@ -303,14 +311,22 @@
               tab="tab1"
             >
               <!-- 时间线 -->
-              <ActivityOverview
-                v-if="tabValue === 'activity'"
-                :processTaskId="processTaskId"
-                :stepDataList="stepData"
-                :defaultActiveData="activeData"
-                :formConfig="frozenFormConfig"
-                @updataActive="(val)=>updataActive(val)"
-              ></ActivityOverview>
+              <template v-if="tabValue === 'activity'">
+                <Loading
+                  v-if="activityLoading"
+                  :loadingShow="true"
+                  :text="false"
+                  class="tab-local-loading"
+                ></Loading>
+                <ActivityOverview
+                  v-else
+                  :processTaskId="processTaskId"
+                  :stepDataList="stepData"
+                  :defaultActiveData="activeData"
+                  :formConfig="frozenFormConfig"
+                  @updataActive="(val)=>updataActive(val)"
+                ></ActivityOverview>
+              </template>
             </TabPane>
           </template>
           <template v-else-if="!tab.top && tab.key === 'relevance'">
@@ -644,12 +660,14 @@ export default {
       auditId: null, //活动id
       buttonLog: '1', //活动日志
       activeData: [], //按活动分
+      activityLoading: false, //时间线加载状态
       stepContent: null, //描述
       selectStepId: this.defaultProcessTaskStepId,
       timeSortIcon: false, //活动排序
       issubTaskComplete: true,
       processTaskStepSubtaskId: null,
       stepData: [], //按步骤分
+      stepLoading: false, //步骤日志加载状态
       viewStepData: [], //需要查看的步骤
       //变更
       handlerStepInfo: null,
@@ -1171,6 +1189,7 @@ export default {
     },
     getActivityList(processTaskStepIdList) {
       //活动列表
+      this.activityLoading = true;
       let data = {
         processTaskId: this.processTaskId,
         processTaskStepIdList: processTaskStepIdList
@@ -1186,11 +1205,14 @@ export default {
           });
           this.activeData = activeList;
         }
+      }).finally(() => {
+        this.activityLoading = false;
       });
     },
 
     getStepStatusList() {
       //步骤状态
+      this.stepLoading = true;
       let data = {
         processTaskId: this.processTaskId
       };
@@ -1205,6 +1227,8 @@ export default {
             });
           }
         }
+      }).finally(() => {
+        this.stepLoading = false;
       });
     },
     saveTaskD() {
@@ -2098,5 +2122,8 @@ function getParent(node) {
 .CenterDetail {
   height: 100%;
   overflow-y: scroll;
+}
+.tab-local-loading {
+  min-height: 120px;
 }
 </style>
