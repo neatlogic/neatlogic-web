@@ -43,11 +43,11 @@
               ></Table>
             </TsFormItem>
             <TsFormItem
-              v-if="helpData.example"
-              :label="$t('term.report.example')"
+              v-if="helpData.example && helpData.example.length"
+              :label="$t('term.framework.apiexample')"
               :labelWidth="80"
             >
-              <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
+              <ApiExampleTabs :examples="helpData.example" :interfaceKey="rowData.token"></ApiExampleTabs>
             </TsFormItem>
           </div>
           <div v-else>{{ helpMessage }}</div>
@@ -100,11 +100,11 @@
             <TsFormItem :label="$t('term.framework.metadata')" :labelWidth="100">
               <JsonViewer boxed copyable :value="mcpHelpData.meta || {}"></JsonViewer>
             </TsFormItem>
-            <TsFormItem :label="$t('term.framework.toolcallexample')" :labelWidth="100">
-              <JsonViewer boxed copyable :value="mcpHelpData.callToolExample || {}"></JsonViewer>
-            </TsFormItem>
-            <TsFormItem v-if="mcpHelpData.example" :label="$t('term.framework.apiexample')" :labelWidth="100">
-              <JsonViewer boxed copyable :value="mcpHelpData.example"></JsonViewer>
+            <TsFormItem v-if="mcpHelpData.callToolExamples && mcpHelpData.callToolExamples.length" :label="$t('term.framework.toolcallexample')" :labelWidth="100">
+              <ApiExampleTabs
+                :examples="mcpHelpData.callToolExamples"
+                :interfaceKey="rowData.token"
+              ></ApiExampleTabs>
             </TsFormItem>
           </div>
           <div v-else>{{ mcpHelpMessage }}</div>
@@ -119,6 +119,7 @@ export default {
   name: 'ApiHelp',
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    ApiExampleTabs: () => import('./api-example-tabs.vue'),
     JsonViewer: () => import('vue-json-viewer')
   },
   props: {
