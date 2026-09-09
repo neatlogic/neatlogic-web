@@ -86,12 +86,10 @@ import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
 const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
-// AES-GCM与RSA混合密文使用该前缀，供前后端识别新密码加密格式。
-const AES_ENCRYPTED_PREFIX = 'AES:';
-// 保留旧RSA密文前缀识别能力，避免升级前已打开页面中的密文被重复加密。
-const RSA_ENCRYPTED_PREFIX = 'RSA:';
-// 混合密文使用固定分隔符连接AES密码载荷和RSA加密后的AES密钥。
-const HYBRID_RSA_SECTION_PREFIX = '.RSA:';
+// 当前RSA与AES混合密文使用该前缀，供前后端识别密钥在前的新密码加密格式。
+const RSA_AES_ENCRYPTED_PREFIX = 'RSA.AES:';
+// 当前混合密文使用点号分隔RSA密钥密文和AES密码载荷。
+const HYBRID_SECTION_SEPARATOR = '.';
 // 每次密码加密均生成独立的256位AES密钥。
 const AES_KEY_BYTE_LENGTH = 32;
 // AES-GCM使用推荐的96位随机IV。
@@ -182,7 +180,7 @@ async function encryptAesKeyWithRsaByWebCrypto(aesKeyBytes, publicKey) {
  *
  * @param {String} password 待加密的明文密码
  * @param {String} publicKey Base64编码的SPKI格式RSA公钥
- * @returns {Promise<String>} AES:密码载荷.RSA:AES密钥密文格式的字符串
+ * @returns {Promise<String>} RSA.AES:AES密钥密文.密码载荷格式的字符串
  */
 async function encryptHybridPasswordByWebCrypto(password, publicKey) {
   // 每次编排均生成独立的AES密钥和IV，避免不同密码复用GCM加密参数。
@@ -194,10 +192,11 @@ async function encryptHybridPasswordByWebCrypto(password, publicKey) {
   const aesPayload = new Uint8Array(iv.length + encryptedPassword.length);
   aesPayload.set(iv, 0);
   aesPayload.set(encryptedPassword, iv.length);
-  return AES_ENCRYPTED_PREFIX +
-    bytesToBase64(aesPayload) +
-    HYBRID_RSA_SECTION_PREFIX +
-    bytesToBase64(encryptedAesKey);
+  // 协议固定将RSA加密后的AES密钥放在前面，将AES密码载荷放在后面。
+  return RSA_AES_ENCRYPTED_PREFIX +
+    bytesToBase64(encryptedAesKey) +
+    HYBRID_SECTION_SEPARATOR +
+    bytesToBase64(aesPayload);
 }
 
 /**
@@ -248,7 +247,7 @@ function encryptAesKeyWithRsaByForge(aesKeyBytes, publicKey) {
  *
  * @param {String} password 待加密的明文密码
  * @param {String} publicKey Base64编码的SPKI格式RSA公钥
- * @returns {String} AES:密码载荷.RSA:AES密钥密文格式的字符串
+ * @returns {String} RSA.AES:AES密钥密文.密码载荷格式的字符串
  */
 function encryptHybridPasswordByForge(password, publicKey) {
   // 每次编排均生成独立的AES密钥和IV，避免不同密码复用GCM加密参数。
@@ -258,10 +257,11 @@ function encryptHybridPasswordByForge(password, publicKey) {
   const encryptedAesKey = encryptAesKeyWithRsaByForge(aesKeyBytes, publicKey);
   // Forge的AES载荷按“IV + 密文 + 认证标签”排列，与Web Crypto保持一致。
   const aesPayload = iv + encryptedPassword;
-  return AES_ENCRYPTED_PREFIX +
-    forge.util.encode64(aesPayload) +
-    HYBRID_RSA_SECTION_PREFIX +
-    forge.util.encode64(encryptedAesKey);
+  // 协议固定将RSA加密后的AES密钥放在前面，将AES密码载荷放在后面。
+  return RSA_AES_ENCRYPTED_PREFIX +
+    forge.util.encode64(encryptedAesKey) +
+    HYBRID_SECTION_SEPARATOR +
+    forge.util.encode64(aesPayload);
 }
 
 const methods = {
@@ -850,15 +850,15 @@ const methods = {
    * 获取后端SPKI公钥并使用AES-GCM与RSA-OAEP混合加密密码。
    *
    * @param {String} password 待加密的明文密码或已经加密的密码密文
-   * @returns {Promise<String>} AES:密码载荷.RSA:AES密钥密文格式的字符串
+   * @returns {Promise<String>} RSA.AES:AES密钥密文.密码载荷格式的字符串
    */
   async encryptPassword(password) {
     // 全局方法对调用参数做统一校验，避免不同页面产生不可识别的密码密文。
     if (typeof password !== 'string') {
       throw new Error('待加密密码格式不正确');
     }
-    // 新混合密文和升级前的RSA密文均直接返回，避免编辑场景重复加密。
-    if (password.startsWith(AES_ENCRYPTED_PREFIX) || password.startsWith(RSA_ENCRYPTED_PREFIX)) {
+    // 当前RSA.AES密文直接返回，避免编辑场景重复加密。
+    if (password.startsWith(RSA_AES_ENCRYPTED_PREFIX)) {
       return password;
     }
     if (!this.$api || !this.$api.common) {
@@ -867,7 +867,6 @@ const methods = {
     // 每次加密前从后端获取当前公钥，调用页面无需感知或传递公钥。
     const publicKeyRes = await this.$api.common.getPasswordPublicKey();
     const publicKey = publicKeyRes && publicKeyRes.Return && publicKeyRes.Return.publicKey;
-    const maxPlaintextByteLength = publicKeyRes && publicKeyRes.Return && publicKeyRes.Return.maxPlaintextByteLength;
     if (!publicKey) {
       throw new Error('密码加密公钥不能为空');
     }
@@ -879,7 +878,6 @@ const methods = {
       // HTTP等非安全上下文无法使用SubtleCrypto时，回退到纯JavaScript实现。
       encryptedPassword = encryptHybridPasswordByForge(password, publicKey);
     }
-    console.log(encryptedPassword, 'encryptedPassword');
     return encryptedPassword;
   },
   getRunnerGroupList(list) {
