@@ -69,6 +69,7 @@
           @setValue="setValue"
           @select="selectFormItem"
           @dropHideComponent="dropHideComponent"
+          @hook:mounted="notifyReactionReady"
         ></component>
         <div v-else class="text-warning">
           {{ getComponentTip }}
@@ -107,6 +108,7 @@ export default {
   props: {
     rowUuid: { type: String }, //行uuid，表格组件引用时需要
     columnReadonly: { type: Boolean, default: false }, // 列是否只读，表格选择组件时使用
+    isReactionPending: { type: Boolean, default: false }, // 翻页后需要补执行未显示期间的联动
     extraUuid: {type: String},
     rowData: {
       type: Object,
@@ -146,6 +148,7 @@ export default {
         allowDelete: 0
       }, //记录操作执行次数
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
+      needsReactionReplay: this.isReactionPending,
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,
@@ -164,19 +167,45 @@ export default {
   beforeCreate() {},
   created() {
     this.initFormItem();
-    this.initReactionFormItemUuid();
+    if (this.isReactionPending) {
+      // 旧依赖只用于比较和初始化过滤条件，不执行旧的赋值、清空等操作。
+      this.reactionFormItemUuidMap = this.$utils.deepClone(this.reactionData);
+      if (this.reaction?.filter) {
+        this.REACTION.filter({ reaction: this.reaction.filter, view: this });
+      }
+    } else {
+      this.initReactionFormItemUuid();
+    }
     this.updateConfig();
     this.initStatus();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    if (this.isReactionPending && (!this.isShowComponent(this.formItem) || !this.isFormType || !this.canRenderHandler)) {
+      this.notifyReactionReady();
+    }
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    clearTimeout(this.reactionReadyTimer);
+  },
   destroyed() {},
   methods: {
+    notifyReactionReady() {
+      if (!this.isReactionPending) return;
+      // 异步子组件也需要先接收一次旧过滤条件，完成自身的首次初始化。
+      this.filter = this.$utils.deepClone(this.filter);
+      this.$nextTick(() => {
+        if (this._isDestroyed) return;
+        clearTimeout(this.reactionReadyTimer);
+        this.reactionReadyTimer = setTimeout(() => {
+          this.$emit('reactionReady');
+        }, 0);
+      });
+    },
     initFormItem() {
       const formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
       this.formItem = formItem ? this.$utils.deepClone(formItem) : {}; // 需要深拷贝，避免修改原数据，否则会影响到联动的禁用显示隐藏等功能
@@ -256,7 +285,7 @@ export default {
         this.executionReaction(this.reactionFormItemUuidMap);
       }
     },
-    executionReaction(newVal, oldVal) { //规则
+    executionReaction(newVal, oldVal, force = false) { //规则
       for (let action in this.reaction) {
         //如果override_config有配置，则相关联动不生效
         const overrideConfig = this.formItem.override_config || {};
@@ -269,7 +298,7 @@ export default {
             ruleList = [reaction];
           }
           ruleList.forEach(rule => {
-            if (this.isConditionDataChange(action, rule, newVal, oldVal, this.formItem.uuid)) {
+            if (force || this.isConditionDataChange(action, rule, newVal, oldVal, this.formItem.uuid)) {
               const result = this.executeReaction(rule, newVal, oldVal);
               if (this.REACTION[action]) {
                 //联动操作
@@ -651,6 +680,18 @@ export default {
     reactionData: {
       handler(val, oldVal) {
         if (val && (this.mode === 'read' || this.mode === 'readSubform')) {
+          if (this.needsReactionReplay) {
+            if (this.isReactionPending) return;
+            this.needsReactionReplay = false;
+            this.isFirstLoad = this.$utils.isSame(val, this.reactionFormItemUuidMap);
+            this.executionReaction(val, this.reactionFormItemUuidMap, true);
+            this.reactionFormItemUuidMap = this.$utils.deepClone(val);
+            this.isFirstLoad = false;
+            if (!this.readonly && !this.disabled) {
+              this.$nextTick(() => this.validData());
+            }
+            return;
+          }
           if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && !this.$utils.isSame(val, this.reactionFormItemUuidMap)) {
             this.executionReaction(val, this.reactionFormItemUuidMap);
             this.reactionFormItemUuidMap = this.$utils.deepClone(val);

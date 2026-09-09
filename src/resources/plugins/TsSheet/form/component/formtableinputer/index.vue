@@ -129,11 +129,13 @@
                       :rowUuid="row.uuid"
                       :extraUuid="extra.uuid"
                       :reactionData="getReactionData(extra, row)"
-                      :reactionValueData="reactionValuesMap[extra.uuid]"
+                      :reactionValueData="getReactionValueData(extra, row)"
+                      :isReactionPending="!!pendingReactionValuesMap[`${row.uuid}_${extra.uuid}`]"
                       :expressionData="getExpressionData(extra)"
                       class="form-item-width"
                       @change="changeRow"
                       @getCurrentRowData="getCurrentRowData"
+                      @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${extra.uuid}`)"
                     ></ColumnItem>
                   </td>
                 </tr>
@@ -213,6 +215,7 @@ export default {
       tbodyList: [],
       validateMap: {},
       reactionValuesMap: {}, // { extraUuid: { uuid: value } }
+      pendingReactionValuesMap: {}, // 未显示单元格发生联动前的依赖值，翻页挂载后再更新为最新值
       clonedExtrasMap: {},
       isSelectAllCurrentPage: false,
       selectedCurrentPageMap: {}
@@ -269,6 +272,14 @@ export default {
             () => this.formData[uuid],
             (newVal, oldVal) => {
               if (newVal !== oldVal) {
+                if (this.isReady && !this.$utils.isSame(newVal, oldVal)) {
+                  this.tbodyList.forEach(row => {
+                    const key = `${row.uuid}_${extra.uuid}`;
+                    if (!this.pagedTbodyList.includes(row) && !this.pendingReactionValuesMap[key]) {
+                      this.$set(this.pendingReactionValuesMap, key, this.$utils.deepClone(this.reactionValuesMap[extra.uuid]));
+                    }
+                  });
+                }
                 this.$set(this.reactionValuesMap[extra.uuid], uuid, newVal);
               }
             }
@@ -694,15 +705,19 @@ export default {
     config() {
       return this.formItem?.config || {};
     },
+    getReactionValueData() {
+      return (extra, row) => this.pendingReactionValuesMap[`${row.uuid}_${extra.uuid}`] || this.reactionValuesMap[extra.uuid];
+    },
     getReactionData() {
       return (extra, row) => {
         if (!extra || !row) return {};
         const deps = this.reactionDepsMap[extra.uuid] || [];
         if (!deps.length) return {};
         const result = {};
+        const reactionValueData = this.getReactionValueData(extra, row) || {};
         deps.forEach(uuid => {
           result[uuid] = this.formData.hasOwnProperty(uuid)
-            ? this.formData[uuid]
+            ? reactionValueData[uuid]
             : row[uuid];
         });
         return result;
