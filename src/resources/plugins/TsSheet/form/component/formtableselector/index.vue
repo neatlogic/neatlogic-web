@@ -63,11 +63,13 @@
                           :extraUuid="column.uuid"
                           :columnReadonly="getColumnReadonly(column.uuid)"
                           :reactionData="getReactionData(column, row)"
-                          :reactionValueData="reactionValuesMap[column.uuid]"
+                          :reactionValueData="getReactionValueData(column, row)"
+                          :isReactionPending="!!pendingReactionValuesMap[`${row.uuid}_${column.uuid}`]"
                           :expressionData="getExpressionData(column)"
                           class="form-item-width"
                           @change="changeRow"
                           @getCurrentRowData="getCurrentRowData"
+                          @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${column.uuid}`)"
                         ></ColumnItem>
                       </td>
                     </tr>
@@ -153,6 +155,7 @@ export default {
   },
   data() {
     return {
+      isReady: false,
       isTableSelectorDialogShow: false,
       selectedItemList: [],
       rowFormItem: {},
@@ -174,7 +177,12 @@ export default {
     this.reactionWatch();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      //避免初始化数据，联动过滤清空表格内数据
+      this.isReady = true;
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
