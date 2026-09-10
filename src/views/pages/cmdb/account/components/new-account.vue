@@ -153,17 +153,17 @@ export default {
         // 确认密码仅用于前端一致性校验，禁止传递到后端接口。
         delete requestData.passwordConfirm;
         if (requestData.passwordPlain) {
-          const isRsaPassword = requestData.passwordPlain.startsWith('RSA:');
-          // 以RSA:开头的内容只能是查询接口回显的原始密文，禁止伪造或修改密文。
-          if (isRsaPassword && requestData.passwordPlain !== this.passwordCipherBackup) {
+          // 当前RSA.AES密文都只能来自查询接口回显，禁止伪造或修改。
+          const isEncryptedPassword = requestData.passwordPlain.startsWith('RSA.AES:');
+          if (isEncryptedPassword && requestData.passwordPlain !== this.passwordCipherBackup) {
             this.$Message.error(this.$t('page.passwordinvalid'));
             return;
           }
           if (this.passwordCipherBackup && requestData.passwordPlain === this.passwordCipherBackup) {
-            // 密码未修改时，将查询接口返回的原始RSA密文通过专用字段回传。
+            // 密码未修改时，将查询接口返回的原始混合密文通过专用字段回传。
             requestData.passwordCipher = this.passwordCipherBackup;
           } else {
-            // 用户输入新密码时，由全局工具内部获取公钥并生成新的RSA密文。
+            // 用户输入新密码时，由全局工具生成AES-GCM与RSA-OAEP混合密文。
             requestData.passwordCipher = await this.$utils.encryptPassword(requestData.passwordPlain);
           }
           delete requestData.passwordPlain;

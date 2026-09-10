@@ -47,7 +47,7 @@ uniqueByField(arr,filterField)               根据某个字段，数组去重�
 matrixDataSourceRedirect(dataSourceId,dataSourceJson) 根据矩阵不同数据源，跳转不同页面
 handleInvalidDate(timeValue, format, styleType) 处理时间格式错误问题
 timestampCalculation(unit = null, value = 0, timstamp = null, format = '', styleType = '-') 时间戳计算
-isUserHasAuth(str)                           判断用户是否有某个权限     
+isUserHasAuth(str)                           判断用户是否有某个权限
 calculateDate(unit = '', value = 0, timstamp = null)   根据 hour/day/month/year 计算时间
 mergeObj(obj1, obj2)                         两个对象合并成一个对象
 substr(name, len)                            字符串截取
@@ -76,7 +76,7 @@ deepRemoveEmptyValues(data)                  深度移除对象中的空值
 getUserInfo()                                获取用户信息
 getInstanceIpPort()                          获取实例ip和端口
 highlightTextByKeywords                      高亮文字根据关键字
-encryptPassword(password)                    获取RSA公钥并加密密码，返回带RSA:前缀的密文
+encryptPassword(password)                    使用AES-GCM加密密码并使用RSA公钥加密AES密钥
 */
 import Vue from 'vue';
 import _ from 'lodash';
@@ -86,73 +86,182 @@ import ViewUI from 'neatlogic-ui/iview/index.js';
 import { $t } from '@/resources/init.js';
 const FONT_UNICODE_LIST = require('@/resources/assets/font/tsfonts/codes.json');
 const FONT_WOFF2_BASE64  = require('@/resources/assets/font/tsfonts/font/tsfont_woff2.json')
-// RSA密码密文统一使用该前缀，供前后端识别密码加密格式。
-const RSA_ENCRYPTED_PREFIX = 'RSA:';
-// 2048位RSA-OAEP且使用SHA-256时，单次可加密的明文最大为190字节。
-const RSA_OAEP_MAX_PLAINTEXT_BYTES = 190;
+// 当前RSA与AES混合密文使用该前缀，供前后端识别密钥在前的新密码加密格式。
+const RSA_AES_ENCRYPTED_PREFIX = 'RSA.AES:';
+// 当前混合密文使用点号分隔RSA密钥密文和AES密码载荷。
+const HYBRID_SECTION_SEPARATOR = '.';
+// 每次密码加密均生成独立的256位AES密钥。
+const AES_KEY_BYTE_LENGTH = 32;
+// AES-GCM使用推荐的96位随机IV。
+const GCM_IV_BYTE_LENGTH = 12;
+// AES-GCM使用128位认证标签。
+const GCM_TAG_BIT_LENGTH = 128;
 
 /**
- * 使用浏览器Web Crypto执行RSA-OAEP加密。
+ * 将字节数组转换成标准Base64字符串。
+ *
+ * @param {Uint8Array} bytes 待编码的字节数组
+ * @returns {String} Base64字符串
+ */
+function bytesToBase64(bytes) {
+  let binary = '';
+  const chunkSize = 0x8000;
+  // 分块转换可避免长密码加密结果一次展开时超过浏览器调用栈限制。
+  for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(offset, offset + chunkSize));
+  }
+  return window.btoa(binary);
+}
+
+/**
+ * 将标准Base64字符串转换成字节数组。
+ *
+ * @param {String} base64 Base64字符串
+ * @returns {Uint8Array} 解码后的字节数组
+ */
+function base64ToBytes(base64) {
+  const binary = window.atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+/**
+ * 使用Web Crypto的AES-GCM算法加密密码正文。
  *
  * @param {String} password 待加密的明文密码
- * @param {String} publicKey Base64编码的SPKI格式RSA公钥
- * @returns {Promise<String>} Base64编码的RSA密文
+ * @param {Uint8Array} aesKeyBytes 256位AES原始密钥
+ * @param {Uint8Array} iv 96位AES-GCM随机IV
+ * @returns {Promise<Uint8Array>} 按“密文 + 认证标签”排列的密码密文
  */
-async function encryptPasswordByWebCrypto(password, publicKey) {
-  // 将后端返回的Base64 SPKI公钥转换为Web Crypto可导入的二进制格式。
-  const publicKeyBinary = window.atob(publicKey);
-  const publicKeyBytes = new Uint8Array(publicKeyBinary.length);
-  for (let i = 0; i < publicKeyBinary.length; i++) {
-    publicKeyBytes[i] = publicKeyBinary.charCodeAt(i);
-  }
-  const cryptoKey = await window.crypto.subtle.importKey(
+async function encryptPasswordWithAesGcmByWebCrypto(password, aesKeyBytes, iv) {
+  const aesKey = await window.crypto.subtle.importKey(
+    'raw',
+    aesKeyBytes,
+    {name: 'AES-GCM'},
+    false,
+    ['encrypt']
+  );
+  // Web Crypto的AES-GCM结果已经按“密文 + 认证标签”排列。
+  return new Uint8Array(await window.crypto.subtle.encrypt(
+    {name: 'AES-GCM', iv: iv, tagLength: GCM_TAG_BIT_LENGTH},
+    aesKey,
+    new TextEncoder().encode(password)
+  ));
+}
+
+/**
+ * 使用Web Crypto的RSA-OAEP算法加密AES原始密钥。
+ *
+ * @param {Uint8Array} aesKeyBytes 需要加密的256位AES原始密钥
+ * @param {String} publicKey Base64编码的SPKI格式RSA公钥
+ * @returns {Promise<Uint8Array>} RSA加密后的AES密钥密文
+ */
+async function encryptAesKeyWithRsaByWebCrypto(aesKeyBytes, publicKey) {
+  const rsaPublicKey = await window.crypto.subtle.importKey(
     'spki',
-    publicKeyBytes.buffer,
+    base64ToBytes(publicKey).buffer,
     {name: 'RSA-OAEP', hash: 'SHA-256'},
     false,
     ['encrypt']
   );
-  const passwordBytes = new TextEncoder().encode(password);
-  if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
-    throw new Error('密码内容过长，无法进行安全加密');
-  }
-  const encrypted = await window.crypto.subtle.encrypt(
+  // RSA只加密固定32字节的AES原始密钥，不受密码正文长度限制。
+  return new Uint8Array(await window.crypto.subtle.encrypt(
     {name: 'RSA-OAEP'},
-    cryptoKey,
-    passwordBytes
-  );
-  const encryptedBytes = new Uint8Array(encrypted);
-  let encryptedBinary = '';
-  for (let i = 0; i < encryptedBytes.length; i++) {
-    encryptedBinary += String.fromCharCode(encryptedBytes[i]);
-  }
-  return window.btoa(encryptedBinary);
+    rsaPublicKey,
+    aesKeyBytes
+  ));
 }
 
 /**
- * 在非安全HTTP环境中使用纯JavaScript实现RSA-OAEP加密。
+ * 使用浏览器Web Crypto编排AES-GCM与RSA-OAEP混合加密。
  *
  * @param {String} password 待加密的明文密码
  * @param {String} publicKey Base64编码的SPKI格式RSA公钥
- * @returns {String} Base64编码的RSA密文
+ * @returns {Promise<String>} RSA.AES:AES密钥密文.密码载荷格式的字符串
  */
-function encryptPasswordByForge(password, publicKey) {
+async function encryptHybridPasswordByWebCrypto(password, publicKey) {
+  // 每次编排均生成独立的AES密钥和IV，避免不同密码复用GCM加密参数。
+  const aesKeyBytes = window.crypto.getRandomValues(new Uint8Array(AES_KEY_BYTE_LENGTH));
+  const iv = window.crypto.getRandomValues(new Uint8Array(GCM_IV_BYTE_LENGTH));
+  const encryptedPassword = await encryptPasswordWithAesGcmByWebCrypto(password, aesKeyBytes, iv);
+  const encryptedAesKey = await encryptAesKeyWithRsaByWebCrypto(aesKeyBytes, publicKey);
+  // AES载荷按“IV + 密文 + 认证标签”排列，与后端解析顺序保持一致。
+  const aesPayload = new Uint8Array(iv.length + encryptedPassword.length);
+  aesPayload.set(iv, 0);
+  aesPayload.set(encryptedPassword, iv.length);
+  // 协议固定将RSA加密后的AES密钥放在前面，将AES密码载荷放在后面。
+  return RSA_AES_ENCRYPTED_PREFIX +
+    bytesToBase64(encryptedAesKey) +
+    HYBRID_SECTION_SEPARATOR +
+    bytesToBase64(aesPayload);
+}
+
+/**
+ * 使用Forge的AES-GCM算法加密密码正文。
+ *
+ * @param {String} password 待加密的明文密码
+ * @param {String} aesKeyBytes Forge二进制字符串格式的256位AES原始密钥
+ * @param {String} iv Forge二进制字符串格式的96位AES-GCM随机IV
+ * @returns {String} 按“密文 + 认证标签”排列的Forge二进制字符串
+ */
+function encryptPasswordWithAesGcmByForge(password, aesKeyBytes, iv) {
+  const aesCipher = forge.cipher.createCipher('AES-GCM', aesKeyBytes);
+  aesCipher.start({iv: iv, tagLength: GCM_TAG_BIT_LENGTH});
+  aesCipher.update(forge.util.createBuffer(forge.util.encodeUtf8(password), 'raw'));
+  if (!aesCipher.finish()) {
+    throw new Error('密码AES-GCM加密失败');
+  }
+  // Forge将认证标签单独保存在mode.tag中，按与Web Crypto一致的顺序手动拼接。
+  const encryptedPassword = aesCipher.output.getBytes();
+  const authenticationTag = aesCipher.mode.tag.getBytes();
+  return encryptedPassword + authenticationTag;
+}
+
+/**
+ * 使用Forge的RSA-OAEP算法加密AES原始密钥。
+ *
+ * @param {String} aesKeyBytes Forge二进制字符串格式的256位AES原始密钥
+ * @param {String} publicKey Base64编码的SPKI格式RSA公钥
+ * @returns {String} RSA加密后的AES密钥Forge二进制字符串
+ */
+function encryptAesKeyWithRsaByForge(aesKeyBytes, publicKey) {
   // Forge按PEM格式导入后端返回的SPKI公钥，每64个字符进行一次换行。
   const publicKeyRows = publicKey.match(/.{1,64}/g) || [];
   const publicKeyPem = ['-----BEGIN PUBLIC KEY-----', ...publicKeyRows, '-----END PUBLIC KEY-----'].join('\n');
-  const passwordBytes = forge.util.encodeUtf8(password);
-  if (passwordBytes.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
-    throw new Error('密码内容过长，无法进行安全加密');
-  }
   const forgePublicKey = forge.pki.publicKeyFromPem(publicKeyPem);
-  // 摘要及MGF1均使用SHA-256，与后端OAEPParameterSpec保持一致。
-  const encryptedBinary = forgePublicKey.encrypt(passwordBytes, 'RSA-OAEP', {
+  // RSA摘要及MGF1均使用SHA-256，并且只加密固定32字节的AES原始密钥。
+  const encryptedAesKey = forgePublicKey.encrypt(aesKeyBytes, 'RSA-OAEP', {
     md: forge.md.sha256.create(),
     mgf1: {
       md: forge.md.sha256.create()
     }
   });
-  return forge.util.encode64(encryptedBinary);
+  return encryptedAesKey;
+}
+
+/**
+ * 在非安全HTTP环境中使用Forge编排AES-GCM与RSA-OAEP混合加密。
+ *
+ * @param {String} password 待加密的明文密码
+ * @param {String} publicKey Base64编码的SPKI格式RSA公钥
+ * @returns {String} RSA.AES:AES密钥密文.密码载荷格式的字符串
+ */
+function encryptHybridPasswordByForge(password, publicKey) {
+  // 每次编排均生成独立的AES密钥和IV，避免不同密码复用GCM加密参数。
+  const aesKeyBytes = forge.random.getBytesSync(AES_KEY_BYTE_LENGTH);
+  const iv = forge.random.getBytesSync(GCM_IV_BYTE_LENGTH);
+  const encryptedPassword = encryptPasswordWithAesGcmByForge(password, aesKeyBytes, iv);
+  const encryptedAesKey = encryptAesKeyWithRsaByForge(aesKeyBytes, publicKey);
+  // Forge的AES载荷按“IV + 密文 + 认证标签”排列，与Web Crypto保持一致。
+  const aesPayload = iv + encryptedPassword;
+  // 协议固定将RSA加密后的AES密钥放在前面，将AES密码载荷放在后面。
+  return RSA_AES_ENCRYPTED_PREFIX +
+    forge.util.encode64(encryptedAesKey) +
+    HYBRID_SECTION_SEPARATOR +
+    forge.util.encode64(aesPayload);
 }
 
 const methods = {
@@ -674,7 +783,7 @@ const methods = {
     }
   },
   formatFileSize(bytes, decimalPoint = 2, type = 'MB') {
-    /* 
+    /*
       格式化文件大小
       bytes 传递文件大小，如：1818
       decimalPoint 保留小数点后多少位
@@ -738,22 +847,18 @@ const methods = {
     return columlist;
   },
   /**
-   * 获取后端SPKI公钥并加密密码，所有页面均可通过this.$utils.encryptPassword调用。
+   * 获取后端SPKI公钥并使用AES-GCM与RSA-OAEP混合加密密码。
    *
-   * @param {String} password 待加密的明文密码或已经加密的RSA密码
-   * @returns {Promise<String>} 带RSA:前缀的Base64密文
+   * @param {String} password 待加密的明文密码或已经加密的密码密文
+   * @returns {Promise<String>} RSA.AES:AES密钥密文.密码载荷格式的字符串
    */
   async encryptPassword(password) {
     // 全局方法对调用参数做统一校验，避免不同页面产生不可识别的密码密文。
     if (typeof password !== 'string') {
       throw new Error('待加密密码格式不正确');
     }
-    // 已加密密码直接返回，避免编辑场景对回显密文重复加密。
-    if (password.startsWith(RSA_ENCRYPTED_PREFIX)) {
-      return password;
-    }
-    // 超过190位的密码，不加密
-    if (password.length > RSA_OAEP_MAX_PLAINTEXT_BYTES) {
+    // 当前RSA.AES密文直接返回，避免编辑场景重复加密。
+    if (password.startsWith(RSA_AES_ENCRYPTED_PREFIX)) {
       return password;
     }
     if (!this.$api || !this.$api.common) {
@@ -768,12 +873,12 @@ const methods = {
     let encryptedPassword;
     if (window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
       // 安全上下文优先使用浏览器原生Web Crypto实现。
-      encryptedPassword = await encryptPasswordByWebCrypto(password, publicKey);
+      encryptedPassword = await encryptHybridPasswordByWebCrypto(password, publicKey);
     } else {
       // HTTP等非安全上下文无法使用SubtleCrypto时，回退到纯JavaScript实现。
-      encryptedPassword = encryptPasswordByForge(password, publicKey);
+      encryptedPassword = encryptHybridPasswordByForge(password, publicKey);
     }
-    return RSA_ENCRYPTED_PREFIX + encryptedPassword;
+    return encryptedPassword;
   },
   getRunnerGroupList(list) {
     let columlist = [];
@@ -1360,7 +1465,7 @@ const methods = {
           result[key] = result[key].filter(item => !_this.isEmpty(item)); // 过滤掉数组中的空值元素
         }else  if (_.isObject(result[key])) { // 如果是对象
           result[key] = _this.deepRemoveEmptyValues(result[key]); // 递归处理深层对象
-        } 
+        }
       }
     }
     return result;
@@ -1378,7 +1483,7 @@ const methods = {
       return h >= 0 && h < 24 && m >= 0 && m < 60;
     } else if (parts.length === 3) {
       const [h, m, s] = parts.map(Number);
-      return h >= 0 && h < 24 && m >= 0 && m < 60 && s >= 0 && s; 
+      return h >= 0 && h < 24 && m >= 0 && m < 60 && s >= 0 && s;
     }
     return false;
   },
@@ -1412,7 +1517,7 @@ const methods = {
     const instancePort = port ? `:${port}` : '';
     instanceIpPortStr = name;
     if (ip) {
-      instanceIpPortStr += `[${ip}${instancePort}]`;  
+      instanceIpPortStr += `[${ip}${instancePort}]`;
     }
     return instanceIpPortStr;
   },
