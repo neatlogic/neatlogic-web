@@ -75,7 +75,7 @@
                   @click="toExecute"
                 >{{ $t('page.job') }}</Button>
               </span>
-              <span v-if="!isActive && editable == 1" class="action-item">
+              <span v-if="!isActive && editable == 1 && versionIsActive == 1" class="action-item">
                 <Button
                   type="primary"
                   ghost
