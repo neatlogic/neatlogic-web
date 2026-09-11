@@ -73,10 +73,7 @@
           :selectItemList.sync="selectMatrixConfig"
           :disabled="disabled"
           @first="$utils.matrixDataSourceRedirect()"
-          @change="(val)=>{
-            $set(config, 'dataConfig', []);
-            changeMatrix(val);
-          }"
+          @change="changeMatrixSource"
           @change-label="changeMatrixLabel"
         >
           <template v-slot:option="{item}">
@@ -324,12 +321,26 @@ export default {
         this.config.dataConfig.push(newProperty);
       }
     },
+    changeMatrixSource(matrixUuid) {
+      this.$set(this.config, 'dataConfig', []);
+      this.$set(this.config, 'sourceColumnList', []);
+      if (this.isTableInputer) {
+        // 切换或清空矩阵后，旧属性的唯一规则及联动过滤均失效；刷新同一矩阵不走此入口。
+        this.$set(this.config, 'uniqueRuleConfig', []);
+        if (this.formItem.reaction) this.$set(this.formItem.reaction, 'filter', {});
+      }
+      this.changeMatrix(matrixUuid);
+    },
     changeMatrix(matrixUuid) {
+      // 切换、清空或连续刷新都会使旧请求失效，旧响应不能修改属性或结束新请求的编辑状态。
+      const requestVersion = this._matrixRequestVersion = (this._matrixRequestVersion || 0) + 1;
+      const isCurrent = () => requestVersion === this._matrixRequestVersion && this.config.matrixUuid === matrixUuid && !this._isDestroyed && !this._isBeingDestroyed;
       if (matrixUuid) {
         //更新了矩阵需要重新刷新columnList,先把表单组件变成不就绪状态，等columnList加载完再重新改为就绪状态
         this.formItem.isEditing = true;
         this.tbodyList = [];
-        this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: matrixUuid }).then(res => {
+        return this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: matrixUuid }).then(res => {
+          if (!isCurrent()) return;
           //获取矩阵的属性
           const dataList = res.Return.tbodyList || [];
           //删除矩阵中不存在的值
@@ -360,13 +371,14 @@ export default {
             }
           });
         }).catch(err => {
+          if (!isCurrent()) return;
           //有异常时只保留扩展字段
           this.config.dataConfig = this.config.dataConfig.filter(d => d.isExtra);
         }).finally(() => {
-          this.$delete(this.formItem, 'isEditing');
+          if (isCurrent()) this.$delete(this.formItem, 'isEditing');
         });
       }
-      this.$set(this.config, 'sourceColumnList', []);
+      this.$delete(this.formItem, 'isEditing');
     },
     dealDataFilter(nodeList) {
       //处理矩阵数据为表单需要的数据结构
@@ -421,11 +433,17 @@ export default {
   watch: {
     'config.matrixUuid': {
       handler: function(val) {
+        // 过滤条件的可选属性单独加载，也必须忽略旧矩阵或已关闭面板的响应。
+        const requestVersion = this._mappingRequestVersion = (this._mappingRequestVersion || 0) + 1;
+        const isCurrent = () => requestVersion === this._mappingRequestVersion && this.config.matrixUuid === val && !this._isDestroyed && !this._isBeingDestroyed;
+        this.mappingDataList = [];
         if (val) {
-          this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: val }).then(res => {
-            if (res.Status == 'OK') {
+          return this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: val }).then(res => {
+            if (isCurrent() && res.Status == 'OK') {
               this.mappingDataList = res.Return.tbodyList;
             }
+          }).catch(() => {
+            if (isCurrent()) this.mappingDataList = [];
           });
         }
       },

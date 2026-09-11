@@ -1,6 +1,6 @@
 // 提供参数转换、记录映射、分页加载和提交过滤；不持有 Vue 状态，异步结果由父表决定是否回写。
 export const isNestedSelector = column => column.handler === 'formtableselector';
-const empty = value => value == null || value === '' || (Array.isArray(value) && !value.length);
+const validRecordUuid = value => (typeof value === 'string' && value.trim().length > 0) || (typeof value === 'number' && Number.isFinite(value));
 
 // 仅将查询和记录映射相关配置纳入标识，标签、宽度等展示配置不触发完整重载。
 export function queryIdentity(config, filter) {
@@ -36,8 +36,10 @@ export function matrixParams(config, filter) {
 
 export function mapMatrixRows(rows, config) {
   return rows.map(source => {
-    const row = { uuid: source.uuid?.value ?? source.uuid?.text ?? source.uuid };
-    if (empty(row.uuid)) throw new Error('Matrix record is missing its unique identifier');
+    // 与原独立选择器一致，优先使用 text；兼容仅提供 value 或直接返回标识的响应。
+    // 保留标识原类型，不随机生成或强制转成字符串，避免改变历史记录的匹配关系。
+    const row = { uuid: source.uuid?.text ?? source.uuid?.value ?? source.uuid };
+    if (!validRecordUuid(row.uuid)) throw new Error('Matrix record has an invalid unique identifier');
     for (const column of config.dataConfig || []) {
       const cell = source[column.matrixAttrUuid || column.uuid];
       if (!column.isExtra) row[column.uuid] = cell && typeof cell === 'object' ? cell.text : cell;
