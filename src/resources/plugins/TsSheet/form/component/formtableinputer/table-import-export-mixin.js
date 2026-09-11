@@ -27,6 +27,7 @@ export default {
       });
     },
     async exportExcelTemplate({ extraList = [], formItem } = {}) {
+      extraList = extraList.filter(column => column.handler !== 'formtableselector');
       // 导出模板
       this.isShowExportExcelTemplate = false;
       const _workbook = new ExcelJS.Workbook();
@@ -53,6 +54,7 @@ export default {
       });
     },
     async exportExcelData({ tbodyList = [], extraList = [], selectedCurrentPageMap = {}, formItem = {} } = {}) {
+      extraList = extraList.filter(column => column.handler !== 'formtableselector');
       // 导出表格数据
       this.isShowExportExcel = false;
       const _workbook = new ExcelJS.Workbook(); // 创建工作簿
@@ -117,7 +119,7 @@ export default {
       const sheet = workbook.getWorksheet(1);
       if (!sheet) return;
 
-      const theadList = this._filterTheadColumns();
+      const theadList = this._filterTheadColumns().filter(th => !this.config.dataConfig.some(column => column.uuid === th.key && column.handler === 'formtableselector'));
       const allRows = [];
       const matrixSearchParamMap = [];
 
@@ -360,7 +362,7 @@ export default {
       // 生成 Excel 导出所需的表头配置
       let columnsList = [];
       let columnsUuidList = [];
-      const tableTheadList = this._filterTheadColumns();
+      const tableTheadList = this._filterTheadColumns().filter(th => !(this.config?.dataConfig || []).some(column => column.uuid === th.key && column.handler === 'formtableselector'));
       tableTheadList.forEach(item => {
         if (item?.key && item?.title) {
           if (!this._findExcludedTableComponentByUuid({ uuid: item.key, extraList: extraList })) {

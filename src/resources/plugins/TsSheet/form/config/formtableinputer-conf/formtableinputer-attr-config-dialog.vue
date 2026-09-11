@@ -15,6 +15,7 @@
               v-model="propertyLocal.config.isRequired"
               :trueValue="true"
               :falseValue="false"
+              :disabled="propertyLocal.handler === 'formtableselector' && propertyLocal.config.saveData === false"
             ></TsFormSwitch>
           </template>
           <template v-slot:isReadOnly>
@@ -483,6 +484,7 @@ export default {
   name: '',
   components: {
     ...extendFormConfigItems,
+    formtableselector: () => import('../formtableselector-conf/index.vue'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
@@ -567,7 +569,7 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'large',
-        title: '表格属性设置'
+        title: this.$t('form.nestedSelector.attributeSettings')
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
@@ -802,7 +804,7 @@ export default {
       if (!handlerConfig) {
         return;
       }
-      FORMITEMS.filter(item => item.supportTableInputer).forEach(item => {
+      FORMITEMS.filter(item => item.supportTableInputer && (this.isNeedTable || item.handler !== 'formtableselector')).forEach(item => {
         if (!handlerConfig.dataList.find(handler => handler.value === item.handler)) {
           handlerConfig.dataList.push({ text: item.label, value: item.handler });
         }
@@ -818,7 +820,7 @@ export default {
       // 判断唯一属性是否显示
       let findItem = this.formConfig.find((v) => v.name == 'isUnique');
       if (findItem) {
-        findItem.isHidden = !(handler && !['formupload', 'formexpression', 'formtable'].includes(handler));
+        findItem.isHidden = !(handler && !['formupload', 'formexpression', 'formtable', 'formtableselector'].includes(handler));
       }
     },
     close() {
@@ -930,7 +932,8 @@ export default {
       if (extendDefinition) {
         this.$set(this.propertyLocal, 'config', {
           ...this.$utils.deepClone(extendDefinition.config || {}),
-          isRequired: true
+          isRequired: true,
+          ...this.$utils.deepClone(extendDefinition.tableInputerConfig || {})
         });
         this.$set(this.propertyLocal, 'hasValue', extendDefinition.hasValue !== false);
       }
@@ -941,6 +944,11 @@ export default {
       } else {
         this.$delete(this.reactionName, 'setvalue');
         this.$delete(reaction, 'setvalue');
+      }
+      if (val === 'formtableselector') {
+        reaction.filter = {};
+        delete reaction.setvalue;
+        this.$set(this.propertyLocal.config, 'isUnique', false);
       }
       // 3. formexpression 特殊处理
       if (val === 'formexpression') {
@@ -1031,7 +1039,9 @@ export default {
   computed: {
     allFormItemList() {
       //表格输入组件和表格外组件
-      return this.formItemConfig.dataConfig.concat(this.outerFormItemList);
+      const nested = this.propertyLocal?.handler === 'formtableselector';
+      return this.formItemConfig.dataConfig.map(item => nested ? { ...item, label: this.$t('form.nestedSelector.currentRowField', { label: item.label }) } : item)
+        .concat(this.outerFormItemList.map(item => nested ? { ...item, label: this.$t('form.nestedSelector.outerField', { label: item.label }) } : item));
     },
     outerFormItemList() {
       const formItemList = [...this.initFormItemList, ...this.formItemList];
@@ -1112,6 +1122,11 @@ export default {
     },
     reactionTabList() {
       const reaction = this.$utils.deepClone(this.propertyLocal.reaction);
+      if (this.propertyLocal.handler === 'formtableselector') {
+        delete reaction.setvalue;
+        delete reaction.setValueOther;
+        if (this.propertyLocal.config.saveData === false) delete reaction.required;
+      }
       if (this.propertyLocal && this.$utils.isEmpty(this.propertyLocal.config.hiddenFieldList)) {
         this.$delete(reaction, 'setValueOther');
       }

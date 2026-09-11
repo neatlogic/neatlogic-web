@@ -71,6 +71,9 @@
       </template>
     </div>
     <Loading :loadingShow="isImportOperationLoading" type="fix"></Loading>
+    <div v-if="canShowImportExportBtn && nestedSelectorColumns.length && !readonly && !disabled" class="text-grey mb-sm">
+      {{ $t('form.nestedSelector.excelUnsupported') }}
+    </div>
     <template v-if="showTable">
       <template v-if="hasColumn">
         <div class="tstable-container border bg-grey radius-lg tstable-no-fixedHeader">
@@ -128,11 +131,14 @@
                       :rowData="row"
                       :rowUuid="row.uuid"
                       :extraUuid="extra.uuid"
+                      :nestedSelectorState="nestedSelectorStates[`${row.uuid}_${extra.uuid}`]"
                       :reactionData="getReactionData(extra, row)"
                       :reactionValueData="getReactionValueData(extra, row)"
                       :isReactionPending="!!pendingReactionValuesMap[`${row.uuid}_${extra.uuid}`]"
                       :expressionData="getExpressionData(extra)"
                       class="form-item-width"
+                      @retryNestedSelector="retryNestedSelector"
+                      @editNestedSelector="editNestedSelector"
                       @change="changeRow"
                       @getCurrentRowData="getCurrentRowData"
                       @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${extra.uuid}`)"
@@ -168,6 +174,7 @@ import validmixin from '../common/validate-mixin.js';
 import conditionMixin from './condition-mixin.js';
 import expressionMixin from './expression-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
+import NestedSelectorMixin from './nested-selector-mixin.js';
 import { FORMITEMS } from '@/resources/plugins/TsSheet/form/formitem-list.js';
 export default {
   name: '',
@@ -177,7 +184,7 @@ export default {
     ColumnItem: () => import('@/resources/plugins/TsSheet/form/component/formtableinputer/column-item.vue')
   },
   extends: base,
-  mixins: [validmixin, conditionMixin, expressionMixin, TableImportExportMixin],
+  mixins: [validmixin, conditionMixin, expressionMixin, TableImportExportMixin, NestedSelectorMixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
@@ -310,7 +317,7 @@ export default {
               break;
             }
           }
-          if (!hasCol) {
+          if (!hasCol && !this.nestedSelectorColumns.length) {
             value.splice(i, 1);
           }
         }
@@ -431,6 +438,8 @@ export default {
       return errorList;
     },
     async validData() {
+      if (this.nestedSelectorColumns.length) await this.$nextTick();
+      const nestedErrors = [];
       //当前页校验样式
       if (this.$refs) {
         for (let name in this.$refs) {
@@ -443,18 +452,27 @@ export default {
                 formitem = this.$refs[name];
               }
               if (formitem) {
-                await formitem.validData();
+                const errors = await formitem.validData();
+                if (formitem.formItem?.handler === 'formtableselector' && !this.nestedSelectorStates[formitem.rowUuid + '_' + formitem.extraUuid]?.blocked) {
+                  const rowIndex = this.tbodyList.findIndex(row => row.uuid === formitem.rowUuid);
+                  nestedErrors.push(...(errors || []).map(error => ({ ...error, uuid: this.formItem.uuid,
+                    attrUuid: formitem.extraUuid, rowUuid: formitem.rowUuid,
+                    errorPageList: [Math.floor(rowIndex / this.tablePageConfig.pageSize) + 1],
+                    error: this.$t('form.nestedSelector.rowError', { row: rowIndex + 1, column: formitem.formItem.label, message: error.error }) })));
+                }
               }
             }
           }
         }
       }
-      return [...this.validTbodyList(), ...this.validAttrUnique()];
+      return [...this.validTbodyList(), ...this.validAttrUnique(), ...this.validNestedSelectors(), ...nestedErrors];
     },
     validAttrUnique() {
       // 校验属性是否唯一
       let errorList = [];
       let { uniqueRuleConfig = [], dataConfig = [] } = this.config || {};
+      dataConfig = dataConfig.filter(column => column.handler !== 'formtableselector');
+      uniqueRuleConfig = uniqueRuleConfig.filter(uuid => dataConfig.some(column => column.uuid === uuid));
       if (uniqueRuleConfig.length == 0) {
         //如果存在设置唯一标识的字段则校验是否重复
         const uniqueRuleList = dataConfig.filter(v => v.config && v.config['isUnique']);
@@ -529,6 +547,11 @@ export default {
       }
     },
     changeRow(rowData) {
+      const nestedKey = rowData.row?.uuid + '_' + rowData.extraUuid;
+      if (this.nestedSelectorStates[nestedKey]) {
+        this.applyNestedValue(nestedKey, rowData.value, rowData.valueSource || (rowData.value == null ? 'clear' : 'external'));
+        return;
+      }
       const { value, extraUuid = '', row = {} } = rowData || {};
       if (!this.$utils.isSame(value, row[extraUuid])) {
         if (!row.hasOwnProperty(extraUuid)) {
@@ -570,7 +593,7 @@ export default {
           //内嵌table
           Object.keys(row).forEach(key => {
             const findThead = this.theadList.find(th => th.key === key);
-            if (findThead && findThead.config && !this.$utils.isEmpty(findThead.config.dataConfig)) {
+            if (findThead && !this.nestedSelectorColumns.some(column => column.uuid === key) && findThead.config && findThead.config.saveData !== false && !this.$utils.isEmpty(findThead.config.dataConfig)) {
               if (!this.$utils.isEmpty(row[key])) {
                 for (let i = 0; i < row[key].length; i++) {
                   let item = row[key][i];
@@ -592,6 +615,7 @@ export default {
       return errorList;
     },
     getErrorList(row, data, pageCount, th, defaultErrorList) { //获取校验错误列表
+      if (this.nestedSelectorColumns.some(column => column.uuid === th.key)) return defaultErrorList || [];
       const key = th.key;
       const reactionValid = this.validReaction(th.reaction, data);
       let isValid = true;
@@ -670,6 +694,7 @@ export default {
       };
     },
     getValidateList(d) { //获取组件的基础校验规则
+      if (d.handler === 'formtableselector' && d.config.saveData === false) return;
       let validateList = [];
       if (d.config.isRequired) {
         validateList.push('required');
@@ -935,7 +960,7 @@ export default {
                 this.$set(item, 'isRequired', true);
               }
               this.getValidateList(d);
-              if (!this.$utils.isEmpty(d.config.dataConfig)) {
+              if (d.config.saveData !== false && !this.$utils.isEmpty(d.config.dataConfig)) {
                 d.config.dataConfig.forEach(c => {
                   if (c.config) {
                     this.getValidateList(c);
