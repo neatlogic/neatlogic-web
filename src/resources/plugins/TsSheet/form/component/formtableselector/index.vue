@@ -111,6 +111,7 @@
         :externalData="externalData"
         :extendConfigList="extendConfigList"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
+        :dataProvider="dataProvider"
         @resize="$emit('resize')"
         @change="getSelectedData"
       ></DataList>
@@ -126,6 +127,7 @@
       :formItemList="formItemList"
       :externalData="externalData"
       :extendConfigList="extendConfigList"
+      :dataProvider="dataProvider"
       @close="closeTableSelectorDialog"
     ></DataDialog>
   </div>
@@ -150,6 +152,7 @@ export default {
   extends: base,
   mixins: [validmixin, conditionMixin, ExpressionMixin, ColumnItemMixin, TableMixin],
   props: {
+    dataProvider: { type: Function },
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
   },

@@ -1130,14 +1130,17 @@ export default {
       for (let key in this.formData) {
         const formitem = this.formItemList.find(d => d.uuid === key);
         if (formitem) {
-          this.clearFormInputTableAttr(formitem, this.formData[key]);
+          // 嵌套列在提交副本上清理私有属性和不保存字段，避免修改正在编辑的记录；其他表单沿用原路径。
+          const hasNestedSelector = formitem.handler === 'formtableinputer' && formitem.config?.dataConfig?.some(column => column.handler === 'formtableselector');
+          const formValue = hasNestedSelector ? this.$utils.deepClone(this.formData[key]) : this.formData[key];
+          this.clearFormInputTableAttr(formitem, formValue);
           //注意！所有下划线开头的属性都会被清理
-          this.clearPrivateAttr(this.formData[key]);
+          this.clearPrivateAttr(formValue);
           formItemList.push({
             attributeUuid: key,
             key: formitem.key,
             handler: formitem.handler,
-            dataList: this.formData[key]
+            dataList: formValue
           });
         }
       }
@@ -1172,9 +1175,10 @@ export default {
       //清除表单输入组件非表头属性
       if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
         let uuidList = formitem.config && formitem.config.dataConfig && this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
+        const excluded = (formitem.config?.dataConfig || []).filter(column => column.handler === 'formtableselector' && column.config?.saveData === false).map(column => column.uuid);
         valueList.forEach(item => {
           Object.keys(item).forEach(key => {
-            if (uuidList && !uuidList.includes(key) && key !== 'uuid') {
+            if (excluded.includes(key) || (uuidList && !uuidList.includes(key) && key !== 'uuid')) {
               //uuid作为每一行的唯一标识，不能删除
               delete item[key];
             }

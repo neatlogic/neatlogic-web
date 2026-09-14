@@ -8,6 +8,7 @@
       <div>
         <DataList
           ref="dataList"
+          :dataProvider="dataProvider"
           :formData="formData"
           :formItem="formItem"
           :formDataForWatch="formDataForWatch"
@@ -30,6 +31,7 @@ export default {
     DataList: () => import('./formtableselector-datalist.vue')
   },
   props: {
+    dataProvider: { type: Function },
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
     formItem: { type: Object },
@@ -83,7 +85,8 @@ export default {
     close() {
       this.$emit('close');
     },
-    save() {
+    async save() {
+      if (this.dataProvider && (await this.$refs.dataList.validData()).length) return;
       this.$emit('close', this.selectedItemList);
     }
   },

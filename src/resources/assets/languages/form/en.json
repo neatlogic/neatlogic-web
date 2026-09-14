@@ -1,4 +1,26 @@
 {
+  "nestedSelector": {
+    "loading": "Matching data is still loading",
+    "loadFailed": "Failed to load data. Please retry.",
+    "filterRequired": "Complete the filter fields first",
+    "rowError": "Row {row} [{column}]: {message}",
+    "saveData": "Save data",
+    "saveHelp": "When enabled, the details page displays a snapshot of the submitted data. When disabled, data is queried live and is not submitted. Direct selection is used when saving is disabled or all matching records are saved. Search only affects browsing, not which records are saved in full. Filters under Interaction / Filter can reference fields in the current row and outside the table.",
+    "saveMode": "Save strategy",
+    "selected": "Save selected records",
+    "allMatched": "Save all matching records",
+    "uniqueHelp": "Attributes marked as unique are listed below. Select attributes to validate uniqueness using their combined values. If none are selected, uniqueness is validated separately for each listed attribute.",
+    "displayFieldRequired": "Select at least one matrix attribute to display",
+    "fieldKeyRequired": "Enter the English name of each matrix attribute",
+    "nestedContainerUnsupported": "Table containers cannot be nested inside a table selector",
+    "normalModeRequired": "Use normal mode when saving is disabled or all matching records are saved",
+    "filterInvalid": "Complete the filters using regular fields in the current row or outside the table",
+    "fixedFilterInvalid": "Complete the fixed filters",
+    "currentRowField": "Current row / {label}",
+    "outerField": "Outside the table / {label}",
+    "attributeSettings": "Table attribute settings",
+    "excelUnsupported": "Table selector columns do not support Excel import or export. Only other columns are included."
+  },
   "help": {
     "nameattribute": "Name is used for topology display and relationship display",
     "uniquerule": "Select multiple attributes as the uniqueness check of configuration items",
