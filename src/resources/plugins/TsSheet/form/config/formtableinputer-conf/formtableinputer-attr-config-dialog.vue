@@ -380,6 +380,7 @@
               :isTableInputer="true"
               :source="source"
               :extendConfigList="extendConfigList"
+              @resetReaction="reactionError = {}; extendConfigErrorList = []"
             ></component>
             <ul v-if="extendConfigErrorList.length" class="text-error mt-xs pl-nm">
               <li v-for="(error, index) in extendConfigErrorList" :key="index">{{ error.error }}</li>

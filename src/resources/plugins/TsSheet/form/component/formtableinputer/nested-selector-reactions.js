@@ -61,3 +61,12 @@ export function selectorContext(owner, column, row, definitions, oldData = {}) {
     effective: { hidden: !!config.isHide, masked: !!config.isMask, disabled: !!(owner.disabled || config.isDisabled),
       readonly: !!(owner.readonly || config.isReadOnly), required: !!config.isRequired } };
 }
+
+// 子记录优先于父行和表格外字段；展示和提交校验使用同一套有效状态。
+export function extraContext(owner, state, row, column) {
+  return selectorContext({
+    formData: { ...(owner.formData || {}), ...state.row },
+    readonly: state.effective.readonly, disabled: state.effective.disabled,
+    $utils: owner.$utils, executeReaction: owner.executeReaction
+  }, column, row, [...(state.column.config.dataConfig || []), ...(owner.config.dataConfig || []), ...(owner.effectiveReferenceFormItemList || [])]);
+}

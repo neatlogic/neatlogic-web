@@ -2,8 +2,12 @@
   <div class="nested-selector">
     <div v-if="!state" class="text-grey">{{ $t('page.dataloading') }}</div>
     <template v-else>
-      <div v-if="state.snapshot || state.blocked || (config.saveData !== false && config.saveMode === 'allMatched')">
-        <Button v-if="!readonly && !disabled" class="mb-sm" @click="$emit('editNestedSelector', state.key)">
+      <div v-for="(error, index) in state.validationErrors" :key="index" class="text-error mb-xs">
+        <a v-if="error.childPage" class="text-error" @click="locateError(error)">{{ error.error }}</a>
+        <span v-else>{{ error.error }}</span>
+      </div>
+      <div v-if="showSavedRecords || state.snapshot || state.blocked || (config.saveData !== false && config.saveMode === 'allMatched')">
+        <Button v-if="!readonly && !disabled" class="mb-sm" @click="showSavedRecords = false; $emit('editNestedSelector', state.key)">
           {{ config.saveMode === 'allMatched' ? $t('page.refresh') : $t('term.cmdb.selectagain') }}
         </Button>
         <div v-if="state.status === 'loading'" class="text-grey">{{ $t('form.nestedSelector.loading') }}</div>
@@ -30,7 +34,24 @@
           @changePageSize="pageSize = $event; page = 1"
         >
           <template v-for="header in snapshotHeaders" :slot="header.key" slot-scope="{ row }">
-            <span :key="header.key">{{ displaySnapshotValue(row[header.key]) }}</span>
+            <FormItem
+              v-if="header.isExtra && config.saveData !== false"
+              :key="header.key"
+              ref="extraFields"
+              :formItem="getExtraFormItem(header.column, row)"
+              :formItemList="extraDefinitions"
+              :value="row[header.key]"
+              :formData="{ ...formData, ...state.row, ...row }"
+              :formDataForWatch="{ ...formDataForWatch, ...state.row, ...row }"
+              :readonly="readonly"
+              :disabled="disabled || state.blocked || state.status === 'loading'"
+              :showStatusIcon="false"
+              :externalData="externalData"
+              :extendConfigList="extendConfigList"
+              mode="read"
+              @change="$emit('changeNestedExtra', { key: state.key, rowUuid: row.uuid, attrUuid: header.key, value: $event })"
+            ></FormItem>
+            <span v-else :key="header.key">{{ displaySnapshotValue(row[header.key]) }}</span>
           </template>
         </TsTable>
       </div>
@@ -69,13 +90,34 @@ import base from '../base.vue';
 export default {
   components: {
     Selector: () => import('../formtableselector/index.vue'),
+    FormItem: () => import('@/resources/plugins/TsSheet/form-item.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   extends: base,
   props: { nestedSelectorState: { type: Object } },
-  data() { return { page: 1, pageSize: this.formItem.config.pageSize || 10, snapshotKeyword: '' }; },
+  data() { return { page: 1, pageSize: this.formItem.config.pageSize || 10, snapshotKeyword: '', showSavedRecords: false, extraItems: {} }; },
   methods: {
+    getExtraFormItem(column, row) {
+      const key = JSON.stringify([row.uuid, column.uuid]);
+      if (!this.extraItems[key]) this.$set(this.extraItems, key, this.$utils.deepClone(column));
+      const item = this.extraItems[key];
+      (item.config?.sourceColumnList || []).forEach(filter => {
+        if (filter.valueColumn) {
+          this.$set(filter, 'valueList', Array.isArray(row[filter.valueColumn]) ? row[filter.valueColumn] : [row[filter.valueColumn]]);
+          filter.expression = 'equal';
+        }
+      });
+      return item;
+    },
+    async locateError(error) {
+      this.showSavedRecords = true;
+      this.snapshotKeyword = '';
+      await this.$nextTick();
+      this.page = error.childPage;
+      await this.$nextTick();
+      await this.validData();
+    },
     displaySnapshotValue(value) {
       if (Array.isArray(value)) return value.map(this.displaySnapshotValue).join('、');
       if (value && typeof value === 'object') return value.text ?? value.name ?? value.label ?? value.value ?? '';
@@ -86,30 +128,37 @@ export default {
     },
     async validDataBase() { return this.validData(); },
     async validData() {
-      if (this.config.saveData === false || this.displayOnly || this.state?.snapshot || this.readonly || this.disabled) return [];
-      return this.$refs.selector ? this.$refs.selector.validData() : [];
+      if (this.config.saveData === false || this.readonly || this.disabled || this.state?.blocked) return [];
+      const fields = this.$refs.extraFields ? (Array.isArray(this.$refs.extraFields) ? this.$refs.extraFields : [this.$refs.extraFields]) : [];
+      for (const field of fields) await field.validData();
+      // 候选列表只更新当前页错误样式，提交结果统一由父表计算。
+      if (this.$refs.selector) await this.$refs.selector.validData();
+      return [];
     }
   },
   computed: {
     state() { return this.nestedSelectorState; },
+    extraDefinitions() { return [...(this.config.dataConfig || []), ...this.formItemList, ...this.referenceFormItemList]; },
     displayOnly() { return this.config.saveData === false || this.config.saveMode === 'allMatched'; },
     selectorItem() {
       return { ...this.formItem, config: { ...this.config, mode: this.displayOnly ? 'normal' : this.config.mode } };
     },
     snapshotSearchColumns() { return (this.config.dataConfig || []).filter(column => column.isSearch); },
     snapshotRows() {
-      const rows = this.state?.snapshot ? this.state.snapshotRows : (this.state?.blocked ? (this.state.currentValue || []) : (this.state?.results || []));
+      const rows = this.state?.currentValue || [];
       const keyword = this.snapshotKeyword.trim().toLowerCase();
       return keyword ? rows.filter(row => this.snapshotSearchColumns.some(column => String(this.displaySnapshotValue(row[column.uuid])).toLowerCase().includes(keyword))) : rows;
     },
     snapshotPage() { return this.snapshotRows.slice((this.page - 1) * this.pageSize, this.page * this.pageSize); },
     snapshotHeaders() {
-      return (this.config.dataConfig || []).filter(column => column.isPC).map(column => ({ key: column.uuid, title: column.label }));
+      return (this.config.dataConfig || []).filter(column => column.isPC).map(column => ({ key: column.uuid, title: column.label, column, isExtra: column.isExtra, isRequired: this.config.saveData !== false && !!column.config?.isRequired }));
     }
   },
   watch: {
     // 查询结果或本地搜索结果变化后回到首页，避免停留在已经不存在的页码。
-    snapshotRows() { this.page = 1; }
+    'state.identity'() { this.page = 1; this.extraItems = {}; this.showSavedRecords = false; },
+    snapshotKeyword() { this.page = 1; },
+    'snapshotRows.length'() { this.page = 1; }
   }
 };
 </script>

@@ -212,6 +212,7 @@
 <script>
 import base from '../base-config.vue';
 import draggable from 'vuedraggable';
+import selectorDefinition from '../../define/formtableselector.js';
 
 export default {
   name: '',
@@ -324,11 +325,12 @@ export default {
     changeMatrixSource(matrixUuid) {
       this.$set(this.config, 'dataConfig', []);
       this.$set(this.config, 'sourceColumnList', []);
-      if (this.isTableInputer) {
-        // 切换或清空矩阵后，旧属性的唯一规则及联动过滤均失效；刷新同一矩阵不走此入口。
-        this.$set(this.config, 'uniqueRuleConfig', []);
-        if (this.formItem.reaction) this.$set(this.formItem.reaction, 'filter', {});
-      }
+      this.$set(this.config, 'uniqueRuleConfig', []);
+      // 独立和嵌套选择器均重置自身全部联动，保留规则入口，不修改其他组件的规则。
+      const reaction = {};
+      Object.keys({ ...selectorDefinition.reaction, ...this.formItem.reaction }).forEach(key => { reaction[key] = {}; });
+      this.$set(this.formItem, 'reaction', reaction);
+      this.$emit('resetReaction');
       this.changeMatrix(matrixUuid);
     },
     changeMatrix(matrixUuid) {

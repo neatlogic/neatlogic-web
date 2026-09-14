@@ -139,6 +139,7 @@
                       class="form-item-width"
                       @retryNestedSelector="retryNestedSelector"
                       @editNestedSelector="editNestedSelector"
+                      @changeNestedExtra="changeNestedExtra"
                       @change="changeRow"
                       @getCurrentRowData="getCurrentRowData"
                       @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${extra.uuid}`)"
@@ -439,33 +440,18 @@ export default {
     },
     async validData() {
       if (this.nestedSelectorColumns.length) await this.$nextTick();
-      const nestedErrors = [];
-      //当前页校验样式
-      if (this.$refs) {
-        for (let name in this.$refs) {
-          if (name.startsWith('formitem_')) {
-            if (this.$refs[name]) {
-              let formitem = null;
-              if (this.$refs[name] instanceof Array) {
-                formitem = this.$refs[name][0];
-              } else {
-                formitem = this.$refs[name];
-              }
-              if (formitem) {
-                const errors = await formitem.validData();
-                if (formitem.formItem?.handler === 'formtableselector' && !this.nestedSelectorStates[formitem.rowUuid + '_' + formitem.extraUuid]?.blocked) {
-                  const rowIndex = this.tbodyList.findIndex(row => row.uuid === formitem.rowUuid);
-                  nestedErrors.push(...(errors || []).map(error => ({ ...error, uuid: this.formItem.uuid,
-                    attrUuid: formitem.extraUuid, rowUuid: formitem.rowUuid,
-                    errorPageList: [Math.floor(rowIndex / this.tablePageConfig.pageSize) + 1],
-                    error: this.$t('form.nestedSelector.rowError', { row: rowIndex + 1, column: formitem.formItem.label, message: error.error }) })));
-                }
-              }
-            }
-          }
+      // 单元格仅更新当前页样式；父表统一返回所有行的校验结果，避免重复或漏掉未挂载的记录。
+      for (const name of Object.keys(this.$refs || {})) {
+        if (name.startsWith('formitem_')) {
+          const item = Array.isArray(this.$refs[name]) ? this.$refs[name][0] : this.$refs[name];
+          if (item) await item.validData();
         }
       }
-      return [...this.validTbodyList(), ...this.validAttrUnique(), ...this.validNestedSelectors(), ...nestedErrors];
+      const nestedErrors = this.validNestedSelectors();
+      Object.values(this.nestedSelectorStates).forEach(state => {
+        state.validationErrors = nestedErrors.filter(error => error.rowUuid === state.row.uuid && error.attrUuid === state.column.uuid);
+      });
+      return [...this.validTbodyList(), ...this.validAttrUnique(), ...nestedErrors];
     },
     validAttrUnique() {
       // 校验属性是否唯一

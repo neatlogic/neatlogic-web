@@ -69,6 +69,7 @@
           :nestedSelectorState="nestedSelectorState"
           @retryNestedSelector="$emit('retryNestedSelector', $event)"
           @editNestedSelector="$emit('editNestedSelector', $event)"
+          @changeNestedExtra="$emit('changeNestedExtra', $event)"
           @setValue="setValue"
           @select="selectFormItem"
           @dropHideComponent="dropHideComponent"

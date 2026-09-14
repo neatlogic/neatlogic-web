@@ -1,28 +1,12 @@
 import { isNestedSelector, loadAllMatched, queryIdentity, loadMatrixPage, mapMatrixRows } from './nested-selector-utils.js';
 import tableValidation from '../common/table-mixin.js';
-import { clone, selectorContext } from './nested-selector-reactions.js';
+import { clone, selectorContext, extraContext } from './nested-selector-reactions.js';
 
 const cancelled = () => Object.assign(new Error('Cancelled'), { name: 'AbortError' });
 // 父表持有各行、列的状态与查询队列，单元格翻页卸载后仍可处理联动和完整保存。
 // 扩展保存策略时，需同步检查状态转换、查询调度、适配组件展示、校验和提交过滤。
 export default {
   data() { return { nestedSelectorStates: {} }; },
-  computed: {
-    nestedSelectorColumns() { return (this.config.dataConfig || []).filter(isNestedSelector); },
-    nestedSelectorRequests() {
-      if (!this.nestedSelectorColumns.length) return [];
-      const definitions = [...(this.config.dataConfig || []), ...this.effectiveReferenceFormItemList];
-      return this.tbodyList.flatMap(row => this.nestedSelectorColumns.map(column => {
-        const key = row.uuid + '_' + column.uuid;
-        const previous = this.nestedSelectorStates[key];
-        const context = selectorContext(this, column, row, definitions, previous?.inputs || {});
-        return { key, row, column, ...context, identity: queryIdentity(column.config, context.filter), observedValue: row[column.uuid] };
-      }));
-    }
-  },
-  watch: {
-    nestedSelectorRequests: { immediate: true, handler(requests) { this.syncNestedSelectors(requests); } }
-  },
   beforeDestroy() {
     Object.values(this.nestedSelectorStates).forEach(state => this.cancelNestedSelector(state));
   },
@@ -47,7 +31,7 @@ export default {
             snapshot, snapshotRows: snapshot ? clone(request.observedValue) : [], results: [],
             status: 'idle', pendingFilterReset: false, error: '', browseError: '', pausedByClear: false, blocked: false,
             requestVersion: 0, valueVersion: 0, viewVersion: 0, controller: null, browseControllers: [],
-            currentValue: clone(request.observedValue) };
+            currentValue: clone(request.observedValue), validationErrors: [] };
           state.loadPage = (params, options) => this.loadNestedPage(state, params, options);
           this.$set(this.nestedSelectorStates, request.key, state);
         }
@@ -206,6 +190,60 @@ export default {
       state.browseError = '';
       if (state.ready && state.column.config.saveData !== false && state.column.config.saveMode === 'allMatched') this.loadNestedSelector(state);
     },
+    // 扩展属性仅修改提交副本，保留历史快照和查询状态；不触发矩阵重载。
+    changeNestedExtra({ key, rowUuid, attrUuid, value }) {
+      const state = this.nestedSelectorStates[key];
+      if (!state || state.column.config.saveData === false || state.blocked || state.effective.readonly || state.status === 'loading') return;
+      const column = (state.column.config.dataConfig || []).find(item => item.uuid === attrUuid && item.isExtra);
+      const row = (state.currentValue || []).find(item => item.uuid === rowUuid);
+      if (!column || !row) return;
+      const { effective } = extraContext(this, state, row, column);
+      if (effective.hidden || effective.masked || effective.disabled || effective.readonly || this.$utils.isSame(row[attrUuid], value)) return;
+      const rows = clone(state.currentValue);
+      rows.find(item => item.uuid === rowUuid)[attrUuid] = clone(value);
+      state.valueVersion += 1;
+      this.commitNestedValue(state, rows);
+      state.results = clone(rows);
+    },
+    getNestedRecordErrors(state) {
+      const validator = { ...tableValidation.methods, $utils: this.$utils, $t: (...args) => this.$t(...args) };
+      const columns = state.column.config.dataConfig || [];
+      const pageSize = state.column.config.pageSize || 10;
+      const errors = [];
+      const uniqueRows = [];
+      (state.currentValue || []).forEach((row, index) => {
+        const uniqueRow = clone(row);
+        columns.filter(column => column.isExtra).forEach(column => {
+          const { effective } = extraContext(this, state, row, column);
+          if (!column.isPC || effective.hidden || effective.masked || effective.disabled || effective.readonly) {
+            delete uniqueRow[column.uuid];
+            const uniqueColumns = state.column.config.uniqueRuleConfig || [];
+            if (uniqueColumns.includes(column.uuid)) uniqueColumns.forEach(uuid => { delete uniqueRow[uuid]; });
+            return;
+          }
+          const config = column.config || {};
+          const validateList = [];
+          if (effective.required) validateList.push('required');
+          if (config.validate) validateList.push(config.validate);
+          if (config.regex && this.isValidRegex(config.regex)) validateList.push({ name: 'regex', pattern: config.regex, message: config.regexMessage });
+          const childPage = Math.floor(index / pageSize) + 1;
+          const fieldErrors = validator._handleTbodyValidErrorInfoList({ row,
+            mergedFormData: { ...this.formData, ...state.row, ...row }, pageCount: childPage,
+            columnAttrConfig: { key: column.uuid, title: column.label }, formItem: state.column,
+            validateMap: { [column.uuid]: { validateList } }, errorList: [] });
+          // 公共逐元素格式校验对空数组不迭代，必填仍需判断整个字段是否为空。
+          if (!fieldErrors.length && effective.required && this.$utils.isEmpty(row[column.uuid])) {
+            fieldErrors.push({ error: this.$t('page.fieldcompleterequired', { label: state.column.label, page: childPage, attr: column.label }) });
+          }
+          fieldErrors.forEach(error => errors.push({ ...error, childRowUuid: row.uuid, childAttrUuid: column.uuid,
+            childPage, error: this.$t('form.nestedSelector.rowError', { row: index + 1, column: column.label, message: error.error }) }));
+        });
+        uniqueRows.push(uniqueRow);
+      });
+      validator.validTableAttrUnique({ pageSize, formItem: state.column, config: state.column.config, tbodyList: uniqueRows })
+        .forEach(error => errors.push({ ...error, childAttrUuid: error.attrUuid || error.uuid, childPage: error.errorPageList?.[0] || 1 }));
+      return errors;
+    },
     // 读取父表全部行的状态并复用表格校验；此处不发请求、不回填，清空后的值直接参与适用校验。
     validNestedSelectors() {
       const errors = [];
@@ -216,19 +254,12 @@ export default {
         if (!state.snapshot && state.status === 'loading') message = this.$t('form.nestedSelector.loading');
         else if (!state.snapshot && state.status === 'error') message = state.error;
         else if (!effective.readonly && effective.required && !state.currentValue?.length) message = state.ready ? this.$t('form.placeholder.pleaseselect', { target: this.$t('page.data') }) : this.$t('form.nestedSelector.filterRequired');
-        if (!effective.readonly && state.currentValue?.length) {
-          const validator = { ...tableValidation.methods, $utils: this.$utils, $t: this.$t };
-          const pageSize = state.column.config.pageSize || 10;
-          const childErrors = [
-            ...validator.validTableTbodyListData({ pageSize, formItem: state.column, formData: { ...this.formData, ...state.row },
-              tbodyList: state.currentValue, theadList: (state.column.config.dataConfig || []).map(column => ({key: column.uuid, title: column.label, reaction: column.reaction})),
-              validateMap: this.validateMap || {}, executeReaction: this.executeReaction }),
-            ...validator.validTableAttrUnique({ pageSize, formItem: state.column, config: state.column.config, tbodyList: state.currentValue })
-          ];
-          if (childErrors.length) message = [message, ...childErrors.map(error => error.error)].filter(Boolean).join('；');
-        }
+        const childErrors = !effective.readonly && state.currentValue?.length ? this.getNestedRecordErrors(state) : [];
+        const index = this.tbodyList.findIndex(row => row.uuid === state.row.uuid);
+        childErrors.forEach(error => errors.push({ ...error, uuid: this.formItem.uuid, attrUuid: state.column.uuid,
+          rowUuid: state.row.uuid, errorPageList: [Math.floor(index / this.tablePageConfig.pageSize) + 1],
+          error: this.$t('form.nestedSelector.rowError', { row: index + 1, column: state.column.label, message: error.error }) }));
         if (message) {
-          const index = this.tbodyList.findIndex(row => row.uuid === state.row.uuid);
           errors.push({ uuid: this.formItem.uuid, attrUuid: state.column.uuid, rowUuid: state.row.uuid,
             errorPageList: [Math.floor(index / this.tablePageConfig.pageSize) + 1],
             error: this.$t('form.nestedSelector.rowError', { row: index + 1, column: state.column.label, message }) });
@@ -236,5 +267,21 @@ export default {
       });
       return errors;
     }
+  },
+  computed: {
+    nestedSelectorColumns() { return (this.config.dataConfig || []).filter(isNestedSelector); },
+    nestedSelectorRequests() {
+      if (!this.nestedSelectorColumns.length) return [];
+      const definitions = [...(this.config.dataConfig || []), ...this.effectiveReferenceFormItemList];
+      return this.tbodyList.flatMap(row => this.nestedSelectorColumns.map(column => {
+        const key = row.uuid + '_' + column.uuid;
+        const previous = this.nestedSelectorStates[key];
+        const context = selectorContext(this, column, row, definitions, previous?.inputs || {});
+        return { key, row, column, ...context, identity: queryIdentity(column.config, context.filter), observedValue: row[column.uuid] };
+      }));
+    }
+  },
+  watch: {
+    nestedSelectorRequests: { immediate: true, handler(requests) { this.syncNestedSelectors(requests); } }
   }
 };
