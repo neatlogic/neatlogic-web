@@ -530,7 +530,7 @@
     "servicedescription": "服务说明",
     "servicedescriptiontooltip": "用于【服务目录】菜单下服务说明",
     "descriptionhelp": "描述帮助",
-    "descriptionhelptooltip": "用于【服务上报】页中的描述说明提示",
+    "descriptionhelptooltip": "用于【服务上报】页面的描述填写提示。仅支持纯文本，可换行，不支持图片、视频、附件及富文本样式。",
     "iconkeywordsetting": "setting 设置 配置",
     "iconkeywordsearch": "search 搜索",
     "iconkeywordupload": "upload 上传",

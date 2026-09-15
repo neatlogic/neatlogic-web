@@ -7,9 +7,7 @@ export default {
       return this.getContentHelp;
     },
     ckeditorPlaceholder() {
-      let contentHelp = this.getContentHelp;
-      let textWithNewlines = contentHelp.replace(/>([^<]+)</g, (match, group) => `>${group}\n<`);
-      return this.$utils.removeHTMLTag(textWithNewlines);
+      return this.$utils.htmlToPlainText(this.getContentHelp);
     }
   }
 };

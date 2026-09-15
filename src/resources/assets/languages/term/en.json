@@ -532,7 +532,7 @@
     "servicedescription": "Service Description",
     "servicedescriptiontooltip": "Used as the service description under the Service Catalog menu.",
     "descriptionhelp": "Description Help",
-    "descriptionhelptooltip": "Used as the description help tip on the Service Report page.",
+    "descriptionhelptooltip": "Used as the description input hint on the Service Report page. Supports plain text and line breaks only. Images, videos, attachments, and rich text formatting are not supported.",
     "iconkeywordsetting": "Settings Configuration",
     "iconkeywordsearch": "Search",
     "iconkeywordupload": "Upload",
