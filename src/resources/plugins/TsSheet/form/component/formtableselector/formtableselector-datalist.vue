@@ -125,6 +125,15 @@ export default {
   },
   destroyed() {},
   methods: {
+    scheduleQueryRefresh() {
+      // 同一轮配置、过滤值和就绪状态变化只查询一次。
+      if (this._queryRefreshPending) return;
+      this._queryRefreshPending = true;
+      this.$nextTick(() => {
+        this._queryRefreshPending = false;
+        if (!this._isDestroyed) this.searchMatrixData(1);
+      });
+    },
     init() {
       this.selectedIndexList = [];
       this.selectedItemList = [];
@@ -178,8 +187,9 @@ export default {
           this.$utils.deepClone(this.config), filter, controller.signal
         );
         if (!rows || controller.signal.aborted || requestId !== this.matrixRequestId) return;
+        const savedRowMap = new Map(this.selectedItemList.map(row => [row.uuid, row]));
         rows.forEach(row => {
-          const saved = this.selectedItemList.find(item => item.uuid === row.uuid);
+          const saved = savedRowMap.get(row.uuid);
           this.extraList.forEach(extra => {
             if (saved && Object.prototype.hasOwnProperty.call(saved, extra.uuid)) row[extra.uuid] = saved[extra.uuid];
           });
@@ -494,6 +504,12 @@ export default {
   },
   filter: {},
   computed: {
+    matrixSourceUuid() {
+      return !this.formItem.isEditing && this.config ? this.config.matrixUuid : null;
+    },
+    manualFilterIdentity() {
+      return this.autoSaveAll ? null : JSON.stringify(this.filter || []);
+    },
     autoSaveAll() {
       return this.config.mode === 'normal' && !!this.config.saveAll && !this.dataProvider;
     },
@@ -535,14 +551,12 @@ export default {
       handler(identity, previous) {
         // 仅查询内容变化时加载，父表重建相同配置或修改展示配置不会触发查询。
         if (!identity || !previous) this.savedQueryIdentity = null;
-        if (identity || previous) this.searchMatrixData(1);
+        if (identity || previous) this.scheduleQueryRefresh();
       },
       immediate: true
     },
     filterReady() {
-      // 同一轮过滤值与就绪状态同时变化时，由原过滤监听加载一次。
-      const version = this.matrixRequestId;
-      this.$nextTick(() => { if (!this._isDestroyed && version === this.matrixRequestId) this.searchMatrixData(1); });
+      this.scheduleQueryRefresh();
     },
     value: {
       handler() {
@@ -563,15 +577,14 @@ export default {
       },
       deep: true
     },
-    filter: {
-      handler: function(val) {
-        if (!this.autoSaveAll) this.searchMatrixData(1);
+    manualFilterIdentity: {
+      handler: function() {
+        if (!this.autoSaveAll) this.scheduleQueryRefresh();
       },
-      deep: true,
       immediate: true
     },
-    config: {
-      handler: function(val) {
+    matrixSourceUuid: {
+      handler: function() {
         if (!this.formItem.isEditing) {
           let needReload = false;
           if (this.config && this.config.matrixUuid && this.config.matrixUuid != this.searchParam.matrixUuid) {
@@ -582,11 +595,10 @@ export default {
             if (!this.searchParam.pageSize) {
               this.searchParam.pageSize = this.config.pageSize || 20;
             }
-            if (!this.autoSaveAll) this.searchMatrixData(1);
+            if (!this.autoSaveAll) this.scheduleQueryRefresh();
           }
         }
       },
-      deep: true,
       immediate: true
     }
   }
