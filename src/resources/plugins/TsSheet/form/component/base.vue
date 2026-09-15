@@ -1,6 +1,8 @@
 <script>
 export default {
   props: {
+    filterReady: { type: Boolean, default: true },
+    filterInvalid: { type: Boolean, default: false },
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
     formItem: { type: Object },

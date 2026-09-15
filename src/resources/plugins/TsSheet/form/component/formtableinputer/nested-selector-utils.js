@@ -61,33 +61,24 @@ export function mapMatrixRows(rows, config) {
   });
 }
 
-// 按记录 UUID 去重，完整成功才返回数组；取消返回 null，失败抛出错误，不返回部分分页数据。
+// 全量保存由后端关闭分页，一次返回全部匹配记录；前端展示分页不影响保存范围。
 export async function loadAllMatched(request, config, filter, signal) {
+  if (signal.aborted) return null;
   const params = matrixParams(config, filter);
-  const records = new Map();
-  let count = 0;
-  while (!signal.aborted) {
-    let response;
-    try { response = await loadMatrixPage(request, params, signal); } catch (error) {
-      if (signal.aborted) return null;
-      throw error;
-    }
+  params.needPage = false;
+  delete params.currentPage;
+  delete params.pageSize;
+  let response;
+  try {
+    response = await loadMatrixPage(request, params, signal);
+  } catch (error) {
     if (signal.aborted) return null;
-    if (response?.Status !== 'OK' || !Array.isArray(response.Return?.tbodyList)) throw new Error('Matrix query failed');
-    const page = response.Return;
-    const rows = mapMatrixRows(page.tbodyList, config);
-    const size = records.size;
-    rows.forEach(row => records.set(row.uuid, row));
-    count += rows.length;
-    if ((Number.isFinite(page.pageCount) && params.currentPage >= page.pageCount) ||
-      (Number.isFinite(page.rowNum) && count >= page.rowNum) || !rows.length ||
-      (!Number.isFinite(page.pageCount) && !Number.isFinite(page.rowNum) && rows.length < params.pageSize)) {
-      return [...records.values()];
-    }
-    if (records.size === size) throw new Error('Matrix pagination did not advance');
-    params.currentPage += 1;
+    throw error;
   }
-  return null;
+  if (signal.aborted) return null;
+  const records = new Map();
+  mapMatrixRows(response.Return.tbodyList, config).forEach(row => records.set(row.uuid, row));
+  return [...records.values()];
 }
 
 // 剔除历史遗留的不保存列时创建行副本，不删除编辑对象上的字段；无须剔除时保留原引用。

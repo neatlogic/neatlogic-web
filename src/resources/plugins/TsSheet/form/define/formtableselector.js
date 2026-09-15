@@ -1,3 +1,4 @@
+import { filterReferenceInvalid } from '../reaction/filter-source.js';
 import { $t } from '@/resources/init.js';
 
 export default {
@@ -22,7 +23,7 @@ export default {
     if ((config.saveData === false || config.saveMode === 'allMatched') && config.mode !== 'normal') add($t('form.nestedSelector.normalModeRequired'));
     for (const rule of formItem.reaction?.filter?.ruleList || []) {
       const uuid = (rule.formItemUuid || '').split('#')[0];
-      if (!rule.matrixAttrUuid || uuid === formItem.uuid || !formItemList.some(item => item.uuid === uuid && !['formtableselector', 'formtableinputer', 'formtable'].includes(item.handler))) add($t('form.nestedSelector.filterInvalid'));
+      if (!rule.matrixAttrUuid || uuid === formItem.uuid || filterReferenceInvalid(rule.formItemUuid, formItemList, formItem.uuid)) add($t('form.nestedSelector.filterInvalid'));
     }
     for (const rule of config.sourceColumnList || []) {
       if (!rule.column || !rule.expression || (!['is-null', 'is-not-null'].includes(rule.expression) && !rule.valueList?.length)) add($t('form.nestedSelector.fixedFilterInvalid'));
@@ -40,6 +41,7 @@ export default {
     isReadOnly: false,
     isDisabled: false,
     mode: 'dialog',
+    saveAll: false,
     dataConfig: [],
     dataSource: 'matrix',
     matrixUuid: '',

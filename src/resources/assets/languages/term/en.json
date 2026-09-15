@@ -1410,6 +1410,12 @@
     "ignoreall": "Ignore all nodes?"
   },
   "framework": {
+    "filterquerylabel": "Query When Linked Fields Have Values",
+    "filterquerytip": "When enabled, query only when at least one linked field has a value. When disabled, this restriction does not apply. Table column references use non-empty values from all rows as filter conditions; current-row field references use only the current row's value.",
+    "filterquerywaiting": "Enter a value in at least one linked field to query data.",
+    "filterqueryinvalid": "Invalid filter reference or circular dependency. Please reconfigure.",
+    "savealldata": "Save All Data",
+    "savealldatahelp": "When enabled, all matching records are saved automatically without manual row selection. Saved data is displayed while the filter conditions remain unchanged and reloaded when they change.",
     "accesstype": "Access Type",
     "allaccesstype": "All Access Types",
     "roleauth": "Authorize After Role Creation",

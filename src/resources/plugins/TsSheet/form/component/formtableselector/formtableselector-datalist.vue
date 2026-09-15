@@ -15,10 +15,12 @@
       v-bind="matrixData"
       :theadList="theadList"
       :multiple="true"
+      :canSelectRow="!autoSaveAll"
       :fixedHeader="false"
       keyName="uuid"
       selectedRemain
       :disabled="disabled"
+      :showPager="!autoSaveAll || matrixData.rowNum > matrixData.pageSize"
       @getSelected="getSelectedItem"
       @changeCurrent="searchMatrixData"
       @changePageSize="changePageSize"
@@ -31,10 +33,10 @@
       >
         <div :key="extra.uuid" @click.stop>
           <FormItem
-            :ref="'formitem_' + row._selected + '_' + row.uuid"
+            :ref="'formitem_' + (autoSaveAll || row._selected) + '_' + row.uuid"
             :formItem="getExtraFormItem(extra,row)"
             :formItemList="mergedFormItemList"
-            :disabled="!row._selected || disabled"
+            :disabled="(!autoSaveAll && !row._selected) || disabled"
             :value="row[extra.uuid]"
             :formData="{...$utils.deepClone(formData || {}), ...row}"
             :formDataForWatch="{...$utils.deepClone(formDataForWatch || {}),...(row || {})}"
@@ -57,6 +59,7 @@
 import base from '../base.vue';
 import search from './search/index.js';
 import validmixin from '../common/validate-mixin.js';
+import { loadAllMatched, queryIdentity } from '../formtableinputer/nested-selector-utils.js';
 export default {
   name: '',
   components: {
@@ -70,6 +73,7 @@ export default {
     // 可选接口 (params, { signal }) => Promise<矩阵分页响应>；Return.tbodyList 须已映射为列 UUID 对应的值。
     // 未传入时仍由本组件请求矩阵并映射原始记录，分页元数据沿用矩阵接口。
     dataProvider: { type: Function },
+    hasSavedValue: { type: Boolean, default: false }, // 区分已保存的空数组与尚未加载的数据。
     disabled: {type: Boolean},
     readonly: {
       type: Boolean,
@@ -94,6 +98,9 @@ export default {
       searchConditionConfig: {},
       matrixAttrUuidMap: {}, //矩阵属性uuid与uuid的映射，用于获取矩阵属性
       matrixRequestId: 0, //矩阵请求序号，确保只有最后一次请求可以更新数据
+      savedQueryIdentity: null,
+      savedRows: [],
+      saveAllLoadFailed: false,
       matrixAbortController: null //用于取消上一次尚未完成的矩阵请求
     };
   },
@@ -123,9 +130,75 @@ export default {
       this.selectedItemList = [];
       if (!this.$utils.isEmpty(this.value)) {
         this.value.forEach(item => {
-          this.selectedIndexList.push(item.uuid);
+          if (!this.autoSaveAll) this.selectedIndexList.push(item.uuid);
         });
         this.selectedItemList = this.$utils.deepClone(this.value);
+      }
+    },
+    showSavedRows() {
+      const pageSize = this.searchParam.pageSize || this.config.pageSize || 10;
+      const currentPage = Math.min(this.searchParam.currentPage || 1, Math.max(1, Math.ceil(this.savedRows.length / pageSize)));
+      this.searchParam.currentPage = currentPage;
+      this.selectedItemList = this.savedRows;
+      const selectedIndexList = [];
+      if (!this.$utils.isSame(this.selectedIndexList, selectedIndexList)) this.selectedIndexList = selectedIndexList;
+      const matrixData = {
+        tbodyList: this.savedRows.slice((currentPage - 1) * pageSize, currentPage * pageSize),
+        currentPage,
+        pageSize,
+        rowNum: this.savedRows.length,
+        pageCount: Math.ceil(this.savedRows.length / pageSize)
+      };
+      if (!this.$utils.isSame(this.matrixData, matrixData)) this.matrixData = matrixData;
+      this.loadingShow = false;
+    },
+    async searchAllSavedRows(requestId) {
+      // 等待初始化联动完成，再把当前过滤条件作为已保存数据的基准。
+      await this.$nextTick();
+      if (requestId !== this.matrixRequestId || this._isDestroyed) return;
+      const filter = (this.filter || []).map(({ uuid, expression, valueList }) => ({ uuid, expression, valueList }));
+      const identity = queryIdentity(this.config, filter);
+      if (this.savedQueryIdentity === null && (this.hasSavedValue || this.value?.length)) {
+        this.savedRows = this.$utils.deepClone(this.value || []);
+        this.savedRows.forEach(row => { row._selected = false; this.$delete(row, 'isSelected'); });
+        this.savedQueryIdentity = identity;
+      }
+      if (identity === this.savedQueryIdentity) {
+        this.saveAllLoadFailed = false;
+        this.showSavedRows();
+        return;
+      }
+      const controller = new AbortController();
+      this.matrixAbortController = controller;
+      this.loadingShow = true;
+      this.saveAllLoadFailed = false;
+      try {
+        const rows = await loadAllMatched(
+          (params, options) => this.$api.framework.matrix.getNewMatrixDataForTable(params, options),
+          this.$utils.deepClone(this.config), filter, controller.signal
+        );
+        if (!rows || controller.signal.aborted || requestId !== this.matrixRequestId) return;
+        rows.forEach(row => {
+          const saved = this.selectedItemList.find(item => item.uuid === row.uuid);
+          this.extraList.forEach(extra => {
+            if (saved && Object.prototype.hasOwnProperty.call(saved, extra.uuid)) row[extra.uuid] = saved[extra.uuid];
+          });
+          row._selected = false;
+        });
+        this.savedRows = rows;
+        this.savedQueryIdentity = identity;
+        this.showSavedRows();
+        this.$emit('change', rows);
+      } catch (error) {
+        if (!controller.signal.aborted && requestId === this.matrixRequestId) {
+          this.saveAllLoadFailed = true;
+          this.$Message.error(this.$t('form.nestedSelector.loadFailed'));
+        }
+      } finally {
+        if (requestId === this.matrixRequestId) {
+          this.loadingShow = false;
+          this.matrixAbortController = null;
+        }
       }
     },
     searchMatrixData(currentPage) {
@@ -136,11 +209,20 @@ export default {
         this.matrixAbortController.abort();
         this.matrixAbortController = null;
       }
+      if (!this.filterReady) {
+        this.matrixData = { tbodyList: this.$utils.deepClone(this.value || []), rowNum: 0 };
+        this.loadingShow = false;
+        return;
+      }
       //编辑模式
       if (this.mode.includes('edit')) {
         this.loadingShow = false;
         this.$emit('resize');
         return;
+      }
+      if (this.autoSaveAll) {
+        if (currentPage) this.searchParam.currentPage = currentPage;
+        return this.searchAllSavedRows(requestId);
       }
       if (this.config.dataConfig) {
         this.config.dataConfig.forEach(d => {
@@ -306,6 +388,8 @@ export default {
       return {...formItem};
     },
     getSelectedItem(idList, itemList) {
+      if (this.autoSaveAll) return;
+      if (!this.filterReady) return;
       if (this.dataProvider && (this.readonly || this.disabled)) return;
       this.selectedItemList.push(...itemList);
       // 先过滤 selectedItemList 中的元素，只保留在 idList 中的
@@ -375,6 +459,9 @@ export default {
     },
     async validData() {
       const errorList = [];
+      if (this.autoSaveAll && (this.loadingShow || this.saveAllLoadFailed)) {
+        errorList.push({ error: this.$t(this.loadingShow ? 'form.nestedSelector.loading' : 'form.nestedSelector.loadFailed') });
+      }
       if (this.$refs) {
         for (let name in this.$refs) {
           if (name.indexOf('formitem_true') > -1 && this.$refs[name]) {
@@ -396,6 +483,7 @@ export default {
       return errorList;
     },
     changeRow(row, uuid, val) {
+      if (this.$utils.isSame(row[uuid], val)) return;
       this.$set(row, uuid, val);
       let index = this.selectedItemList.findIndex(s => s.uuid === row.uuid);
       if (index > -1) {
@@ -406,9 +494,17 @@ export default {
   },
   filter: {},
   computed: {
+    autoSaveAll() {
+      return this.config.mode === 'normal' && !!this.config.saveAll && !this.dataProvider;
+    },
+    autoSaveQueryIdentity() {
+      if (!this.autoSaveAll) return null;
+      const filter = (this.filter || []).map(({ uuid, expression, valueList }) => ({ uuid, expression, valueList }));
+      return queryIdentity(this.config, filter);
+    },
     theadList() {
       let theadList = [];
-      if (!this.disabled && !this.readonly) {
+      if (!this.disabled && !this.readonly && !this.autoSaveAll) {
         theadList.push({ key: 'selection' });
       }
       if (this.config && !this.$utils.isEmpty(this.config.dataConfig)) {
@@ -435,13 +531,41 @@ export default {
     }
   },
   watch: {
+    autoSaveQueryIdentity: {
+      handler(identity, previous) {
+        // 仅查询内容变化时加载，父表重建相同配置或修改展示配置不会触发查询。
+        if (!identity || !previous) this.savedQueryIdentity = null;
+        if (identity || previous) this.searchMatrixData(1);
+      },
+      immediate: true
+    },
+    filterReady() {
+      // 同一轮过滤值与就绪状态同时变化时，由原过滤监听加载一次。
+      const version = this.matrixRequestId;
+      this.$nextTick(() => { if (!this._isDestroyed && version === this.matrixRequestId) this.searchMatrixData(1); });
+    },
     value: {
-      handler() { if (this.dataProvider) this.init(); },
+      handler() {
+        if (this.dataProvider) this.init();
+        if (this.autoSaveAll) {
+          const rows = this.$utils.deepClone(this.value || []);
+          rows.forEach(row => { row._selected = false; this.$delete(row, 'isSelected'); });
+          if (!this.loadingShow && this.savedQueryIdentity !== null && this.$utils.isSame(rows, this.savedRows)) return;
+          // 外部赋值（包括清空）优先于正在加载的旧结果。
+          this.matrixRequestId += 1;
+          this.matrixAbortController?.abort();
+          this.matrixAbortController = null;
+          this.savedQueryIdentity = this.autoSaveQueryIdentity;
+          this.saveAllLoadFailed = false;
+          this.savedRows = rows;
+          this.showSavedRows();
+        }
+      },
       deep: true
     },
     filter: {
       handler: function(val) {
-        this.searchMatrixData(1);
+        if (!this.autoSaveAll) this.searchMatrixData(1);
       },
       deep: true,
       immediate: true
@@ -458,7 +582,7 @@ export default {
             if (!this.searchParam.pageSize) {
               this.searchParam.pageSize = this.config.pageSize || 20;
             }
-            this.searchMatrixData(1);
+            if (!this.autoSaveAll) this.searchMatrixData(1);
           }
         }
       },

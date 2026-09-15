@@ -309,7 +309,7 @@
   "condition": "条件",
   "filtercondition": "过滤条件",
   "formselectautoselecttip": "对于下拉框组件，若当前组件设置为必填且过滤后仅剩一个选项，系统会自动选中该选项。",
-  "availablecomponentvaluetip": "当前可作为组件值的组件包括：下拉框、单选框、复选框、用户选择、上报人、日期、时间、表达式、文本框、工单信息。",
+  "availablecomponentvaluetip": "当前可作为组件值的组件包括：下拉框、单选框、复选框、用户选择、上报人、日期、时间、表达式、文本框、工单信息、表格输入。",
   "datasourceisextenddata": "数据来源为扩展数据。",
   "addextenddata": "添加扩展数据",
   "currentformolddata": "当前表单为旧数据，",

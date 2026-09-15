@@ -13,7 +13,7 @@
     "displayFieldRequired": "请至少选择一个展示的矩阵属性",
     "fieldKeyRequired": "请填写矩阵属性的英文名称",
     "nestedContainerUnsupported": "表格选择内不支持继续嵌套表格容器",
-    "normalModeRequired": "不保存或保存全部匹配记录时，请使用普通模式",
+    "normalModeRequired": "不保存或保存全部匹配记录时，请使用直接选择。",
     "filterInvalid": "请补全过滤条件，引用当前行或表格外的普通字段",
     "fixedFilterInvalid": "请补全固定过滤条件",
     "currentRowField": "当前行 / {label}",

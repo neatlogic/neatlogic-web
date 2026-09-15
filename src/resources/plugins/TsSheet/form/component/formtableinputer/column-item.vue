@@ -54,6 +54,8 @@
           :value="formItemValue"
           :mode="mode"
           :filter="filter"
+          :filterReady="filterReady"
+          :filterInvalid="filterInvalid"
           :readonly="componentReadonly"
           :disabled="componentDisabled"
           :required="componentRequired"
@@ -84,6 +86,7 @@
   </div>
 </template>
 <script>
+import { initialFilterReady } from '../../reaction/filter-source.js';
 import filterValueMixin from '../common/filter-value-mixin.js';
 import formItems from '@/resources/plugins/TsSheet/form/component/index.js';
 import conditionMixin from '@/resources/plugins/TsSheet/form/conditionexpression/condition-mixin.js';
@@ -156,6 +159,8 @@ export default {
       }, //记录操作执行次数
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
       needsReactionReplay: this.isReactionPending,
+      filterReady: initialFilterReady(this.formItem, this.formItemList || []),
+      filterInvalid: false,
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,

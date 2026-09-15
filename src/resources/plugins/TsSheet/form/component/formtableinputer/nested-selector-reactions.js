@@ -45,19 +45,12 @@ export function selectorContext(owner, column, row, definitions, oldData = {}) {
       actions[action]({ overrideConfig, result: owner.executeReaction(rule, data, oldData), view });
     });
   }
-  const rules = column.reaction?.filter?.ruleList || [];
-  // 逐条复用原过滤转换并检查就绪状态，避免同一矩阵属性的其他条件掩盖空依赖。
-  let ready = true;
-  const filter = rules.flatMap(rule => {
-    filterReaction({ reaction: { ruleList: [rule] }, view });
-    if (!view.filter.some(item => item.valueList.some(value => value !== undefined && value !== null && value !== ''))) ready = false;
-    return view.filter;
-  });
-  view.filter = filter;
+  // 整组规则交给公共过滤逻辑，内外组件采用同一查询门槛和引用校验。
+  filterReaction({ reaction: column.reaction?.filter || {}, view });
   const config = view.formItem.config;
   const clearRules = column.reaction?.clearValue;
   const clear = clearRules && !owner.$utils.isEmpty(clearRules) && (Array.isArray(clearRules) ? clearRules : [clearRules]).some(rule => owner.executeReaction(rule, data, oldData));
-  return { filter: clone(view.filter), ready, inputs: reactionInputs(column, data), clear: !!clear,
+  return { filter: clone(view.filter), ready: view.filterReady, invalid: view.filterInvalid, inputs: reactionInputs(column, data), clear: !!clear,
     effective: { hidden: !!config.isHide, masked: !!config.isMask, disabled: !!(owner.disabled || config.isDisabled),
       readonly: !!(owner.readonly || config.isReadOnly), required: !!config.isRequired } };
 }

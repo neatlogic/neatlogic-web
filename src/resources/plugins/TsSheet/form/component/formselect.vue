@@ -1,10 +1,12 @@
 <template>
   <div v-if="errorList.length === 0">
+    <div v-if="config.dataSource === 'matrix' && !filterReady" class="text-grey mb-xs">{{ filterInvalid?$t('term.framework.filterqueryinvalid') : $t('term.framework.filterquerywaiting') }}</div>
     <TsFormSelect
       ref="formitem"
+      :key="filterReady"
       v-bind="setting"
       :transfer="true"
-      :readonly="readonly"
+      :readonly="readonly || (config.dataSource === 'matrix' && !filterReady)"
       :disabled="disabled"
       :value="actualValue"
       :validateList="validateList"
@@ -58,6 +60,7 @@ export default {
     return {
       isFirst: true,
       initFilter: [],
+      filterDisplayItems: [],
       isShowRowEditDialog: false,
       matrixUuid: ''
     };
@@ -234,6 +237,11 @@ export default {
       setting.isAutoSelectdOnlyValue = this.config.isAutoSelectdOnlyValue || false;
       setting.isCanAll = this.config.isCanAll || false;
       setting.pageSize = this.config.pageSize || 20;
+      if (this.config.dataSource === 'matrix' && !this.filterReady) {
+        // 仅提供已有值用于回显，不配置候选查询地址。
+        setting.dataList = this.filterDisplayItems.length ? this.filterDisplayItems : (Array.isArray(this.value) ? this.value : this.value == null ? [] : [this.value]).map(value => typeof value === 'object' ? value : { value, text: value });
+        return setting;
+      }
       if (this.config.dataSource === 'matrix') {
         setting.dynamicUrl = '/api/rest/matrix/column/data/search/forselect';
         setting.rootName = 'dataList';
@@ -315,6 +323,11 @@ export default {
     }
   },
   watch: {
+    filterReady(ready) {
+      // 切换候选列表实例前保留已解析的名称，兼容历史标量值。
+      if (!ready && this.$refs.formitem) this.filterDisplayItems = this.$utils.deepClone(this.$refs.formitem.selectedList || []);
+      if (ready) this.filterDisplayItems = [];
+    },
     filter: {
       handler(val) {
         if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, this.initFilter)) {
