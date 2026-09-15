@@ -28,6 +28,7 @@
               :placeholder="$t('form.placeholder.pleaseinput', {target: $t('page.title')})"
               maxlength="200"
               :validateList="validateList"
+              @hook:mounted="syncContentRefs"
               @on-keyup="knowledgeSearch()"
             ></TsFormInput>
           </div>
@@ -42,10 +43,16 @@
               :draftData="draftData"
               :externalData="externalData"
               :priorityList="priorityList"
+              @hook:mounted="syncContentRefs"
               @setPriorityByForm="setPriorityByForm"
             ></FormSetting>
           </div>
-          <component :is="handlerName" ref="dispatchHandler" :draftData="draftData"></component>
+          <component
+            :is="handlerName"
+            ref="dispatchHandler"
+            :draftData="draftData"
+            @hook:mounted="syncContentRefs"
+          ></component>
         </div>
       </template>
       <template v-slot:right>
@@ -54,6 +61,7 @@
           :draftData="draftData"
           :priorityList="priorityList"
           :defaultPriorityConfig="defaultPriorityConfig"
+          @hook:mounted="syncContentRefs"
           @updateDispatchOwnerInfo="updateDispatchOwnerInfo"
         ></BaseSetting>
       </template>
@@ -62,6 +70,7 @@
 </template>
 <script>
 import Dispatch from './index.js';
+import FormSetting from './workorder/form-setting.vue';
 import scrollHidden from '@/resources/directives/scroll-hidden.js';
 import {store} from './dispatchState.js';
 
@@ -75,7 +84,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     ForwardingDetail: () => import('@/views/pages/process/task/taskcommon/forwarding-detail.vue'),
     BaseSetting: () => import('./workorder/base-setting.vue'),
-    FormSetting: () => import('./workorder/form-setting.vue')
+    FormSetting
   },
   directives: {scrollHidden},
   props: {
@@ -97,6 +106,8 @@ export default {
   data() {
     return {
       taskLoading: true,
+      priorityReady: false,
+      contentRefs: {},
       channelUuid: this.defaultChannelUuid,
       baseData: {},
       dispatchTitle: '',
@@ -115,10 +126,24 @@ export default {
   mounted() {
     this.init();
     this.getPriority();
+    this.syncContentRefs();
+  },
+  updated() {
+    this.syncContentRefs();
+  },
+  beforeDestroy() {
+    this.$emit('ready-change', false);
   },
   destroyed() {
   },
   methods: {
+    syncContentRefs() {
+      // $refs 本身不响应式，仅在组件挂载/替换时同步引用。
+      ['dispatchTitle', 'baseSetting', 'dispatchHandler', 'formSetting'].forEach(name => {
+        const instance = this.$refs[name] || null;
+        if (this.contentRefs[name] !== instance) this.$set(this.contentRefs, name, instance);
+      });
+    },
     init() {
       let draftData = this.$utils.deepClone(this.draftData);
       this.channelUuid = draftData.channelUuid || null;
@@ -141,6 +166,7 @@ export default {
       this.taskLoading = false;
     },
     getPriority() { //获取优先级列表
+      this.priorityReady = false;
       let data = {
         needPage: false,
         channelUuid: this.draftData.channelUuid
@@ -148,15 +174,18 @@ export default {
       return this.$api.process.priority.search(data).then(res => {
         if (res.Status == 'OK') {
           this.priorityList = res.Return.tbodyList || [];
+          this.priorityReady = true;
         }
+      }).catch(() => {
+        // 请求错误由接口层提示，保持未就绪，避免提交不完整数据。
       });
     },
-    getData() { //获取页面数据
+    getData(includeForm = true) { //获取页面数据；离页比较不读取尚未就绪的表单。
       let data = {
         channelUuid: this.channelUuid,
         title: this.dispatchTitle
       };
-      if (this.$refs.formSetting) {
+      if (includeForm && this.$refs.formSetting) {
         let formData = this.$refs.formSetting.getFormData();
         Object.assign(data, formData);
       }
@@ -252,6 +281,12 @@ export default {
     }
   },
   computed: {
+    contentReady() {
+      const { dispatchTitle, baseSetting, dispatchHandler, formSetting } = this.contentRefs;
+      return !this.taskLoading && this.priorityReady && !!dispatchTitle &&
+        !!baseSetting && baseSetting.initReady && !!dispatchHandler && dispatchHandler.contentReady &&
+        (!this.isShowForm || (!!formSetting && formSetting.contentReady));
+    },
     handlerName() {
       let node = {
         'omnipotent': 'omnipotent', //普通节点
@@ -265,6 +300,12 @@ export default {
     }
   },
   watch: {
+    contentReady: {
+      handler(ready) {
+        this.$emit('ready-change', ready);
+      },
+      immediate: true
+    },
     processTaskId: {
       handler(id) {
         if (id && !this.$utils.isSame(id, this.externalData.processTaskId)) {

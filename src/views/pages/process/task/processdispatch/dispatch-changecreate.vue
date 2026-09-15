@@ -125,6 +125,7 @@
               type: 'itsm',
             }
           }"
+          @ready="editorReady = true"
         ></TsCkeditor>
       </div>
     </div>
