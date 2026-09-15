@@ -2,25 +2,46 @@
   <div class="report-param-wrap">
     <div v-if="myParamList && myParamList.length > 0" class="tstable-container">
       <table class="tstable-body">
+        <colgroup>
+          <col style="width: 40px;">
+          <col style="width: calc(15% - 10px);">
+          <col style="width: calc(15% - 10px);">
+          <col style="width: 40%;">
+          <col style="width: calc(15% - 10px);">
+          <col style="width: 5%;">
+          <col style="width: calc(10% - 10px);">
+        </colgroup>
         <thead>
           <tr>
-            <th style="width:15%">{{ $t('page.name') }}</th>
-            <th style="width:15%">{{ $t('page.tag') }}</th>
-            <th style="width:40%">{{ $t('term.report.control') }}</th>
-            <th style="width:15%">{{ $t('page.width') }}</th>
-            <th style="width: 5%">{{ $t('page.isrequired') }}</th>
-            <th style="width:10%;" class="text-right">
+            <th class="param-drag-column"></th>
+            <th>{{ $t('page.name') }}</th>
+            <th>{{ $t('page.tag') }}</th>
+            <th>{{ $t('term.report.control') }}</th>
+            <th>{{ $t('page.width') }}</th>
+            <th>{{ $t('page.isrequired') }}</th>
+            <th class="text-right">
               <a href="javascript:void(0)" @click="addParam">
                 <i class="tsfont-plus-o" style="font-size: 13px;"></i>
               </a>
             </th>
           </tr>
         </thead>
-        <tbody>
-          <tr v-for="(param,index) in myParamList" :key="index">
-            <td><TsFormInput v-model="param.name" :validateList="['required']"></TsFormInput></td>
+        <Draggable
+          tag="tbody"
+          :list="myParamList"
+          handle=".param-drag-handle"
+          :animation="200"
+          ghost-class="param-row-ghost"
+          chosen-class="param-row-chosen"
+          drag-class="param-row-drag"
+        >
+          <tr v-for="(param,index) in myParamList" :key="getParamKey(param)">
+            <td class="param-drag-column">
+              <span class="param-drag-handle tsfont-drag" :title="$t('page.sort')"></span>
+            </td>
+            <td><TsFormInput v-model="param.name" border="border" :validateList="['required']"></TsFormInput></td>
             <td>
-              <TsFormInput v-model="param.label" :validateList="['required']"></TsFormInput></td>
+              <TsFormInput v-model="param.label" border="border" :validateList="['required']"></TsFormInput></td>
             <td>
               <div :class="[param.type == 'formdaterange' || param.type == 'formdate' ? 'flex-start': '']">
                 <TsFormSelect
@@ -28,6 +49,7 @@
                   :transfer="true"
                   :dataList="controllerTypeList"
                   :validateList="['required']"
+                  border="border"
                 ></TsFormSelect>
                 <TsFormSelect
                   v-if="param.type == 'formdaterange'"
@@ -36,6 +58,7 @@
                   :dataList="param.config.datePickerTypeList"
                   :validateList="['required']"
                   :class="[param.type == 'formdaterange' ? 'date-form-margin' : '']"
+                  border="border"
                   @on-change="handleDateFormatType(param.config.tsFormDatePickerType, param)"
                 ></TsFormSelect>
                 <TsFormSelect
@@ -45,6 +68,7 @@
                   :dataList="param.config.dateFormatList"
                   :validateList="['required']"
                   :class="[param.type == 'formdaterange' ? 'date-form-margin' : '']"
+                  border="border"
                 ></TsFormSelect>
                 <TsFormSelect
                   v-if="param.type == 'formdate'"
@@ -53,6 +77,7 @@
                   :dataList="yearMonthDayFormatList"
                   :validateList="['required']"
                   :class="[param.type == 'formdate' ? 'formdate-form-margin' : '']"
+                  border="border"
                 ></TsFormSelect>
               </div>
             </td>
@@ -62,6 +87,7 @@
                 :transfer="true"
                 :dataList="widthTypeList"
                 :validateList="['required']"
+                border="border"
               ></TsFormSelect>
             </td>
             <td>
@@ -81,7 +107,7 @@
               </a>
             </td>
           </tr>
-        </tbody>
+        </Draggable>
       </table>
     </div>
     <a
@@ -113,10 +139,14 @@
 <script>
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+import Draggable from 'vuedraggable';
 import * as configs from './paramconfig';
+const paramKeys = new WeakMap();
+let nextParamKey = 0;
 export default {
   name: '',
   components: {
+    Draggable,
     TsFormInput,
     TsFormSelect,
     ...configs,
@@ -209,6 +239,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getParamKey(param) {
+      if (!paramKeys.has(param)) {
+        paramKeys.set(param, ++nextParamKey);
+      }
+      return paramKeys.get(param);
+    },
     addParam: function() {
       let _this = this;
       this.myParamList.push(
@@ -296,6 +332,44 @@ export default {
 </script>
 <style lang="less" scoped>
 .report-param-wrap {
+  .tstable-body {
+    width: 100%;
+    table-layout: fixed;
+    > thead > tr > th,
+    > tbody > tr > td {
+      vertical-align: middle;
+      &.param-drag-column {
+        padding-left: 8px;
+        padding-right: 8px;
+        text-align: center;
+      }
+    }
+  }
+  .param-drag-handle {
+    display: inline-block;
+    cursor: grab;
+    user-select: none;
+    &:hover {
+      color: var(--primary-color);
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+  .param-row-chosen > td {
+    background-color: var(--primary-hover-color, rgba(45, 140, 240, 0.08));
+  }
+  .param-row-ghost {
+    opacity: 0.4;
+    > td {
+      background-color: var(--primary-hover-color, rgba(45, 140, 240, 0.08));
+      box-shadow: inset 0 1px var(--primary-color, #2d8cf0), inset 0 -1px var(--primary-color, #2d8cf0);
+    }
+  }
+  .param-row-drag {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
   .date-form-margin {
     width: 100%;
     margin-left: 10px;
