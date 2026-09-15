@@ -1,6 +1,11 @@
 <template>
   <div>
-    <TsFormItem :label="$t('page.disabledd')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
+    <TsFormItem
+      v-if="!isAllDataMode"
+      :label="$t('page.disabledd')"
+      :labelPosition="isTableInputer ? 'right' : 'left'"
+      :contentAlign="isTableInputer ? 'left' : 'right'"
+    >
       <TsFormSwitch
         :value="config.disableAddData"
         :trueValue="true"
@@ -11,7 +16,12 @@
         }"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem :label="$t('page.disabledelete')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
+    <TsFormItem
+      v-if="!isAllDataMode"
+      :label="$t('page.disabledelete')"
+      :labelPosition="isTableInputer ? 'right' : 'left'"
+      :contentAlign="isTableInputer ? 'left' : 'right'"
+    >
       <TsFormSwitch
         :value="config.disableDeleteData"
         :trueValue="true"
@@ -36,9 +46,10 @@
     </TsFormItem>
     <TsFormItem :label="$t('term.framework.selectmode')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
       <TsFormRadio
-        v-model="config.mode"
+        :value="config.mode"
         :dataList="modeList"
         :disabled="disabled || forceNormalMode"
+        @on-change="changeSelectionMode"
       ></TsFormRadio>
     </TsFormItem>
     <TsFormItem
@@ -265,6 +276,12 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeSelectionMode(mode) {
+      if (this.disabled || this.forceNormalMode || mode === this.config.mode || !['dialog', 'normal'].includes(mode)) return;
+      // 仅主动切换时重置，打开已有配置及程序回显不改变保存策略。
+      this.saveAllData = false;
+      this.$set(this.config, 'mode', mode);
+    },
     removeExtraProperty(data) {
       const index = this.config.dataConfig.findIndex(d => d === data);
       if (index > -1) {
@@ -404,6 +421,9 @@ export default {
   },
   filter: {},
   computed: {
+    isAllDataMode() {
+      return this.config.mode === 'normal' && this.saveAllData;
+    },
     saveAllData: {
       get() {
         return this.isTableInputer ? this.config.saveMode === 'allMatched' : !!this.config.saveAll;
@@ -420,7 +440,7 @@ export default {
       }
     },
     forceNormalMode() {
-      return this.isTableInputer && (this.config.saveData === false || this.config.saveMode === 'allMatched');
+      return this.isTableInputer && this.config.saveData === false;
     },
     handleUniqueRuleConfigDataList() {
       let dataList = [];
