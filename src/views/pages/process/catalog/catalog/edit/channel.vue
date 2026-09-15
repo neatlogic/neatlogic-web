@@ -414,11 +414,10 @@ export default {
           removePlugins: ['UploadVideo']
         },
         {
-          type: 'ckeditor',
+          type: 'textarea',
           name: 'contentHelp',
           label: this.$t('term.process.descriptionhelp'),
-          tooltip: this.$t('term.process.descriptionhelptooltip'),
-          removePlugins: ['UploadVideo']
+          tooltip: this.$t('term.process.descriptionhelptooltip')
         }
       ],
       initValue: {
@@ -548,7 +547,7 @@ export default {
             color: color,
             isActivePriority: isActivePriority,
             support: support,
-            contentHelp: contentHelp,
+            contentHelp: this.$utils.htmlToPlainText(contentHelp),
             channelTypeUuid: channelTypeUuid,
             config: {
               allowTranferReport: !this.$utils.isEmpty(config) ? config.allowTranferReport : 0, // 允许转报

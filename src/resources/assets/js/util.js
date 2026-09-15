@@ -60,6 +60,7 @@ intersectionArr                              返回一个包含所有传入数�
 validParamValue(val, validateList)           参数校验规则：判断值是否满足正则规则
 getComposedPath(e)                           返回事件流中元素的事件路径
 removeHTMLTag(str)                           去除html标签
+htmlToPlainText(value)                       将富文本转为纯文本，保留空格和换行
 handleTopoImagePath(nodesString)             处理topo图中的图片路径
 cleanObject(obj)                             递归清理对象，移除对象中的null或者undefined属性
 getTextWidth({ text, fontSize = 12, isBold = false }) 获取文本宽度
@@ -1251,6 +1252,19 @@ const methods = {
       return `rgba(${r},${g},${b},${opacity})`;
     }
     return '';
+  },
+  htmlToPlainText(value) {
+    if (!value || !/<\/?(?:p|br|div|li|ul|ol|h[1-6]|blockquote|table|span|strong|em|a|img)\b[^>]*>/i.test(value)) {
+      return value || '';
+    }
+    // 兼容旧富文本内容；纯文本保持原样，HTML 的换行和段落转换为换行符。
+    const template = document.createElement('template');
+    template.innerHTML = value;
+    template.content.querySelectorAll('br').forEach(node => node.replaceWith('\n'));
+    template.content.querySelectorAll('p, div, li, h1, h2, h3, h4, h5, h6, blockquote, tr').forEach(node => {
+      node.appendChild(document.createTextNode('\n'));
+    });
+    return (template.content.textContent || '').replace(/\u00a0/g, ' ').trim();
   },
   removeHTMLTag(str) {
     //去除html标签
