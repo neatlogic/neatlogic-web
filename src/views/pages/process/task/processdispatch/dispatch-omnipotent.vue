@@ -33,6 +33,7 @@
           }"
           :placeholder="ckeditorPlaceholder"
           :validateList="ckeditorValidateList"
+          @ready="editorReady = true"
         ></TsCkeditor>
       </div>
     </div>
@@ -43,6 +44,7 @@
       </div>
       <TsUpLoad
         v-show="showDetailConfig.file"
+        ref="dispatchFiles"
         class="upload"
         data-type="itsm"
         styleType="button"
