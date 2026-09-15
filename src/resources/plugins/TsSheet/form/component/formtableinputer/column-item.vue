@@ -291,7 +291,7 @@ export default {
         }
         if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && this.formData) {
           Object.keys(this.reactionFormItemUuidMap).forEach((key) => {
-            this.$set(this.reactionFormItemUuidMap, key, this.formData[key]);
+            this.$set(this.reactionFormItemUuidMap, key, this.$utils.deepClone(this.formData[key]));
           });
         }
         this.executionReaction(this.reactionFormItemUuidMap);

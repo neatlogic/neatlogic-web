@@ -176,6 +176,7 @@ import conditionMixin from './condition-mixin.js';
 import expressionMixin from './expression-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
 import NestedSelectorMixin from './nested-selector-mixin.js';
+import ColumnItemMixin from './column-item-mixin.js';
 import { FORMITEMS } from '@/resources/plugins/TsSheet/form/formitem-list.js';
 export default {
   name: '',
@@ -250,6 +251,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    reactionWatch: ColumnItemMixin.methods.reactionWatch,
     handleSelectedRow(isSelected, row) {
       this.$set(this.selectedCurrentPageMap, row.uuid, isSelected);
       const findSelectedList = this.pagedTbodyList.filter(d => this.selectedCurrentPageMap[d.uuid]);
@@ -267,33 +269,6 @@ export default {
       } else {
         this.selectedCurrentPageMap = {};
       }
-    },
-    reactionWatch() {
-      this.reactionValuesMap = {};
-      this.extraList.forEach(extra => {
-        const deps = this.reactionDepsMap[extra.uuid] || [];
-        this.$set(this.reactionValuesMap, extra.uuid, {});
-        this.$set(this.clonedExtrasMap, extra.uuid, this.$utils.deepClone(extra));
-        deps.forEach(uuid => {
-          this.$set(this.reactionValuesMap[extra.uuid], uuid, this.formData[uuid]);
-          this.$watch(
-            () => this.formData[uuid],
-            (newVal, oldVal) => {
-              if (newVal !== oldVal) {
-                if (this.isReady && !this.$utils.isSame(newVal, oldVal)) {
-                  this.tbodyList.forEach(row => {
-                    const key = `${row.uuid}_${extra.uuid}`;
-                    if (!this.pagedTbodyList.includes(row) && !this.pendingReactionValuesMap[key]) {
-                      this.$set(this.pendingReactionValuesMap, key, this.$utils.deepClone(this.reactionValuesMap[extra.uuid]));
-                    }
-                  });
-                }
-                this.$set(this.reactionValuesMap[extra.uuid], uuid, newVal);
-              }
-            }
-          );
-        });
-      });
     },
     init() {
       if (this.value && this.value instanceof Array && this.value.length > 0) {

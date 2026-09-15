@@ -364,7 +364,8 @@ export default {
         }
         if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && this.formData) {
           Object.keys(this.reactionFormItemUuidMap).forEach((key) => {
-            this.$set(this.reactionFormItemUuidMap, key, this.formData[key]);
+            // 保存独立的依赖快照，避免表格单元格原地修改时旧值也同步变化，漏掉首次联动。
+            this.$set(this.reactionFormItemUuidMap, key, this.$utils.deepClone(this.formData[key]));
           });
         }
         this.executionReaction(this.reactionFormItemUuidMap);
