@@ -13,6 +13,7 @@ import tag from './tag/tag.js';
 import iteration from './iteration/iteration.js';
 import webhook from './webhook/webhook.js';
 import dashboard from './dashboard/dashboard.js';
+import event from './event/event.js';
 export default {
   project,
   app,
@@ -27,5 +28,6 @@ export default {
   tag,
   iteration,
   webhook,
-  dashboard
+  dashboard,
+  eventCapability: event
 };

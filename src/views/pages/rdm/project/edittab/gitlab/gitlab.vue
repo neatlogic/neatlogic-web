@@ -1,41 +1,58 @@
 <template>
-  <div>
-    <TsFormItem label="Webhook Url" :required="true" labelPosition="top">
-      <div v-if="webhookData.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
-        <Code class="bg-block">
-          <span id="webhookUrl">{{ webhookUrlFull }}</span>
-          <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#webhookUrl')"></span>
-        </Code>
-      </div>
-      <div>
-        <a @click="createWebhookUrl()">{{ $t('page.recreate') }}</a>
-      </div>
-    </TsFormItem>
-    <TsFormItem label="Secret Token" labelPosition="top">
-      <div v-if="webhookData.secretToken" class="bg-op padding-md radius-md mt-md mb-md">
-        <Code class="bg-block">
-          <span id="secretToken">{{ webhookData.secretToken }}</span>
-          <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#secretToken')"></span>
-        </Code>
-      </div>
-      <div>
-        <a v-if="webhookData.secretToken" class="mr-sm" @click="clearSecretToken()">{{ $t('page.clear') }}</a>
-        <a @click="createSecretToken()">{{ $t('page.recreate') }}</a>
-      </div>
-    </TsFormItem>
-  </div>
+  <Tabs v-model="currentTab">
+    <TabPane :label="$t('term.rdm.webhooksetting')" name="webhook">
+      <TsFormItem label="Webhook Url" :required="true" labelPosition="top">
+        <div v-if="webhookData.webhookUrl" class="bg-op padding-md radius-md mt-md mb-md">
+          <Code class="bg-block">
+            <span id="webhookUrl">{{ webhookUrlFull }}</span>
+            <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#webhookUrl')"></span>
+          </Code>
+        </div>
+        <div>
+          <a @click="createWebhookUrl()">{{ $t('page.recreate') }}</a>
+        </div>
+      </TsFormItem>
+      <TsFormItem label="Secret Token" labelPosition="top">
+        <div v-if="webhookData.secretToken" class="bg-op padding-md radius-md mt-md mb-md">
+          <Code class="bg-block">
+            <span id="secretToken">{{ webhookData.secretToken }}</span>
+            <span class="ml-sm tsfont-copy cursor" @click="$utils.copyText('#secretToken')"></span>
+          </Code>
+        </div>
+        <div>
+          <a v-if="webhookData.secretToken" class="mr-sm" @click="clearSecretToken()">{{ $t('page.clear') }}</a>
+          <a @click="createSecretToken()">{{ $t('page.recreate') }}</a>
+        </div>
+      </TsFormItem>
+    </TabPane>
+    <TabPane
+      v-if="eventSettingComponent"
+      :label="$t('term.rdm.eventsetting')"
+      name="event"
+      class="pl-md"
+    >
+      <component
+        :is="eventSettingComponent"
+        v-if="currentTab === 'event'"
+        :key="appData.id"
+        :appId="appData.id"
+        :projectId="appData.projectId"
+      ></component>
+    </TabPane>
+  </Tabs>
 </template>
 <script>
+import { SettingBase } from '../base-setting.js';
 export default {
   name: '',
+  defaultSettingTab: 'webhook',
   components: {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem')
   },
-  props: {
-    appData: { type: Object }
-  },
+  extends: SettingBase,
   data() {
     return {
+      currentTab: 'webhook',
       webhookData: { appId: this.appData.id },
       formConfig: [
         {
@@ -106,8 +123,7 @@ export default {
       }
       return this.webhookData.webhookUrlFull || ((this.webhookData.webhookUrlPrefix || '') + this.webhookData.webhookUrl);
     }
-  },
-  watch: {}
+  }
 };
 </script>
 <style lang="less" scoped>
