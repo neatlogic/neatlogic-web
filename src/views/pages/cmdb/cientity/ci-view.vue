@@ -12,7 +12,12 @@
       </template>
       <template v-slot:sider>
         <div>
-          <ciTypeList :ciId="ciId && parseInt(ciId)" :toggleable="false" @click="switchCi"></ciTypeList>
+          <ciTypeList
+            :ciId="ciId && parseInt(ciId)"
+            :toggleable="false"
+            :isShowInCiEntityQuery="1"
+            @click="switchCi"
+          ></ciTypeList>
         </div>
       </template>
       <div slot="content" class="ci-content border-color">

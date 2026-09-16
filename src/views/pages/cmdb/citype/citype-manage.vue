@@ -30,7 +30,7 @@
               <Col span="2">
                 <span v-if="!item.isDeleted"><i class="tsfont-bar move"></i></span>
               </Col>
-              <Col span="8">
+              <Col span="7">
                 <div v-if="!item.isDeleted">
                   <TsFormInput
                     v-model="item.name"
@@ -53,10 +53,18 @@
                   <i-switch v-model="item.isShowInTopo" :true-value="1" :false-value="0"></i-switch>
                 </div>
               </Col>
-              <Col span="4">
+              <Col span="5">
+                <TsFormSwitch
+                  v-if="!item.isDeleted"
+                  v-model="item.isShowInCiEntityQuery"
+                  :true-value="1"
+                  :false-value="0"
+                ></TsFormSwitch>
+              </Col>
+              <Col span="3">
                 <Badge :count="item.ciCount" type="primary"></Badge>
               </Col>
-              <Col span="4">
+              <Col span="3">
                 <div v-if="!item.ciCount">
                   <div
                     v-if="!item.isDeleted"
@@ -86,11 +94,13 @@
 <script>
 import draggable from 'vuedraggable';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
+import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
 export default {
   name: '',
   components: {
     draggable,
-    TsFormInput
+    TsFormInput,
+    TsFormSwitch
   },
   props: {
     id: { type: Number },
@@ -103,9 +113,9 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: '600px'
+        width: '800px'
       },
-      colSpanList: [2, 8, 4, 4, 4],
+      colSpanList: [2, 7, 4, 5, 3, 3],
       theadList: [
         {
           label: this.$t('page.sort'),
@@ -121,6 +131,10 @@ export default {
         // },
         {
           label: this.$t('term.cmdb.showintopo'),
+          uuid: this.$utils.setUuid()
+        },
+        {
+          label: this.$t('term.cmdb.showincientityquery'),
           uuid: this.$utils.setUuid()
         },
         {
