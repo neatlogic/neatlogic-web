@@ -142,6 +142,7 @@ export default {
   },
   data() {
     return {
+      initReady: false,
       dispatch: {
         owner: '',
         priorityUuid: '',
@@ -185,16 +186,17 @@ export default {
   destroyed() {},
   methods: {
     async init() {
+      this.initReady = false;
       if (!this.$utils.isEmpty(this.draftData)) {
         if (!this.$utils.isEmpty(this.draftData.ownerVo)) {
           this.userDetail = this.draftData.ownerVo;
         } else if (this.draftData.owner) {
-          await this.userChange(this.draftData.owner);
+          this.userDetail = {};
         } else {
           this.userDetail = this.$AuthUtils.getCurrentUser();
         }
-        this.dispatch.owner = 'user#' + this.userDetail.uuid;
-        this.$emit('updateDispatchOwnerInfo', this.userDetail);
+        this.dispatch.owner = this.userDetail.uuid ? 'user#' + this.userDetail.uuid : this.draftData.owner;
+        if (this.userDetail.uuid) this.$emit('updateDispatchOwnerInfo', this.userDetail);
         if (this.draftData.tagList) {
           this.tagList = this.draftData.tagList;
         }
@@ -213,6 +215,28 @@ export default {
           }
           this.defaultPriorityUuid = this.draftData.defaultPriorityUuid;
         }
+      }
+      if (this.dispatch.owner && !this.userDetail.uuid) {
+        await this.loadInitialOwner();
+      } else {
+        this.initReady = true;
+      }
+    },
+    async loadInitialOwner() {
+      // 加载上报人信息，保留初始化期间用户对其他字段的修改。
+      const owner = this.dispatch.owner;
+      this.initReady = false;
+      try {
+        const res = await this.$api.framework.user.getUser({userUuid: (owner || '').replace(/^user#/, '')});
+        if (this._isDestroyed || this.dispatch.owner !== owner) return;
+        if (res.Status !== 'OK' || !res.Return || !res.Return.uuid) {
+          return;
+        }
+        this.userDetail = res.Return;
+        this.$emit('updateDispatchOwnerInfo', this.userDetail);
+        this.initReady = true;
+      } catch (error) {
+        // 请求错误由接口层提示，保持未就绪，避免提交不完整数据。
       }
     },
     //修改用户
@@ -233,6 +257,7 @@ export default {
           if (res.Status == 'OK') {
             this.userDetail = res.Return;
             this.$emit('updateDispatchOwnerInfo', this.userDetail);
+            this.initReady = true;
           }
         });
       } else {

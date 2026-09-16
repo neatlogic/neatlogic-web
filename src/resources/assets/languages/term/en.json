@@ -907,6 +907,9 @@
     "changelinename": "Change Line Name",
     "menutype": "Menu Type",
     "allservicetype": "All Service Types",
+    "slastatus": {
+      "untiltimeout": "Until Timeout"
+    },
     "slatags": "SLA Tag Count",
     "slapolicy": "SLA Policy Count",
     "maxaging": "Top 3 Longest Service Durations (h)",

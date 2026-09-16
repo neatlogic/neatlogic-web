@@ -264,7 +264,8 @@ export default {
   filter: {},
   computed: {
     actionLoading() {
-      return !!this.processTaskActionState.loading;
+      const needsDetail = ['save', 'transfer', 'reapproval', 'back', 'complete'].some(action => this.actionConfig[action]);
+      return !!this.processTaskActionState.loading || (needsDetail && !this.isDetailReady);
     },
     isDetailReady() {
       return processStore.isDetailReady;
@@ -292,8 +293,9 @@ export default {
 <style lang="less" scoped>
 .action-loading {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   width: 32px;
   height: 32px;
 }

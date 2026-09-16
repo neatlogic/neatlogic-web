@@ -905,6 +905,9 @@
     "changelinename": "改变线名称",
     "menutype": "菜单类型",
     "allservicetype": "所有服务类型",
+    "slastatus": {
+      "untiltimeout": "后超时"
+    },
     "slatags": "SLA标签数",
     "slapolicy": "SLA策略数",
     "maxaging": "最大服务时效top3（h)",

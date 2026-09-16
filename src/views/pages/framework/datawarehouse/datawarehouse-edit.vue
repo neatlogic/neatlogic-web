@@ -289,8 +289,9 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 示例说明跟随当前界面语言。
     getExample() {
-      this.$api.framework.datawarehouse.getExample().then(res => {
+      this.$api.framework.datawarehouse.getExample(this.$i18n.locale).then(res => {
         this.example = res;
       });
     },

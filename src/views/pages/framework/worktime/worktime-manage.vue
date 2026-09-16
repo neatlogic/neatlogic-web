@@ -161,17 +161,16 @@
                   <tr v-for="(tr, index) in calendarList" :key="index">
                     <td v-for="(month, dindex) in tr.monthList" :key="dindex" class="td-content border-color">
                       <div class="month-div">{{ month.name }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.da') }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.one') }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.two') }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.three') }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.four') }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.five') }}</div>
-                      <div style="width: 13%;" class="headStyle">{{ $t('page.six') }}</div>
+                      <div class="headStyle">{{ $t('page.sundayshort') }}</div>
+                      <div class="headStyle">{{ $t('page.mondayshort') }}</div>
+                      <div class="headStyle">{{ $t('page.tuesdayshort') }}</div>
+                      <div class="headStyle">{{ $t('page.wednesdayshort') }}</div>
+                      <div class="headStyle">{{ $t('page.thursdayshort') }}</div>
+                      <div class="headStyle">{{ $t('page.fridayshort') }}</div>
+                      <div class="headStyle">{{ $t('page.saturdayshort') }}</div>
                       <div class="clear"></div>
                       <div v-for="(date, ddindex) in month.dateList" :key="ddindex">
                         <div
-                          style="width: 13%;"
                           class="bodyStyle"
                           :class="{
                             dayStyle: date.dayOfWeek !== -1,
@@ -779,6 +778,7 @@ export default {
 
 .table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 .table > thead > tr > th,
@@ -818,14 +818,17 @@ export default {
   text-align: center;
   float: left;
   margin: 1px;
-  width: 38px;
+  width: calc(100% / 7 - 2px);
   height: 20px;
 }
 .headStyle {
   float: left;
   margin: 1px;
-  width: 38px;
+  width: calc(100% / 7 - 2px);
   height: 20px;
+  font-size: 12px;
+  line-height: 20px;
+  white-space: nowrap;
   text-align: center;
   vertical-align: middle;
 }
