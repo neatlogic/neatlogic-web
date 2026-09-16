@@ -2,6 +2,7 @@
   <div>
     <TsFormInput
       ref="handler"
+      :disabled="disabled"
       border="border"
       :value="value"
       :clearable="true"
@@ -16,6 +17,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
+    disabled: { type: Boolean, default: false },
     attrData: { type: Object },
     valueList: { type: Array }
   },
@@ -36,7 +38,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 禁用状态下不修改或回传固定条件。
     setData(val) {
+      if (this.disabled) {
+        return;
+      }
       this.$emit('setData', [val]);
       this.$emit('setValue', [val]);
     },

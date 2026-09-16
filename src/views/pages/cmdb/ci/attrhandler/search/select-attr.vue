@@ -2,6 +2,7 @@
   <div>
     <TsFormSelect
       ref="handler"
+      :disabled="disabled"
       v-bind="searchConfig"
       :value="valueList"
     ></TsFormSelect>
@@ -15,6 +16,7 @@ export default {
     TsFormSelect
   },
   props: {
+    disabled: { type: Boolean, default: false },
     attrData: {type: Object},
     valueList: { type: Array }
   },
@@ -31,7 +33,11 @@ export default {
         textName: 'name',
         valueName: 'id',
         transfer: true,
+        // 禁用状态下忽略控件的变更回调。
         onChange: (val, opt) => {
+          if (this.disabled) {
+            return;
+          }
           if (opt) {
             if (Array.isArray(opt)) {
               this.$emit('setData', val, opt.filter(d => d.text));

@@ -221,6 +221,8 @@
     <CiEntityChoose
       v-if="isCiEntityChooseShow"
       :ciId="targetCiId"
+      :condition="currentRelFilter"
+      :conditionReadonly="!$utils.isEmpty(currentRelFilter)"
       @close="isCiEntityChooseShow = false"
       @confirm="getCheckCiEntity"
     ></CiEntityChoose>
@@ -263,6 +265,7 @@ export default {
       elementList: [],
       uniqueList: [],
       isCiEntityChooseShow: false,
+      currentRel: null, // 当前选择的关系，保证切换时过滤条件响应式更新
       relCiList: [], //关系的所有下游模型列表
       isRelPopShow: {}
     };
@@ -589,6 +592,19 @@ export default {
   },
   filter: {},
   computed: {
+    // 批量编辑与单项编辑一致，使用被选择模型一端的过滤条件。
+    currentRelFilter() {
+      if (!this.currentRel) {
+        return null;
+      }
+      if (this.currentRel.direction === 'from') {
+        return this.currentRel.toFilter || null;
+      }
+      if (this.currentRel.direction === 'to') {
+        return this.currentRel.fromFilter || null;
+      }
+      return null;
+    },
     elementTypeList() {
       const typeList = [];
       if (this.elementList) {

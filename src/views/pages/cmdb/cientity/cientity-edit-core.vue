@@ -262,6 +262,8 @@
       :ciId="targetCiId"
       :isMultiple="isRelMultiple"
       :selectedData="currentRelEntityValue"
+      :condition="currentRelFilter"
+      :conditionReadonly="!$utils.isEmpty(currentRelFilter)"
       @close="isCiEntityChooseShow = false"
       @confirm="getCheckCiEntity"
     ></CiEntityChoose>
@@ -661,6 +663,19 @@ export default {
   },
   filter: {},
   computed: {
+    // 当前端为 from 时选择下游，候选条件始终取被选择模型一端。
+    currentRelFilter() {
+      if (!this.currentRel) {
+        return null;
+      }
+      if (this.currentRel.direction === 'from') {
+        return this.currentRel.toFilter || null;
+      }
+      if (this.currentRel.direction === 'to') {
+        return this.currentRel.fromFilter || null;
+      }
+      return null;
+    },
     elementTypeList() {
       const typeList = [];
       if (this.ciEntityData) {

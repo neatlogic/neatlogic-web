@@ -3,6 +3,7 @@
     <div>
       <TsFormDatePicker
         ref="handler"
+        :disabled="disabled"
         border="border"
         :value="valueB"
         type="datetime"
@@ -15,6 +16,7 @@
     <div>
       <TsFormDatePicker
         ref="handler"
+        :disabled="disabled"
         border="border"
         :value="valueA"
         type="datetime"
@@ -26,6 +28,7 @@
   </div>
   <div v-else-if="mode === 'condition'">
     <div class="item mr-xs"><TsFormInput
+      :disabled="disabled"
       type="number"
       :value="valueBNumber"
       :width="60"
@@ -36,6 +39,7 @@
     <div class="item mr-xs">{{ $t('term.cmdb.daysbefore') }}</div>
     <div class="item mr-xs">~</div>
     <div class="item mr-xs"><TsFormInput
+      :disabled="disabled"
       type="number"
       :width="60"
       :step="1"
@@ -57,6 +61,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
+    disabled: { type: Boolean, default: false },
     mode: { type: String },
     propConfig: { type: Object },
     attrData: { type: Object },
@@ -91,7 +96,11 @@ export default {
       const sec = d.getSeconds();
       return year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day) + ' ' + (hour < 10 ? '0' + hour : hour) + ':' + (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
     },*/
+    // 禁用状态下不修改或回传固定条件。
     setDataBefore(val) {
+      if (this.disabled) {
+        return;
+      }
       if (val === null) {
         val = '';
       }
@@ -103,7 +112,11 @@ export default {
       this.$emit('setData', [v]);
       this.$emit('setValue', [v]);
     },
+    // 禁用状态下不修改或回传固定条件。
     setDataAfter(val) {
+      if (this.disabled) {
+        return;
+      }
       if (val === null) {
         val = '';
       }
