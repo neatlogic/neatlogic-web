@@ -44,7 +44,7 @@
     <template v-if="isShowComponent(formItem)">
       <template v-if="isFormType">
         <component
-          :is="formItem.handler"
+          :is="formItem.handler === 'formtableselector' && nestedSelectorState ? 'NestedSelector' : formItem.handler"
           v-if="canRenderHandler"
           ref="formItem"
           :style="componentStyle"
@@ -66,9 +66,14 @@
           :extendConfigList="Object.freeze(extendConfigList)"
           :formDataForWatch="formDataForWatch"
           :extraFormItemList="extraFormItemList"
+          :nestedSelectorState="nestedSelectorState"
+          @retryNestedSelector="$emit('retryNestedSelector', $event)"
+          @editNestedSelector="$emit('editNestedSelector', $event)"
+          @changeNestedExtra="$emit('changeNestedExtra', $event)"
           @setValue="setValue"
           @select="selectFormItem"
           @dropHideComponent="dropHideComponent"
+          @hook:mounted="notifyReactionReady"
         ></component>
         <div v-else class="text-warning">
           {{ getComponentTip }}
@@ -79,6 +84,7 @@
   </div>
 </template>
 <script>
+import filterValueMixin from '../common/filter-value-mixin.js';
 import formItems from '@/resources/plugins/TsSheet/form/component/index.js';
 import conditionMixin from '@/resources/plugins/TsSheet/form/conditionexpression/condition-mixin.js';
 import { REACTION } from '@/resources/plugins/TsSheet/form/reaction/index.js';
@@ -86,9 +92,10 @@ import { FORMITEMS } from '@/resources/plugins/TsSheet/form/formitem-list.js';
 export default {
   name: '',
   components: {
+    NestedSelector: () => import('./nested-selector.vue'),
     ...formItems
   },
-  mixins: [conditionMixin],
+  mixins: [conditionMixin, filterValueMixin],
   inject: [
     'getFormDataForWatch',
     'extraFormItemList',
@@ -105,8 +112,10 @@ export default {
     'mode'
   ],
   props: {
+    nestedSelectorState: { type: Object },
     rowUuid: { type: String }, //行uuid，表格组件引用时需要
     columnReadonly: { type: Boolean, default: false }, // 列是否只读，表格选择组件时使用
+    isReactionPending: { type: Boolean, default: false }, // 翻页后需要补执行未显示期间的联动
     extraUuid: {type: String},
     rowData: {
       type: Object,
@@ -146,6 +155,7 @@ export default {
         allowDelete: 0
       }, //记录操作执行次数
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
+      needsReactionReplay: this.isReactionPending,
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,
@@ -164,19 +174,45 @@ export default {
   beforeCreate() {},
   created() {
     this.initFormItem();
-    this.initReactionFormItemUuid();
+    if (this.isReactionPending) {
+      // 旧依赖只用于比较和初始化过滤条件，不执行旧的赋值、清空等操作。
+      this.reactionFormItemUuidMap = this.$utils.deepClone(this.reactionData);
+      if (this.reaction?.filter) {
+        this.REACTION.filter({ reaction: this.reaction.filter, view: this });
+      }
+    } else {
+      this.initReactionFormItemUuid();
+    }
     this.updateConfig();
     this.initStatus();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    if (this.isReactionPending && (!this.isShowComponent(this.formItem) || !this.isFormType || !this.canRenderHandler)) {
+      this.notifyReactionReady();
+    }
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    clearTimeout(this.reactionReadyTimer);
+  },
   destroyed() {},
   methods: {
+    notifyReactionReady() {
+      if (!this.isReactionPending) return;
+      // 异步子组件也需要先接收一次旧过滤条件，完成自身的首次初始化。
+      this.filter = this.$utils.deepClone(this.filter);
+      this.$nextTick(() => {
+        if (this._isDestroyed) return;
+        clearTimeout(this.reactionReadyTimer);
+        this.reactionReadyTimer = setTimeout(() => {
+          this.$emit('reactionReady');
+        }, 0);
+      });
+    },
     initFormItem() {
       const formItem = this.extraFormItemList.find(d => d.uuid === this.extraUuid);
       this.formItem = formItem ? this.$utils.deepClone(formItem) : {}; // 需要深拷贝，避免修改原数据，否则会影响到联动的禁用显示隐藏等功能
@@ -256,7 +292,8 @@ export default {
         this.executionReaction(this.reactionFormItemUuidMap);
       }
     },
-    executionReaction(newVal, oldVal) { //规则
+    executionReaction(newVal, oldVal, force = false) { //规则
+      if (this.nestedSelectorState) return;
       for (let action in this.reaction) {
         //如果override_config有配置，则相关联动不生效
         const overrideConfig = this.formItem.override_config || {};
@@ -269,7 +306,7 @@ export default {
             ruleList = [reaction];
           }
           ruleList.forEach(rule => {
-            if (this.isConditionDataChange(action, rule, newVal, oldVal, this.formItem.uuid)) {
+            if (force || this.isConditionDataChange(action, rule, newVal, oldVal, this.formItem.uuid)) {
               const result = this.executeReaction(rule, newVal, oldVal);
               if (this.REACTION[action]) {
                 //联动操作
@@ -302,49 +339,6 @@ export default {
           formItem.config[v] = true;
         }
       });
-    },
-    handleFilterValue(value, column, formItem = {}) {
-      let tmpText, tmpValue;
-      let { handler = '', config = {} } = formItem || {};
-      let { dataList = [] } = config;
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-        tmpText = tmpValue = value;
-        if (handler == 'formuserselect') {
-          tmpText = tmpValue = this.handleUserSelectValue(value);
-        } else if (!this.$utils.isEmpty(dataList)) {
-          const findData = dataList.find(f => f.value === value);
-          tmpText = findData ? findData.text : value;
-        }
-      } else if (typeof value === 'object') {
-        tmpText = value.text;
-        tmpValue = value[column];
-        if (handler == 'formuserselect') {
-          tmpText = this.handleUserSelectValue(tmpText);
-          tmpValue = this.handleUserSelectValue(tmpValue);
-        } else if (!this.$utils.isEmpty(dataList) && tmpValue) {
-          const findData = dataList.find(f => f[column] === tmpValue);
-          tmpText = findData ? findData.text : tmpText;
-        }
-      }
-      return { text: tmpText, value: tmpValue };
-    },
-    handleUserSelectValue(value) {
-      // 处理用户下拉组件的值，去掉前缀
-      let prefixList = ['user#', 'team#', 'role#'];
-      let currentValue = this.$utils.deepClone(value);
-      let uuid = '';
-      let parts = [];
-      prefixList.some(v => {
-        if (!this.$utils.isEmpty(currentValue) && currentValue.includes(v)) {
-          parts = currentValue.split(v) || [];
-          if (parts.length > 1) {
-            uuid = parts[1] || '';
-            return true;
-          }
-        }
-        return false;
-      });
-      return uuid;
     },
     isConditionDataChange(action, reaction, newFormData, oldFormData, formItemUuid) {
       if (!newFormData) {
@@ -443,8 +437,8 @@ export default {
       }
       return [];
     },
-    setValue(val) {
-      this.$emit('change', { value: val, extraUuid: this.extraUuid, row: this.rowData});
+    setValue(val, valueSource) {
+      this.$emit('change', { value: val, extraUuid: this.extraUuid, row: this.rowData, ...(this.nestedSelectorState ? { valueSource: valueSource || (val == null || (Array.isArray(val) && !val.length) ? 'clear' : 'external') } : {}) });
     },
     call(name, ...args) {
       const formItem = this.$refs['formItem'];
@@ -533,14 +527,17 @@ export default {
       return { width: this.mode != 'defaultvalue' ? (this.formItem.config && this.formItem.config.width) || '100%' : '100%' };
     },
     componentReadonly() {
+      if (this.nestedSelectorState) return this.nestedSelectorState.effective.readonly;
       const configIsReadOnly = this.formItem.config && this.formItem.config.isReadOnly;
       const currentItemReactionIsReadOnly = this.currentItemReaction && this.currentItemReaction.currentItemReadonly;
       return (this.mode != 'defaultvalue' && this.mode != 'condition' ? configIsReadOnly : false) || this.readonly || this.columnReadonly || currentItemReactionIsReadOnly;
     },
     componentDisabled() {
+      if (this.nestedSelectorState) return this.nestedSelectorState.effective.disabled;
       return (this.mode != 'defaultvalue' && this.mode != 'condition' ? this.formItem.config && this.formItem.config.isDisabled : false) || this.disabled || this.currentItemReaction?.currentItemDisabled;
     },
     componentRequired() {
+      if (this.nestedSelectorState) return this.nestedSelectorState.column.config.saveData !== false && this.nestedSelectorState.effective.required;
       const configIsRequired = this.formItem.config && this.formItem.config.isRequired;
       const currentItemReactionIsRequired = this.currentItemReaction && this.currentItemReaction.cunrrentRequire;
       return (this.mode != 'defaultvalue' ? configIsRequired : false) || currentItemReactionIsRequired;
@@ -620,6 +617,7 @@ export default {
     },
     isShowComponent() {
       return (formItem) => {
+        if (this.nestedSelectorState) return !this.nestedSelectorState.effective.hidden && !this.nestedSelectorState.effective.masked;
         let isShow = true;
         if (this?.currentItemReaction?.currentItemHide || (formItem && (this.mode === 'read' || this.mode === 'readSubform') && formItem.config && formItem.config.isHide) || formItem.isEditing || (formItem.override_config && formItem.override_config.isHide)) {
           isShow = false;
@@ -651,6 +649,18 @@ export default {
     reactionData: {
       handler(val, oldVal) {
         if (val && (this.mode === 'read' || this.mode === 'readSubform')) {
+          if (this.needsReactionReplay) {
+            if (this.isReactionPending) return;
+            this.needsReactionReplay = false;
+            this.isFirstLoad = this.$utils.isSame(val, this.reactionFormItemUuidMap);
+            this.executionReaction(val, this.reactionFormItemUuidMap, true);
+            this.reactionFormItemUuidMap = this.$utils.deepClone(val);
+            this.isFirstLoad = false;
+            if (!this.readonly && !this.disabled) {
+              this.$nextTick(() => this.validData());
+            }
+            return;
+          }
           if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && !this.$utils.isSame(val, this.reactionFormItemUuidMap)) {
             this.executionReaction(val, this.reactionFormItemUuidMap);
             this.reactionFormItemUuidMap = this.$utils.deepClone(val);

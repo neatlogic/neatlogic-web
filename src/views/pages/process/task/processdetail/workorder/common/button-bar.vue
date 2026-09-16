@@ -1,5 +1,14 @@
 <template>
-  <div class="action-group">
+  <div
+    class="action-group"
+    :class="{'action-loading-mask': actionLoading}"
+  >
+    <Loading
+      v-if="actionLoading"
+      :loadingShow="true"
+      :text="false"
+      class="action-loading"
+    ></Loading>
     <!-- 开始_start -->
     <span
       v-if="actionConfig.start"
@@ -200,6 +209,11 @@ export default {
     TransfereoastepDialog: () => import('./transfereoastep-dialog.vue'),
     ReactivateDialog: () => import('./reactivate-dialog.vue')
   },
+  inject: {
+    processTaskActionState: {
+      default: () => ({ loading: false })
+    }
+  },
   props: {
     actionConfig: { type: Object },
     disabledConfig: { tpye: Object },
@@ -249,6 +263,10 @@ export default {
   },
   filter: {},
   computed: {
+    actionLoading() {
+      const needsDetail = ['save', 'transfer', 'reapproval', 'back', 'complete'].some(action => this.actionConfig[action]);
+      return !!this.processTaskActionState.loading || (needsDetail && !this.isDetailReady);
+    },
     isDetailReady() {
       return processStore.isDetailReady;
     },
@@ -272,4 +290,22 @@ export default {
   watch: {}
 };
 </script>
-<style lang="less"></style>
+<style lang="less" scoped>
+.action-loading {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+}
+.action-loading-mask {
+  position: relative;
+  min-width: 32px;
+  min-height: 32px;
+  > :not(.action-loading) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+</style>

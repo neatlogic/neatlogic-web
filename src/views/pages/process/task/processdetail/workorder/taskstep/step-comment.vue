@@ -22,7 +22,7 @@
           ></UserCard>
         </span>
         <span class="text-grey date-text fz10">{{ stepItem.fcd | formatDate }}</span>
-        <span v-show="stepItem.sourceName" class="text-grey pl-nm">{{ $t('page.from') }}{{ stepItem.sourceName }}</span>
+        <span v-show="stepItem.sourceName" class="text-grey pl-nm">{{ $t('page.from') }} {{ stepItem.sourceName }}</span>
       </div>
       <UserCard
         class="avatar child-avatar"

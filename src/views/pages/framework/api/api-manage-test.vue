@@ -29,8 +29,8 @@
               @setConfig="setAuthConfig"
             ></component>
           </TsFormItem>
-          <TsFormItem v-if="helpData.example" :labelWidth="80" :label="$t('term.report.example')">
-            <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
+          <TsFormItem v-if="helpData.example && helpData.example.length" :labelWidth="80" :label="$t('term.framework.apiexample')">
+            <ApiExampleTabs :examples="helpData.example" :interfaceKey="rowData.token"></ApiExampleTabs>
           </TsFormItem>
           <TsFormItem :label=" $t('page.request')" :labelWidth="80">
             <div class="mb-md"><TsFormRadio v-model="tab" :dataList="requestType"></TsFormRadio></div>
@@ -123,6 +123,12 @@
           <TsFormItem v-if="isDangerousTool" :label="$t('term.framework.risktip')" :labelWidth="100">
             <div class="text-warning">{{ $t('term.framework.mcpdebugdangeroustip') }}</div>
           </TsFormItem>
+          <TsFormItem v-if="mcpHelpData.callToolExamples && mcpHelpData.callToolExamples.length" :label="$t('term.framework.toolcallexample')" :labelWidth="100">
+            <ApiExampleTabs
+              :examples="mcpHelpData.callToolExamples"
+              :interfaceKey="rowData.token"
+            ></ApiExampleTabs>
+          </TsFormItem>
           <TsFormItem :label="$t('term.framework.callarguments')" :labelWidth="100">
             <TsCodemirror
               :value="argumentText"
@@ -163,6 +169,7 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    ApiExampleTabs: () => import('./api-example-tabs.vue'),
     JsonViewer: () => import('vue-json-viewer'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ...authHandler

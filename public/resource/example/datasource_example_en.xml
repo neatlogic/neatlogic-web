@@ -1,0 +1,63 @@
+<datasource>
+  <!-- fields defines the list of returned fields. -->
+  <fields>
+    <!-- id defines a unique key; multiple id fields can form a composite key. Use field for other fields. Supported type values are number, text, time, date, and datetime. Numbers retain at most four decimal places.
+  Use aggregate for aggregation. Supported operations are sum and count. Fields with aggregate are counted or summed by the id fields. -->
+    <id column="id" label="ID" type="number"/>
+    <field column="user_id" label="User ID" type="text"/>
+    <field column="user_name" label="User Name" type="text"/>
+    <field column="phone" label="Phone" type="number"/>
+    <!-- For JSON fields, use paths such as x.y.z to extract nested properties. -->
+     <field column="json.x" label="JSON Property x" type="text"/>
+  </fields>
+  <!-- params defines fields whose maximum values are retained. For example, retain the maximum id after each execution and use it as a filter in the next execution for incremental synchronization. -->
+  <params>
+    <!-- column identifies a returned field, which must be numeric. Convert time values to timestamps before retaining them.
+      Reference the value in a WHERE clause using #{column}, replacing column with the field name. -->
+    <param column="id" label="Maximum ID" default="0"/>
+  </params>
+  <!-- Multiple select elements are supported. The fields returned by each statement must match the fields definition. -->
+  <!-- SQL example -->
+  <select>
+    select user_id,user_name,phone,json from `user` where id > #{id}
+  </select>
+  <!-- MongoDB example -->
+  <!-- MongoDB supports aggregation pipelines only. API reference: https://www.mongodb.com/docs/manual/reference/operator/aggregation/ -->
+  <select>
+  {
+  aggregate: "INSPECT_REPORTS",
+  pipeline: [
+    {
+      $match: {
+        _report_time: { $lte: ISODate("2022-11-05T00:00:00.000Z") },
+        "_inspect_result.status": { $in: ["CRITICAL", "WARN", "FATAL"] }
+      }
+    },
+    {
+      $sort: { _report_time: -1 }
+    },
+    {
+      $project: {
+        resourceId: "$RESOURCE_ID",
+        status: "$_inspect_result.status"
+      }
+    }
+  ],
+  cursor: {}
+}
+  </select>
+  <!-- Elasticsearch example -->
+  <select>
+ {
+    "index": "alert",
+    "query": {
+      "range": {
+        "id": { "gt": #{id} }
+      }
+    },
+    "_source": ["id","title","level","alertTime","status","attrObj.entityName"],
+    "sort": [{ "id": { "order": "asc" } }],
+    "size": 100
+  }
+  </select>
+</datasource>

@@ -63,11 +63,13 @@
                           :extraUuid="column.uuid"
                           :columnReadonly="getColumnReadonly(column.uuid)"
                           :reactionData="getReactionData(column, row)"
-                          :reactionValueData="reactionValuesMap[column.uuid]"
+                          :reactionValueData="getReactionValueData(column, row)"
+                          :isReactionPending="!!pendingReactionValuesMap[`${row.uuid}_${column.uuid}`]"
                           :expressionData="getExpressionData(column)"
                           class="form-item-width"
                           @change="changeRow"
                           @getCurrentRowData="getCurrentRowData"
+                          @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${column.uuid}`)"
                         ></ColumnItem>
                       </td>
                     </tr>
@@ -109,6 +111,7 @@
         :externalData="externalData"
         :extendConfigList="extendConfigList"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
+        :dataProvider="dataProvider"
         @resize="$emit('resize')"
         @change="getSelectedData"
       ></DataList>
@@ -124,6 +127,7 @@
       :formItemList="formItemList"
       :externalData="externalData"
       :extendConfigList="extendConfigList"
+      :dataProvider="dataProvider"
       @close="closeTableSelectorDialog"
     ></DataDialog>
   </div>
@@ -148,11 +152,13 @@ export default {
   extends: base,
   mixins: [validmixin, conditionMixin, ExpressionMixin, ColumnItemMixin, TableMixin],
   props: {
+    dataProvider: { type: Function },
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
   },
   data() {
     return {
+      isReady: false,
       isTableSelectorDialogShow: false,
       selectedItemList: [],
       rowFormItem: {},
@@ -174,7 +180,12 @@ export default {
     this.reactionWatch();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      //避免初始化数据，联动过滤清空表格内数据
+      this.isReady = true;
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},

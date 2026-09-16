@@ -300,6 +300,7 @@ export default {
           });
         }
         this.isShow = true;
+        this.isSaving = true;
         this.$api.report.report.saveReportInstance(this.reportInstanceData).then(res => {
           if (res.Status == 'OK') {
             this.$Message.success(this.$t('message.savesuccess'));

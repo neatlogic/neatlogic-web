@@ -1,6 +1,30 @@
 <template>
   <div>
-    <TsFormItem :label="$t('page.disabledd')" labelPosition="left" contentAlign="right">
+    <template v-if="isTableInputer">
+      <TsFormItem
+        :label="$t('form.nestedSelector.saveData')"
+        labelPosition="right"
+        contentAlign="left"
+        :tooltip="$t('form.nestedSelector.saveHelp')"
+      >
+        <TsFormSwitch
+          :value="config.saveData !== false"
+          :trueValue="true"
+          :falseValue="false"
+          :disabled="disabled"
+          @on-change="changeSaveData"
+        ></TsFormSwitch>
+      </TsFormItem>
+      <TsFormItem v-if="config.saveData !== false" :label="$t('form.nestedSelector.saveMode')" :labelPosition="isTableInputer ? 'right' : 'top'">
+        <TsFormRadio
+          :value="config.saveMode || 'selected'"
+          :dataList="[{ value: 'selected', text: $t('form.nestedSelector.selected') }, { value: 'allMatched', text: $t('form.nestedSelector.allMatched') }]"
+          :disabled="disabled"
+          @on-change="changeSaveMode"
+        ></TsFormRadio>
+      </TsFormItem>
+    </template>
+    <TsFormItem :label="$t('page.disabledd')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
       <TsFormSwitch
         :value="config.disableAddData"
         :trueValue="true"
@@ -11,7 +35,7 @@
         }"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem :label="$t('page.disabledelete')" labelPosition="left" contentAlign="right">
+    <TsFormItem :label="$t('page.disabledelete')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
       <TsFormSwitch
         :value="config.disableDeleteData"
         :trueValue="true"
@@ -25,8 +49,7 @@
     <TsFormItem
       :label="$t('term.framework.hideheaderwhendataempty')"
       labelPosition="left"
-      contentAlign="right"
-      labelWidth="180"
+      :contentAlign="isTableInputer ? 'left' : 'right'"
     >
       <TsFormSwitch
         v-model="config.hideHeaderWhenDataEmpty"
@@ -35,25 +58,22 @@
         :disabled="disabled"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem :label="$t('term.framework.selectmode')" labelPosition="left" contentAlign="right">
-      <TsFormRadio v-model="config.mode" :dataList="modeList" :disabled="disabled"></TsFormRadio>
+    <TsFormItem :label="$t('term.framework.selectmode')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
+      <TsFormRadio v-model="config.mode" :dataList="modeList" :disabled="disabled || forceNormalMode"></TsFormRadio>
     </TsFormItem>
     <TsFormItem
       :label="$t('page.matrix')"
-      labelPosition="top"
+      :labelPosition="isTableInputer ? 'right' : 'top'"
       :validateList="['required']"
     >
-      <div class="radius-sm padding-md" :class="validClass('matrixUuid')">
+      <div :class="[validClass('matrixUuid'), isTableInputer ? 'matrix-source' : 'radius-sm padding-md']">
         <TsFormSelect
           v-model="config.matrixUuid"
           v-bind="matrixConfig"
           :selectItemList.sync="selectMatrixConfig"
           :disabled="disabled"
           @first="$utils.matrixDataSourceRedirect()"
-          @change="(val)=>{
-            $set(config, 'dataConfig', []);
-            changeMatrix(val);
-          }"
+          @change="changeMatrixSource"
           @change-label="changeMatrixLabel"
         >
           <template v-slot:option="{item}">
@@ -75,7 +95,7 @@
       v-if="config.dataSource === 'matrix' && config.matrixUuid"
       :tooltip="$t('message.framework.matrixtip')"
       :label="$t('term.framework.matrixattr')"
-      labelPosition="top"
+      :labelPosition="isTableInputer ? 'right' : 'top'"
     >
       <div class="padding-md radius-md bg-block">
         <div class="tstable-container tstable-normal radius-lg">
@@ -139,7 +159,7 @@
         </div>
       </div>
     </TsFormItem>
-    <TsFormItem :label="$t('term.cmdb.uniquerule')" tooltip="根据属性设置，筛选出所有标记为'是否唯一'的属性，若选择下列属性配置多个字段的组合唯一性，则通过这些字段的组合来确保数据的唯一性；若未选择下列属性，则会单独对下列每个字段进行唯一性校验。" labelPosition="top">
+    <TsFormItem :label="$t('term.cmdb.uniquerule')" :tooltip="$t('form.nestedSelector.uniqueHelp')" :labelPosition="isTableInputer ? 'right' : 'top'">
       <TsFormCheckbox
         :value="config.uniqueRuleConfig"
         :dataList="handleUniqueRuleConfigDataList"
@@ -150,12 +170,12 @@
         }"
       ></TsFormCheckbox>
     </TsFormItem>
-    <!-- <TsFormItem label="分页" labelPosition="left" contentAlign="right">
+    <!-- <TsFormItem label="分页" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
       <TsFormSwitch v-model="config.needPage" :trueValue="true" :falseValue="false"></TsFormSwitch>
     </TsFormItem>-->
     <TsFormItem
       :label="$t('page.pagesize')"
-      labelPosition="top"
+      :labelPosition="isTableInputer ? 'right' : 'top'"
     >
       <TsFormInput
         v-model="config.pageSize"
@@ -165,7 +185,7 @@
         :disabled="disabled"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem v-if="config.matrixUuid && selectMatrixConfig" labelPosition="top" :label="$t('page.filtercondition')">
+    <TsFormItem v-if="config.matrixUuid && selectMatrixConfig" :labelPosition="isTableInputer ? 'right' : 'top'" :label="$t('page.filtercondition')">
       <div class="bg-block padding-md radius-md" :class="validClass('sourceColumnList')">
         <DataSourceFilter
           v-model="config.sourceColumnList"
@@ -179,6 +199,7 @@
     <AttrConfigDialog
       v-if="isAttrConfigDialogShow && currentProperty"
       :formItemUuid="formItem.uuid"
+      :isNeedTable="!isTableInputer"
       :formItemConfig="config"
       :property="currentProperty"
       :formItemList="formItemList"
@@ -191,6 +212,7 @@
 <script>
 import base from '../base-config.vue';
 import draggable from 'vuedraggable';
+import selectorDefinition from '../../define/formtableselector.js';
 
 export default {
   name: '',
@@ -206,7 +228,7 @@ export default {
     DataSourceFilter: () => import('../common/data-source-filter.vue')
   },
   extends: base,
-  props: {},
+  props: { isTableInputer: { type: Boolean, default: false } },
   data() {
     return {
       modeList: [
@@ -243,6 +265,19 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeSaveData(value) {
+      this.$set(this.config, 'saveData', value);
+      this.$set(this.config, 'isUnique', false);
+      if (!value) {
+        this.$set(this.config, 'mode', 'normal');
+        this.$set(this.config, 'isRequired', false);
+        if (this.formItem.reaction) this.$delete(this.formItem.reaction, 'required');
+      }
+    },
+    changeSaveMode(value) {
+      this.$set(this.config, 'saveMode', value);
+      if (value === 'allMatched') this.$set(this.config, 'mode', 'normal');
+    },
     removeExtraProperty(data) {
       const index = this.config.dataConfig.findIndex(d => d === data);
       if (index > -1) {
@@ -287,12 +322,27 @@ export default {
         this.config.dataConfig.push(newProperty);
       }
     },
+    changeMatrixSource(matrixUuid) {
+      this.$set(this.config, 'dataConfig', []);
+      this.$set(this.config, 'sourceColumnList', []);
+      this.$set(this.config, 'uniqueRuleConfig', []);
+      // 独立和嵌套选择器均重置自身全部联动，保留规则入口，不修改其他组件的规则。
+      const reaction = {};
+      Object.keys({ ...selectorDefinition.reaction, ...this.formItem.reaction }).forEach(key => { reaction[key] = {}; });
+      this.$set(this.formItem, 'reaction', reaction);
+      this.$emit('resetReaction');
+      this.changeMatrix(matrixUuid);
+    },
     changeMatrix(matrixUuid) {
+      // 切换、清空或连续刷新都会使旧请求失效，旧响应不能修改属性或结束新请求的编辑状态。
+      const requestVersion = this._matrixRequestVersion = (this._matrixRequestVersion || 0) + 1;
+      const isCurrent = () => requestVersion === this._matrixRequestVersion && this.config.matrixUuid === matrixUuid && !this._isDestroyed && !this._isBeingDestroyed;
       if (matrixUuid) {
         //更新了矩阵需要重新刷新columnList,先把表单组件变成不就绪状态，等columnList加载完再重新改为就绪状态
         this.formItem.isEditing = true;
         this.tbodyList = [];
-        this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: matrixUuid }).then(res => {
+        return this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: matrixUuid }).then(res => {
+          if (!isCurrent()) return;
           //获取矩阵的属性
           const dataList = res.Return.tbodyList || [];
           //删除矩阵中不存在的值
@@ -323,13 +373,14 @@ export default {
             }
           });
         }).catch(err => {
+          if (!isCurrent()) return;
           //有异常时只保留扩展字段
           this.config.dataConfig = this.config.dataConfig.filter(d => d.isExtra);
         }).finally(() => {
-          this.$delete(this.formItem, 'isEditing');
+          if (isCurrent()) this.$delete(this.formItem, 'isEditing');
         });
       }
-      this.$set(this.config, 'sourceColumnList', []);
+      this.$delete(this.formItem, 'isEditing');
     },
     dealDataFilter(nodeList) {
       //处理矩阵数据为表单需要的数据结构
@@ -366,6 +417,9 @@ export default {
   },
   filter: {},
   computed: {
+    forceNormalMode() {
+      return this.isTableInputer && (this.config.saveData === false || this.config.saveMode === 'allMatched');
+    },
     handleUniqueRuleConfigDataList() {
       let dataList = [];
       let {dataConfig = [] } = this.config;
@@ -381,11 +435,17 @@ export default {
   watch: {
     'config.matrixUuid': {
       handler: function(val) {
+        // 过滤条件的可选属性单独加载，也必须忽略旧矩阵或已关闭面板的响应。
+        const requestVersion = this._mappingRequestVersion = (this._mappingRequestVersion || 0) + 1;
+        const isCurrent = () => requestVersion === this._mappingRequestVersion && this.config.matrixUuid === val && !this._isDestroyed && !this._isBeingDestroyed;
+        this.mappingDataList = [];
         if (val) {
-          this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: val }).then(res => {
-            if (res.Status == 'OK') {
+          return this.$api.framework.matrix.getMatrixAttributeByUuid({ matrixUuid: val }).then(res => {
+            if (isCurrent() && res.Status == 'OK') {
               this.mappingDataList = res.Return.tbodyList;
             }
+          }).catch(() => {
+            if (isCurrent()) this.mappingDataList = [];
           });
         }
       },
@@ -396,6 +456,31 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.table-inputer-config {
+  .matrix-source {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    > :first-child {
+      flex: 1;
+      min-width: 0;
+    }
+    .matrix-btn {
+      position: static;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+    }
+  }
+  > ::v-deep .ivu-form-item {
+    margin-bottom: 16px;
+    > .ivu-form-item-content {
+      text-align: left;
+      min-width: 0;
+    }
+  }
+}
+
  ::v-deep .ivu-checkbox-wrapper {
   margin-right: 0;
 }

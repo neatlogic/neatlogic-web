@@ -1,4 +1,26 @@
 {
+  "nestedSelector": {
+    "loading": "匹配数据尚未加载完成",
+    "loadFailed": "数据加载失败，请重试",
+    "filterRequired": "请先填写筛选条件",
+    "rowError": "第 {row} 行【{column}】：{message}",
+    "saveData": "是否保存",
+    "saveHelp": "开启保存：详情页展示提交时的数据快照；关闭保存：仅实时查询，不提交数据。关闭保存或保存全部匹配记录时，使用直接选择；搜索只影响浏览，不改变全部保存的范围。筛选条件可在“交互 / 过滤”中引用当前行及表格外字段。",
+    "saveMode": "保存策略",
+    "selected": "保存勾选记录",
+    "allMatched": "保存全部匹配记录",
+    "uniqueHelp": "根据属性设置，筛选出所有标记为'是否唯一'的属性，若选择下列属性配置多个字段的组合唯一性，则通过这些字段的组合来确保数据的唯一性；若未选择下列属性，则会单独对下列每个字段进行唯一性校验。",
+    "displayFieldRequired": "请至少选择一个展示的矩阵属性",
+    "fieldKeyRequired": "请填写矩阵属性的英文名称",
+    "nestedContainerUnsupported": "表格选择内不支持继续嵌套表格容器",
+    "normalModeRequired": "不保存或保存全部匹配记录时，请使用普通模式",
+    "filterInvalid": "请补全过滤条件，引用当前行或表格外的普通字段",
+    "fixedFilterInvalid": "请补全固定过滤条件",
+    "currentRowField": "当前行 / {label}",
+    "outerField": "表格外 / {label}",
+    "attributeSettings": "表格属性设置",
+    "excelUnsupported": "表格选择列不支持 Excel 导入导出；导入导出仅处理其他列。"
+  },
   "help": {
     "nameattribute": "名称用于拓扑展示和关系展示",
     "uniquerule": "选择多个属性作为配置项的唯一性校验",

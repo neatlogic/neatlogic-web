@@ -67,6 +67,9 @@ export default {
   extends: base,
   mixins: [validmixin],
   props: {
+    // 可选接口 (params, { signal }) => Promise<矩阵分页响应>；Return.tbodyList 须已映射为列 UUID 对应的值。
+    // 未传入时仍由本组件请求矩阵并映射原始记录，分页元数据沿用矩阵接口。
+    dataProvider: { type: Function },
     disabled: {type: Boolean},
     readonly: {
       type: Boolean,
@@ -190,28 +193,30 @@ export default {
       //每次请求使用独立的AbortController，后续查询可通过signal取消当前请求
       const abortController = new AbortController();
       this.matrixAbortController = abortController;
-      this.$api.framework.matrix.getNewMatrixDataForTable(searchParam, { signal: abortController.signal }).then(res => {
+      (this.dataProvider ? this.dataProvider(searchParam, { signal: abortController.signal }) : this.$api.framework.matrix.getNewMatrixDataForTable(searchParam, { signal: abortController.signal })).then(res => {
         //取消请求或过期请求均不处理，防止旧响应覆盖最后一次查询结果
         if (abortController.signal.aborted || requestId !== this.matrixRequestId || !res) {
           return;
         }
         this.matrixData = res.Return;
         if (!this.$utils.isEmpty(this.matrixData.tbodyList)) {
-          let tbodyList = [];
-          this.matrixData.tbodyList.forEach(d => {
-            let td = {};
-            //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
-            for (let k in d) {
-              d[k] = d[k].text;
-            }
-            if (d.uuid) {
-              td.uuid = d.uuid;
-            }
-            Object.keys(this.matrixAttrUuidMap).forEach(uuid => {
-              td[uuid] = d[this.matrixAttrUuidMap[uuid]];
+          let tbodyList = this.dataProvider ? this.matrixData.tbodyList : [];
+          if (!this.dataProvider) {
+            this.matrixData.tbodyList.forEach(d => {
+              let td = {};
+              //矩阵回来的数据包含了text,type,value三个属性，表格显示时只需要text属性
+              for (let k in d) {
+                d[k] = d[k].text;
+              }
+              if (d.uuid) {
+                td.uuid = d.uuid;
+              }
+              Object.keys(this.matrixAttrUuidMap).forEach(uuid => {
+                td[uuid] = d[this.matrixAttrUuidMap[uuid]];
+              });
+              tbodyList.push(td);
             });
-            tbodyList.push(td);
-          });
+          }
           tbodyList.forEach(d => {
             if (!this.$utils.isEmpty(this.config.dataConfig.length)) {
               this.config.dataConfig.forEach(column => {
@@ -262,6 +267,7 @@ export default {
         if (abortController.signal.aborted || (error && error.code === 'ERR_CANCELED')) {
           return;
         }
+        if (this.dataProvider) return; // 数据提供方负责展示查询错误。
         return Promise.reject(error);
       }).finally(() => {
         //旧请求结束时不能关闭新请求的loading，也不能清理新请求的Controller
@@ -300,6 +306,7 @@ export default {
       return {...formItem};
     },
     getSelectedItem(idList, itemList) {
+      if (this.dataProvider && (this.readonly || this.disabled)) return;
       this.selectedItemList.push(...itemList);
       // 先过滤 selectedItemList 中的元素，只保留在 idList 中的
       const filteredItemList = this.selectedItemList.filter(item => idList.includes(item.uuid));
@@ -428,6 +435,10 @@ export default {
     }
   },
   watch: {
+    value: {
+      handler() { if (this.dataProvider) this.init(); },
+      deep: true
+    },
     filter: {
       handler: function(val) {
         this.searchMatrixData(1);
