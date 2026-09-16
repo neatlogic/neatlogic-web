@@ -1,6 +1,8 @@
 {
   "actionaudit": "Action Record",
+  "jobaudit": {"action": "Operation Type", "actions": {"abort": "Abort Job", "check": "Verify Job", "execute": "Execute Job", "ignore": "Ignore", "interact": "Continue Execution", "nodeRefire": "Re-execute", "pause": "Pause Job", "phaseExecute": "Execute Phase", "phaseIgnore": "Ignore Phase", "refire": "Re-execute Job", "reset": "Reset", "revoke": "Revoke Job", "sqlReset": "Reset SQL File", "takeover": "Take Over Job"}, "allphases": "Current Job · All Phases", "currentExecUser": "New Execution User", "detail": "Operation Details", "empty": "No operation records. Only business operations performed after this feature was enabled are recorded.", "interactionType": "Interaction Type", "interactionValue": "Interaction Choice", "keyword": "Object Name / IP / SQL File Name", "loadfailed": "Unable to load operation records. Please retry.", "object": {"job": "Job", "node": "Node", "phase": "Phase", "sql": "SQL File"}, "previousExecUser": "Previous Execution User", "scope": "Operation Scope", "selectrecord": "Select an operation record.", "strategyText": "Execution Strategy", "target": "Target Object", "targets": "Target Details", "time": "Operation Time"},
   "updatefrom": "Modification Method",
+  "application": "Application",
   "apply": "Apply",
   "append": "Append",
   "model": "Model",

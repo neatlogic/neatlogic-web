@@ -112,7 +112,7 @@ export default {
         { title: this.$t('page.environment'), key: 'envName'},
         { title: this.$t('term.cmdb.citype'), key: 'typeLabel'},
         { title: this.$t('page.module'), key: 'appModuleName'},
-        { title: this.$t('page.apply'), key: 'appSystemName'},
+        { title: this.$t('page.application'), key: 'appSystemName'},
         { title: this.$t('page.assetstatus'), key: 'stateName'},
         { title: this.$t('page.networkarea'), key: 'networkArea'},
         { title: this.$t('page.subordinatedepartment'), key: 'bgList', type: 'usercards'},

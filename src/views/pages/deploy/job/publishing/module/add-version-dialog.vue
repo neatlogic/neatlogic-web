@@ -40,7 +40,7 @@ export default {
       },
       formList: [
         {
-          label: this.$t('page.apply'),
+          label: this.$t('page.application'),
           type: 'select',
           name: 'appSystemId',
           validateList: ['required'],

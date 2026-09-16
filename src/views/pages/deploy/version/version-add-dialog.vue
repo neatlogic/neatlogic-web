@@ -40,7 +40,7 @@ export default {
       },
       formList: [
         {
-          label: this.$t('page.apply'),
+          label: this.$t('page.application'),
           type: 'select',
           name: 'appSystemId',
           validateList: ['required'],
@@ -138,7 +138,7 @@ export default {
       for (let key = 0; key < this.formList.length; key++) {
         if (this.formList[key]['name'] == 'appModuleId') {
           this.formList[key]['params']['appSystemIdList'] = appSystemId ? [appSystemId] : [];
-          this.formList[key]['disabledHoverTitle'] = appSystemId ? '' : this.$t('form.placeholder.pleaseselect', {target: this.$t('page.apply')});
+          this.formList[key]['disabledHoverTitle'] = appSystemId ? '' : this.$t('form.placeholder.pleaseselect', {target: this.$t('page.application')});
           this.formList[key]['disabled'] = !appSystemId;
           break;
         }

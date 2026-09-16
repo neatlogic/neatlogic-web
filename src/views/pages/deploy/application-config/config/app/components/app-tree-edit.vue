@@ -6,8 +6,8 @@
       @on-close="closeDialog"
     >
       <template v-slot:header>
-        <div v-if="appSystemId">{{ $t('dialog.title.edittarget', {target: $t('page.apply')}) }}</div>
-        <div v-else>{{ $t('dialog.title.addtarget', {target: $t('page.apply')}) }}</div>
+        <div v-if="appSystemId">{{ $t('dialog.title.edittarget', {target: $t('page.application')}) }}</div>
+        <div v-else>{{ $t('dialog.title.addtarget', {target: $t('page.application')}) }}</div>
       </template>
       <template v-slot>
         <div>
