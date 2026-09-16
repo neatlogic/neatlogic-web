@@ -22,6 +22,10 @@
     "exclude": "exclude"
   },
   "cmdb": {
+    "relfilterconfigured": "Configured",
+    "relfilterinvalid": "A filter reference is unavailable or its operator is no longer supported. Correct it or clear the filters and configure them again.",
+    "relfilterloadfailed": "Failed to load filter metadata. Close this dialog and try again.",
+
     "cabinetone": "Cabinet 1",
     "switch1": "Switch 1",
     "objectstorage1": "Object Storage 1",

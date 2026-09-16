@@ -22,6 +22,10 @@
     "exclude": "不包括"
   },
   "cmdb": {
+    "relfilterconfigured": "已配置",
+    "relfilterinvalid": "过滤条件引用已失效或操作符不再支持，请修正或清空后重新配置",
+    "relfilterloadfailed": "过滤条件元数据加载失败，请关闭后重试",
+
     "cabinetone": "机柜一号",
     "switch1": "交换机1",
     "objectstorage1": "对象存储1",
