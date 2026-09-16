@@ -99,7 +99,7 @@ export default {
           {
             type: 'select',
             name: 'appSystemIdList',
-            label: this.$t('page.apply'),
+            label: this.$t('page.application'),
             multiple: true,
             value: null,
             dynamicUrl: '/api/rest/resourcecenter/appsystem/list/forselect',
@@ -220,7 +220,7 @@ export default {
         {
           name: 'appSystemIdList',
           type: 'select',
-          label: this.$t('page.apply'),
+          label: this.$t('page.application'),
           search: true,
           transfer: true,
           defaultValue: [],

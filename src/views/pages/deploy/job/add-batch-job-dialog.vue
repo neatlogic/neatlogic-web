@@ -98,7 +98,7 @@ export default {
         },
         appSystemId: {
           type: 'select',
-          label: this.$t('page.apply'),
+          label: this.$t('page.application'),
           value: null,
           dynamicUrl: '/api/rest/deploy/app/config/appsystem/search',
           dealDataByUrl: (nodeList) => { return this.dealDataByUrl(nodeList, 'appsystem'); },
