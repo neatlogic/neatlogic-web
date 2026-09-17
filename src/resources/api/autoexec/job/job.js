@@ -1,6 +1,14 @@
 import axios from '../../http';
 
 const job = {
+  // 查询当前作业的业务操作记录。
+  searchOperationAudit(params) {
+    return axios.post('/api/rest/autoexec/job/operation/audit/search', params);
+  },
+  // 获取单条操作记录与分页目标快照。
+  getOperationAudit(params) {
+    return axios.post('/api/rest/autoexec/job/operation/audit/get', params);
+  },
   //作业搜索（作业执行列表）
   searchJobList(params, cancelRequest = {}) {
     return axios.post('/api/rest/autoexec/job/search', params, cancelRequest);
@@ -114,7 +122,7 @@ const job = {
   },
   revokeJob(params) {
     //撤销作业
-    return axios.post('/api/rest/autoexec/job/from/combop/revoke', params);
+    return axios.post('/api/rest/autoexec/job/revoke', params);
   },
   takeoverJob(params) {
     //接管作业

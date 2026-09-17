@@ -1,6 +1,6 @@
 {
   "actionaudit": "操作记录",
-  "jobaudit": {"action": "操作类型", "actions": {"abort": "终止作业", "check": "验证作业", "execute": "执行作业", "ignore": "忽略", "interact": "继续执行", "nodeRefire": "重新执行", "pause": "暂停作业", "phaseExecute": "执行阶段", "phaseIgnore": "忽略阶段", "refire": "重新执行作业", "reset": "重置", "revoke": "撤销作业", "sqlReset": "重置 SQL 文件", "takeover": "接管作业"}, "allphases": "当前作业 · 全部阶段", "currentExecUser": "新执行人", "detail": "操作详情", "empty": "暂无操作记录，仅记录功能上线后的业务操作", "interactionType": "交互类型", "interactionValue": "交互选择", "keyword": "对象名称 / IP / SQL 文件名", "loadfailed": "操作记录加载失败，请重试", "object": {"job": "作业", "node": "节点", "phase": "阶段", "sql": "SQL 文件"}, "previousExecUser": "原执行人", "scope": "操作范围", "selectrecord": "请选择一条操作记录", "strategyText": "执行策略", "target": "目标对象", "targets": "目标明细", "time": "操作时间"},
+  "jobaudit": {"action":"操作类型","allphases":"当前作业 · 全部阶段","currentExecUser":"新执行人","detail":"操作详情","empty":"暂无操作记录","interactionType":"交互类型","interactionValue":"交互选择","keyword":"对象名称 / IP / SQL 文件名","loadfailed":"操作记录加载失败，请重试","object":{"job":"作业","node":"节点","phase":"阶段","sql":"SQL 文件"},"objecttype":"操作对象类型","previousExecUser":"原执行人","scope":"操作范围","selectrecord":"请选择一条操作记录","strategyText":"执行策略","target":"操作对象","targets":"目标明细","time":"操作时间"},
   "updatefrom": "修改方式",
   "application": "应用",
   "apply": "应用",
