@@ -75,6 +75,7 @@
               :needExportFlow="true"
               :needMinimap="true"
               :graph="graph"
+              :strictMode.sync="strictMode"
               mode="graph"
               :readonly="!!processTaskId"
             ></FlowEditorToolbar>
@@ -83,6 +84,7 @@
             <FlowEditor
               ref="flowEditor"
               :config="flowConfig"
+              :strictMode="strictMode"
               :muted="true"
               :callback="{ validateNode: validateNode }"
               :disableAddDelete="!!processTaskId"
@@ -261,6 +263,7 @@ export default {
       graph: null,
       dnd: null,
       flowConfig: {}, //流程设计器的设置
+      strictMode: false, //严格框选模式
       flowData: { process: { formConfig: {} } }, //流程数据
       allowDispatchStepWorkerNode: [], //允许指派任务的节点
       processTaskId: null,

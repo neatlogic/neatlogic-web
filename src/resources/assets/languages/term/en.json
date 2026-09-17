@@ -1026,7 +1026,8 @@
     "settime": "Set Time",
     "setdate": "Set Calendar",
     "titletemplatetooltip": "Example: ${regionName} user ${userName} initiates a data center inspection on ${yyyyMMdd}.\nAvailable variables:\n",
-    "viewdocs": "View Documents"
+    "viewdocs": "View Documents",
+    "strictmodetip": "When enabled, drag on an empty canvas area to box-select multiple nodes."
   },
   "autoexec": {
     "times": "Times",

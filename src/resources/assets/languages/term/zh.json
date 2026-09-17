@@ -1024,7 +1024,8 @@
     "settime": "设置时间",
     "setdate": "设置日历",
     "titletemplatetooltip": "示例:${regionName}机构用户${userName}于${yyyyMMdd}发起机房巡检\n可用变量:\n",
-    "viewdocs": "查看文档"
+    "viewdocs": "查看文档",
+    "strictmodetip": "开启后，拖动画布空白处可框选多个节点。"
   },
   "autoexec": {
     "times": "次",
