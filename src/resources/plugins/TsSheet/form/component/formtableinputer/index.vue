@@ -273,12 +273,19 @@ export default {
     init() {
       if (this.value && this.value instanceof Array && this.value.length > 0) {
         const value = this.$utils.deepClone(this.value);
-        //去掉不存在的表头数据
+        const dataColumns = [...this.config.dataConfig];
+        const referenceFormItem = this.effectiveReferenceFormItemList.find(item => item.uuid === this.formItem.uuid);
+        (referenceFormItem?.config?.dataConfig || []).forEach(column => {
+          if (!dataColumns.some(item => item.uuid === column.uuid)) {
+            dataColumns.push(column);
+          }
+        });
+        // 仅清理当前场景和主场景都不存在的列，保留其他场景的已有数据。
         for (let i = value.length - 1; i >= 0; i--) {
           const element = value[i];
           for (let key in element) {
-            if (key != 'uuid' && !this.config.dataConfig.find(d => d.uuid === key)) {
-              let findKey = this.config.dataConfig.find(d => d.key === key);
+            if (key != 'uuid' && !dataColumns.find(d => d.uuid === key)) {
+              let findKey = dataColumns.find(d => d.key === key);
               if (findKey) {
                 //根据uuid不存在时根据key取值
                 this.$set(element, findKey.uuid, element[key]);
