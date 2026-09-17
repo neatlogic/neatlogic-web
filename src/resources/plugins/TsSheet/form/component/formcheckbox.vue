@@ -1,8 +1,9 @@
 <template>
   <div v-if="errorList.length === 0">
+    <div v-if="config.dataSource === 'matrix' && !filterReady" class="text-grey mb-xs">{{ filterInvalid?$t('term.framework.filterqueryinvalid') : $t('term.framework.filterquerywaiting') }}</div>
     <TsFormCheckbox
       ref="formitem"
-      :readonly="readonly"
+      :readonly="readonly || (config.dataSource === 'matrix' && !filterReady)"
       :disabled="disabled"
       :value="actualValue"
       :dataList="dataList"
@@ -61,6 +62,8 @@ export default {
       return this.validConfigForListItem();
     },
     getData() {
+      const requestVersion = this._filterRequestVersion = (this._filterRequestVersion || 0) + 1;
+      if (this.config.dataSource === 'matrix' && !this.filterReady) return;
       if (this.config.dataSource === 'matrix') {
         if (this.config.matrixUuid && this.config.mapping && this.config.mapping.value && this.config.mapping.text) {
           const params = {
@@ -83,6 +86,7 @@ export default {
             });
           }
           this.$api.framework.matrix.getMatrixDataForSelect(params).then(res => {
+            if (this._isDestroyed || this._isBeingDestroyed || requestVersion !== this._filterRequestVersion || !this.filterReady) return;
             this.dataList = res.Return.dataList;
             this.$nextTick(() => {
               this.$emit('resize');
@@ -153,6 +157,11 @@ export default {
     }
   },
   watch: {
+    filterReady() {
+      // 同一轮过滤值与就绪状态同时变化时，由原过滤监听加载一次。
+      const version = this._filterRequestVersion;
+      this.$nextTick(() => { if (!this._isDestroyed && version === this._filterRequestVersion) this.getData(); });
+    },
     filter: {
       handler: function(val, oldVal) {
         if (!this.isFirst && !this.$utils.isEmpty(val) && !this.$utils.isSame(val, oldVal)) {

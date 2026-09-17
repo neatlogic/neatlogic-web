@@ -25,30 +25,39 @@ export default {
   },
   methods: {
     reactionWatch() {
+      (this._reactionUnwatchList || []).forEach(unwatch => unwatch());
+      this._reactionUnwatchList = [];
       this.reactionValuesMap = {};
+      const dependentExtras = new Map();
       this.extraList.forEach(extra => {
         const deps = this.reactionDepsMap[extra.uuid] || [];
         this.$set(this.reactionValuesMap, extra.uuid, {});
         this.$set(this.clonedExtrasMap, extra.uuid, this.$utils.deepClone(extra));
         deps.forEach(uuid => {
-          this.$set(this.reactionValuesMap[extra.uuid], uuid, this.formData[uuid]);
-          this.$watch(
-            () => this.formData[uuid],
-            (newVal, oldVal) => {
-              if (newVal !== oldVal) {
-                if (this.isReady && !this.$utils.isSame(newVal, oldVal)) {
-                  this.tbodyList.forEach(row => {
-                    const key = `${row.uuid}_${extra.uuid}`;
-                    if (!this.pagedTbodyList.includes(row) && !this.pendingReactionValuesMap[key]) {
-                      this.$set(this.pendingReactionValuesMap, key, this.$utils.deepClone(this.reactionValuesMap[extra.uuid]));
-                    }
-                  });
-                }
-                this.$set(this.reactionValuesMap[extra.uuid], uuid, newVal);
-              }
-            }
-          );
+          this.$set(this.reactionValuesMap[extra.uuid], uuid, this.$utils.deepClone(this.formData[uuid]));
+          if (!dependentExtras.has(uuid)) dependentExtras.set(uuid, new Set());
+          dependentExtras.get(uuid).add(extra.uuid);
         });
+      });
+      // 每个依赖字段只监听一次；深层修改与替换都和独立快照比较。
+      dependentExtras.forEach((extraUuids, uuid) => {
+        let previous = this.$utils.deepClone(this.formData[uuid]);
+        this._reactionUnwatchList.push(this.$watch(() => this.formData[uuid], newVal => {
+          if (this.$utils.isSame(newVal, previous)) return;
+          previous = this.$utils.deepClone(newVal);
+          const visibleRows = new Set(this.pagedTbodyList);
+          extraUuids.forEach(extraUuid => {
+            if (this.isReady) {
+              this.tbodyList.forEach(row => {
+                const key = `${row.uuid}_${extraUuid}`;
+                if (!visibleRows.has(row) && !this.pendingReactionValuesMap[key]) {
+                  this.$set(this.pendingReactionValuesMap, key, this.$utils.deepClone(this.reactionValuesMap[extraUuid]));
+                }
+              });
+            }
+            this.$set(this.reactionValuesMap[extraUuid], uuid, this.$utils.deepClone(previous));
+          });
+        }, { deep: true }));
       });
     },
     changeRow(rowData) {

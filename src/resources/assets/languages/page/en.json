@@ -311,7 +311,7 @@
   "condition": "Condition",
   "filtercondition": "Filter Condition",
   "formselectautoselecttip": "For select components, if the current component is required and only one option remains after filtering, the system automatically selects that option.",
-  "availablecomponentvaluetip": "The following components can currently be used as component values: Select, Radio Button, Checkbox, User Selector, Reporter, Date, Time, Expression, Text Input, and Ticket Information.",
+  "availablecomponentvaluetip": "The following components can currently be used as component values: Select, Radio Button, Checkbox, User Selector, Reporter, Date, Time, Expression, Text Input, Ticket Information, and Table Input.",
   "datasourceisextenddata": "The data source is extension data.",
   "addextenddata": "Add Extension Data",
   "currentformolddata": "The current form uses legacy data. ",

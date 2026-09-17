@@ -7,14 +7,14 @@
         <span v-else>{{ error.error }}</span>
       </div>
       <div v-if="showSavedRecords || state.snapshot || state.blocked || (config.saveData !== false && config.saveMode === 'allMatched')">
-        <Button v-if="!readonly && !disabled" class="mb-sm" @click="showSavedRecords = false; $emit('editNestedSelector', state.key)">
-          {{ config.saveMode === 'allMatched' ? $t('page.refresh') : $t('term.cmdb.selectagain') }}
+        <Button v-if="!readonly && !disabled && config.saveMode !== 'allMatched'" class="mb-sm" @click="showSavedRecords = false; $emit('editNestedSelector', state.key)">
+          {{ $t('term.cmdb.selectagain') }}
         </Button>
         <div v-if="state.status === 'loading'" class="text-grey">{{ $t('form.nestedSelector.loading') }}</div>
         <div v-if="state.error" class="text-error">
           {{ state.error }} <span v-if="!disabled" class="text-action" @click="$emit('retryNestedSelector', state.key)">{{ $t('page.retry') }}</span>
         </div>
-        <div v-if="!state.ready && !state.snapshot" class="text-grey">{{ $t('form.nestedSelector.filterRequired') }}</div>
+        <div v-if="!state.ready && !state.snapshot && state.invalid" class="text-grey">{{ $t('term.framework.filterqueryinvalid') }}</div>
         <TsFormInput
           v-if="snapshotSearchColumns.length && !disabled"
           v-model="snapshotKeyword"
@@ -29,6 +29,7 @@
           :currentPage="page"
           :pageSize="pageSize"
           :fixedHeader="false"
+          :canSelectRow="config.saveMode !== 'allMatched'"
           keyName="uuid"
           @changeCurrent="page = $event"
           @changePageSize="pageSize = $event; page = 1"
@@ -55,7 +56,9 @@
           </template>
         </TsTable>
       </div>
-      <div v-else-if="!state.ready" class="text-grey">{{ $t('form.nestedSelector.filterRequired') }}</div>
+      <template v-else-if="!state.ready">
+        <div v-if="state.invalid" class="text-grey">{{ $t('term.framework.filterqueryinvalid') }}</div>
+      </template>
       <template v-else>
         <div v-if="state.status === 'loading' || state.status === 'queued'" class="text-grey">{{ $t('form.nestedSelector.loading') }}</div>
         <div v-if="state.browseError" class="text-error">
@@ -149,7 +152,11 @@ export default {
       const keyword = this.snapshotKeyword.trim().toLowerCase();
       return keyword ? rows.filter(row => this.snapshotSearchColumns.some(column => String(this.displaySnapshotValue(row[column.uuid])).toLowerCase().includes(keyword))) : rows;
     },
-    snapshotPage() { return this.snapshotRows.slice((this.page - 1) * this.pageSize, this.page * this.pageSize); },
+    snapshotPage() {
+      const rows = this.snapshotRows.slice((this.page - 1) * this.pageSize, this.page * this.pageSize);
+      // 全量保存不使用行选择；历史选中标记只在展示副本中清除。
+      return this.config.saveMode === 'allMatched' ? rows.map(row => ({ ...row, _selected: false, isSelected: false })) : rows;
+    },
     snapshotHeaders() {
       return (this.config.dataConfig || []).filter(column => column.isPC).map(column => ({ key: column.uuid, title: column.label, column, isExtra: column.isExtra, isRequired: this.config.saveData !== false && !!column.config?.isRequired }));
     }

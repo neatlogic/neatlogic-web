@@ -61,6 +61,8 @@
           :value="formItemValue"
           :mode="mode"
           :filter="filter"
+          :filterReady="filterReady"
+          :filterInvalid="filterInvalid"
           :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly || currentItemReaction.currentItemReadonly"
           :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemReaction.currentItemDisabled"
           :required="(mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false) || currentItemReaction.cunrrentRequire"
@@ -96,6 +98,8 @@
           :value="formItemValue"
           :mode="mode"
           :filter="filter"
+          :filterReady="filterReady"
+          :filterInvalid="filterInvalid"
           :readonly="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isReadOnly : false) || readonly"
           :disabled="(mode != 'defaultvalue' && mode != 'condition' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemReaction.currentItemDisabled"
           :required="(mode != 'defaultvalue' ? formItem.config && formItem.config.isRequired : false) || currentItemReaction.cunrrentRequire"
@@ -129,6 +133,8 @@
         :value="formItemValue"
         :mode="mode"
         :filter="filter"
+        :filterReady="filterReady"
+        :filterInvalid="filterInvalid"
         :readonly="(mode != 'defaultvalue' ? formItem.config && formItem.config.isReadOnly : false) || readonly || currentItemReaction.currentItemReadonly"
         :disabled="(mode != 'defaultvalue' ? formItem.config && formItem.config.isDisabled : false) || disabled || currentItemReaction.currentItemDisabled"
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
@@ -146,6 +152,7 @@
   </div>
 </template>
 <script>
+import { initialFilterReady } from './form/reaction/filter-source.js';
 import formItems from './form/component/index.js';
 import conditionMixin from './form/conditionexpression/condition-mixin.js';
 import { REACTION } from './form/reaction/index.js';
@@ -260,6 +267,8 @@ export default {
         allowDelete: 0
       }, //记录操作执行次数
       isFirstLoad: true, //是否第一次加载，用于比较表单数据新旧值时，第一次触发一次操作
+      filterReady: initialFilterReady(this.formItem, this.formItemList || []),
+      filterInvalid: false,
       filter: [], //格式[{column:'矩阵属性uuid',expression:'equal',valueList:["value"]}]
       REACTION: REACTION, //联动规则
       isShowErrorMessage: true,
@@ -355,7 +364,8 @@ export default {
         }
         if (!this.$utils.isEmpty(this.reactionFormItemUuidMap) && this.formData) {
           Object.keys(this.reactionFormItemUuidMap).forEach((key) => {
-            this.$set(this.reactionFormItemUuidMap, key, this.formData[key]);
+            // 保存独立的依赖快照，避免表格单元格原地修改时旧值也同步变化，漏掉首次联动。
+            this.$set(this.reactionFormItemUuidMap, key, this.$utils.deepClone(this.formData[key]));
           });
         }
         this.executionReaction(this.reactionFormItemUuidMap);

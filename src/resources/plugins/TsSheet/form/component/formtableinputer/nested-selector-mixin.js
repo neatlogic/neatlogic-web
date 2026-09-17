@@ -27,7 +27,7 @@ export default {
           // snapshot 控制历史展示；pausedByClear 阻止自动回填；pendingFilterReset 记录阻塞期间待执行的清空。
           // requestVersion 淘汰旧请求，valueVersion 防止请求覆盖后续赋值，viewVersion 用于重新挂载候选列表。
           state = { key: request.key, row: request.row, column: request.column, identity: request.identity,
-            filter: request.filter, inputs: request.inputs, effective: request.effective, ready: request.ready,
+            filter: request.filter, inputs: request.inputs, effective: request.effective, ready: request.ready, invalid: request.invalid,
             snapshot, snapshotRows: snapshot ? clone(request.observedValue) : [], results: [],
             status: 'idle', pendingFilterReset: false, error: '', browseError: '', pausedByClear: false, blocked: false,
             requestVersion: 0, valueVersion: 0, viewVersion: 0, controller: null, browseControllers: [],
@@ -36,6 +36,7 @@ export default {
           this.$set(this.nestedSelectorStates, request.key, state);
         }
         const queryChanged = state.identity !== request.identity;
+        const becameReady = !state.ready && request.ready;
         const inputsChanged = !this.$utils.isSame(state.inputs, request.inputs);
         state.row = request.row;
         state.column = request.column;
@@ -43,6 +44,7 @@ export default {
         if (inputsChanged) state.inputs = request.inputs;
         if (!this.$utils.isSame(state.effective, request.effective)) state.effective = request.effective;
         state.ready = request.ready;
+        state.invalid = request.invalid;
         if (!initial && !this.$utils.isSame(state.currentValue, request.observedValue)) {
           this.applyNestedValue(state.key, request.observedValue, request.observedValue == null || !request.observedValue.length ? 'clear' : 'external');
         }
@@ -76,7 +78,7 @@ export default {
         }
         if (!blocked && !state.snapshot && !state.pausedByClear && state.ready &&
           state.column.config.saveData !== false && state.column.config.saveMode === 'allMatched' &&
-          (initial || queryChanged || resumed) && state.status !== 'loading') this.loadNestedSelector(state);
+          (initial || queryChanged || resumed || becameReady) && state.status !== 'loading') this.loadNestedSelector(state);
       });
     },
     cancelNestedSelector(state) {
@@ -140,8 +142,17 @@ export default {
       state.error = '';
       try {
         const rows = await loadAllMatched((params, options) => this.scheduleNestedRequest(() => this.$api.framework.matrix.getNewMatrixDataForTable(params, options), options.signal), clone(state.column.config), clone(state.filter), controller.signal);
-        // 所有分页成功后才整体写入；同时核对取消信号、请求/值版本及行状态是否仍存在。
+        // 全量请求成功后才整体写入；同时核对取消信号、请求/值版本及行状态是否仍存在。
         if (rows && !controller.signal.aborted && state.requestVersion === requestVersion && state.valueVersion === valueVersion && this.nestedSelectorStates[state.key] === state) {
+          // 手动刷新保留仍然匹配记录的扩展属性，与外部表格选择的行为一致。
+          const currentRows = new Map((state.currentValue || []).map(row => [row.uuid, row]));
+          const extraColumns = (state.column.config.dataConfig || []).filter(column => column.isExtra);
+          rows.forEach(row => {
+            const current = currentRows.get(row.uuid);
+            extraColumns.forEach(column => {
+              if (current && Object.prototype.hasOwnProperty.call(current, column.uuid)) row[column.uuid] = clone(current[column.uuid]);
+            });
+          });
           state.results = rows;
           state.status = 'ready';
           this.commitNestedValue(state, rows);

@@ -1,30 +1,11 @@
 <template>
   <div>
-    <template v-if="isTableInputer">
-      <TsFormItem
-        :label="$t('form.nestedSelector.saveData')"
-        labelPosition="right"
-        contentAlign="left"
-        :tooltip="$t('form.nestedSelector.saveHelp')"
-      >
-        <TsFormSwitch
-          :value="config.saveData !== false"
-          :trueValue="true"
-          :falseValue="false"
-          :disabled="disabled"
-          @on-change="changeSaveData"
-        ></TsFormSwitch>
-      </TsFormItem>
-      <TsFormItem v-if="config.saveData !== false" :label="$t('form.nestedSelector.saveMode')" :labelPosition="isTableInputer ? 'right' : 'top'">
-        <TsFormRadio
-          :value="config.saveMode || 'selected'"
-          :dataList="[{ value: 'selected', text: $t('form.nestedSelector.selected') }, { value: 'allMatched', text: $t('form.nestedSelector.allMatched') }]"
-          :disabled="disabled"
-          @on-change="changeSaveMode"
-        ></TsFormRadio>
-      </TsFormItem>
-    </template>
-    <TsFormItem :label="$t('page.disabledd')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
+    <TsFormItem
+      v-if="!isAllDataMode"
+      :label="$t('page.disabledd')"
+      :labelPosition="isTableInputer ? 'right' : 'left'"
+      :contentAlign="isTableInputer ? 'left' : 'right'"
+    >
       <TsFormSwitch
         :value="config.disableAddData"
         :trueValue="true"
@@ -35,7 +16,12 @@
         }"
       ></TsFormSwitch>
     </TsFormItem>
-    <TsFormItem :label="$t('page.disabledelete')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
+    <TsFormItem
+      v-if="!isAllDataMode"
+      :label="$t('page.disabledelete')"
+      :labelPosition="isTableInputer ? 'right' : 'left'"
+      :contentAlign="isTableInputer ? 'left' : 'right'"
+    >
       <TsFormSwitch
         :value="config.disableDeleteData"
         :trueValue="true"
@@ -59,7 +45,26 @@
       ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem :label="$t('term.framework.selectmode')" :labelPosition="isTableInputer ? 'right' : 'left'" :contentAlign="isTableInputer ? 'left' : 'right'">
-      <TsFormRadio v-model="config.mode" :dataList="modeList" :disabled="disabled || forceNormalMode"></TsFormRadio>
+      <TsFormRadio
+        :value="config.mode"
+        :dataList="modeList"
+        :disabled="disabled || forceNormalMode"
+        @on-change="changeSelectionMode"
+      ></TsFormRadio>
+    </TsFormItem>
+    <TsFormItem
+      v-if="config.mode === 'normal'"
+      :label="$t('term.framework.savealldata')"
+      :tooltip="$t('term.framework.savealldatahelp')"
+      :labelPosition="isTableInputer ? 'right' : 'left'"
+      :contentAlign="isTableInputer ? 'left' : 'right'"
+    >
+      <TsFormSwitch
+        v-model="saveAllData"
+        :trueValue="true"
+        :falseValue="false"
+        :disabled="disabled"
+      ></TsFormSwitch>
     </TsFormItem>
     <TsFormItem
       :label="$t('page.matrix')"
@@ -255,7 +260,13 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    // 移除“不保存”入口后，旧配置在可编辑的副本中恢复为默认勾选保存。
+    if (this.isTableInputer && !this.disabled && this.config.saveData === false) {
+      this.$set(this.config, 'saveData', true);
+      this.$set(this.config, 'saveMode', 'selected');
+    }
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -265,18 +276,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    changeSaveData(value) {
-      this.$set(this.config, 'saveData', value);
-      this.$set(this.config, 'isUnique', false);
-      if (!value) {
-        this.$set(this.config, 'mode', 'normal');
-        this.$set(this.config, 'isRequired', false);
-        if (this.formItem.reaction) this.$delete(this.formItem.reaction, 'required');
-      }
-    },
-    changeSaveMode(value) {
-      this.$set(this.config, 'saveMode', value);
-      if (value === 'allMatched') this.$set(this.config, 'mode', 'normal');
+    changeSelectionMode(mode) {
+      if (this.disabled || this.forceNormalMode || mode === this.config.mode || !['dialog', 'normal'].includes(mode)) return;
+      // 仅主动切换时重置，打开已有配置及程序回显不改变保存策略。
+      this.saveAllData = false;
+      this.$set(this.config, 'mode', mode);
     },
     removeExtraProperty(data) {
       const index = this.config.dataConfig.findIndex(d => d === data);
@@ -417,8 +421,26 @@ export default {
   },
   filter: {},
   computed: {
+    isAllDataMode() {
+      return this.config.mode === 'normal' && this.saveAllData;
+    },
+    saveAllData: {
+      get() {
+        return this.isTableInputer ? this.config.saveMode === 'allMatched' : !!this.config.saveAll;
+      },
+      set(value) {
+        // 只统一设置入口，保留内外组件各自的持久化字段和运行逻辑。
+        if (this.isTableInputer) {
+          this.$set(this.config, 'saveData', true);
+          this.$set(this.config, 'saveMode', value ? 'allMatched' : 'selected');
+          if (value) this.$set(this.config, 'mode', 'normal');
+        } else {
+          this.$set(this.config, 'saveAll', value);
+        }
+      }
+    },
     forceNormalMode() {
-      return this.isTableInputer && (this.config.saveData === false || this.config.saveMode === 'allMatched');
+      return this.isTableInputer && this.config.saveData === false;
     },
     handleUniqueRuleConfigDataList() {
       let dataList = [];
