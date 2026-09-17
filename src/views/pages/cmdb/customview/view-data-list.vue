@@ -423,6 +423,20 @@ export default {
       //});
       this.searchCustomViewData(row);
     },
+    getFilterValueList(key, filter) {
+      // 机房位置仅在请求中转换为引用ID，保留页面结构化值供树节点和历史条件回显。
+      if (key.startsWith('attr_') && Array.isArray(filter.valueList)) {
+        return filter.valueList.map(value => {
+          if (value && ['datacenter', 'computerRoom', 'cabinet'].includes(value.type) && value.invokeId != null) {
+            // 安全整数按数字提交，超出JavaScript精度范围的ID保留字符串，避免引用错误。
+            const invokeId = Number(value.invokeId);
+            return Number.isSafeInteger(invokeId) ? invokeId : value.invokeId;
+          }
+          return value;
+        });
+      }
+      return filter.valueList;
+    },
     exportUrl() {
       const params = { id: this.viewId, searchMode: 'normal', attrFilterList: [] };
       params.keyword = this.searchParam.keyword;
@@ -431,7 +445,7 @@ export default {
         if (d.attrUuid && d.expression) {
           params.attrFilterList.push({
             attrUuid: d.attrUuid,
-            valueList: d.valueList,
+            valueList: this.getFilterValueList(key, d),
             actualValueList: d.actualValueList,
             expression: d.expression,
             type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
@@ -469,7 +483,7 @@ export default {
         if (d.attrUuid && d.expression) {
           this.searchParam.attrFilterList.push({
             attrUuid: d.attrUuid,
-            valueList: d.valueList,
+            valueList: this.getFilterValueList(key, d),
             actualValueList: d.actualValueList,
             expression: d.expression,
             type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
