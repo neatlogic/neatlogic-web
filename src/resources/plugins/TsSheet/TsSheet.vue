@@ -1186,10 +1186,17 @@ export default {
       }
     },
     clearFormInputTableAttr(formitem, valueList) {
-      //清除表单输入组件非表头属性
+      // 清理当前场景和主场景均不存在的列，以及明确不保存的嵌套列。
       if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
-        let uuidList = formitem.config && formitem.config.dataConfig && this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
-        const excluded = (formitem.config?.dataConfig || []).filter(column => column.handler === 'formtableselector' && column.config?.saveData === false).map(column => column.uuid);
+        const dataColumns = [...(formitem.config?.dataConfig || [])];
+        const referenceFormItem = this.effectiveReferenceFormItemList.find(item => item.uuid === formitem.uuid);
+        (referenceFormItem?.config?.dataConfig || []).forEach(column => {
+          if (!dataColumns.some(item => item.uuid === column.uuid)) {
+            dataColumns.push(column);
+          }
+        });
+        const uuidList = dataColumns.map(column => column.uuid);
+        const excluded = dataColumns.filter(column => column.handler === 'formtableselector' && column.config?.saveData === false).map(column => column.uuid);
         valueList.forEach(item => {
           Object.keys(item).forEach(key => {
             if (excluded.includes(key) || (uuidList && !uuidList.includes(key) && key !== 'uuid')) {
