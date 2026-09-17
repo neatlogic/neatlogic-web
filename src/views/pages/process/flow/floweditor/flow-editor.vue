@@ -239,7 +239,7 @@ export default {
           background: this.config.background,
           zoomAtMousePosition: true,
           autoResize: true, //自动延伸画布
-          panning: this.panning, //拖拽平移
+          panning: this.panning && !this.strictMode && !this.edgeMode, //拖拽平移
           mousewheel: {
             enabled: true, //滚动缩放
             modifiers: ['ctrl']
@@ -470,7 +470,8 @@ export default {
               multiple: true, // 是否启用点击多选，使用shift键可以多选
               multipleSelectionModifiers: ['shift'],
               rubberband: true, //拖动框选
-              modifiers: ['alt'], // 在画布空白的地方，按着alt键，框选需要选择的节点。
+              strict: this.strictMode,
+              modifiers: this.strictMode ? [] : ['alt'], //严格模式直接拖动框选，普通模式按住alt框选
               movable: true,
               showNodeSelectionBox: false, //显示图元的选择框
               showEdgeSelectionBox: false, //显示边的选择框
@@ -927,7 +928,16 @@ export default {
   watch: {
     strictMode: {
       handler: function(val) {
-        this.graph.toggleStrictRubberband(val);
+        if (this.graph) {
+          this.graph.toggleStrictRubberband(val);
+          this.graph.setRubberbandModifiers(val ? [] : ['alt']);
+          if (val) {
+            this.graph.disablePanning();
+            this.graph.enableRubberband();
+          } else if (this.panning && !this.edgeMode) {
+            this.graph.enablePanning();
+          }
+        }
       }
     },
     edgeType: {
@@ -967,7 +977,7 @@ export default {
             });
           }
         } else {
-          if (this.panning) {
+          if (this.panning && !this.strictMode) {
             this.graph.enablePanning();
           }
           const edges = this.graph.getEdges();
