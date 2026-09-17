@@ -725,6 +725,10 @@ export default {
           this.config = this.value;
         }
         this.config.lefterList.forEach(d => {
+          // 区分保存的行高和组件内容撑开的显示行高。
+          if (this.mode === 'edit' && d._configuredHeight === undefined) {
+            d._configuredHeight = d.height;
+          }
           if (d.height < this.minHeight) {
             d.height = this.minHeight;
           }
@@ -1004,6 +1008,9 @@ export default {
     resizeCell(row, col, needReset) {
       if (row != null) {
         const lefter = this.config.lefterList[row];
+        if (this.mode === 'edit' && lefter._configuredHeight === undefined) {
+          this.$set(lefter, '_configuredHeight', lefter.height);
+        }
         if (needReset) {
           lefter.height = this.minHeight; //先重置高度
         }
@@ -1045,7 +1052,14 @@ export default {
     //提供外部使用，返回最新配置数据
     getFormConfig() {
       //消除所有私有属性
-      const data = this.$utils.deepClone(this.config);
+      // 与接口保存的数据保持一致，剔除组件初始化时混入的运行时函数。
+      const data = JSON.parse(JSON.stringify(this.config));
+      data.lefterList.forEach(row => {
+        if (row._configuredHeight !== undefined) {
+          row.height = row._configuredHeight;
+          this.$delete(row, '_configuredHeight');
+        }
+      });
       data.tableList.forEach(cell => {
         for (let k in cell) {
           if (k.startsWith('_')) {
@@ -1791,6 +1805,7 @@ export default {
         if (height >= this.minHeight) {
           const index = this.config.lefterList.findIndex(d => d === this.resizeRow);
           this.resizeRow.height = height;
+          this.$set(this.resizeRow, '_configuredHeight', height);
           this.resizerPosition.left = 0;
           this.resizerPosition.top = this.resizerPosition.top + deltaY;
           //有些组件高度压缩不了，需要重新修正高度

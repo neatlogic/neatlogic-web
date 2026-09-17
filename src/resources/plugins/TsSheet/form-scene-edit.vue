@@ -68,7 +68,7 @@
           <div class="action-item text-action tsfont-scene" @click="openScene()">{{ $t('page.scene') }}</div>
           <div class="action-item text-action tsfont-circulation-s" @click="openPreview()">{{ $t('page.preview') }}</div>
           <div v-if="!processTaskId" class="action-item last">
-            <Button type="primary" @click.stop="saveForm()">{{ $t('page.save') }}</Button>
+            <Button type="primary" :loading="isSaving" @click.stop="saveForm()">{{ $t('page.save') }}</Button>
           </div>
         </div>
       </template>
@@ -184,6 +184,7 @@ export default {
       sceneName: '',
       type: 'add', //add/edit/copy
       isFormLoaded: false,
+      isSaving: false,
       initFormData: {},
       initFormConfig: {},
       initFormItemList: [],
@@ -237,12 +238,13 @@ export default {
       // 离开当前页面，数据对比
       let isSame = true;
       if (this.deleteSceneUuid !== this.sceneUuid) {
+        oldData = this.getCompareData(oldData);
         let newData = this.$refs.sheet.getFormConfig();
         newData = this.getCompareData(newData);
         let oldLefterList = oldData.lefterList;
         let newLefterList = newData.lefterList;
         let oldHeaderList = oldData.headerList;
-        let newHeaderList = oldData.headerList;
+        let newHeaderList = newData.headerList;
         this.$delete(oldData, 'lefterList');
         this.$delete(oldData, 'headerList');
         this.$delete(newData, 'lefterList');
@@ -287,6 +289,7 @@ export default {
     getCompareData(config) {
       let data = {};
       if (config) {
+        config = this.$utils.deepClone(config);
         data = {
           headerList: config.headerList,
           lefterList: config.lefterList,
@@ -295,6 +298,8 @@ export default {
         };
         if (data.tableList) {
           data.tableList.forEach(item => {
+            // 单元格渲染标识在每次加载时重新生成，不属于表单修改。
+            this.$delete(item, 'rowColUuid');
             if (item.component && item.component.inherit) {
               item.component = {
                 uuid: item.component.uuid,
@@ -531,7 +536,9 @@ export default {
         });
       });
     },
-    saveForm(type) {
+    async saveForm(type) {
+      if (this.isSaving) return false;
+      let isSuccess = false;
       if (this.valid()) {
         this.isShowValidList = false;
         let data = {
@@ -561,8 +568,12 @@ export default {
         } else {
           data.formConfig.sceneList.push(formConfig);
         }
-        this.$api.framework.form.saveForm(data).then(res => {
+        this.isSaving = true;
+        await this.$api.framework.form.saveForm(data).then(res => {
           if (res.Status == 'OK') {
+            isSuccess = true;
+            this.$set(this.formData.formConfig, 'name', formConfig.name);
+            this.$addWatchData(this.getCompareData(formConfig));
             this.$Message.success(this.$t('message.savesuccess'));
             if (type != 'back') {
               if (this.$route.query.sceneUuid !== this.sceneUuid) {
@@ -580,11 +591,14 @@ export default {
               }
             }
           }
+        }).finally(() => {
+          this.isSaving = false;
         });
       } else if (!this.$utils.isEmpty(this.errorData)) {
         this.isShowValidList = true;
         return false;
       }
+      return isSuccess;
     },
     deleteScene(uuid) {
       this.deleteSceneUuid = uuid;

@@ -149,14 +149,14 @@
               </div>
               <div v-if="!processTaskId" class="action-item">
                 <Button
-                  :loading="isSaving"
+                  :loading="isSaving || isCheckingSave"
                   type="primary"
                   ghost
                   @click.stop="saveForm('saveother')"
                 >{{ $t('term.framework.saveothernewversion') }}</Button>
               </div>
               <div v-if="!processTaskId" class="action-item last">
-                <Button type="primary" :loading="isSaving" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
+                <Button type="primary" :loading="isSaving || isCheckingSave" @click.stop="handleSaveForm()">{{ $t('page.save') }}</Button>
               </div>
             </template>
             <template v-else>
@@ -421,7 +421,8 @@ export default {
       isShowExtendConfigDialog: false,
       extendConfigList: [],
       processTaskId: null, //工单id
-      isSaving: false
+      isSaving: false,
+      isCheckingSave: false
     };
   },
   beforeCreate() {},
@@ -468,6 +469,8 @@ export default {
     },
     compareData(oldData, newData) {
       //对比数据
+      oldData = this.$utils.deepClone(oldData);
+      newData = this.$utils.deepClone(newData);
       let isSame = true;
       let oldLefterList = this.$utils.deepClone(oldData.lefterList);
       let newLefterList = this.$utils.deepClone(newData.lefterList);
@@ -586,6 +589,7 @@ export default {
       this.isPreviewShow = false;
     },
     async saveForm(type) {
+      if (this.isSaving) return false;
       //type 值为saveother(另存为)  exportFile(导出的保存)  upload(导入数据)
       let isSuccess = false;
       if (this.valid()) {
@@ -654,6 +658,10 @@ export default {
             isSuccess = true;
             this.initFormName = this.formData.name;
             this.initFormConfig = this.$utils.deepClone(formConfig);
+            // 保存时补充的配置也要同步到编辑器，避免与已保存基线不一致。
+            ['uuid', 'name', 'sceneList', 'defaultSceneUuid', 'readOnly', 'hideComponentList', 'formExtendConfig', 'formCustomExtendConfig'].forEach(key => {
+              this.$set(this.formData.formConfig, key, this.$utils.deepClone(formConfig[key]));
+            });
             if (type == 'saveother' || !(this.formUuid && this.currentVersion.uuid)) {
               //this.formUuid为空代表从其他地方跳过来进行新增
               this.currentVersion.uuid = res.Return.currentVersionUuid;
@@ -886,21 +894,23 @@ export default {
     },
     async handleSaveForm(uuid) {
       // 检查当前表单是否有被进行中的工单引用，若被引用，需要弹窗二次确认
-      let _this = this;
-      let isTip = await $frameworkUtils.isDependency(this.formUuid, 'form');
-      if (isTip) {
-        this.$createDialog({
-          title: this.$t('page.tip'),
-          content: this.$t('dialog.content.updateformflowtip'),
-          'on-ok': vnode => {
-            if (uuid) {
-              _this.handleActiveFormVersion(uuid); // 处理激活表单版本
-            } else {
-              _this.saveForm(); // 保存表单
-            }
-            vnode.isShow = false;
-          },
-          'on-close': vnode => {
+      if (this.isSaving || this.isCheckingSave) return false;
+      this.isCheckingSave = true;
+      try {
+        const isTip = await $frameworkUtils.isDependency(this.formUuid, 'form');
+        if (isTip) {
+          const confirmed = await new Promise(resolve => {
+            this.$createDialog({
+              title: this.$t('page.tip'),
+              content: this.$t('dialog.content.updateformflowtip'),
+              'on-ok': vnode => {
+                resolve(true);
+                vnode.isShow = false;
+              },
+              'on-close': () => resolve(false)
+            });
+          });
+          if (!confirmed) {
             // 取消之后，激活状态变成修改之前状态
             if (uuid) {
               this.versionList &&
@@ -910,14 +920,16 @@ export default {
                   }
                 });
             }
+            return false;
           }
-        });
-      } else {
-        if (uuid) {
-          _this.handleActiveFormVersion(uuid); // 处理激活表单版本
-        } else {
-          _this.saveForm(); // 保存表单
         }
+        if (uuid) {
+          return await this.handleActiveFormVersion(uuid); // 处理激活表单版本
+        } else {
+          return await this.saveForm(); // 保存表单
+        }
+      } finally {
+        this.isCheckingSave = false;
       }
     },
     delVersionModal(uuid, version) {

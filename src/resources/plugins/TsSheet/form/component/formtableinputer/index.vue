@@ -584,7 +584,9 @@ export default {
       if (!reactionValid.isDisable && this.validateMap && this.validateMap[key]) {
         const validateList = this.validateMap[key].validateList;
         if (!this.$utils.isEmpty(validateList)) {
-          isValid = this.$utils.validParamValue(row[key], validateList);
+          const required = validateList.some(rule => rule === 'required' || rule?.name === 'required' || rule?.required === true);
+          const empty = row[key] == null || row[key] === '' || (Array.isArray(row[key]) && row[key].length === 0);
+          isValid = empty ? !required : this.$utils.validParamValue(row[key], validateList);
         }
       }
       if (!isValid || (this.$utils.isEmpty(row[th.key]) && reactionValid.isRequired)) {
