@@ -51,7 +51,13 @@
               <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
             </div>
             <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
-              <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+              <div
+                v-if="!$utils.isEmpty(formConfig)"
+                id="form"
+                class="form-view"
+                :class="{'form-loading-mask': formLoading}"
+              >
+                <Loading v-if="formLoading" :loadingShow="true" class="form-local-loading"></Loading>
                 <template v-if="formConfig._type == 'new'">
                   <TsSheet
                     ref="formSheet"
@@ -174,7 +180,13 @@
             >
               <!-- 内容详情 -->
               <div class="pt-nm pb-nm">
-                <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+                <div
+                  v-if="!$utils.isEmpty(formConfig)"
+                  id="form"
+                  class="form-view"
+                  :class="{'form-loading-mask': formLoading}"
+                >
+                  <Loading v-if="formLoading" :loadingShow="true" class="form-local-loading"></Loading>
                   <template v-if="processTaskConfig.formConfig._type == 'new'">
                     <TsSheet
                       ref="formSheet"
@@ -281,15 +293,23 @@
               tab="tab1"
             >
               <!--步骤日志 -->
-              <div v-if="tabValue === 'step' && stepData && stepData.length > 0">
-                <StepOverview
-                  :processTaskId="processTaskId"
-                  :processTaskStepId="processTaskStepId"
-                  :defaultStepData="stepData"
-                  :currentStepId="defaultProcessTaskStepId"
-                  :processTaskConfig="processTaskConfig"
-                ></StepOverview>
-              </div>
+              <template v-if="tabValue === 'step'">
+                <Loading
+                  v-if="stepLoading"
+                  :loadingShow="true"
+                  :text="false"
+                  class="tab-local-loading"
+                ></Loading>
+                <div v-else-if="stepData && stepData.length > 0">
+                  <StepOverview
+                    :processTaskId="processTaskId"
+                    :processTaskStepId="processTaskStepId"
+                    :defaultStepData="stepData"
+                    :currentStepId="defaultProcessTaskStepId"
+                    :processTaskConfig="processTaskConfig"
+                  ></StepOverview>
+                </div>
+              </template>
             </TabPane>
           </template>
           <template v-else-if="!tab.top && tab.key === 'activity'">
@@ -303,14 +323,22 @@
               tab="tab1"
             >
               <!-- 时间线 -->
-              <ActivityOverview
-                v-if="tabValue === 'activity'"
-                :processTaskId="processTaskId"
-                :stepDataList="stepData"
-                :defaultActiveData="activeData"
-                :formConfig="frozenFormConfig"
-                @updataActive="(val)=>updataActive(val)"
-              ></ActivityOverview>
+              <template v-if="tabValue === 'activity'">
+                <Loading
+                  v-if="activityLoading"
+                  :loadingShow="true"
+                  :text="false"
+                  class="tab-local-loading"
+                ></Loading>
+                <ActivityOverview
+                  v-else
+                  :processTaskId="processTaskId"
+                  :stepDataList="stepData"
+                  :defaultActiveData="activeData"
+                  :formConfig="frozenFormConfig"
+                  @updataActive="(val)=>updataActive(val)"
+                ></ActivityOverview>
+              </template>
             </TabPane>
           </template>
           <template v-else-if="!tab.top && tab.key === 'relevance'">
@@ -396,7 +424,13 @@
               <span class="tsfont-pin-angle-s text-primary cursor pl-xs" :title="$t('page.cancelfixedpage')" @click="cancelFixedPage('report')"></span>
             </div>
             <div v-if="haveProcessTask(false, false, formConfig, processTaskConfig)" class="pt-nm pb-nm">
-              <div v-if="!$utils.isEmpty(formConfig)" id="form" class="form-view">
+              <div
+                v-if="!$utils.isEmpty(formConfig)"
+                id="form"
+                class="form-view"
+                :class="{'form-loading-mask': formLoading}"
+              >
+                <Loading v-if="formLoading" :loadingShow="true" class="form-local-loading"></Loading>
                 <template v-if="formConfig._type == 'new'">
                   <TsSheet
                     ref="formSheet"
@@ -537,6 +571,24 @@ import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.j
 import Component from './CenterDetailComponent/index.js';
 import stepitems from './taskstep/item/index.js';
 import { store, mutations } from '@/views/pages/process/task/processdetail/processStore.js';
+import Loading from '@/resources/components/loading/Loading.vue';
+
+const TabLoading = {
+  render(h) {
+    return h(Loading, {
+      props: { loadingShow: true, text: false },
+      style: { minHeight: '120px' }
+    });
+  }
+};
+
+// 接口数据就绪后，异步组件本身仍可能在加载，立即显示局部占位。
+const loadTabComponent = loader => () => ({
+  component: loader(),
+  loading: TabLoading,
+  delay: 0
+});
+
 export default {
   name: 'CenterDetail',
   components: {
@@ -546,8 +598,8 @@ export default {
     ...stepitems,
     ...Component,
     TsSheet: () => import('@/resources/plugins/TsSheet/TsSheet.vue'),
-    ActivityOverview: () => import('./activity/activity-overview.vue'),
-    StepOverview: () => import('./taskstep/step-overview.vue'),
+    ActivityOverview: loadTabComponent(() => import('./activity/activity-overview.vue')),
+    StepOverview: loadTabComponent(() => import('./taskstep/step-overview.vue')),
     StrategyDetail: () => import('./strategy/strategy-detail.vue'),
     RelationDetail: () => import('./relation/relation-detail.vue'),
     ChangeDetail: () => import('./change/change-detail.vue'),
@@ -556,7 +608,7 @@ export default {
     MarkRepeat: () => import('./markrepeat/mark-repeat.vue'),
     AccessoriesList: () => import('./CenterDetailComponent/accessories-list'), // 附件清单
     ReplyContent: () => import('./CenterDetailComponent/reply-content'), // 回复内容
-    ReportingHistory: () => import('./CenterDetailComponent/reporting-history') // 上报历史
+    ReportingHistory: loadTabComponent(() => import('./CenterDetailComponent/reporting-history')) // 上报历史
   },
   provide() { //有些表单可能需要这些参数，表单里面会接收这些参数
     return {
@@ -634,6 +686,8 @@ export default {
       draftFile: [], //工单上报附件
       timerForm: null,
       detailReadyTimer: null,
+      setTimeUpdata: null,
+      formViewInstance: null, // 将非响应式的 ref 同步为响应式引用，跟踪表单初始化状态。
       isDisableCommet: false,
       commentObj: {
         content: null,
@@ -644,12 +698,14 @@ export default {
       auditId: null, //活动id
       buttonLog: '1', //活动日志
       activeData: [], //按活动分
+      activityLoading: false, //时间线加载状态
       stepContent: null, //描述
       selectStepId: this.defaultProcessTaskStepId,
       timeSortIcon: false, //活动排序
       issubTaskComplete: true,
       processTaskStepSubtaskId: null,
       stepData: [], //按步骤分
+      stepLoading: false, //步骤日志加载状态
       viewStepData: [], //需要查看的步骤
       //变更
       handlerStepInfo: null,
@@ -762,6 +818,7 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      this.syncFormViewInstance();
       this.timerForm = setInterval(() => {
         if (this.$refs.FormPreview) {
           let formPreview = this.getDetailRef('FormPreview');
@@ -781,6 +838,9 @@ export default {
       }
     });
   },
+  updated() {
+    this.syncFormViewInstance();
+  },
   beforeDestroy() {
     this.setCenterDetailReady(false);
     this.clear();
@@ -789,6 +849,12 @@ export default {
     this.setTimeUpdata && clearTimeout(this.setTimeUpdata);
   },
   methods: {
+    syncFormViewInstance() {
+      const instance = this.getDetailRef(this.formConfig._type === 'new' ? 'formSheet' : 'FormPreview') || null;
+      if (this.formViewInstance !== instance) {
+        this.formViewInstance = instance;
+      }
+    },
     setCenterDetailReady(val) {
       if (!val) {
         this.detailReadyTimer && clearTimeout(this.detailReadyTimer);
@@ -1171,6 +1237,7 @@ export default {
     },
     getActivityList(processTaskStepIdList) {
       //活动列表
+      this.activityLoading = true;
       let data = {
         processTaskId: this.processTaskId,
         processTaskStepIdList: processTaskStepIdList
@@ -1186,11 +1253,14 @@ export default {
           });
           this.activeData = activeList;
         }
+      }).finally(() => {
+        this.activityLoading = false;
       });
     },
 
     getStepStatusList() {
       //步骤状态
+      this.stepLoading = true;
       let data = {
         processTaskId: this.processTaskId
       };
@@ -1205,6 +1275,8 @@ export default {
             });
           }
         }
+      }).finally(() => {
+        this.stepLoading = false;
       });
     },
     saveTaskD() {
@@ -1845,6 +1917,14 @@ export default {
     }
   },
   computed: {
+    formLoading() {
+      if (this.$utils.isEmpty(this.formConfig)) {
+        return false;
+      }
+      // 表单独立等待初始化和数据同步，不依赖操作按钮权限的加载状态。
+      const instance = this.formViewInstance;
+      return this.loadingShow || this.taskLoading || !this.resizeStatusConfig.isReady || !!this.setTimeUpdata || !instance || instance.isReady === false;
+    },
     frozenFormConfig() {
       return Object.freeze(this.processTaskConfig.formConfig || {});
     },
@@ -2098,5 +2178,21 @@ function getParent(node) {
 .CenterDetail {
   height: 100%;
   overflow-y: scroll;
+}
+.tab-local-loading {
+  min-height: 120px;
+}
+.form-loading-mask {
+  position: relative;
+  min-height: 120px;
+  > :not(.form-local-loading) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+.form-local-loading {
+  position: absolute;
+  inset: 0;
+  min-height: 120px;
 }
 </style>

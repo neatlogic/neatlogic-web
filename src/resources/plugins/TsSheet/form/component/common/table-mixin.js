@@ -81,7 +81,7 @@ export default {
         let attrLabel = dataConfig.filter((v) => v['uuid'] && uniqueRuleConfig.includes(v['uuid']) && v.label).map((item) => item.label).join(',');
         let tempValue = '';
         let existList = [];
-        tbodyList.forEach((row) => {
+        tbodyList.forEach((row, index) => {
           const pageCount = Math.ceil((index + 1) / pageSize);
           if (!this.$utils.isEmpty(row)) {
             tempValue = '';

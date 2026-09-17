@@ -129,7 +129,8 @@ export default {
     return {
       channelUuid: null,
       processTaskId: this.$route.query.processTaskId,
-      processTaskData: () => this.processTaskData
+      processTaskData: () => this.processTaskData,
+      processTaskActionState: this.processTaskActionState
     };
   },
   components: {
@@ -144,6 +145,9 @@ export default {
       isMoreStep: true, //是否有多个可处理的步骤
       defaultStartList: [], //可处理的步骤列表
       actionList: [], //按钮权限列表
+      processTaskActionState: {
+        loading: true
+      }, //操作按钮权限加载状态
       processTask: null, //工单信息
       loadingShow: true,
       taskLoading: false, //工单处理流转等待时提示图标
@@ -225,6 +229,7 @@ export default {
     },
     getTaskActionObj() {
       //操作权限
+      this.processTaskActionState.loading = true;
       if (this.processTaskId) {
         let data = {
           processTaskId: this.processTaskId,
@@ -232,15 +237,19 @@ export default {
         };
         return this.$api.process.processtask.getTaskAction(data).then(res => {
           if (res.Status == 'OK') {
-            let actionList = res.Return;
+            let actionList = res.Return || [];
             this.actionList = actionList;
             let findItem = actionList.find(item => item.value === 'pocesstaskview');
             if (findItem) {
               this.pocesstaskview = true;
             }
           }
+        }).finally(() => {
+          this.processTaskActionState.loading = false;
         });
       }
+      this.processTaskActionState.loading = false;
+      return Promise.resolve();
     },
     getMessage() {
       //获取工单和步骤信息接口

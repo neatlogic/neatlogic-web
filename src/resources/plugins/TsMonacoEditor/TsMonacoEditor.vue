@@ -461,9 +461,12 @@ export default {
       }
       const extensionMap = {
         javascript: 'js',
+        typescript: 'ts',
         json: 'json',
+        yaml: 'yaml',
         xml: 'xml',
         freemarker: 'ftl',
+        plaintext: 'txt',
         python: 'py',
         ruby: 'rb',
         perl: 'pl',

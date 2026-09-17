@@ -2,6 +2,7 @@
   <div>
     <TsFormRadio
       ref="handler"
+      :disabled="disabled"
       :value="value"
       :dataList="dataList"
       :allowToggle="true"
@@ -16,6 +17,7 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio')
   },
   props: {
+    disabled: { type: Boolean, default: false },
     attrData: { type: Object },
     valueList: { type: Array }
   },
@@ -35,7 +37,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 禁用状态下不修改或回传固定条件。
     setData(val) {
+      if (this.disabled) {
+        return;
+      }
       this.$emit('setData', [val]);
       this.$emit('setValue', [val]);
     },

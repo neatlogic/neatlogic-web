@@ -19,11 +19,19 @@
               @change="changeSearchParam"
             ></TimeSelect>
           </Col>
-          <Col span="8">
+          <Col span="4">
             <TsFormSelect
               v-model="statusList"
               :clearable="false"
               :dataList="statusDataList"
+              @on-change="changeSearchParam"
+            ></TsFormSelect>
+          </Col>
+          <Col span="4">
+            <TsFormSelect
+              v-model="type"
+              :clearable="false"
+              :dataList="typeDataList"
               @on-change="changeSearchParam"
             ></TsFormSelect>
           </Col>
@@ -45,6 +53,9 @@
       >
         <template v-slot:startTime="{row}">
           <div>{{ row.startTime | formatDate }}</div>
+        </template>
+        <template v-slot:type="{row}">
+          <span>{{ row.type ? row.type.toUpperCase() : '' }}</span>
         </template>
         <template v-slot:status="{row}">
           <span v-if="row.status==='succeed'" class="text-success">{{ $t('page.success') }}</span>
@@ -104,6 +115,7 @@ export default {
         { title: this.$t('page.username'), key: 'userName', width: 150 },
         { title: 'IP', key: 'ip', width: 150 },
         { title: this.$t('term.framework.calltime'), key: 'startTime', width: 200 },
+        { title: this.$t('term.framework.accesstype'), key: 'type', width: 100 },
         { title: this.$t('page.timecost') + '(' + this.$t('page.ms') + ')', key: 'timeCost', width: 100 },
         { title: this.$t('page.status'), key: 'status', width: 100 },
         { title: '', key: 'action', align: 'right', width: 10}
@@ -151,11 +163,19 @@ export default {
         }
       ],
       statusList: ['all'],
+      typeDataList: [
+        {
+          text: this.$t('term.framework.allaccesstype'),
+          value: 'all'
+        }
+      ],
+      type: 'all',
       userUuidList: [] // 用户
     };
   },
   created() {
     this.getStatusList();
+    this.getTypeList();
   },
   mounted() {
     this.handleVisibleChange(true);
@@ -174,6 +194,7 @@ export default {
           timeRange: '1',
           timeUnit: 'day',
           statusList: ['all'],
+          type: 'all',
           userUuidList: []
         };
         this.$emit('on-hide', visible);
@@ -187,7 +208,8 @@ export default {
         ...params,
         ...this.rangeTime,
         userUuidList: (typeof this.userUuidList == 'string' && this.userUuidList) ? [this.userUuidList] : [], // 用户
-        statusList: this.statusList.includes('all') ? [] : [this.statusList] // 状态
+        statusList: this.statusList.includes('all') ? [] : [this.statusList], // 状态
+        type: this.type === 'all' ? null : this.type
       };
       return this.$api.framework.apiManage
         .getCallRecord(this.searchParams)
@@ -236,6 +258,20 @@ export default {
         if (res.Status == 'OK') {
           let list = res.Return || [];
           list.length > 0 && (this.statusDataList.push(...list));
+        }
+      });
+    },
+    // 获取访问类型下拉列表
+    getTypeList() {
+      const data = {
+        enumClass: 'neatlogic.framework.restful.enums.ApiAccessType'
+      };
+      this.$api.common.getSelectList(data).then(res => {
+        if (res.Status === 'OK') {
+          const list = res.Return || [];
+          if (list.length > 0) {
+            this.typeDataList.push(...list);
+          }
         }
       });
     },

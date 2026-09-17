@@ -19,6 +19,9 @@
               </div>
             </div>
           </template>
+          <template v-slot:isShowInCiEntityQuery>
+            <TsFormSwitch v-model="ciTypeData.isShowInCiEntityQuery" :true-value="1" :false-value="0"></TsFormSwitch>
+          </template>
         </TsForm>
       </template>
       <template v-slot:footer>
@@ -30,11 +33,13 @@
 </template>
 <script>
 import TsForm from '@/resources/plugins/TsForm/TsForm';
+import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
 
 export default {
   name: '',
   components: {
-    TsForm
+    TsForm,
+    TsFormSwitch
   },
   props: {
     id: {type: Number},
@@ -50,7 +55,7 @@ export default {
         isShow: true,
         width: 'small'
       },
-      ciTypeData: {},
+      ciTypeData: { isShowInCiEntityQuery: 1 },
       ciTypeFormConfig: [
         {
           name: 'id',
@@ -77,12 +82,20 @@ export default {
           name: 'isShowInTopo',
           type: 'slot',
           label: this.$t('term.cmdb.isshowintopo')
+        },
+        {
+          name: 'isShowInCiEntityQuery',
+          type: 'slot',
+          label: this.$t('term.cmdb.showincientityquery')
         }
       ]
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    // 弹窗由父组件按需挂载，初始化时加载层级或设置新建默认值。
+    this.getCiTypeById();
+  },
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
@@ -92,9 +105,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 编辑时读取已保存开关，新建层级默认在配置项查询中显示。
     getCiTypeById: function() {
       if (this.id) {
-        this.$api.cmdb.citype.getCiTypeById(id).then(res => {
+        this.$api.cmdb.citype.getCiTypeById(this.id).then(res => {
           if (res.Status == 'OK') {
             this.ciTypeData = res.Return;
             this.ciTypeFormConfig.forEach(element => {
@@ -103,7 +117,7 @@ export default {
           }
         });
       } else {
-        this.ciTypeData = {};
+        this.ciTypeData = { isShowInCiEntityQuery: 1 };
         this.ciTypeFormConfig.forEach(element => {
           element.value = this.ciTypeData[element.name];
         });

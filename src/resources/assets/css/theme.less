@@ -3816,6 +3816,20 @@
   }
 
   // color-picker 拾色器面板
+  
+  .@{iv-prev}color-picker-rel.@{iv-prev}color-picker-disabled {
+    background-color: transparent; // 禁用背景只作用于内层，避免在圆角外露出浅色框。
+
+    .@{iv-prev}color-picker-input {
+      background-color: @disabled-bg;
+      color: @form-text-disabled;
+    }
+  }
+
+  .@{iv-prev}color-picker > .@{iv-prev}color-picker-rel.@{iv-prev}color-picker-disabled:hover .@{iv-prev}color-picker-input {
+    border-color: var(--border-color, @border-color-base);
+  }
+
   .@{iv-prev}color-picker-confirm {
     border-top: 1px solid var(--border-color, @border-color-base);
   }

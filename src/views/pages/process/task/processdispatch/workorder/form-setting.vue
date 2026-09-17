@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="dispatch-form" :class="{'form-loading-mask': formLoading}">
+    <Loading v-if="formLoading" :loadingShow="true" class="form-local-loading"></Loading>
     <FormPreview
       v-if="formConfig && formConfig.controllerList"
       ref="FormPreview"
@@ -43,6 +44,9 @@ export default {
   data() {
     return {
       formConfig: null, //获取表单信息
+      initialDataApplied: false,
+      initialDataPending: false,
+      formInstance: null,
       formAttributeDataMap: null,
       formAttributeHideList: [], //表单组件的权限（隐藏列表）
       stephidetrList: [], //当前步骤需要隐藏的行
@@ -56,19 +60,41 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    this.$nextTick(() => {
-      if (this.formConfig && this.$refs.FormPreview && this.formAttributeDataMap) {
-        this.$refs.FormPreview.updateFormval(this.formAttributeDataMap);
-      }
-    });
+    this.$nextTick(() => this.syncFormInstance());
   },
   beforeUpdate() {},
-  updated() {},
+  updated() {
+    this.syncFormInstance();
+  },
   activated() {},
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    syncFormInstance() {
+      const instance = (this.formConfig && this.formConfig.controllerList ? this.$refs.FormPreview : this.$refs.formSheet) || null;
+      if (this.formInstance !== instance) {
+        this.formInstance = instance;
+        this.initialDataApplied = false;
+        this.initialDataPending = false;
+      }
+      this.applyInitialData();
+    },
+    applyInitialData() {
+      if (this.formConfig && this.formConfig.controllerList) {
+        const preview = this.formInstance;
+        if (!preview || typeof preview.updateFormval !== 'function') return;
+        if (!this.initialDataApplied && !this.initialDataPending) {
+          this.initialDataPending = true;
+          if (this.formAttributeDataMap) preview.updateFormval(this.formAttributeDataMap);
+          this.$nextTick(() => {
+            if (this._isDestroyed || this.formInstance !== preview) return;
+            this.initialDataApplied = true;
+            this.initialDataPending = false;
+          });
+        }
+      }
+    },
     init() {
       if (this.draftData) {
         this.formConfig = this.draftData.formConfig;
@@ -267,9 +293,31 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    formLoading() {
+      return !this.contentReady;
+    },
+    contentReady() {
+      if (this.$utils.isEmpty(this.formConfig)) return true;
+      if (!this.formInstance) return false;
+      return this.formConfig.controllerList ? this.initialDataApplied : this.formInstance.isReady === true;
+    }
+  },
   watch: {}
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.form-loading-mask {
+  position: relative;
+  min-height: 120px;
+  > :not(.form-local-loading) {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+.form-local-loading {
+  position: absolute;
+  inset: 0;
+  min-height: 120px;
+}
 </style>

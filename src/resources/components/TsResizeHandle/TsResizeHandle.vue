@@ -35,8 +35,9 @@ export default {
 
   .ts-resize-handle-line {
     position: absolute;
+    opacity: 0;
     background-color: var(--dividing-color, #e8eaec);
-    transition: background-color 0.2s ease;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
   }
 
   .ts-resize-handle-grip {
@@ -47,9 +48,10 @@ export default {
     justify-content: center;
     gap: 2px;
     box-sizing: border-box;
+    opacity: 0;
     background: #f3f3f3;
     box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
-    transition: box-shadow 0.2s ease;
+    transition: opacity 0.2s ease, box-shadow 0.2s ease;
 
     i {
       display: block;
@@ -61,10 +63,12 @@ export default {
   &:hover,
   &:active {
     .ts-resize-handle-line {
+      opacity: 1;
       background-color: var(--primary-color, #1677ff);
     }
 
     .ts-resize-handle-grip {
+      opacity: 1;
       box-shadow: 0 0 0 1px var(--primary-color, #1677ff), 0 0 1px 1px rgba(0, 0, 0, 0.2);
     }
   }

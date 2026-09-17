@@ -114,7 +114,7 @@
                   <Checkbox v-model="data.isMobile" :disabled="disabled"></Checkbox>
                 </td>
                 <td>
-                  <Checkbox v-model="data.config.isRequired" :disabled="disabled"></Checkbox>
+                  <Checkbox v-model="data.config.isRequired" :disabled="disabled || (data.handler === 'formtableselector' && data.config.saveData === false)"></Checkbox>
                 </td>
                 <td v-if="!disabled">
                   <span v-if="data.isExtra" class="tsfont-setting text-action" @click="openAttrConfigDialog(data)"></span>
@@ -265,7 +265,7 @@ export default {
       let {dataConfig = [] } = this.config;
       dataConfig.forEach(item => {
         let {isUnique = false} = item.config || {};
-        if (isUnique) {
+        if (isUnique && item.handler !== 'formtableselector') {
           dataList.push({ text: item.label, value: item.uuid });
         }
       });

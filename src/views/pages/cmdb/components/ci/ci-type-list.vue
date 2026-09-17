@@ -130,6 +130,7 @@ export default {
   filters: {},
   props: {
     ciId: { type: Number },
+    isShowInCiEntityQuery: { type: Number }, // 仅指定入口传值，由接口过滤模型层级
     toggleable: { type: Boolean, default: true }, //允许反选
     ciFilter: { type: Array }, //过滤模型列表
     tree: {
@@ -175,8 +176,13 @@ export default {
       this.isExpandAll = !this.isExpandAll;
       this.$refs['tree'].toggleExpand(this.isExpandAll);
     },
+    // 透传入口的可选显示条件，其他复用入口保留完整模型树。
     getCiTree() {
-      this.$api.cmdb.ci.getCiTree().then(res => {
+      let params;
+      if (this.isShowInCiEntityQuery != null) {
+        params = { isShowInCiEntityQuery: this.isShowInCiEntityQuery };
+      }
+      this.$api.cmdb.ci.getCiTree(params).then(res => {
         this.ciTreeList = res.Return;
       });
     },
@@ -224,8 +230,13 @@ export default {
     click(nodeData) {
       this.$emit('click', nodeData);
     },
+    // 显示条件交由接口处理，不在共享组件中增加层级过滤逻辑。
     async searchCiTypeCi() {
-      await this.$api.cmdb.ci.searchCiTypeCi().then(res => {
+      let params;
+      if (this.isShowInCiEntityQuery != null) {
+        params = { isShowInCiEntityQuery: this.isShowInCiEntityQuery };
+      }
+      await this.$api.cmdb.ci.searchCiTypeCi(params).then(res => {
         if (this.ciFilter && this.ciFilter.length > 0) {
           const ciTypeList = res.Return;
           ciTypeList.forEach(citype => {

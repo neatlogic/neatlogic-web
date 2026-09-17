@@ -2,7 +2,7 @@
   <div class="extrainfo-detail bg-op padding radius-lg">
     <div class="extrainfo-content">
       <div class="overflow">
-        <div class="text-tip pb-sm">{{ $t('page.apply') }}</div>
+        <div class="text-tip pb-sm">{{ $t('page.application') }}</div>
         <div v-if="config.appSystemAbbrName || config.appSystemName" class="text-href overflow" @click="gotoManage('app')">
           <span v-if="config.appSystemAbbrName">{{ config.appSystemAbbrName }}</span>
           <span v-if="config.appSystemName">[{{ config.appSystemName }}]</span>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="reporting-history">
     <Loading
       :loadingShow="loadingShow"
       type="fix"
@@ -164,5 +164,9 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.reporting-history {
+  position: relative;
+  min-height: 120px;
+}
 </style>

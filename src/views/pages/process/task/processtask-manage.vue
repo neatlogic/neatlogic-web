@@ -874,7 +874,7 @@ html {
 }
 .position {
   position: relative;
-  height: 100%;
+  min-height: 100%;
 }
 .mode-change {
   position: absolute;

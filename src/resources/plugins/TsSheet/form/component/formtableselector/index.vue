@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div v-if="!filterReady && filterInvalid" class="text-grey mb-xs">{{ $t('term.framework.filterqueryinvalid') }}</div>
     <div v-if="config.mode === 'dialog'">
       <div v-if="!readonly && !disabled" class="mb-sm action-group">
         <div v-if="canAddData" class="action-item">
@@ -63,11 +64,13 @@
                           :extraUuid="column.uuid"
                           :columnReadonly="getColumnReadonly(column.uuid)"
                           :reactionData="getReactionData(column, row)"
-                          :reactionValueData="reactionValuesMap[column.uuid]"
+                          :reactionValueData="getReactionValueData(column, row)"
+                          :isReactionPending="!!pendingReactionValuesMap[`${row.uuid}_${column.uuid}`]"
                           :expressionData="getExpressionData(column)"
                           class="form-item-width"
                           @change="changeRow"
                           @getCurrentRowData="getCurrentRowData"
+                          @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${column.uuid}`)"
                         ></ColumnItem>
                       </td>
                     </tr>
@@ -102,13 +105,17 @@
         :formDataForWatch="formDataForWatch"
         :formItemList="formItemList"
         :value="tbodyList"
+        :hasSavedValue="Array.isArray(value)"
         :mode="mode"
         :filter="filter"
+        :filterReady="filterReady"
+        :filterInvalid="filterInvalid"
         :disabled="disabled"
-        :readonly="readonly"
+        :readonly="readonly || !filterReady"
         :externalData="externalData"
         :extendConfigList="extendConfigList"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
+        :dataProvider="dataProvider"
         @resize="$emit('resize')"
         @change="getSelectedData"
       ></DataList>
@@ -121,9 +128,12 @@
       :value="tbodyList"
       :mode="mode"
       :filter="filter"
+      :filterReady="filterReady"
+      :filterInvalid="filterInvalid"
       :formItemList="formItemList"
       :externalData="externalData"
       :extendConfigList="extendConfigList"
+      :dataProvider="dataProvider"
       @close="closeTableSelectorDialog"
     ></DataDialog>
   </div>
@@ -148,11 +158,13 @@ export default {
   extends: base,
   mixins: [validmixin, conditionMixin, ExpressionMixin, ColumnItemMixin, TableMixin],
   props: {
+    dataProvider: { type: Function },
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
   },
   data() {
     return {
+      isReady: false,
       isTableSelectorDialogShow: false,
       selectedItemList: [],
       rowFormItem: {},
@@ -174,7 +186,12 @@ export default {
     this.reactionWatch();
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      //避免初始化数据，联动过滤清空表格内数据
+      this.isReady = true;
+    });
+  },
   beforeUpdate() {},
   updated() {},
   activated() {},
@@ -276,6 +293,26 @@ export default {
       if (this.$refs.dataList && this.$refs.dataList.validData) {
         let dataListValid = await this.$refs.dataList.validData();
         errorList.push(...dataListValid);
+        if (this.$refs.dataList.autoSaveAll) {
+          // 全量保存包含未展示的分页，提交时也需要校验这些记录的扩展属性。
+          const tbodyList = this.$refs.dataList.selectedItemList;
+          const pageSize = this.$refs.dataList.matrixData.pageSize;
+          const theadList = this.theadList.filter(th => this.extraList.some(column => column.uuid === th.key));
+          errorList.push(
+            ...this.validTableTbodyListData({
+              pageSize,
+              readonly: this.readonly,
+              disabled: this.disabled,
+              theadList,
+              tbodyList,
+              formData: this.formData,
+              formItem: this.formItem,
+              validateMap: this.validateMap,
+              executeReaction: this.executeReaction
+            }),
+            ...this.validTableAttrUnique({ pageSize, config: this.config, formItem: this.formItem, tbodyList })
+          );
+        }
       } else if (this.config.mode === 'dialog') {
         let itemError = [];
         if (this.$refs) {

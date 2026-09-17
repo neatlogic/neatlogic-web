@@ -46,8 +46,10 @@ const datawarehouse = {
   validXml(xml) {
     return axios.post('/api/rest/datawarehouse/datasource/validxml', {xml: xml});
   },
-  getExample() {
-    return fetch('/resource/example/datasource_example.xml', {
+  // 根据界面语言加载示例，未指定语言时沿用中文示例。
+  getExample(locale) {
+    const fileName = /^en(?:[-_]|$)/i.test(locale || '') ? 'datasource_example_en.xml' : 'datasource_example.xml';
+    return fetch(`/resource/example/${fileName}`, {
       method: 'get',
       credentials: 'same-origin',
       responseType: 'text'

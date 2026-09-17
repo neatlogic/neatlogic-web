@@ -71,6 +71,9 @@
       </template>
     </div>
     <Loading :loadingShow="isImportOperationLoading" type="fix"></Loading>
+    <div v-if="canShowImportExportBtn && nestedSelectorColumns.length && !readonly && !disabled" class="text-grey mb-sm">
+      {{ $t('form.nestedSelector.excelUnsupported') }}
+    </div>
     <template v-if="showTable">
       <template v-if="hasColumn">
         <div class="tstable-container border bg-grey radius-lg tstable-no-fixedHeader">
@@ -128,12 +131,18 @@
                       :rowData="row"
                       :rowUuid="row.uuid"
                       :extraUuid="extra.uuid"
+                      :nestedSelectorState="nestedSelectorStates[`${row.uuid}_${extra.uuid}`]"
                       :reactionData="getReactionData(extra, row)"
-                      :reactionValueData="reactionValuesMap[extra.uuid]"
+                      :reactionValueData="getReactionValueData(extra, row)"
+                      :isReactionPending="!!pendingReactionValuesMap[`${row.uuid}_${extra.uuid}`]"
                       :expressionData="getExpressionData(extra)"
                       class="form-item-width"
+                      @retryNestedSelector="retryNestedSelector"
+                      @editNestedSelector="editNestedSelector"
+                      @changeNestedExtra="changeNestedExtra"
                       @change="changeRow"
                       @getCurrentRowData="getCurrentRowData"
+                      @reactionReady="$delete(pendingReactionValuesMap, `${row.uuid}_${extra.uuid}`)"
                     ></ColumnItem>
                   </td>
                 </tr>
@@ -166,6 +175,8 @@ import validmixin from '../common/validate-mixin.js';
 import conditionMixin from './condition-mixin.js';
 import expressionMixin from './expression-mixin.js';
 import TableImportExportMixin from './table-import-export-mixin.js';
+import NestedSelectorMixin from './nested-selector-mixin.js';
+import ColumnItemMixin from './column-item-mixin.js';
 import { FORMITEMS } from '@/resources/plugins/TsSheet/form/formitem-list.js';
 export default {
   name: '',
@@ -175,7 +186,7 @@ export default {
     ColumnItem: () => import('@/resources/plugins/TsSheet/form/component/formtableinputer/column-item.vue')
   },
   extends: base,
-  mixins: [validmixin, conditionMixin, expressionMixin, TableImportExportMixin],
+  mixins: [validmixin, conditionMixin, expressionMixin, TableImportExportMixin, NestedSelectorMixin],
   props: {
     readonly: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
@@ -213,6 +224,7 @@ export default {
       tbodyList: [],
       validateMap: {},
       reactionValuesMap: {}, // { extraUuid: { uuid: value } }
+      pendingReactionValuesMap: {}, // 未显示单元格发生联动前的依赖值，翻页挂载后再更新为最新值
       clonedExtrasMap: {},
       isSelectAllCurrentPage: false,
       selectedCurrentPageMap: {}
@@ -239,6 +251,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    reactionWatch: ColumnItemMixin.methods.reactionWatch,
     handleSelectedRow(isSelected, row) {
       this.$set(this.selectedCurrentPageMap, row.uuid, isSelected);
       const findSelectedList = this.pagedTbodyList.filter(d => this.selectedCurrentPageMap[d.uuid]);
@@ -256,25 +269,6 @@ export default {
       } else {
         this.selectedCurrentPageMap = {};
       }
-    },
-    reactionWatch() {
-      this.reactionValuesMap = {};
-      this.extraList.forEach(extra => {
-        const deps = this.reactionDepsMap[extra.uuid] || [];
-        this.$set(this.reactionValuesMap, extra.uuid, {});
-        this.$set(this.clonedExtrasMap, extra.uuid, this.$utils.deepClone(extra));
-        deps.forEach(uuid => {
-          this.$set(this.reactionValuesMap[extra.uuid], uuid, this.formData[uuid]);
-          this.$watch(
-            () => this.formData[uuid],
-            (newVal, oldVal) => {
-              if (newVal !== oldVal) {
-                this.$set(this.reactionValuesMap[extra.uuid], uuid, newVal);
-              }
-            }
-          );
-        });
-      });
     },
     init() {
       if (this.value && this.value instanceof Array && this.value.length > 0) {
@@ -299,7 +293,7 @@ export default {
               break;
             }
           }
-          if (!hasCol) {
+          if (!hasCol && !this.nestedSelectorColumns.length) {
             value.splice(i, 1);
           }
         }
@@ -420,30 +414,26 @@ export default {
       return errorList;
     },
     async validData() {
-      //当前页校验样式
-      if (this.$refs) {
-        for (let name in this.$refs) {
-          if (name.startsWith('formitem_')) {
-            if (this.$refs[name]) {
-              let formitem = null;
-              if (this.$refs[name] instanceof Array) {
-                formitem = this.$refs[name][0];
-              } else {
-                formitem = this.$refs[name];
-              }
-              if (formitem) {
-                await formitem.validData();
-              }
-            }
-          }
+      if (this.nestedSelectorColumns.length) await this.$nextTick();
+      // 单元格仅更新当前页样式；父表统一返回所有行的校验结果，避免重复或漏掉未挂载的记录。
+      for (const name of Object.keys(this.$refs || {})) {
+        if (name.startsWith('formitem_')) {
+          const item = Array.isArray(this.$refs[name]) ? this.$refs[name][0] : this.$refs[name];
+          if (item) await item.validData();
         }
       }
-      return [...this.validTbodyList(), ...this.validAttrUnique()];
+      const nestedErrors = this.validNestedSelectors();
+      Object.values(this.nestedSelectorStates).forEach(state => {
+        state.validationErrors = nestedErrors.filter(error => error.rowUuid === state.row.uuid && error.attrUuid === state.column.uuid);
+      });
+      return [...this.validTbodyList(), ...this.validAttrUnique(), ...nestedErrors];
     },
     validAttrUnique() {
       // 校验属性是否唯一
       let errorList = [];
       let { uniqueRuleConfig = [], dataConfig = [] } = this.config || {};
+      dataConfig = dataConfig.filter(column => column.handler !== 'formtableselector');
+      uniqueRuleConfig = uniqueRuleConfig.filter(uuid => dataConfig.some(column => column.uuid === uuid));
       if (uniqueRuleConfig.length == 0) {
         //如果存在设置唯一标识的字段则校验是否重复
         const uniqueRuleList = dataConfig.filter(v => v.config && v.config['isUnique']);
@@ -518,6 +508,11 @@ export default {
       }
     },
     changeRow(rowData) {
+      const nestedKey = rowData.row?.uuid + '_' + rowData.extraUuid;
+      if (this.nestedSelectorStates[nestedKey]) {
+        this.applyNestedValue(nestedKey, rowData.value, rowData.valueSource || (rowData.value == null ? 'clear' : 'external'));
+        return;
+      }
       const { value, extraUuid = '', row = {} } = rowData || {};
       if (!this.$utils.isSame(value, row[extraUuid])) {
         if (!row.hasOwnProperty(extraUuid)) {
@@ -559,7 +554,7 @@ export default {
           //内嵌table
           Object.keys(row).forEach(key => {
             const findThead = this.theadList.find(th => th.key === key);
-            if (findThead && findThead.config && !this.$utils.isEmpty(findThead.config.dataConfig)) {
+            if (findThead && !this.nestedSelectorColumns.some(column => column.uuid === key) && findThead.config && findThead.config.saveData !== false && !this.$utils.isEmpty(findThead.config.dataConfig)) {
               if (!this.$utils.isEmpty(row[key])) {
                 for (let i = 0; i < row[key].length; i++) {
                   let item = row[key][i];
@@ -581,6 +576,7 @@ export default {
       return errorList;
     },
     getErrorList(row, data, pageCount, th, defaultErrorList) { //获取校验错误列表
+      if (this.nestedSelectorColumns.some(column => column.uuid === th.key)) return defaultErrorList || [];
       const key = th.key;
       const reactionValid = this.validReaction(th.reaction, data);
       let isValid = true;
@@ -659,6 +655,7 @@ export default {
       };
     },
     getValidateList(d) { //获取组件的基础校验规则
+      if (d.handler === 'formtableselector' && d.config.saveData === false) return;
       let validateList = [];
       if (d.config.isRequired) {
         validateList.push('required');
@@ -694,15 +691,19 @@ export default {
     config() {
       return this.formItem?.config || {};
     },
+    getReactionValueData() {
+      return (extra, row) => this.pendingReactionValuesMap[`${row.uuid}_${extra.uuid}`] || this.reactionValuesMap[extra.uuid];
+    },
     getReactionData() {
       return (extra, row) => {
         if (!extra || !row) return {};
         const deps = this.reactionDepsMap[extra.uuid] || [];
         if (!deps.length) return {};
         const result = {};
+        const reactionValueData = this.getReactionValueData(extra, row) || {};
         deps.forEach(uuid => {
           result[uuid] = this.formData.hasOwnProperty(uuid)
-            ? this.formData[uuid]
+            ? reactionValueData[uuid]
             : row[uuid];
         });
         return result;
@@ -920,7 +921,7 @@ export default {
                 this.$set(item, 'isRequired', true);
               }
               this.getValidateList(d);
-              if (!this.$utils.isEmpty(d.config.dataConfig)) {
+              if (d.config.saveData !== false && !this.$utils.isEmpty(d.config.dataConfig)) {
                 d.config.dataConfig.forEach(c => {
                   if (c.config) {
                     this.getValidateList(c);

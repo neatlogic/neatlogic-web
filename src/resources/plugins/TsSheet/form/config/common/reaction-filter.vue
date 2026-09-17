@@ -12,6 +12,26 @@
         </Alert>
       </Col>
     </Row>
+    <div class="flex-start mb-sm">
+      <span class="pr-nm text-title">{{ $t('term.framework.filterquerylabel') }}
+        <Poptip
+          :transfer="true"
+          word-wrap
+          trigger="hover"
+          width="300"
+          :content="$t('term.framework.filterquerytip')"
+        >
+          <span class="tsfont-info-o text-tip-active"></span>
+        </Poptip>
+      </span>
+      <TsFormSwitch
+        :width="'auto'"
+        :value="!!filter.queryWhenConditionHasValue"
+        :trueValue="true"
+        :falseValue="false"
+        @on-change="changeQueryMode"
+      ></TsFormSwitch>
+    </div>
     <Row :gutter="10" class="mb-sm">
       <Col :span="10" class="text-grey">{{ $t('page.attribute') }}</Col>
       <Col :span="2" class="text-grey"></Col>
@@ -65,13 +85,16 @@
         </Col>
       </Row>
     </template>
+    <div v-if="invalidReference" class="text-error mb-sm">{{ $t('term.framework.filterqueryinvalid') }}</div>
     <div class="text-href tsfont-plus" @click="addFilterRule">{{ $t('page.filtercondition') }}</div>
   </div>
 </template>
 <script>
+import { filterHandlers, filterReferenceInvalid } from '../../reaction/filter-source.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
   props: {
@@ -84,7 +107,7 @@ export default {
     return {
       filter: this.value || {},
       validateList: [{ name: 'required', message: ' ' }],
-      filterComponentList: ['formselect', 'formradio', 'formcheckbox', 'formuserselect', 'formdispatchowner', 'formdate', 'formtime', 'formtext', 'formexpression', 'formprocesstaskinfo']
+      filterComponentList: filterHandlers
     };
   },
   beforeCreate() {},
@@ -98,6 +121,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    changeQueryMode(value) {
+      this.$set(this.filter, 'queryWhenConditionHasValue', !!value);
+      this.$emit('input', this.filter);
+    },
     addFilterRule() {
       if (!this.filter.ruleList) {
         this.$set(this.filter, 'ruleList', []);
@@ -117,7 +144,7 @@ export default {
       this.$emit('input', this.filter);
     },
     valid() {
-      let isValid = true;
+      let isValid = !(this.filter.ruleList || []).some(rule => filterReferenceInvalid(rule.formItemUuid, this.formItemList, this.formItem.uuid));
       if (this.$refs['select']) {
         this.$refs['select'].forEach(element => {
           if (!element.valid()) {
@@ -130,10 +157,23 @@ export default {
   },
   filter: {},
   computed: {
+    invalidReference() {
+      return (this.filter.ruleList || []).some(rule => rule.formItemUuid && filterReferenceInvalid(rule.formItemUuid, this.formItemList, this.formItem.uuid));
+    },
     otherFormItemList() {
-      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && this.filterComponentList.includes(d.handler));
+      let list = this.formItemList.filter(d => d.uuid !== this.formItem.uuid && (this.filterComponentList.includes(d.handler) || d.handler === 'formtableinputer'));
       let newList = [];
       list.forEach(item => {
+        if (item.handler === 'formtableinputer') {
+          (item.config?.dataConfig || []).filter(column => filterHandlers.includes(column.handler)).forEach(column => {
+            const uuid = item.uuid + '#' + column.uuid;
+            const label = item.label + '.' + column.label;
+            if (filterReferenceInvalid(uuid, this.formItemList, this.formItem.uuid)) return;
+            newList.push({ uuid, label });
+            (column.config?.hiddenFieldList || []).forEach(hidden => newList.push({ uuid: uuid + '#' + hidden.value, label: label + '.' + hidden.text }));
+          });
+          return;
+        }
         let obj = {
           label: item.label,
           uuid: item.uuid

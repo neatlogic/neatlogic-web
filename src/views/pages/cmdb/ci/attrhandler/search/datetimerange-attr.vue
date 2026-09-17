@@ -2,6 +2,7 @@
   <div>
     <TsFormDatePicker
       ref="handler"
+      :disabled="disabled"
       border="border"
       :value="value"
       :type="type"
@@ -18,6 +19,7 @@ export default {
     TsFormDatePicker: () => import('@/resources/plugins/TsForm/TsFormDatePicker')
   },
   props: {
+    disabled: { type: Boolean, default: false },
     propConfig: {type: Object},
     attrData: {type: Object},
     valueList: {type: Array}
@@ -47,7 +49,11 @@ export default {
         this.format = this.attrData.config.format;
       }
     },
+    // 禁用状态下不修改或回传固定条件。
     setData(val) {
+      if (this.disabled) {
+        return;
+      }
       this.$emit('setData', [val]);
       this.$emit('setValue', [val]);
     }
