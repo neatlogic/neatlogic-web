@@ -18,7 +18,7 @@ export function buildValidateList({columnAttrItem = {}, readonly = false, disabl
   if (!utils.isEmpty(validate)) {
     validateList.push(validate);
   }
-  if (!utils.isEmpty(regex) && this.isValidRegexPattern(regex)) {
+  if (!utils.isEmpty(regex) && isValidRegexPattern(regex)) {
     let findRegexItem = validateList.find(item => item && item.name === 'regex');
     if (findRegexItem) {
       findRegexItem.pattern = regex;
