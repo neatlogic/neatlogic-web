@@ -6,10 +6,7 @@
         <a v-if="error.childPage" class="text-error" @click="locateError(error)">{{ error.error }}</a>
         <span v-else>{{ error.error }}</span>
       </div>
-      <div v-if="showSavedRecords || state.snapshot || state.blocked || (config.saveData !== false && config.saveMode === 'allMatched')">
-        <Button v-if="!readonly && !disabled && config.saveMode !== 'allMatched'" class="mb-sm" @click="showSavedRecords = false; $emit('editNestedSelector', state.key)">
-          {{ $t('term.cmdb.selectagain') }}
-        </Button>
+      <div v-if="useSavedTable">
         <div v-if="state.status === 'loading'" class="text-grey">{{ $t('form.nestedSelector.loading') }}</div>
         <div v-if="state.error" class="text-error">
           {{ state.error }} <span v-if="!disabled" class="text-action" @click="$emit('retryNestedSelector', state.key)">{{ $t('page.retry') }}</span>
@@ -72,6 +69,8 @@
           :referenceFormItemList="referenceFormItemList"
           :value="config.saveData === false ? [] : value"
           :filter="state.filter"
+          :filterReady="state.ready"
+          :filterInvalid="state.invalid"
           :formData="formData"
           :formDataForWatch="formDataForWatch"
           :externalData="externalData"
@@ -89,7 +88,7 @@
 <script>
 import base from '../base.vue';
 // 单元格只管理本地搜索/分页并转发交互；快照、提交值和异步状态由父表持有。
-// 快照及全部匹配结果直接本地展示，其余候选列表通过 dataProvider 复用原选择器。
+// 可编辑的手动选择直接复用原选择器；全量结果及受限快照保留本地展示。
 export default {
   components: {
     Selector: () => import('../formtableselector/index.vue'),
@@ -118,6 +117,8 @@ export default {
       this.snapshotKeyword = '';
       await this.$nextTick();
       this.page = error.childPage;
+      // 手动选择的错误页使用原选择器展示已选记录，仍保留增删入口。
+      if (this.$refs.selector) this.$refs.selector.tablePageConfig.currentPage = error.childPage;
       await this.$nextTick();
       await this.validData();
     },
@@ -143,8 +144,13 @@ export default {
     state() { return this.nestedSelectorState; },
     extraDefinitions() { return [...(this.config.dataConfig || []), ...this.formItemList, ...this.referenceFormItemList]; },
     displayOnly() { return this.config.saveData === false || this.config.saveMode === 'allMatched'; },
+    useSavedTable() {
+      return !!this.state && (this.state.blocked ||
+        (this.config.saveData !== false && this.config.saveMode === 'allMatched') ||
+        (this.state.snapshot && (this.readonly || this.disabled || !this.state.ready)));
+    },
     selectorItem() {
-      return { ...this.formItem, config: { ...this.config, mode: this.displayOnly ? 'normal' : this.config.mode } };
+      return { ...this.formItem, config: { ...this.config, mode: this.displayOnly ? 'normal' : (this.showSavedRecords ? 'dialog' : this.config.mode) } };
     },
     snapshotSearchColumns() { return (this.config.dataConfig || []).filter(column => column.isSearch); },
     snapshotRows() {

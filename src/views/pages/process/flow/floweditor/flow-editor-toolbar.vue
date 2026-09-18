@@ -13,6 +13,24 @@
       @click="canRedo && graph.redo()"
     ></div>
     <div v-if="!readonly" class="action-item"><Divider type="vertical"></Divider></div>
+    <div v-if="!readonly" class="action-item">
+      <Poptip
+        trigger="hover"
+        :transfer="true"
+        word-wrap
+        width="320"
+        :content="$t('term.process.strictmodetip')"
+      >
+        <TsFormSwitch
+          :value="strictMode"
+          :showStatus="true"
+          :trueText="$t('page.strictmode')"
+          :falseText="$t('page.strictmode')"
+          @on-change="$emit('update:strictMode', $event)"
+        ></TsFormSwitch>
+      </Poptip>
+    </div>
+    <div v-if="!readonly" class="action-item"><Divider type="vertical"></Divider></div>
     <div class="action-item tsfont-search-plus" @click="graph.zoom(0.1)"></div>
     <div class="action-item tsfont-search-minus" @click="graph.zoom(-0.1)"></div>
     <div class="action-item tsfont-search" @click="graph.zoomTo(1)"></div>
@@ -74,6 +92,7 @@ import { $t } from '@/resources/init.js';
 export default {
   name: '',
   components: {
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
   },
   props: {
     mode: {
@@ -85,6 +104,7 @@ export default {
     },
     needMinimap: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
+    strictMode: { type: Boolean, default: false },
     graph: { type: Graph }, //图形实例，非数据
     selectedNode: { type: Node },
     selectedEdge: { type: Edge },

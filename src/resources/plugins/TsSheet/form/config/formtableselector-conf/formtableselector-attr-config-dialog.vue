@@ -22,21 +22,16 @@
             ></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea', 'formpassword'].includes(propertyLocal.handler)" v-slot:config>
-            <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
+            <TsFormItem v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" :label="$t('form.placeholder.checkrule')">
               <TsFormSelect
-                v-model="propertyLocal.config.validate"
+                :value="getValidationRule(propertyLocal.config)"
                 :dataList="ruleList"
                 transfer
                 border="border"
-                @on-change="(validateRule)=> {
-                  if(validateRule !== 'custom'){
-                    $set(propertyLocal.config,'regex','');
-                    $set(propertyLocal.config,'regexMessage','');
-                  }
-                }"
+                @on-change="val => changeValidationRule(propertyLocal.config, val)"
               ></TsFormSelect>
             </TsFormItem>
-            <template v-if="propertyLocal && propertyLocal.config && (propertyLocal.config.validate == 'custom')">
+            <template v-if="propertyLocal && propertyLocal.config && showRegexConfig(propertyLocal.config)">
               <TsFormItem :label="$t('message.framework.regex')" :tooltip="$t('message.framework.regextip')">
                 <TsFormInput
                   ref="formitem_regex"
@@ -496,6 +491,7 @@
   </TsDialog>
 </template>
 <script>
+import textValidationMixin from '../common/text-validation-mixin.js';
 export default {
   name: '',
   components: {
@@ -516,6 +512,7 @@ export default {
     ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue'),
     QuickOperation: () => import('@/resources/components/quick-operation/index.vue')
   },
+  mixins: [textValidationMixin],
   props: {
     formItemUuid: { type: String }, //表单组件uuid
     formItemConfig: { type: Object }, //表单组件配置
@@ -646,71 +643,6 @@ export default {
         }
       ],
       isActive: false,
-      ruleList: [
-        {
-          text: this.$t('page.letter'),
-          value: 'unique_ident'
-        },
-        {
-          text: this.$t('page.lowercaseletter'),
-          value: 'lowercase'
-        },
-        {
-          text: this.$t('page.capitalletter'),
-          value: 'uppercase'
-        },
-        {
-          text: this.$t('page.number'),
-          value: 'number'
-        },
-        {
-          text: this.$t('page.lettersandnumbers'),
-          value: 'enchar'
-        },
-        {
-          text: this.$t('page.emailaddress'),
-          value: 'mail'
-        },
-        {
-          text: this.$t('page.phonenumber'),
-          value: 'phone'
-        },
-        {
-          text: this.$t('page.ip'),
-          value: 'ip'
-        },
-        {
-          text: this.$t('page.port'),
-          value: 'port'
-        },
-        {
-          text: 'URL',
-          value: 'url'
-        },
-        {
-          text: this.$t('page.custom'),
-          value: 'custom'
-        }
-      ],
-      regexValidateList: [
-        {
-          name: 'tomore',
-          trigger: 'change',
-          message: this.$t('message.pleaseentertruetarget', {'target': this.$t('message.framework.regularexpression')}),
-          validator: (rule, value) => {
-            if (this.$utils.isEmpty(value)) {
-              return true;
-            } else {
-              try {
-                new RegExp(value);
-                return true;
-              } catch (error) {
-                return false;
-              }
-            }
-          }
-        }
-      ],
       mapReaction: { //联动配置
         formexpression: {
           hide: {},

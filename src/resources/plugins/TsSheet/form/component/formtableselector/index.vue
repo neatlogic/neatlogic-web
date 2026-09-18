@@ -577,6 +577,20 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    filter: {
+      handler(val, oldVal) {
+        if (!this.isReady || this.$utils.isSame(val, oldVal) || this.filterInvalid || this.mode.includes('edit') || this.readonly || this.disabled) return;
+        const autoSaveAll = this.config.mode === 'normal' && this.config.saveAll && !this.dataProvider;
+        if (autoSaveAll && this.filterReady) return;
+        if (!this.tbodyList.length && !this.selectedItemList.length && this.$utils.isEmpty(this.selectedCurrentPageMap)) return;
+        this.tbodyList = [];
+        this.selectedItemList = [];
+        this.selectedCurrentPageMap = {};
+        this.isSelectAllCurrentPage = false;
+        this.setValue([]);
+      },
+      deep: true
     }
   }
 };

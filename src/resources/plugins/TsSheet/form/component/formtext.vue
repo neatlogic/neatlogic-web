@@ -74,7 +74,7 @@ export default {
       return null;
     },
     actualValidateList() {
-      let validateList = this.validateList || [];
+      let validateList = this.$utils.deepClone(this.validateList || []);
       if (!this.$utils.isEmpty(this.config)) {
         if (this.config.validate) {
           validateList.push(this.config.validate);

@@ -560,7 +560,7 @@ export default {
     },
     value: {
       handler() {
-        if (this.dataProvider) this.init();
+        if (!this.autoSaveAll && !this.$utils.isSame(this.value || [], this.selectedItemList)) this.init();
         if (this.autoSaveAll) {
           const rows = this.$utils.deepClone(this.value || []);
           rows.forEach(row => { row._selected = false; this.$delete(row, 'isSelected'); });

@@ -20,85 +20,67 @@
         }"
       ></TsFormInput>
     </TsFormItem>
-    <TsFormItem :label="$t('message.framework.regex')" labelPosition="top" :tooltip="$t('message.framework.regextip')">
-      <TsFormInput
-        :value="config.regex"
+    <TsFormItem :label="$t('form.placeholder.checkrule')" labelPosition="top">
+      <TsFormSelect
+        :value="getValidationRule(config)"
+        :dataList="ruleList"
         :disabled="disabled"
-        :validateList="regexValidateList"
-        :placeholder="$t('message.framework.regularexpression')"
-        prepend="/"
-        append="/"
-        class="regex-input"
-        @on-change="val => {
-          setConfig('regex', val);
-        }"
-      >
-      </TsFormInput>
+        transfer
+        border="border"
+        @on-change="val => changeValidationRule(config, val)"
+      ></TsFormSelect>
     </TsFormItem>
-    <TsFormItem :label="$t('message.framework.validtip')" labelPosition="top" :tooltip="$t('message.framework.regexvalidtip')">
-      <TsFormInput
-        ref="regexMessage"
-        :value="config.regexMessage"
-        :disabled="disabled"
-        :validateList="!$utils.isEmpty(config.regex)? validateList:[]"
-        :placeholder="$t('message.framework.regexvalidplaceholder')"
-        @on-change="val => {
-          setConfig('regexMessage', val);
-        }"
-      >
-      </TsFormInput>
-    </TsFormItem>
+    <template v-if="showRegexConfig(config)">
+      <TsFormItem :label="$t('message.framework.regex')" labelPosition="top" :tooltip="$t('message.framework.regextip')">
+        <TsFormInput
+          :value="config.regex"
+          :disabled="disabled"
+          :validateList="regexValidateList"
+          :placeholder="$t('message.framework.regularexpression')"
+          prepend="/"
+          append="/"
+          class="regex-input"
+          @on-change="val => {
+            setConfig('regex', val);
+          }"
+        >
+        </TsFormInput>
+      </TsFormItem>
+      <TsFormItem :label="$t('message.framework.validtip')" labelPosition="top" :tooltip="$t('message.framework.regexvalidtip')">
+        <TsFormInput
+          ref="regexMessage"
+          :value="config.regexMessage"
+          :disabled="disabled"
+          :validateList="!$utils.isEmpty(config.regex)? validateList:[]"
+          :placeholder="$t('message.framework.regexvalidplaceholder')"
+          @on-change="val => {
+            setConfig('regexMessage', val);
+          }"
+        >
+        </TsFormInput>
+      </TsFormItem>
+    </template>
   </div>
 </template>
 <script>
 import base from './base-config.vue';
+import textValidationMixin from './common/text-validation-mixin.js';
 
 export default {
   name: '',
   components: {
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   extends: base,
-  props: {},
+  mixins: [textValidationMixin],
   data() {
     return {
-      regexValidateList: [
-        {
-          name: 'tomore',
-          trigger: 'change',
-          message: this.$t('message.pleaseentertruetarget', {'target': this.$t('message.framework.regularexpression')}),
-          validator: (rule, value) => {
-            if (this.$utils.isEmpty(value)) {
-              return true;
-            } else {
-              return this.isValidRegex(value);
-            }
-          }
-        }
-      ],
       validateList: ['required']
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
-    isValidRegex(regexString) {
-      try {
-        new RegExp(regexString);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    },
     configValid() {
       this.$nextTick(() => {
         if (this.$refs.regexMessage) {
@@ -107,7 +89,6 @@ export default {
       });
     }
   },
-  filter: {},
   computed: {
     regexMessageConfig() {
       return this.validClass('regexMessage');
