@@ -97,7 +97,14 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    value: {
+      handler(val) {
+        this.selectedItemList = this.$utils.deepClone(val) || [];
+      },
+      deep: true
+    }
+  }
 };
 </script>
 <style lang="less">
