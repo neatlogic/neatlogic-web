@@ -3,19 +3,54 @@
     <div v-if="paramList.length > 0" class="param-list text-title tips param-header">
       <TsRow :gutter="8">
         <Col span="3">
-          <div class="overflow">{{ $t('term.autoexec.parameterenglishname') }}</div>
+          <Tooltip
+            class="header-tooltip"
+            :content="$t('term.autoexec.parameterenglishname')"
+            placement="top"
+            transfer
+          >
+            <div class="overflow">{{ $t('term.autoexec.parameterenglishname') }}</div>
+          </Tooltip>
         </Col>
         <Col span="3">
-          <div class="overflow">{{ $t('term.autoexec.parameterchinesename') }}</div>
+          <Tooltip
+            class="header-tooltip"
+            :content="$t('term.autoexec.parameterchinesename')"
+            placement="top"
+            transfer
+          >
+            <div class="overflow">{{ $t('term.autoexec.parameterchinesename') }}</div>
+          </Tooltip>
         </Col>
         <Col span="3">
-          <div class="overflow">{{ $t('term.autoexec.controltype') }}</div>
+          <Tooltip
+            class="header-tooltip"
+            :content="$t('term.autoexec.controltype')"
+            placement="top"
+            transfer
+          >
+            <div class="overflow">{{ $t('term.autoexec.controltype') }}</div>
+          </Tooltip>
         </Col>
         <Col span="8">
-          <div class="overflow">{{ $t('page.validate') }}/{{ $t('page.defaultvalue') }}</div>
+          <Tooltip
+            class="header-tooltip"
+            :content="$t('page.validate') + '/' + $t('page.defaultvalue')"
+            placement="top"
+            transfer
+          >
+            <div class="overflow">{{ $t('page.validate') }}/{{ $t('page.defaultvalue') }}</div>
+          </Tooltip>
         </Col>
         <Col span="7">
-          <div class="overflow">{{ $t('page.description') }}</div>
+          <Tooltip
+            class="header-tooltip"
+            :content="$t('page.description')"
+            placement="top"
+            transfer
+          >
+            <div class="overflow">{{ $t('page.description') }}</div>
+          </Tooltip>
         </Col>
       </TsRow>
       <div class="btn-item" style="top: -7px;">
@@ -359,6 +394,12 @@ export default {
 <style lang='less' scoped>
 .param-header{
   padding-bottom: @space-sm !important;
+  .header-tooltip{
+    width: 100%;
+    ::v-deep .ivu-tooltip-rel{
+      width: 100%;
+    }
+  }
 }
 .param-list{
   position: relative;
