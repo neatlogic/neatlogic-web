@@ -54,16 +54,22 @@
             </div>
           </div>
           <div class="information-list">
-            <div class="infor-left text-title overflow">{{ $t('term.process.usernumber') }}</div>
+            <Tooltip class="infor-left text-title" :content="$t('term.process.usernumber')" transfer>
+              <span class="infor-label overflow">{{ $t('term.process.usernumber') }}</span>
+            </Tooltip>
             <div class="infor-right">{{ userDetail.userId ||'-' }}</div>
           </div>
-          <div class="infor-left text-title overflow">{{ $t('term.process.region') }}</div>
-          <div class="infor-right">
-            <TsFormSelect
-              ref="region"
-              v-model="dispatch.regionId"
-              v-bind="getRegionSetting"
-            ></TsFormSelect>
+          <div class="information-list">
+            <Tooltip class="infor-left text-title" :content="$t('term.process.region')" transfer>
+              <span class="infor-label overflow">{{ $t('term.process.region') }}</span>
+            </Tooltip>
+            <div class="infor-right">
+              <TsFormSelect
+                ref="region"
+                v-model="dispatch.regionId"
+                v-bind="getRegionSetting"
+              ></TsFormSelect>
+            </div>
           </div>
         </div>
         <!-- <div class="information-list">
@@ -83,11 +89,15 @@
       </div>
       <div v-show="showBasic">
         <div class="information-list">
-          <div class="infor-left text-title overflow">{{ $t('term.process.reportcatalog') }}</div>
+          <Tooltip class="infor-left text-title" :content="$t('term.process.reportcatalog')" transfer>
+            <span class="infor-label overflow">{{ $t('term.process.reportcatalog') }}</span>
+          </Tooltip>
           <div class="infor-right">{{ draftData.channelPath ||'-' }}</div>
         </div>
         <div v-if="isDisplayPriority" class="information-list">
-          <div class="infor-left text-title require-label overflow">{{ $t('page.priority') }}</div>
+          <Tooltip class="infor-left text-title require-label" :content="$t('page.priority')" transfer>
+            <span class="infor-label overflow">{{ $t('page.priority') }}</span>
+          </Tooltip>
           <div class="infor-right">
             <TsFormSelect
               ref="priorityUuid"
@@ -103,13 +113,17 @@
           </div>
         </div>
         <div class="information-list">
-          <div class="infor-left text-title overflow">{{ $t('page.tag') }}</div>
+          <Tooltip class="infor-left text-title" :content="$t('page.tag')" transfer>
+            <span class="infor-label overflow">{{ $t('page.tag') }}</span>
+          </Tooltip>
           <div class="infor-right">
             <WorkLabel ref="workLabel" :list="tagList" :showLogo="false"></WorkLabel>
           </div>
         </div>
         <div class="information-list">
-          <div class="infor-left text-title overflow">{{ $t('term.process.focususer') }}</div>
+          <Tooltip class="infor-left text-title" :content="$t('term.process.focususer')" transfer>
+            <span class="infor-label overflow">{{ $t('term.process.focususer') }}</span>
+          </Tooltip>
           <div class="infor-right">
             <UserSelect
               v-model="dispatch.focusUserUuidList"
@@ -372,6 +386,12 @@ export default {
     width: 60px;
     text-align: right;
     flex-shrink: 0;
+    ::v-deep .ivu-tooltip-rel {
+      width: 100%;
+    }
+    .infor-label {
+      display: block;
+    }
   }
   .infor-right {
     flex-grow:1;

@@ -6,10 +6,19 @@
         <div v-if="menuList && Object.keys(menuList).length">
           <div v-for="(menus, ind) in menuList" :key="ind" class="menu_link">
             <div v-if="menus.isFirst" :class="$isMenuActive(menus.url) ? 'active link' : 'link'">
-              <router-link :to="menus.url ? menus.url : '/'" :class="menus.icon">{{ menus.name }}</router-link>
+              <Tooltip class="menu-tooltip" :content="menus.name" transfer>
+                <router-link :to="menus.url ? menus.url : '/'" class="overflow" :class="menus.icon">{{ menus.name }}</router-link>
+              </Tooltip>
             </div>
             <div v-else>
-              <div v-if="menuCategoryType[ind]" class="title text-grey">{{ menuCategoryType[ind] }}</div>
+              <Tooltip
+                v-if="menuCategoryType[ind]"
+                class="title text-grey menu-tooltip"
+                :content="menuCategoryType[ind]"
+                transfer
+              >
+                <span class="menu-name overflow">{{ menuCategoryType[ind] }}</span>
+              </Tooltip>
               <ul v-if="menus && menus.length > 0">
                 <li
                   v-for="(menu, mindex) in menus"
@@ -18,7 +27,9 @@
                   @click="goTo(menu.url ? menu.url : '/')"
                   @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
                 >
-                  <a class="cursor" :class="menu.icon">{{ menu.name }}</a>
+                  <Tooltip class="menu-tooltip" :content="menu.name" transfer>
+                    <a class="cursor overflow" :class="menu.icon">{{ menu.name }}</a>
+                  </Tooltip>
                 </li>
               </ul>
             </div>
@@ -168,3 +179,16 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+.menu-tooltip {
+  display: block;
+  width: 100%;
+  ::v-deep .ivu-tooltip-rel {
+    display: block;
+    width: 100%;
+  }
+  .menu-name {
+    display: block;
+  }
+}
+</style>
