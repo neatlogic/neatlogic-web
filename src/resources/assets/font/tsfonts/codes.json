@@ -3676,5 +3676,17 @@
     "css": "tsfont-whiteboard",
     "hexCodepoint": "0xea6a",
     "codepoint": 60010
+  },
+  {
+    "name": "cardview",
+    "css": "tsfont-cardview",
+    "hexCodepoint": "0xea6b",
+    "codepoint": 60011
+  },
+  {
+    "name": "document-directory",
+    "css": "tsfont-document-directory",
+    "hexCodepoint": "0xea6c",
+    "codepoint": 60012
   }
 ]

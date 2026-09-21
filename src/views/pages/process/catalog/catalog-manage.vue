@@ -37,7 +37,7 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="content bg-op pt-md radius-lg" :class="!isSiderHide ? 'ml-md' : ''">
+        <div class="content bg-op pt-md radius-lg padding-sm" :class="!isSiderHide ? 'ml-md' : ''">
           <component
             :is="catalogTypeName"
             :ref="catalogTypeName"
@@ -436,6 +436,20 @@ export default {
 </script>
 <style lang="less" scoped>
 .service-management {
+  ::v-deep .ivu-form-label-right > .ivu-form-item-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    > span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    > .ivu-poptip {
+      flex-shrink: 0;
+    }
+  }
   ::v-deep .tscontain-body {
     padding-left: 0px !important;
   }
