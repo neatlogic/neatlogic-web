@@ -6,32 +6,27 @@
         <div v-if="menuList && Object.keys(menuList).length">
           <div v-for="(menus, ind) in menuList" :key="ind" class="menu_link">
             <div v-if="menus.isFirst" :class="$isMenuActive(menus.url) ? 'active link' : 'link'">
-              <Tooltip
+              <OverflowTooltip
                 class="menu-tooltip"
                 :content="menus.name"
-                :disabled="!isOverflowTooltip('first-' + ind)"
                 placement="right"
-                transfer
               >
                 <router-link
                   :to="menus.url ? menus.url : '/'"
                   class="overflow"
                   :class="menus.icon"
-                  :data-overflow-tooltip-key="'first-' + ind"
                 >{{ menus.name }}</router-link>
-              </Tooltip>
+              </OverflowTooltip>
             </div>
             <div v-else>
-              <Tooltip
+              <OverflowTooltip
                 v-if="menuCategoryType[ind]"
                 class="title text-grey menu-tooltip"
                 :content="menuCategoryType[ind]"
-                :disabled="!isOverflowTooltip('category-' + ind)"
                 placement="right"
-                transfer
               >
-                <span class="menu-name overflow" :data-overflow-tooltip-key="'category-' + ind">{{ menuCategoryType[ind] }}</span>
-              </Tooltip>
+                <span class="menu-name overflow">{{ menuCategoryType[ind] }}</span>
+              </OverflowTooltip>
               <ul v-if="menus && menus.length > 0">
                 <li
                   v-for="(menu, mindex) in menus"
@@ -40,19 +35,16 @@
                   @click="goTo(menu.url ? menu.url : '/')"
                   @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
                 >
-                  <Tooltip
+                  <OverflowTooltip
                     class="menu-tooltip"
                     :content="menu.name"
-                    :disabled="!isOverflowTooltip('menu-' + ind + '-' + mindex)"
                     placement="right"
-                    transfer
                   >
                     <a
                       class="cursor overflow"
                       :class="menu.icon"
-                      :data-overflow-tooltip-key="'menu-' + ind + '-' + mindex"
                     >{{ menu.name }}</a>
-                  </Tooltip>
+                  </OverflowTooltip>
                 </li>
               </ul>
             </div>
@@ -73,11 +65,10 @@ import { mapMutations, mapState } from 'vuex';
 import * as Types from '@/resources/store/mutation-type';
 import LeftMenuMixin from './leftmenu-mixin';
 import LeftMenuResizeMixin from './leftmenu-resize-mixin';
-import OverflowTooltipMixin from './overflow-tooltip-mixin';
 
 export default {
   name: 'LeftMenu',
-  mixins: [LeftMenuMixin, LeftMenuResizeMixin, OverflowTooltipMixin],
+  mixins: [LeftMenuMixin, LeftMenuResizeMixin],
   data() {
     return {
       isMenuExpanded: false, //菜单是否展开
@@ -174,7 +165,6 @@ export default {
           } else {
             this.menuList = menugroup;
           }
-          this.refreshOverflowTooltips();
         }
       });
     }
@@ -206,12 +196,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .menu-tooltip {
-  display: block;
-  width: 100%;
-  ::v-deep .ivu-tooltip-rel {
-    display: block;
-    width: 100%;
-  }
   .menu-name {
     display: block;
   }

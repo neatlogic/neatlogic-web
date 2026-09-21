@@ -10,15 +10,12 @@
         @contextmenu="newTab($event, item.nameIconObj, item.url)"
         @click="goTo(item.url)"
       >
-        <Tooltip
-          class="overflow-menu-tooltip"
+        <OverflowTooltip
           :content="$t(item.name)"
-          :disabled="!isOverflowTooltip('first-' + index)"
           placement="right"
-          transfer
         >
-          <a class="cursor" :class="item.icon" :data-overflow-tooltip-key="'first-' + index">{{ $t(item.name) }}</a>
-        </Tooltip>
+          <a class="cursor" :class="item.icon">{{ $t(item.name) }}</a>
+        </OverflowTooltip>
       </li>
     </ul>
     <div v-auth="questionClassificationMenuAuth">
@@ -37,19 +34,15 @@
               :class="{ active: $isMenuActive('/recent-issues-' + item.id)}"
             >
               <li class="overflow navlist-text">
-                <Tooltip
-                  class="overflow-menu-tooltip"
+                <OverflowTooltip
                   :content="$t(item.name)"
-                  :disabled="!isOverflowTooltip('category-' + item.id)"
                   placement="right"
-                  transfer
                 >
                   <a
                     class="router-link tsfont-baobiao"
-                    :data-overflow-tooltip-key="'category-' + item.id"
                     @click="goTo('/recent-issues-' + item.id)"
                   >{{ $t(item.name) }}</a>
-                </Tooltip>
+                </OverflowTooltip>
                 <i class="item-icon handle tsfont-drag hide text-actiongit"></i>
                 <span class="navlist-action">
                   <Dropdown trigger="click" :transfer="true">
@@ -82,15 +75,12 @@
         @click="goTo(item.url)"
         @contextmenu="newTab($event, item.nameIconObj, item.url)"
       >
-        <Tooltip
-          class="overflow-menu-tooltip"
+        <OverflowTooltip
           :content="$t(item.name)"
-          :disabled="!isOverflowTooltip('other-' + index)"
           placement="right"
-          transfer
         >
-          <a class="cursor" :class="item.icon" :data-overflow-tooltip-key="'other-' + index">{{ $t(item.name) }}</a>
-        </Tooltip>
+          <a class="cursor" :class="item.icon">{{ $t(item.name) }}</a>
+        </OverflowTooltip>
       </li>
     </ul>
     <CategoryEditDialog v-if="isShowCategoryEditDialog" :id="id" @close="closeRenameDialog"></CategoryEditDialog>
@@ -101,7 +91,6 @@
 import { mapGetters } from 'vuex';
 import draggable from 'vuedraggable';
 import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
-import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 import inspectRouterList from '@/views/pages/inspect/router.js'; // 巡检路由列表
 export default {
   name: '', // 巡检结果菜单
@@ -109,7 +98,7 @@ export default {
     CategoryEditDialog: () => import('@/views/pages/inspect/recentIssues/category-edit-dialog'), // 编辑新分类
     draggable
   },
-  mixins: [LeftMenuMixin, OverflowTooltipMixin],
+  mixins: [LeftMenuMixin],
   props: {},
   data() {
     return {
@@ -171,7 +160,6 @@ export default {
           }
         });
       }
-      this.refreshOverflowTooltips();
     },
     dragEnd({oldIndex, newIndex}) {
       const params = {
@@ -232,7 +220,6 @@ export default {
       }
       this.InspectResultMenuList = this.$store.state.leftMenu.recentIssuesList || [];
       this.oldMenuList = this.$utils.deepClone(this.InspectResultMenuList);
-      this.refreshOverflowTooltips();
       if (action === 'first') {
         this.$router.push({ name: 'recent-issues', params: { recentIssuesId: this.InspectResultMenuList[0].id } });
       }

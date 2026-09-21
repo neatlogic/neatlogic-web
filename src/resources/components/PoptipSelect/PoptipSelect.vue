@@ -40,9 +40,9 @@
             >
               <div class="poptip-label" :style="{'width':popLable+'px'}">
                 <span v-if="isIcon" class="icon-type text-grey" :class="iconConfig[item[valueName]]?iconConfig[item[valueName]]:'tsfont-forminput'"></span>
-                <Tooltip class="label-tooltip" :content="item[textName]" transfer>
+                <OverflowTooltip class="label-tooltip" :content="item[textName]">
                   <span class="label-text overflow">{{ item[textName] }}</span>
-                </Tooltip>
+                </OverflowTooltip>
               </div>
               <div class="text-tip type-tip pl-sm">{{ item[descriptionName] }}</div>
             </div>
@@ -298,9 +298,6 @@ export default {
     .label-tooltip {
       flex: 1;
       min-width: 0;
-      ::v-deep .ivu-tooltip-rel {
-        width: 100%;
-      }
       .label-text {
         display: block;
       }

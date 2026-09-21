@@ -54,15 +54,15 @@
             </div>
           </div>
           <div class="information-list">
-            <Tooltip class="infor-left text-title" :content="$t('term.process.usernumber')" transfer>
+            <OverflowTooltip class="infor-left text-title" :content="$t('term.process.usernumber')">
               <span class="infor-label overflow">{{ $t('term.process.usernumber') }}</span>
-            </Tooltip>
+            </OverflowTooltip>
             <div class="infor-right">{{ userDetail.userId ||'-' }}</div>
           </div>
           <div class="information-list">
-            <Tooltip class="infor-left text-title" :content="$t('term.process.region')" transfer>
+            <OverflowTooltip class="infor-left text-title" :content="$t('term.process.region')">
               <span class="infor-label overflow">{{ $t('term.process.region') }}</span>
-            </Tooltip>
+            </OverflowTooltip>
             <div class="infor-right">
               <TsFormSelect
                 ref="region"
@@ -89,15 +89,15 @@
       </div>
       <div v-show="showBasic">
         <div class="information-list">
-          <Tooltip class="infor-left text-title" :content="$t('term.process.reportcatalog')" transfer>
+          <OverflowTooltip class="infor-left text-title" :content="$t('term.process.reportcatalog')">
             <span class="infor-label overflow">{{ $t('term.process.reportcatalog') }}</span>
-          </Tooltip>
+          </OverflowTooltip>
           <div class="infor-right">{{ draftData.channelPath ||'-' }}</div>
         </div>
         <div v-if="isDisplayPriority" class="information-list">
-          <Tooltip class="infor-left text-title require-label" :content="$t('page.priority')" transfer>
+          <OverflowTooltip class="infor-left text-title require-label" :content="$t('page.priority')">
             <span class="infor-label overflow">{{ $t('page.priority') }}</span>
-          </Tooltip>
+          </OverflowTooltip>
           <div class="infor-right">
             <TsFormSelect
               ref="priorityUuid"
@@ -113,17 +113,17 @@
           </div>
         </div>
         <div class="information-list">
-          <Tooltip class="infor-left text-title" :content="$t('page.tag')" transfer>
+          <OverflowTooltip class="infor-left text-title" :content="$t('page.tag')">
             <span class="infor-label overflow">{{ $t('page.tag') }}</span>
-          </Tooltip>
+          </OverflowTooltip>
           <div class="infor-right">
             <WorkLabel ref="workLabel" :list="tagList" :showLogo="false"></WorkLabel>
           </div>
         </div>
         <div class="information-list">
-          <Tooltip class="infor-left text-title" :content="$t('term.process.focususer')" transfer>
+          <OverflowTooltip class="infor-left text-title" :content="$t('term.process.focususer')">
             <span class="infor-label overflow">{{ $t('term.process.focususer') }}</span>
-          </Tooltip>
+          </OverflowTooltip>
           <div class="infor-right">
             <UserSelect
               v-model="dispatch.focusUserUuidList"

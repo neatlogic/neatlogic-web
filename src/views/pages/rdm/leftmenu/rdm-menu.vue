@@ -13,26 +13,23 @@
           class="link rdm-menu-link"
           :class="{ active: $isMenuActive('/project/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
         >
-          <Tooltip
-            class="overflow-menu-tooltip"
+          <OverflowTooltip
             :content="project.name"
-            :disabled="!isOverflowTooltip('project-' + project.id)"
             placement="right"
-            transfer
           >
             <a
               class="cursor tsfont-blocks rdm-menu-a"
               :style="{ color: project.color }"
               @click="goTo('/project/' + project.id)"
             >
-              <span class="project-name overflow" :data-overflow-tooltip-key="'project-' + project.id">{{ project.name }}</span>
+              <span class="project-name overflow">{{ project.name }}</span>
               <div
                 v-if="project.isOwner || project.isLeader"
                 class="text-grey cursor tsfont-setting rdm-menu-setting-icon"
                 @click.stop="goTo('/project-edit/' + project.id)"
               ></div>
             </a>
-          </Tooltip>
+          </OverflowTooltip>
         </li>
       </ul>
       <div v-if="pageCount > 1" style="margin-top: 44px;">
@@ -52,14 +49,13 @@
 </template>
 <script>
 import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
-import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 export default {
   name: 'RdmMenu',
   components: {
     ProjectEditDialog: () => import('@/views/pages/rdm/project/project-add-dialog.vue'),
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  mixins: [LeftMenuMixin, OverflowTooltipMixin],
+  mixins: [LeftMenuMixin],
   data() {
     return {
       isProjectDialogShow: false,
@@ -92,7 +88,6 @@ export default {
         let { pageCount = 0, tbodyList = [] } = res.Return || {};
         this.projectList = tbodyList;
         this.pageCount = pageCount;
-        this.refreshOverflowTooltips();
       });
     }
   },

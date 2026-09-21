@@ -29,19 +29,15 @@
               @click="goTo('/view-data/' + customview.id)"
               @contextmenu="newTab($event, customview, '/view-data/' + customview.id)"
             >
-              <Tooltip
-                class="overflow-menu-tooltip"
+              <OverflowTooltip
                 :content="customview.name"
-                :disabled="!isOverflowTooltip('customview-' + customview.id)"
                 placement="right"
-                transfer
               >
                 <a
                   class="cursor overflow"
                   :class="customview.icon"
-                  :data-overflow-tooltip-key="'customview-' + customview.id"
                 >{{ customview.name }}</a>
-              </Tooltip>
+              </OverflowTooltip>
             </li>
           </ul>
         </div>
@@ -71,19 +67,15 @@
               @click="goTo('/graph-data/' + customview.id)"
               @contextmenu="newTab($event, customview, '/graph-data/' + customview.id)"
             >
-              <Tooltip
-                class="overflow-menu-tooltip"
+              <OverflowTooltip
                 :content="customview.name"
-                :disabled="!isOverflowTooltip('graph-' + customview.id)"
                 placement="right"
-                transfer
               >
                 <a
                   class="cursor overflow"
                   :class="customview.icon"
-                  :data-overflow-tooltip-key="'graph-' + customview.id"
                 >{{ customview.name }}</a>
-              </Tooltip>
+              </OverflowTooltip>
             </li>
           </ul>
         </div>
@@ -102,15 +94,13 @@
     </div>
     <template v-if="dataList && dataList.length > 0">
       <div v-for="(menuGroup, index) in dataList" :key="index">
-        <Tooltip
-          class="title text-grey overflow-menu-tooltip"
+        <OverflowTooltip
+          class="title text-grey"
           :content="menuGroup.menuTypeName"
-          :disabled="!isOverflowTooltip('group-' + index)"
           placement="right"
-          transfer
         >
-          <span class="menu-group-name overflow" :data-overflow-tooltip-key="'group-' + index">{{ menuGroup.menuTypeName }}</span>
-        </Tooltip>
+          <span class="menu-group-name overflow">{{ menuGroup.menuTypeName }}</span>
+        </OverflowTooltip>
         <ul v-if="menuGroup.menuList && menuGroup.menuList.length > 0">
           <li
             v-for="menu in menuGroup.menuList"
@@ -120,15 +110,12 @@
             @click="goTo('/ci-view/' + menu.id)"
             @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
           >
-            <Tooltip
-              class="overflow-menu-tooltip"
+            <OverflowTooltip
               :content="menu.name"
-              :disabled="!isOverflowTooltip('ci-' + menu.id)"
               placement="right"
-              transfer
             >
-              <a class="cursor" :class="menu.icon" :data-overflow-tooltip-key="'ci-' + menu.id">{{ menu.name }}</a>
-            </Tooltip>
+              <a class="cursor" :class="menu.icon">{{ menu.name }}</a>
+            </OverflowTooltip>
           </li>
         </ul>
       </div>
@@ -137,13 +124,12 @@
 </template>
 <script>
 import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
-import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 export default {
   name: 'CmdbMenu',
   components: {
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  mixins: [LeftMenuMixin, OverflowTooltipMixin],
+  mixins: [LeftMenuMixin],
   data() {
     return {
       searchCustomViewData: { currentPage: 1, pageSize: 10, isActive: 1 },
@@ -185,7 +171,6 @@ export default {
       }
       this.$api.cmdb.customview.searchCustomView(this.searchCustomViewData).then(res => {
         this.customViewData = res.Return;
-        this.refreshOverflowTooltips();
       });
     },
     searchGraph(currentPage) {
@@ -194,7 +179,6 @@ export default {
       }
       this.$api.cmdb.graph.searchGraph(this.searchGraphData).then(res => {
         this.graphData = res.Return;
-        this.refreshOverflowTooltips();
       });
     }
   },
@@ -207,12 +191,6 @@ export default {
     '$store.state.leftMenu.cmdbCustomViewCount'(newvalue) {
       this.searchCustomView();
       this.searchGraph();
-    },
-    dataList: {
-      handler() {
-        this.refreshOverflowTooltips();
-      },
-      deep: true
     }
   }
 };

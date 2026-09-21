@@ -19,21 +19,17 @@
             class="link"
             :class="{ active: $isMenuActive('/dashboard-detail/' + dashboardItem.id) }"
           >
-            <Tooltip
-              class="overflow-menu-tooltip"
+            <OverflowTooltip
               :content="dashboardItem.name"
-              :disabled="!isOverflowTooltip('dashboard-' + dashboardItem.id)"
               placement="right"
-              transfer
             >
               <a
                 class="cursor"
                 :class="dashboardItem.icon || 'tsfont-type'"
                 style="position: relative"
-                :data-overflow-tooltip-key="'dashboard-' + dashboardItem.id"
                 @click="goTo('/dashboard-detail/' + dashboardItem.id)"
               >{{ dashboardItem.name }}</a>
-            </Tooltip>
+            </OverflowTooltip>
           </li>
         </ul>
       </div>
@@ -52,13 +48,11 @@
   </div>
 </template>
 <script>
-import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 export default {
   name: 'DashboardMenu',
   components: {
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  mixins: [OverflowTooltipMixin],
   data() {
     return {
       dashBoardData: {},
@@ -82,7 +76,6 @@ export default {
       }
       this.$api.dashboard.dashboard.searchDashboard(this.searchBashboardParam).then(res => {
         this.dashBoardData = res.Return || {};
-        this.refreshOverflowTooltips();
         const tbodyList = this.dashBoardData?.tbodyList || [];
         if ((operationType == 'add' || operationType == 'del') && tbodyList.length > 0) {
           this.$route.meta.fromPageList = [];

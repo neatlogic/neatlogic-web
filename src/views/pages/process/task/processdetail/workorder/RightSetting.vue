@@ -38,9 +38,9 @@
               </div>
             </div>
             <div v-if="processTaskConfig.ownerVo" class="information-list">
-              <Tooltip class="infor-left text-grey" :content="$t('page.userteam')" transfer>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.userteam')">
                 <span class="infor-label overflow">{{ $t('page.userteam') }}</span>
-              </Tooltip>
+              </OverflowTooltip>
               <div class="infor-right">
                 <template v-if="processTaskConfig.ownerVo.teamList && processTaskConfig.ownerVo.teamList.length > 0">
                   <Tooltip
@@ -74,7 +74,7 @@
             <div v-for="(item, index) of baseInfoList" :key="index">
               <div class="information-list">
                 <template v-if="item.value == 'id'">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <div v-clipboard="item.textConfig" class="task-id" @click="$Message.success($t('message.copysuccess'))">
                       {{ item.textConfig }}
@@ -83,7 +83,7 @@
                   </div>
                 </template>
                 <template v-else-if="item.value == 'serialNumber'">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <div v-clipboard="item.textConfig" class="task-id" @click="$Message.success($t('message.copysuccess'))">
                       {{ item.textConfig }}
@@ -92,26 +92,26 @@
                   </div>
                 </template>
                 <template v-else-if="item.value == 'regionVo'">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     {{ item.textConfig.upwardNamePath }}
                   </div>
                 </template>
                 <template v-else-if="item.value == 'reporterVo'">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <UserCard v-bind="processTaskConfig.reporterVo" :iconSize="16"></UserCard>
                   </div>
                 </template>
                 <template v-else-if="item.value == 'channelPath'">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <span v-if="processTaskConfig.channelType" class="channel-type" :style="typeTip(processTaskConfig.channelType.color)">{{ processTaskConfig.channelType.name }}</span>
                     <span>{{ item.textConfig }}</span>
                   </div>
                 </template>
                 <template v-else-if="item.value == 'priority'">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div
                     v-if="!canEditPrority"
                     ref="priorityName"
@@ -136,19 +136,19 @@
                   </div>
                 </template>
                 <template v-else-if="timeShow(item.value)">
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">{{ item.textConfig | formatDate }}</div>
                 </template>
                 <template v-else>
-                  <Tooltip class="infor-left text-grey" :content="item.title" transfer><span class="infor-label overflow">{{ item.title }}</span></Tooltip>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">{{ item.textConfig }}</div>
                 </template>
               </div>
             </div>
             <div class="information-list clearfix">
-              <Tooltip class="infor-left text-grey" :content="$t('page.tag')" transfer>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.tag')">
                 <span class="infor-label overflow">{{ $t('page.tag') }}</span>
-              </Tooltip>
+              </OverflowTooltip>
               <div class="infor-right">
                 <WorkLabel
                   :showLogo="false"
@@ -160,9 +160,9 @@
               </div>
             </div>
             <div class="information-list clearfix">
-              <Tooltip class="infor-left text-grey" :content="$t('term.process.focususer')" transfer>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('term.process.focususer')">
                 <span class="infor-label overflow">{{ $t('term.process.focususer') }}</span>
-              </Tooltip>
+              </OverflowTooltip>
               <div class="infor-right">
                 <UserSelect
                   :value="processTaskConfig.focusUserUuidList"
@@ -175,9 +175,9 @@
               </div>
             </div>
             <div v-if="knowledgeConfig && knowledgeConfig.knowledgeDocumentVersion" class="information-list knowledge-box">
-              <Tooltip class="infor-left text-grey" :content="$t('term.process.relatedknowledge')" transfer>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('term.process.relatedknowledge')">
                 <span class="infor-label overflow">{{ $t('term.process.relatedknowledge') }}</span>
-              </Tooltip>
+              </OverflowTooltip>
               <div class="infor-right">
                 <div :class="knowledgeConfig.knowledgeDocumentVersion.status == 'passed' ? 'text-href' : ''" class="time-height" @click="gotoKnowledge(knowledgeConfig.knowledgeDocumentVersion.status)">
                   <span>{{ knowledgeConfig.knowledgeDocumentVersion.title }}</span>

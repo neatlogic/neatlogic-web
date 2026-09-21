@@ -4,19 +4,15 @@
       <div class="title text-grey">{{ $t('term.report.report') }}</div>
       <ul>
         <li v-for="(report, index) in reportList" :key="index" :class="$route.fullPath.indexOf(report.id) > -1 ? 'active link' : 'link'">
-          <Tooltip
-            class="overflow-menu-tooltip"
+          <OverflowTooltip
             :content="report.name"
-            :disabled="!isOverflowTooltip('report-' + report.id)"
             placement="right"
-            transfer
           >
             <a
               class="cursor tsfont-baobiao"
-              :data-overflow-tooltip-key="'report-' + report.id"
               @click="goTo('/reportinstance-show/' + report.id)"
             >{{ report.name }}</a>
-          </Tooltip>
+          </OverflowTooltip>
         </li>
       </ul>
     </div>
@@ -26,19 +22,15 @@
         <div class="overflow">
           <ul>
             <li v-for="(statement, index) in statementData.tbodyList" :key="index" :class="$route.fullPath.indexOf(statement.id) > -1 ? 'active link' : 'link'">
-              <Tooltip
-                class="overflow-menu-tooltip"
+              <OverflowTooltip
                 :content="statement.name"
-                :disabled="!isOverflowTooltip('statement-' + statement.id)"
                 placement="right"
-                transfer
               >
                 <a
                   class="cursor tsfont-report"
-                  :data-overflow-tooltip-key="'statement-' + statement.id"
                   @click="goTo('/statement-view/' + statement.id)"
                 >{{ statement.name }}</a>
-              </Tooltip>
+              </OverflowTooltip>
             </li>
           </ul>
         </div>
@@ -59,13 +51,12 @@
 </template>
 <script>
 import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
-import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 export default {
   name: '',
   components: {
     VerticalPager: () => import('@/resources/plugins/VerticalPager/vertical-pager.vue')
   },
-  mixins: [LeftMenuMixin, OverflowTooltipMixin],
+  mixins: [LeftMenuMixin],
   props: {},
   data() {
     return {
@@ -92,7 +83,6 @@ export default {
       this.$api.report.report.getReportInstanceMenu().then(res => {
         if (res.Status == 'OK') {
           this.reportList = res.Return || [];
-          this.refreshOverflowTooltips();
         }
       });
     },
@@ -104,7 +94,6 @@ export default {
       }
       this.$api.report.statement.searchStatement(this.searchParam).then(res => {
         this.statementData = res.Return;
-        this.refreshOverflowTooltips();
       });
     }
   },
