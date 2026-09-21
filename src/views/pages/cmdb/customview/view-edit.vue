@@ -597,6 +597,7 @@ export default {
             }
             ci.setConfig(conf);
             ci.setIconweight(null);
+            ci.group.layoutNode();
           });
           node.setIconweight('bold');
         } else {
@@ -605,6 +606,7 @@ export default {
         let conf = node.getConfig();
         conf['isStart'] = val;
         node.setConfig(conf);
+        node.group.layoutNode();
         /*const links = node.getPrevLinks();
         if (links && links.length > 0) {
           links.forEach(link => {
@@ -628,6 +630,7 @@ export default {
         }
         node.setConfig(conf);
         node.setIcon(conf['index'] + '.' + conf['alias']);
+        node.group.layoutNode();
       }
     },
     drag(event, data) {
@@ -980,6 +983,7 @@ export default {
         conf['index'] = i + 1;
         node.setConfig(conf);
         node.setIcon(conf['index'] + '.' + conf['alias']);
+        node.group.layoutNode();
       }
     },
     getCiList() {
