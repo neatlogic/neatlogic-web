@@ -38,9 +38,11 @@
               :class="{'text-href':item[valueName] == selectValue}"
               @click="changeValue($event,item)"
             >
-              <div :style="{'min-width':popLable+'px'}">
+              <div class="poptip-label" :style="{'width':popLable+'px'}">
                 <span v-if="isIcon" class="icon-type text-grey" :class="iconConfig[item[valueName]]?iconConfig[item[valueName]]:'tsfont-forminput'"></span>
-                <span>{{ item[textName] }}</span>
+                <OverflowTooltip class="label-tooltip" :content="item[textName]">
+                  <span class="label-text overflow">{{ item[textName] }}</span>
+                </OverflowTooltip>
               </div>
               <div class="text-tip type-tip pl-sm">{{ item[descriptionName] }}</div>
             </div>
@@ -287,6 +289,19 @@ export default {
     width: 100%;
     height: 100%;
     white-space: normal;
+  }
+  .poptip-label {
+    display: flex;
+    align-items: center;
+    flex: none;
+    min-width: 0;
+    .label-tooltip {
+      flex: 1;
+      min-width: 0;
+      .label-text {
+        display: block;
+      }
+    }
   }
 }
 .type-select{

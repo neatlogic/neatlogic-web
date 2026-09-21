@@ -4,7 +4,15 @@
       <div class="title text-grey">{{ $t('term.report.report') }}</div>
       <ul>
         <li v-for="(report, index) in reportList" :key="index" :class="$route.fullPath.indexOf(report.id) > -1 ? 'active link' : 'link'">
-          <a class="cursor tsfont-baobiao" @click="goTo('/reportinstance-show/' + report.id)">{{ report.name }}</a>
+          <OverflowTooltip
+            :content="report.name"
+            placement="right"
+          >
+            <a
+              class="cursor tsfont-baobiao"
+              @click="goTo('/reportinstance-show/' + report.id)"
+            >{{ report.name }}</a>
+          </OverflowTooltip>
         </li>
       </ul>
     </div>
@@ -14,7 +22,15 @@
         <div class="overflow">
           <ul>
             <li v-for="(statement, index) in statementData.tbodyList" :key="index" :class="$route.fullPath.indexOf(statement.id) > -1 ? 'active link' : 'link'">
-              <a class="cursor tsfont-report" @click="goTo('/statement-view/' + statement.id)">{{ statement.name }}</a>
+              <OverflowTooltip
+                :content="statement.name"
+                placement="right"
+              >
+                <a
+                  class="cursor tsfont-report"
+                  @click="goTo('/statement-view/' + statement.id)"
+                >{{ statement.name }}</a>
+              </OverflowTooltip>
             </li>
           </ul>
         </div>

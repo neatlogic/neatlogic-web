@@ -65,11 +65,18 @@
                 :id="item.uuid"
                 :ref="'id' + item.uuid"
                 :key="index"
-                class="li-text radius-sm overflow"
+                class="li-text radius-sm"
                 :class="item.uuid == channelUuid ? 'bg-grey-select' : 'bg-td-hover'"
-                :title="item.name"
                 @click="channelClick(item)"
-              >{{ item.name }}</li>
+              >
+                <OverflowTooltip
+                  class="channel-tooltip"
+                  :content="item.name"
+                  placement="right"
+                >
+                  <span class="channel-name overflow">{{ item.name }}</span>
+                </OverflowTooltip>
+              </li>
             </ul>
             <div v-else-if="!taskLoading">
               <no-data></no-data>
@@ -675,6 +682,11 @@ export default {
       margin-bottom: 4px;
       padding: 0 16px;
       cursor: pointer;
+      .channel-tooltip {
+        .channel-name {
+          display: block;
+        }
+      }
     }
   }
 }

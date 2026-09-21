@@ -2,17 +2,40 @@
   <div class="menu_link">
     <ul v-if="$AuthUtils.hasRole('PROCESS_BASE')">
       <li class="link">
-        <a href="javascript:void(0)" class="tsfont-plus text-primary" @click="openWorkOrderDialog">
-          <span class="text-primary">{{ $t('page.build') }}</span>
-        </a>
+        <OverflowTooltip
+          class="menu-tooltip"
+          :content="$t('page.build')"
+          placement="right"
+        >
+          <a
+            href="javascript:void(0)"
+            class="tsfont-plus text-primary overflow"
+            @click="openWorkOrderDialog"
+          >
+            <span class="text-primary">{{ $t('page.build') }}</span>
+          </a>
+        </OverflowTooltip>
       </li>
     </ul>
     <Loading v-if="loadingShow" :loadingShow="loadingShow"></Loading>
     <template v-if="!$utils.isEmpty(workcenterList)">
-      <div class="title text-grey">{{ $t('router.process.workordercenter') }}</div>
+      <OverflowTooltip
+        class="title text-grey menu-tooltip"
+        :content="$t('router.process.workordercenter')"
+        placement="right"
+      >
+        <span class="menu-name overflow">{{ $t('router.process.workordercenter') }}</span>
+      </OverflowTooltip>
       <ul class="navlist-ul">
         <li v-for="ditem in workcenterList" :key="ditem.uuid">
-          <div v-if="ditem.catalogName" :title="ditem.catalogName" class="overflow title text-grey subtitle-padding">{{ ditem.catalogName }}</div>
+          <OverflowTooltip
+            v-if="ditem.catalogName"
+            class="title text-grey subtitle-padding menu-tooltip"
+            :content="ditem.catalogName"
+            placement="right"
+          >
+            <span class="menu-name overflow">{{ ditem.catalogName }}</span>
+          </OverflowTooltip>
           <draggable
             v-model="ditem.children"
             :animation="200"
@@ -27,7 +50,16 @@
               :class="{ active: $isMenuActive('/task-overview-' + childrenItem.uuid), editable: ditem.isCanEdit || 2 }"
             >
               <li class="overflow navlist-text">
-                <a class="router-link tsfont-tickets" @click="clickWorkcenter(childrenItem.uuid)">{{ childrenItem.name }}</a>
+                <OverflowTooltip
+                  class="menu-tooltip"
+                  :content="childrenItem.name"
+                  placement="right"
+                >
+                  <a
+                    class="router-link tsfont-tickets overflow"
+                    @click="clickWorkcenter(childrenItem.uuid)"
+                  >{{ childrenItem.name }}</a>
+                </OverflowTooltip>
                 <i class="item-icon handle tsfont-drag hide text-actiongit"></i>
                 <span class="navlist-action">
                   <Dropdown trigger="click" :transfer="true">
@@ -295,6 +327,17 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .menu_link {
+  .menu-tooltip {
+    display: block;
+    width: 100%;
+    ::v-deep .ivu-tooltip-rel {
+      display: block;
+      width: 100%;
+    }
+    .menu-name {
+      display: block;
+    }
+  }
   .subtitle-padding {
     padding-left: 18px !important;
   }
