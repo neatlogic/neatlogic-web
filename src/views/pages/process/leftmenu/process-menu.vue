@@ -2,8 +2,19 @@
   <div class="menu_link">
     <ul v-if="$AuthUtils.hasRole('PROCESS_BASE')">
       <li class="link">
-        <Tooltip class="menu-tooltip" :content="$t('page.build')" transfer>
-          <a href="javascript:void(0)" class="tsfont-plus text-primary overflow" @click="openWorkOrderDialog">
+        <Tooltip
+          class="menu-tooltip"
+          :content="$t('page.build')"
+          :disabled="!isOverflowTooltip('build')"
+          placement="right"
+          transfer
+        >
+          <a
+            href="javascript:void(0)"
+            class="tsfont-plus text-primary overflow"
+            data-overflow-tooltip-key="build"
+            @click="openWorkOrderDialog"
+          >
             <span class="text-primary">{{ $t('page.build') }}</span>
           </a>
         </Tooltip>
@@ -11,8 +22,14 @@
     </ul>
     <Loading v-if="loadingShow" :loadingShow="loadingShow"></Loading>
     <template v-if="!$utils.isEmpty(workcenterList)">
-      <Tooltip class="title text-grey menu-tooltip" :content="$t('router.process.workordercenter')" transfer>
-        <span class="menu-name overflow">{{ $t('router.process.workordercenter') }}</span>
+      <Tooltip
+        class="title text-grey menu-tooltip"
+        :content="$t('router.process.workordercenter')"
+        :disabled="!isOverflowTooltip('workordercenter')"
+        placement="right"
+        transfer
+      >
+        <span class="menu-name overflow" data-overflow-tooltip-key="workordercenter">{{ $t('router.process.workordercenter') }}</span>
       </Tooltip>
       <ul class="navlist-ul">
         <li v-for="ditem in workcenterList" :key="ditem.uuid">
@@ -20,9 +37,11 @@
             v-if="ditem.catalogName"
             class="title text-grey subtitle-padding menu-tooltip"
             :content="ditem.catalogName"
+            :disabled="!isOverflowTooltip('catalog-' + ditem.uuid)"
+            placement="right"
             transfer
           >
-            <span class="menu-name overflow">{{ ditem.catalogName }}</span>
+            <span class="menu-name overflow" :data-overflow-tooltip-key="'catalog-' + ditem.uuid">{{ ditem.catalogName }}</span>
           </Tooltip>
           <draggable
             v-model="ditem.children"
@@ -38,8 +57,18 @@
               :class="{ active: $isMenuActive('/task-overview-' + childrenItem.uuid), editable: ditem.isCanEdit || 2 }"
             >
               <li class="overflow navlist-text">
-                <Tooltip class="menu-tooltip" :content="childrenItem.name" transfer>
-                  <a class="router-link tsfont-tickets overflow" @click="clickWorkcenter(childrenItem.uuid)">{{ childrenItem.name }}</a>
+                <Tooltip
+                  class="menu-tooltip"
+                  :content="childrenItem.name"
+                  :disabled="!isOverflowTooltip('workcenter-' + childrenItem.uuid)"
+                  placement="right"
+                  transfer
+                >
+                  <a
+                    class="router-link tsfont-tickets overflow"
+                    :data-overflow-tooltip-key="'workcenter-' + childrenItem.uuid"
+                    @click="clickWorkcenter(childrenItem.uuid)"
+                  >{{ childrenItem.name }}</a>
                 </Tooltip>
                 <i class="item-icon handle tsfont-drag hide text-actiongit"></i>
                 <span class="navlist-action">
@@ -90,6 +119,7 @@
 import { mapGetters, mapMutations } from 'vuex';
 import draggable from 'vuedraggable';
 import LeftMenuMixin from '@/views/components/leftmenu/leftmenu-mixin';
+import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 
 export default {
   name: 'ProcessMenu',
@@ -99,7 +129,7 @@ export default {
     AuthDialog: () => import('./auth-dialog.vue'),
     WorkOrderDialog: () => import('./work-order-dialog')
   },
-  mixins: [LeftMenuMixin],
+  mixins: [LeftMenuMixin, OverflowTooltipMixin],
   props: {},
   data() {
     return {
@@ -255,6 +285,7 @@ export default {
         }
       }
       this.workcenterList = this.handleGroupData(workcenterList);
+      this.refreshOverflowTooltips();
       this.workcenterList.forEach(function(d, i) {
         d.index = i;
       });

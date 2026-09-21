@@ -65,11 +65,20 @@
                 :id="item.uuid"
                 :ref="'id' + item.uuid"
                 :key="index"
-                class="li-text radius-sm overflow"
+                class="li-text radius-sm"
                 :class="item.uuid == channelUuid ? 'bg-grey-select' : 'bg-td-hover'"
-                :title="item.name"
                 @click="channelClick(item)"
-              >{{ item.name }}</li>
+              >
+                <Tooltip
+                  class="channel-tooltip"
+                  :content="item.name"
+                  :disabled="!isOverflowTooltip('channel-' + item.uuid)"
+                  placement="right"
+                  transfer
+                >
+                  <span class="channel-name overflow" :data-overflow-tooltip-key="'channel-' + item.uuid">{{ item.name }}</span>
+                </Tooltip>
+              </li>
             </ul>
             <div v-else-if="!taskLoading">
               <no-data></no-data>
@@ -115,6 +124,7 @@
 </template>
 <script>
 import { store, mutations } from './processdispatch/dispatchState.js';
+import OverflowTooltipMixin from '@/views/components/leftmenu/overflow-tooltip-mixin';
 export default {
   name: '',
   components: {
@@ -125,6 +135,7 @@ export default {
     AssignDialog: () => import('./processdispatch/workorder/assign-dialog.vue'),
     ProcessTopoDialog: () => import('@/views/pages/process/task/process-topo-dialog.vue')
   },
+  mixins: [OverflowTooltipMixin],
   props: {
     propChannelUuid: { type: String }
   },
@@ -371,6 +382,7 @@ export default {
       return this.$api.process.service.searchService(data).then(res => {
         if (res.Status == 'OK') {
           this.channelList = res.Return.channelList;
+          this.refreshOverflowTooltips();
         }
       });
     },
@@ -675,6 +687,17 @@ export default {
       margin-bottom: 4px;
       padding: 0 16px;
       cursor: pointer;
+      .channel-tooltip {
+        display: block;
+        width: 100%;
+        ::v-deep .ivu-tooltip-rel {
+          display: block;
+          width: 100%;
+        }
+        .channel-name {
+          display: block;
+        }
+      }
     }
   }
 }
