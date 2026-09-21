@@ -7,6 +7,7 @@
         :format="format"
         :accept="accept"
         :multiple="multiple"
+        :disabled="disabled"
         :data="filedata"
         :on-format-error="FormatError"
         :on-progress="progress"
@@ -272,7 +273,12 @@ export default {
       },
       srcList: [],
       initialIndex: 0,
-      isShowScreenshotFromClicpboardDialog: false
+      isShowScreenshotFromClicpboardDialog: false,
+      batchPendingCount: 0,
+      batchSuccessList: [],
+      batchFailureList: [],
+      batchActive: false,
+      batchCompleteTimer: null
     };
   },
   beforeMount() {},
@@ -283,6 +289,9 @@ export default {
   },
   created() {},
   destroyed() {
+    if (this.batchCompleteTimer) {
+      clearTimeout(this.batchCompleteTimer);
+    }
     const uploadRef = this.$refs.upload;
     if (uploadRef) {
       uploadRef.clearFiles();
@@ -297,7 +306,14 @@ export default {
       this.srcList = this.uploadList;
     },
     FormatError: function(file) {
-      this.handleFormatError(file);
+      if (!this.silent) {
+        this.handleFormatError(file);
+      }
+      this.finishBatchFile({
+        status: 'FAILED',
+        fileName: file.name,
+        message: this.$t('form.validate.fileformaterror')
+      });
     },
     before: function(file) {
       this.fileStatus = 'normal';
@@ -308,12 +324,99 @@ export default {
 
         return false;
       }
-      return this.beforeUpload(file);
+      this.startBatchFile();
+      let result;
+      try {
+        result = this.beforeUpload(file);
+      } catch (error) {
+        this.finishBatchFile({
+          status: 'FAILED',
+          fileName: file.name,
+          message: this.uploadErrorMessage(error)
+        });
+        throw error;
+      }
+      if (result && typeof result.then === 'function') {
+        return result.then(
+          processedFile => {
+            if (processedFile === false) {
+              this.finishBatchFile({
+                status: 'FAILED',
+                fileName: file.name,
+                message: this.$t('message.uploadfailed')
+              });
+            }
+            return processedFile;
+          },
+          error => {
+            this.finishBatchFile({
+              status: 'FAILED',
+              fileName: file.name,
+              message: this.uploadErrorMessage(error)
+            });
+            return Promise.reject(error);
+          }
+        );
+      }
+      if (result === false) {
+        this.finishBatchFile({
+          status: 'FAILED',
+          fileName: file.name,
+          message: this.$t('message.uploadfailed')
+        });
+      }
+      return result;
+    },
+    // 同一次文件选择中的请求独立执行，批次事件只在全部请求结束后触发一次。
+    startBatchFile() {
+      if (this.batchCompleteTimer) {
+        clearTimeout(this.batchCompleteTimer);
+        this.batchCompleteTimer = null;
+      }
+      if (!this.batchActive) {
+        this.batchActive = true;
+        this.batchSuccessList = [];
+        this.batchFailureList = [];
+        this.$emit('batchStart');
+      }
+      this.batchPendingCount++;
+    },
+    finishBatchFile(result) {
+      if (!this.batchActive) return;
+      if (result.status === 'SUCCESS') {
+        this.batchSuccessList.push(result);
+      } else {
+        this.batchFailureList.push(result);
+      }
+      this.batchPendingCount = Math.max(0, this.batchPendingCount - 1);
+      if (this.batchPendingCount === 0) {
+        // 格式和大小校验是同步回调，延迟到当前文件选择循环结束后再判断整批完成。
+        this.batchCompleteTimer = setTimeout(() => {
+          this.batchCompleteTimer = null;
+          if (!this.batchActive || this.batchPendingCount !== 0) return;
+          const payload = {
+            successList: this.batchSuccessList.slice(),
+            failureList: this.batchFailureList.slice()
+          };
+          this.batchActive = false;
+          this.batchSuccessList = [];
+          this.batchFailureList = [];
+          this.$emit('batchComplete', payload);
+        }, 0);
+      }
+    },
+    uploadErrorMessage(error, response) {
+      if (response && response.Message) {
+        return Array.isArray(response.Message) ? response.Message.join('；') : String(response.Message);
+      }
+      if (error && error.message) return error.message;
+      return this.$t('message.uploadfailed');
     },
     //上传成功
     success: function(res, file, fileList) {
       if (res.Status == 'OK') {
         file.id = res.Return.id;
+        this.finishBatchFile({ status: 'SUCCESS', fileId: String(file.id), fileName: file.name });
         if (fileList.length) {
           let isFinish = true;
           fileList.forEach(f => {
@@ -342,15 +445,22 @@ export default {
             this.fileStatus = 'success';
           }
         }
+      } else {
+        const message = this.uploadErrorMessage(null, res);
+        this.finishBatchFile({ status: 'FAILED', fileName: file.name, message: message });
+        if (!this.silent) {
+          this.$Notice.error({ title: this.$t('message.uploadfailed'), desc: message });
+        }
+        const index = fileList.indexOf(file);
+        if (index >= 0) fileList.splice(index, 1);
       }
     },
     //上传失败
-    error: function(res, file, fileList) {
-      if (file.Status == 'ERROR') {
-        this.$Notice.error({
-          title: this.$t('message.uploadfailed'),
-          desc: file.Message
-        });
+    error: function(error, response, file) {
+      const message = this.uploadErrorMessage(error, response);
+      this.finishBatchFile({ status: 'FAILED', fileName: file.name, message: message });
+      if (!this.silent) {
+        this.$Notice.error({ title: this.$t('message.uploadfailed'), desc: message });
       }
     },
     //上传时的接口
@@ -419,8 +529,15 @@ export default {
       link.remove();
     },
     //文件大小限制
-    exceeded: function() {
-      this.$Message.warning(this.$t('form.validate.fileoverlimit'));
+    exceeded: function(file) {
+      if (!this.silent) {
+        this.$Message.warning(this.$t('form.validate.fileoverlimit'));
+      }
+      this.finishBatchFile({
+        status: 'FAILED',
+        fileName: file.name,
+        message: this.$t('form.validate.fileoverlimit')
+      });
     },
     // 清除upload方法
     handleClearFiles() {
