@@ -353,6 +353,7 @@ export default {
             name: 'createUser',
             groupList: ['user'],
             multiple: false,
+            transfer: true,
             label: this.$t('page.creator')
           },
           {
