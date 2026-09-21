@@ -35,11 +35,11 @@
             </span>
           </template> -->
           <template slot="routeName" slot-scope="{ row }">
-            <span v-if="row.source == 'inspect' || row.source == 'inspectapp'">
-              <span>{{ row.route && row.route.name }}</span>
+            <span v-if="!isRouteLink(row)">
+              <span>{{ getRouteName(row) }}</span>
             </span>
             <span v-else class="text-href" @click="toRoute(row)">
-              <span>{{ row.route && row.route.name }}</span>
+              <span>{{ getRouteName(row) }}</span>
             </span>
           </template>
           <template slot="status" slot-scope="{row}">
@@ -269,6 +269,20 @@ export default {
         path: '/question-report',
         query: {jobId: row.id, startTime: row.startTime, execUser: row.execUser}
       });
+    },
+    // 应用巡检子作业的来源类目代表模型，不提供来源配置跳转。
+    isRouteLink(row) {
+      return row.source != 'inspect' &&
+        row.source != 'inspectapp' &&
+        !(row.source == 'scheduleinspectapp' && row.parentId != null && row.parentId != -1);
+    },
+    // 历史应用巡检子作业没有模型路由时，使用创建时保存的模型作业名称兜底。
+    getRouteName(row) {
+      const isAppInspectChild = (row.source == 'inspectapp' || row.source == 'scheduleinspectapp') && row.parentId != null && row.parentId != -1;
+      if (isAppInspectChild) {
+        return row.routeId && row.routeId.startsWith('ci:') && row.route && row.route.name ? row.route.name : row.name;
+      }
+      return row.route && row.route.name ? row.route.name : '';
     },
     toRoute(row) {
       let routeConfig = row.route?.config;
