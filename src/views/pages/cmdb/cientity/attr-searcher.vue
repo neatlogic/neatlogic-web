@@ -7,6 +7,7 @@
       :attrData="attrData"
       :valueList="valueList"
       :mode="mode"
+      :disabled="disabled"
       @setData="setData"
       @select="selectNewCiEntity($event)"
     ></component>
@@ -19,6 +20,7 @@ import { getAttrHandlerComponentMap } from '../ci/attrhandler/attrhandler-extens
 export default {
   name: '',
   props: {
+    disabled: { type: Boolean, default: false },
     mode: { type: String, default: 'search' }, //search或condition
     attrData: { type: Object },
     valueList: { type: Array }
@@ -37,7 +39,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 仅可编辑条件允许继续传递选择事件。
+    selectNewCiEntity(value) {
+      if (!this.disabled) {
+        this.$emit('select', value);
+      }
+    },
+    // 固定过滤条件禁止子控件回传修改。
     setData(value, actualValue) {
+      if (this.disabled) {
+        return;
+      }
       if (typeof value == 'undefined' || value == null) {
         value = [];
       }

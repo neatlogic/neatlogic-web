@@ -20,7 +20,13 @@
         </div>
       </template>
       <template v-slot:topRight>
-        <div class="action-group">
+        <div class="action-group" :class="{'action-loading-mask': !dispatchReady}">
+          <Loading
+            v-if="!dispatchReady"
+            :loadingShow="true"
+            :text="false"
+            class="action-loading"
+          ></Loading>
           <div class="action-item">
             <span class="tsfont-topo" @click="lookSitemap()">{{ $t('term.process.viewflowchart') }}</span>
           </div>
@@ -59,11 +65,18 @@
                 :id="item.uuid"
                 :ref="'id' + item.uuid"
                 :key="index"
-                class="li-text radius-sm overflow"
+                class="li-text radius-sm"
                 :class="item.uuid == channelUuid ? 'bg-grey-select' : 'bg-td-hover'"
-                :title="item.name"
                 @click="channelClick(item)"
-              >{{ item.name }}</li>
+              >
+                <OverflowTooltip
+                  class="channel-tooltip"
+                  :content="item.name"
+                  placement="right"
+                >
+                  <span class="channel-name overflow">{{ item.name }}</span>
+                </OverflowTooltip>
+              </li>
             </ul>
             <div v-else-if="!taskLoading">
               <no-data></no-data>
@@ -78,6 +91,7 @@
           :draftData="draftData"
           :isOrderRightHide="isOrderRightHide"
           :processTaskId="processTaskId"
+          @ready-change="dispatchReady = $event"
           @updateMenu="updateMenu"
           @rightSiderToggle="rightSiderToggle"
         ></DispatchCommon>
@@ -124,6 +138,7 @@ export default {
   data() {
     return {
       taskLoading: true,
+      dispatchReady: false,
       isOrderRightHide: false,
       keyword: '',
       handler: 'omnipotent',
@@ -206,18 +221,21 @@ export default {
     this.clearTimer();
   },
   methods: {
+    isDispatchReady() {
+      const content = this.$refs.dispatchCommon;
+      return !this.taskLoading && !!content && content.contentReady;
+    },
     beforeLeaveCompare(oldData) {
-      // 离开当前页面，数据对比
-      let newData = this.$refs.dispatchCommon && this.$refs.dispatchCommon.getData();
+      // 沿用原有不比较表单字段的范围，跳过表单取值，避免初始化期间访问未就绪的组件。
+      let newData = this.$refs.dispatchCommon && this.$refs.dispatchCommon.getData(false);
+      // 后续会删除比较范围外的字段，使用副本，避免修改保存基线。
+      oldData = this.$utils.deepClone(oldData);
       if (!this.$utils.isEmpty(newData)) { // 修复newData为空，控制台报错的问题
-        this.$delete(newData, 'formAttributeDataList');
-        this.$delete(newData, 'hidecomponentList');
-        this.$delete(newData, 'readcomponentList');
-        if (!this.$utils.isEmpty(oldData)) {
-          this.$delete(oldData, 'formAttributeDataList');
-          this.$delete(oldData, 'hidecomponentList');
-          this.$delete(oldData, 'readcomponentList');
-        }
+        // 两侧使用同一比较范围，避免保存后的表单扩展数据造成离页误报。
+        ['formAttributeDataList', 'hidecomponentList', 'readcomponentList', 'formExtendAttributeDataList'].forEach(key => {
+          this.$delete(newData, key);
+          if (oldData) this.$delete(oldData, key);
+        });
         return this.$utils.isSame(oldData, newData);
       }
     },
@@ -248,6 +266,7 @@ export default {
       mutations.setShowDetailConfig(this.showDetailConfig);
       let param = {};
       this.taskLoading = true;
+      this.dispatchReady = false;
       this.channelUuid &&
         Object.assign(param, {
           channelUuid: this.channelUuid
@@ -377,11 +396,11 @@ export default {
       this.$router.replace({ query: { uuid: item.uuid } });
     },
     save() {
+      if (!this.isDispatchReady() || this.disabledConfig.saving) return false;
       //暂存
       let _this = this;
       let dispatchCommon = this.$refs.dispatchCommon;
       let workdata = dispatchCommon ? dispatchCommon.getData() : {};
-      this.initData = this.$utils.deepClone(workdata);
       this.validList = [];
       this.validCardOpen = false;
       let titleValid = dispatchCommon ? dispatchCommon.validTitle() : '';
@@ -414,35 +433,33 @@ export default {
           this.$set(workdata, 'reporter', reporter);
         }
       }
-      return new Promise((resolve, reject) => {
-        if (!this.disabledConfig.saving) {
-          this.disabledConfig.saving = true;
-          let cancelTokenSource = this.cancelTokenSource ? {
-            cancelToken: this.cancelTokenSource.token
-          } : {};
-          this.$api.process.processtask
-            .save(workdata, cancelTokenSource)
-            .then(res => {
-              this.disabledConfig.saving = false;
-              if (res && res.Status == 'OK') {
-                let data = res.Return;
-                _this.processTaskId = data.processTaskId;
-                _this.processTaskStepId = data.processTaskStepId;
-                sessionStorage.setItem('processTaskId', _this.processTaskId);
-                resolve(data);
-                _this.$Message.success(this.$t('page.saved', { target: this.$utils.getCurrenttime('HH:mm:ss') }));
-                _this.autoSaveKey = true;
-                _this.initData = _this.$refs.dispatchCommon.getData();
-                _this.$addWatchData(_this.initData);
-              }
-            })
-            .finally(() => {
-              _this.disabledConfig.saving = false;
-            });
-        }
-      });
+      this.disabledConfig.saving = true;
+      let cancelTokenSource = this.cancelTokenSource ? {
+        cancelToken: this.cancelTokenSource.token
+      } : {};
+      // 直接返回请求 Promise，使失败能传递给等待保存的调用方，避免外层 Promise 一直 pending。
+      // 非 OK 响应返回 false，不继续提交；无论成功或失败，都在 finally 中恢复保存状态。
+      return this.$api.process.processtask
+        .save(workdata, cancelTokenSource)
+        .then(res => {
+          if (!res || res.Status !== 'OK') return false;
+          let data = res.Return;
+          _this.processTaskId = data.processTaskId;
+          _this.processTaskStepId = data.processTaskStepId;
+          sessionStorage.setItem('processTaskId', _this.processTaskId);
+          _this.$Message.success(this.$t('page.saved', { target: this.$utils.getCurrenttime('HH:mm:ss') }));
+          _this.autoSaveKey = true;
+          // 仅保存成功后更新基线，避免校验或请求失败后将未保存的编辑误判为已保存。
+          _this.initData = _this.$refs.dispatchCommon.getData();
+          _this.$addWatchData(_this.initData);
+          return data;
+        })
+        .finally(() => {
+          _this.disabledConfig.saving = false;
+        });
     },
     async submitForm() {
+      if (!this.isDispatchReady()) return;
       //提交
       this.validList = await this.$refs.dispatchCommon.valid();
       if (this.$utils.isEmpty(this.validList)) {
@@ -455,9 +472,11 @@ export default {
       //工单上报提交
       try {
         var data = await this.save();
+        if (!data) return;
         //获取到表单id之后进行工作时间校验
       } catch (err) {
         console.log(err);
+        return;
       }
       this.$api.process.processtask.getNextStep(data).then(res => {
         let list = res.Return || [];
@@ -588,6 +607,7 @@ export default {
     },
     setTimer() {
       this.timer = this.$utils.setInterval(async() => {
+        if (!this.isDispatchReady()) return;
         let isSame = this.beforeLeaveCompare(this.initData);
         if (this.autoSaveKey && !isSame) {
           await this.save();
@@ -630,6 +650,22 @@ export default {
 <style lang="less" scoped>
 @import (reference) '~@/resources/assets/css/variable.less';
 .dispatch {
+  .action-loading-mask {
+    position: relative;
+    min-height: 32px;
+    > :not(.action-loading) {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+  .action-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+  }
   .channel-list {
     position: relative;
     margin-top: 8px;
@@ -646,6 +682,11 @@ export default {
       margin-bottom: 4px;
       padding: 0 16px;
       cursor: pointer;
+      .channel-tooltip {
+        .channel-name {
+          display: block;
+        }
+      }
     }
   }
 }

@@ -15,13 +15,13 @@
           <TabPane :label="$t('term.framework.mcptest')" name="mcp"></TabPane>
         </Tabs>
         <div v-if="!rowData.isMcp || activeTab === 'api'">
-          <TsFormItem :label="$t('page.interface')" :labelWidth="80">
+          <TsFormItem :label="$t('page.interface')" :labelWidth="100">
             <strong>{{ rowData.url }}</strong>
           </TsFormItem>
-          <TsFormItem v-if="helpData.description" :labelWidth="80" :label="$t('page.description')">
+          <TsFormItem v-if="helpData.description" :labelWidth="100" :label="$t('page.description')">
             {{ helpData.description }}
           </TsFormItem>
-          <TsFormItem v-if="rowData.apiType == 'custom'" :labelWidth="80" :label="rowData.authtypeName">
+          <TsFormItem v-if="rowData.apiType == 'custom'" :labelWidth="100" :label="rowData.authtypeName">
             <component
               :is="rowData.authtype"
               v-if="rowData.apiType == 'custom'"
@@ -29,13 +29,13 @@
               @setConfig="setAuthConfig"
             ></component>
           </TsFormItem>
-          <TsFormItem v-if="helpData.example" :labelWidth="80" :label="$t('term.report.example')">
-            <JsonViewer boxed copyable :value="helpData.example"></JsonViewer>
+          <TsFormItem v-if="helpData.example && helpData.example.length" :labelWidth="100" :label="$t('page.inputparamexample')">
+            <ApiExampleTabs :examples="helpData.example" :interfaceKey="rowData.token"></ApiExampleTabs>
           </TsFormItem>
-          <TsFormItem :label=" $t('page.request')" :labelWidth="80">
+          <TsFormItem :label=" $t('page.request')" :labelWidth="100">
             <div class="mb-md"><TsFormRadio v-model="tab" :dataList="requestType"></TsFormRadio></div>
           </TsFormItem>
-          <TsFormItem v-if="helpData.input && tab === 'form'" :label="$t('page.inputparam')" :labelWidth="80">
+          <TsFormItem v-if="helpData.input && tab === 'form'" :label="$t('page.inputparam')" :labelWidth="100">
             <Table
               class="api-input-table"
               :columns="displayInputColumns"
@@ -77,7 +77,7 @@
               </template>
             </Table>
           </TsFormItem>
-          <TsFormItem v-else-if="tab === 'json'" :label="$t('page.inputparam')" :labelWidth="80">
+          <TsFormItem v-else-if="tab === 'json'" :label="$t('page.inputparam')" :labelWidth="100">
             <TsCodemirror
               :value="JSON.stringify(testData.param, null, 2)"
               codeMode="json"
@@ -85,7 +85,7 @@
             ></TsCodemirror>
             <div v-if="error" class="pt-md text-error">{{ error }}</div>
           </TsFormItem>
-          <TsFormItem :labelWidth="80">
+          <TsFormItem :labelWidth="100">
             <Button
               v-if="apiType === 'rest'"
               style="width:100%"
@@ -101,7 +101,7 @@
               @click="executeDownload"
             >{{ $t('page.sendrequest') }}</Button>
           </TsFormItem>
-          <TsFormItem v-if="testData.result" :label="$t('page.outputresults')" :labelWidth="80">
+          <TsFormItem v-if="testData.result" :label="$t('page.outputresults')" :labelWidth="100">
             <JsonViewer
               boxed
               copyable
@@ -123,7 +123,13 @@
           <TsFormItem v-if="isDangerousTool" :label="$t('term.framework.risktip')" :labelWidth="100">
             <div class="text-warning">{{ $t('term.framework.mcpdebugdangeroustip') }}</div>
           </TsFormItem>
-          <TsFormItem :label="$t('term.framework.callarguments')" :labelWidth="100">
+          <TsFormItem v-if="mcpHelpData.example && mcpHelpData.example.length" :label="$t('page.inputparamexample')" :labelWidth="100">
+            <ApiExampleTabs
+              :examples="mcpHelpData.example"
+              :interfaceKey="rowData.token"
+            ></ApiExampleTabs>
+          </TsFormItem>
+          <TsFormItem :label="$t('page.inputparam')" :labelWidth="100">
             <TsCodemirror
               :value="argumentText"
               codeMode="json"
@@ -163,6 +169,7 @@ export default {
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
+    ApiExampleTabs: () => import('./api-example-tabs.vue'),
     JsonViewer: () => import('vue-json-viewer'),
     TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror'),
     ...authHandler

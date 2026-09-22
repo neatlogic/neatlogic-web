@@ -81,7 +81,7 @@ export default {
         let attrLabel = dataConfig.filter((v) => v['uuid'] && uniqueRuleConfig.includes(v['uuid']) && v.label).map((item) => item.label).join(',');
         let tempValue = '';
         let existList = [];
-        tbodyList.forEach((row) => {
+        tbodyList.forEach((row, index) => {
           const pageCount = Math.ceil((index + 1) / pageSize);
           if (!this.$utils.isEmpty(row)) {
             tempValue = '';
@@ -118,7 +118,10 @@ export default {
       if (!reactionValid.isDisable && validateMap && validateMap[key]) {
         const validateList = validateMap[key]?.validateList;
         if (!this.$utils.isEmpty(validateList)) {
-          isValid = this.$utils.validParamValue(row[key], validateList);
+          const required = validateList.some(rule => rule === 'required' || rule?.name === 'required' || rule?.required === true);
+          const empty = row[key] == null || row[key] === '' || (Array.isArray(row[key]) && row[key].length === 0);
+          // 非必填空值不执行格式校验，与单元格控件一致；必填空数组也应拦截。
+          isValid = empty ? !required : this.$utils.validParamValue(row[key], validateList);
         }
       }
       if (!isValid || (this.$utils.isEmpty(row[key]) && reactionValid.isRequired)) {

@@ -10,10 +10,25 @@
       <TabPane :label="$t('page.noticesetting')" name="notify" class="pl-md">
         <NotifyPolicySetting v-if="currentTab === 'notify'" targetType="app" :targetId="appData.id"></NotifyPolicySetting>
       </TabPane>
+      <TabPane
+        v-if="eventSettingComponent"
+        :label="$t('term.rdm.eventsetting')"
+        name="event"
+        class="pl-md"
+      >
+        <component
+          :is="eventSettingComponent"
+          v-if="currentTab === 'event'"
+          :key="appData.id"
+          :appId="appData.id"
+          :projectId="appData.projectId"
+        ></component>
+      </TabPane>
     </Tabs>
   </div>
 </template>
 <script>
+import { SettingBase } from '../base-setting.js';
 export default {
   name: '',
   components: {
@@ -21,9 +36,7 @@ export default {
     AppStatus: () => import('@/views/pages/rdm/project/edittab/components/app-status-edit.vue'),
     NotifyPolicySetting: () => import('@/views/pages/rdm/project/edittab/components/notify-policy-setting.vue')
   },
-  props: {
-    appData: { type: Object }
-  },
+  extends: SettingBase,
   data() {
     return {
       currentTab: 'attr'

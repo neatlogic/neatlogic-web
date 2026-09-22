@@ -3,7 +3,7 @@
     <TsContain :siderWidth="220">
       <template v-slot:topLeft>
         <div class="action-group">
-          <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.apply') }}</span>
+          <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.application') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -11,7 +11,7 @@
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
             <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
-            <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.apply') }}</span>
+            <span class="action-item tsfont-edit" @click="editAppTree">{{ $t('page.application') }}</span>
             <span v-show="hasConfig" class="action-item tsfont-trash-o text-action" @click="clearConfig">{{ $t('page.clearconfig') }}</span>
           </template>
 
@@ -99,7 +99,7 @@
                 </div>
                 <div v-else>
                   <div v-if="!isHasAppSystemIdList" class="flex-center pt-nm">
-                    {{ $t('term.deploy.noapplytip') }}<span class="tsfont-plus text-href" @click="addAppTree">{{ $t('page.apply') }}</span>
+                    {{ $t('term.deploy.noapplytip') }}<span class="tsfont-plus text-href" @click="addAppTree">{{ $t('page.application') }}</span>
                   </div>
                   <div v-else class="flex-center pt-nm">
                     {{ $t('term.deploy.applynotconfigselect') }}

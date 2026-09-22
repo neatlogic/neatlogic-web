@@ -18,7 +18,7 @@
             <CarouselItem v-for="(object,sindex) in stepList" :key="sindex">
               <div v-for="(item, index) in getStepInformationList(object)" :key="'step'+index" class="information-list">
                 <template v-if="item.value == 'majorUser'">
-                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <UserCard v-bind="item.textConfig.userVo" :iconSize="20"></UserCard>
                     <span v-if="object.originalUserVo">
@@ -39,7 +39,11 @@
                   </div>
                 </template>
                 <template v-else-if="item.value == 'workerList' && item.textConfig.length > 0">
-                  <div v-if="item.textConfig.length > 0" class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <OverflowTooltip
+                    v-if="item.textConfig.length > 0"
+                    class="infor-left text-grey"
+                    :content="item.title"
+                  ><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <span class="minoruser-list">
                       <span><UserCard
@@ -53,23 +57,23 @@
                   </div>
                 </template>
                 <template v-else-if="item.value == 'statusVo'">
-                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">
                     {{ item.textConfig.text }}
                   </div>
                 </template>
                 <template v-else-if="timeShow(item.value)">
-                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">{{ item.textConfig | formatDate }}</div>
                 </template>
                 <template v-else>
-                  <div class="infor-left text-grey overflow">{{ item.title }}</div>
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div class="infor-right">{{ item.textConfig }}</div>
                 </template>
               </div>
               <div v-for="(sla, slaIndex) in getSlaList(sindex)" :key="slaIndex" class="information-list">
                 <template v-if="!$utils.isEmpty(sla)">
-                  <div class="infor-left text-grey overflow" :title="sla.name && sla.name.length > 6 ? sla.name : ''">{{ sla.name }}</div>
+                  <OverflowTooltip class="infor-left text-grey" :content="sla.name"><span class="infor-label overflow">{{ sla.name }}</span></OverflowTooltip>
                   <div class="infor-right">
                     <div v-if="sla.status == 'doing'" class="time-height">
                       <span v-if="sla.timeLeft >= 0" class="text-success">{{ $t('page.remainingtime') }}</span>
@@ -331,6 +335,12 @@ export default {
     width: 72px;
     text-align: right;
     flex-shrink: 0;
+    ::v-deep .ivu-tooltip-rel {
+      width: 100%;
+    }
+    .infor-label {
+      display: block;
+    }
   }
 
   .infor-right {

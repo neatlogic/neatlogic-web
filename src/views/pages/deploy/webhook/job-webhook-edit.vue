@@ -184,8 +184,8 @@ export default {
         {
           name: 'appSystemId',
           type: 'select',
-          label: this.$t('page.apply'),
-          validateList: ['required', {name: 'custom', trigger: 'change', message: this.$t('form.validate.repeat', {target: this.$t('page.apply')}), validator: (rule, appSystemId) => {
+          label: this.$t('page.application'),
+          validateList: ['required', {name: 'custom', trigger: 'change', message: this.$t('form.validate.repeat', {target: this.$t('page.application')}), validator: (rule, appSystemId) => {
             // 自定义校验规则，验证唯一性
             return this.validUnique('app', appSystemId);
           }}],

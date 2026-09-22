@@ -9,7 +9,7 @@
       class="tsfont-plus text-action mt-nm pl-md text-href"
       style="margin-bottom: -5px;"
       @click="openAppEdit"
-    >{{ $t('page.apply') }}</div>
+    >{{ $t('page.application') }}</div>
     <div ref="scroll">
       <Scroll :on-reach-bottom="handleReachBottom" :loading-text="loadingTip" :height="scrollHeight">
         <Tree

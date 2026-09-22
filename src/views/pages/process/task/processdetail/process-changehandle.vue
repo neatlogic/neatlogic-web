@@ -23,7 +23,16 @@
             @changeTitle="changeTitle"
           ></NavTop>
           <div class="toolbar-right">
-            <div class="action-group">
+            <div
+              class="action-group"
+              :class="{'action-loading-mask': actionLoading}"
+            >
+              <Loading
+                v-if="actionLoading"
+                :loadingShow="true"
+                :text="false"
+                class="action-loading"
+              ></Loading>
               <!-- 变更按钮 -->
               <!-- 处理_start -->
               <span
@@ -549,6 +558,11 @@ export default {
     FormEditDialog: () => import('@/views/pages/process/task/processdetail/workorder/common/form-edit-dialog'),
     FooterOperationBtn
   },
+  inject: {
+    processTaskActionState: {
+      default: () => ({ loading: false })
+    }
+  },
   directives: {
     clipboard
   },
@@ -892,6 +906,9 @@ export default {
     }
   },
   computed: {
+    actionLoading() {
+      return !!this.processTaskActionState.loading;
+    },
     isMoreAction() {
       //更多操作按钮
       let actionConfig = this.actionConfig;
@@ -929,6 +946,22 @@ export default {
   padding: 4px 12px;
   margin-right: 4px;
   border-radius: 20px;
+}
+.action-loading {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+}
+.action-loading-mask {
+  position: relative;
+  min-width: 32px;
+  min-height: 32px;
+  > :not(.action-loading) {
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 ::v-deep .ivu-layout-content{
   overflow-y: scroll !important;

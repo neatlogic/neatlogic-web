@@ -15,6 +15,7 @@
               v-model="propertyLocal.config.isRequired"
               :trueValue="true"
               :falseValue="false"
+              :disabled="propertyLocal.handler === 'formtableselector' && propertyLocal.config.saveData === false"
             ></TsFormSwitch>
           </template>
           <template v-slot:isReadOnly>
@@ -26,21 +27,16 @@
             ></TsFormSwitch>
           </template>
           <template v-if="['formtext', 'formtextarea', 'formpassword'].includes(propertyLocal.handler)" v-slot:config>
-            <TsFormItem v-if="propertyLocal.handler=== 'formtext'" :label="$t('form.placeholder.checkrule')">
+            <TsFormItem v-if="['formtext', 'formtextarea'].includes(propertyLocal.handler)" :label="$t('form.placeholder.checkrule')">
               <TsFormSelect
-                v-model="propertyLocal.config.validate"
+                :value="getValidationRule(propertyLocal.config)"
                 :dataList="ruleList"
                 transfer
                 border="border"
-                @on-change="(validateRule)=> {
-                  if(validateRule !== 'custom'){
-                    $set(propertyLocal.config,'regex','');
-                    $set(propertyLocal.config,'regexMessage','');
-                  }
-                }"
+                @on-change="val => changeValidationRule(propertyLocal.config, val)"
               ></TsFormSelect>
             </TsFormItem>
-            <template v-if="propertyLocal && propertyLocal.config && (propertyLocal.config.validate == 'custom')">
+            <template v-if="propertyLocal && propertyLocal.config && showRegexConfig(propertyLocal.config)">
               <TsFormItem :label="$t('message.framework.regex')" :tooltip="$t('message.framework.regextip')">
                 <TsFormInput
                   ref="formitem_regex"
@@ -379,6 +375,7 @@
               :isTableInputer="true"
               :source="source"
               :extendConfigList="extendConfigList"
+              @resetReaction="reactionError = {}; extendConfigErrorList = []"
             ></component>
             <ul v-if="extendConfigErrorList.length" class="text-error mt-xs pl-nm">
               <li v-for="(error, index) in extendConfigErrorList" :key="index">{{ error.error }}</li>
@@ -462,6 +459,7 @@
   </TsDialog>
 </template>
 <script>
+import textValidationMixin from '../common/text-validation-mixin.js';
 import ComponentManager from '@/resources/import/component-manager.js';
 import { FORMITEMS } from '../../formitem-list.js';
 
@@ -483,6 +481,7 @@ export default {
   name: '',
   components: {
     ...extendFormConfigItems,
+    formtableselector: () => import('../formtableselector-conf/index.vue'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
@@ -503,6 +502,7 @@ export default {
     ReactionSetvalue: () => import('@/resources/plugins/TsSheet/form/config/common/reaction-setvalue.vue'),
     QuickOperation: () => import('@/resources/components/quick-operation/index.vue')
   },
+  mixins: [textValidationMixin],
   props: {
     formItemConfig: { type: Object }, //表单组件配置
     property: { type: Object }, //属性配置
@@ -567,7 +567,7 @@ export default {
         maskClose: false,
         isShow: true,
         width: 'large',
-        title: '表格属性设置'
+        title: this.$t('form.nestedSelector.attributeSettings')
       },
       dataSourceList: [
         { value: 'static', text: this.$t('page.staticdatasource') },
@@ -648,71 +648,6 @@ export default {
           label: this.$t('page.eachother'),
           type: 'slot',
           isHidden: !this.isNeedReaction
-        }
-      ],
-      ruleList: [
-        {
-          text: this.$t('page.letter'),
-          value: 'unique_ident'
-        },
-        {
-          text: this.$t('page.lowercaseletter'),
-          value: 'lowercase'
-        },
-        {
-          text: this.$t('page.capitalletter'),
-          value: 'uppercase'
-        },
-        {
-          text: this.$t('page.number'),
-          value: 'number'
-        },
-        {
-          text: this.$t('page.lettersandnumbers'),
-          value: 'enchar'
-        },
-        {
-          text: this.$t('page.emailaddress'),
-          value: 'mail'
-        },
-        {
-          text: this.$t('page.phonenumber'),
-          value: 'phone'
-        },
-        {
-          text: this.$t('page.ip'),
-          value: 'ip'
-        },
-        {
-          text: this.$t('page.port'),
-          value: 'port'
-        },
-        {
-          text: 'URL',
-          value: 'url'
-        },
-        {
-          text: this.$t('page.custom'),
-          value: 'custom'
-        }
-      ],
-      regexValidateList: [
-        {
-          name: 'tomore',
-          trigger: 'change',
-          message: this.$t('message.pleaseentertruetarget', {'target': this.$t('message.framework.regularexpression')}),
-          validator: (rule, value) => {
-            if (this.$utils.isEmpty(value)) {
-              return true;
-            } else {
-              try {
-                new RegExp(value);
-                return true;
-              } catch (error) {
-                return false;
-              }
-            }
-          }
         }
       ],
       selectMatrixConfig: null,
@@ -802,7 +737,7 @@ export default {
       if (!handlerConfig) {
         return;
       }
-      FORMITEMS.filter(item => item.supportTableInputer).forEach(item => {
+      FORMITEMS.filter(item => item.supportTableInputer && (this.isNeedTable || item.handler !== 'formtableselector')).forEach(item => {
         if (!handlerConfig.dataList.find(handler => handler.value === item.handler)) {
           handlerConfig.dataList.push({ text: item.label, value: item.handler });
         }
@@ -818,7 +753,7 @@ export default {
       // 判断唯一属性是否显示
       let findItem = this.formConfig.find((v) => v.name == 'isUnique');
       if (findItem) {
-        findItem.isHidden = !(handler && !['formupload', 'formexpression', 'formtable'].includes(handler));
+        findItem.isHidden = !(handler && !['formupload', 'formexpression', 'formtable', 'formtableselector'].includes(handler));
       }
     },
     close() {
@@ -930,7 +865,8 @@ export default {
       if (extendDefinition) {
         this.$set(this.propertyLocal, 'config', {
           ...this.$utils.deepClone(extendDefinition.config || {}),
-          isRequired: true
+          isRequired: true,
+          ...this.$utils.deepClone(extendDefinition.tableInputerConfig || {})
         });
         this.$set(this.propertyLocal, 'hasValue', extendDefinition.hasValue !== false);
       }
@@ -941,6 +877,11 @@ export default {
       } else {
         this.$delete(this.reactionName, 'setvalue');
         this.$delete(reaction, 'setvalue');
+      }
+      if (val === 'formtableselector') {
+        reaction.filter = {};
+        delete reaction.setvalue;
+        this.$set(this.propertyLocal.config, 'isUnique', false);
       }
       // 3. formexpression 特殊处理
       if (val === 'formexpression') {
@@ -1031,7 +972,9 @@ export default {
   computed: {
     allFormItemList() {
       //表格输入组件和表格外组件
-      return this.formItemConfig.dataConfig.concat(this.outerFormItemList);
+      const nested = this.propertyLocal?.handler === 'formtableselector';
+      return this.formItemConfig.dataConfig.map(item => nested ? { ...item, label: this.$t('form.nestedSelector.currentRowField', { label: item.label }) } : item)
+        .concat(this.outerFormItemList.map(item => nested ? { ...item, label: this.$t('form.nestedSelector.outerField', { label: item.label }) } : item));
     },
     outerFormItemList() {
       const formItemList = [...this.initFormItemList, ...this.formItemList];
@@ -1112,6 +1055,11 @@ export default {
     },
     reactionTabList() {
       const reaction = this.$utils.deepClone(this.propertyLocal.reaction);
+      if (this.propertyLocal.handler === 'formtableselector') {
+        delete reaction.setvalue;
+        delete reaction.setValueOther;
+        if (this.propertyLocal.config.saveData === false) delete reaction.required;
+      }
       if (this.propertyLocal && this.$utils.isEmpty(this.propertyLocal.config.hiddenFieldList)) {
         this.$delete(reaction, 'setValueOther');
       }

@@ -31,11 +31,22 @@
               <li
                 v-for="item in toolClassificationList"
                 :key="item.value"
-                class="radius-sm cursor mt-xs overflow"
-                :title="item.text"
+                class="radius-sm cursor mt-xs"
                 :class="typeId == item.value ? 'bg-selected': 'type-li'"
+                @mouseenter="updateClassificationTooltip($event)"
                 @click="selectedToolClassification(item)"
-              >{{ item.text }}</li>
+              >
+                <Tooltip
+                  :content="item.text"
+                  :disabled="!isClassificationOverflow"
+                  placement="right"
+                  max-width="300"
+                  transfer
+                  class="overflow-tooltip"
+                >
+                  <div class="classification-text overflow">{{ item.text }}</div>
+                </Tooltip>
+              </li>
             </ul>
             <TsCard
               v-bind="cardData"
@@ -50,8 +61,28 @@
             >
               <template slot-scope="{ row }">
                 <div class="cursor">
-                  <div class="overflow" :title="row.name">{{ row.name }}</div>
-                  <div class="text-grey overflow pt-xs" :title="row.description">{{ row.description || '-' }}</div>
+                  <Tooltip
+                    :content="row.name"
+                    :disabled="!cardTooltipOverflow[`${row.id}:name`]"
+                    placement="right"
+                    max-width="300"
+                    transfer
+                    class="overflow-tooltip"
+                    @mouseenter.native="updateCardTooltip($event, row.id, 'name')"
+                  >
+                    <div class="overflow">{{ row.name }}</div>
+                  </Tooltip>
+                  <Tooltip
+                    :content="row.description || '-'"
+                    :disabled="!cardTooltipOverflow[`${row.id}:description`]"
+                    placement="right"
+                    max-width="300"
+                    transfer
+                    class="overflow-tooltip pt-xs"
+                    @mouseenter.native="updateCardTooltip($event, row.id, 'description')"
+                  >
+                    <div class="text-grey overflow">{{ row.description || '-' }}</div>
+                  </Tooltip>
                 </div>
               </template>
             </TsCard>
@@ -76,6 +107,8 @@ export default {
       typeId: null, // 工具分类
       selectedList: [],
       toolClassificationList: [],
+      isClassificationOverflow: false,
+      cardTooltipOverflow: {},
       cardData: {
         canSelect: true,
         multiple: false,
@@ -100,6 +133,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    updateCardTooltip(event, id, field) {
+      const text = event.currentTarget.querySelector('.overflow');
+      this.$set(this.cardTooltipOverflow, `${id}:${field}`, !!text && text.scrollWidth > text.clientWidth);
+    },
+    updateClassificationTooltip(event) {
+      const text = event.currentTarget.querySelector('.classification-text');
+      this.isClassificationOverflow = !!text && text.scrollWidth > text.clientWidth;
+    },
     closeDialog() {
       this.$emit('close');
     },
@@ -112,6 +153,7 @@ export default {
         pageSize: this.cardData.pageSize
       };
       this.loadingShow = true;
+      this.cardTooltipOverflow = {};
       this.$api.autoexec.action.getCombopExecutableList(params).then(res => {
         if (res && res.Status == 'OK') {
           Object.assign(this.cardData, res.Return);
@@ -155,6 +197,12 @@ export default {
     .content-wrap {
       display:grid;
       grid-template-columns: 208px auto;
+      .overflow-tooltip {
+        display: block;
+        ::v-deep .ivu-tooltip-rel {
+          display: block;
+        }
+      }
       .left-type-list-box {
         li {
           padding: 7px 16px;

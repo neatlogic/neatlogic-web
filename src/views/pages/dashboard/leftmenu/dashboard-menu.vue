@@ -19,14 +19,17 @@
             class="link"
             :class="{ active: $isMenuActive('/dashboard-detail/' + dashboardItem.id) }"
           >
-            <a
-              class="cursor"
-              :class="dashboardItem.icon || 'tsfont-type'"
-              style="position: relative"
-              @click="goTo('/dashboard-detail/' + dashboardItem.id)"
+            <OverflowTooltip
+              :content="dashboardItem.name"
+              placement="right"
             >
-              <span>{{ dashboardItem.name }}</span>
-            </a>
+              <a
+                class="cursor"
+                :class="dashboardItem.icon || 'tsfont-type'"
+                style="position: relative"
+                @click="goTo('/dashboard-detail/' + dashboardItem.id)"
+              >{{ dashboardItem.name }}</a>
+            </OverflowTooltip>
           </li>
         </ul>
       </div>

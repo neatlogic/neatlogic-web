@@ -244,6 +244,28 @@
                 </Col>
               </TsRow>
 
+              <TsRow class="form-item">
+                <Col span="4" class="text-grey form-title">{{ $t('page.filtercondition') }}</Col>
+                <Col span="10" class="form-control">
+                  <Button
+                    type="info"
+                    size="small"
+                    :ghost="!relData.fromFilter"
+                    :disabled="!relData.fromCiId"
+                    @click="openFilter('from')"
+                  >{{ relData.fromFilter ? $t('term.cmdb.relfilterconfigured') : $t('page.notconfig') }}</Button>
+                </Col>
+                <Col span="10" class="form-control">
+                  <Button
+                    type="info"
+                    size="small"
+                    :ghost="!relData.toFilter"
+                    :disabled="!relData.toCiId"
+                    @click="openFilter('to')"
+                  >{{ relData.toFilter ? $t('term.cmdb.relfilterconfigured') : $t('page.notconfig') }}</Button>
+                </Col>
+              </TsRow>
+
               <TsRow v-if="relativeRelList && relativeRelList.length > 0" class="form-item">
                 <Col span="4" class="text-grey form-title">{{ $t('term.cmdb.cascaderelation') }}</Col>
                 <Col span="20" class="form-control">
@@ -267,6 +289,14 @@
         <Button type="primary" @click="save()">{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
+    <RelFilterEdit
+      v-if="filterSide"
+      :ciId="relData[filterSide + 'CiId']"
+      :ciLabel="relData[filterSide + 'CiLabel']"
+      :value="relData[filterSide + 'Filter']"
+      @confirm="setFilter"
+      @close="filterSide = null"
+    ></RelFilterEdit>
     <RelGroupEdit :ciId="relGroupCiId" :isShow="isRelGroupShow" @close="closeRelGroupDialog"></RelGroupEdit>
     <CiSelect :isShow="isCiSelectShow" :ciId="relCiId" @close="closeCiSelectDialog"></CiSelect>
   </div>
@@ -280,7 +310,8 @@ export default {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     RelGroupEdit: () => import('./relgroup-edit.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    CiSelect: () => import('./ci-select.vue')
+    CiSelect: () => import('./ci-select.vue'),
+    RelFilterEdit: () => import('./rel-filter-edit.vue')
   },
   props: {
     id: {
@@ -297,6 +328,7 @@ export default {
         { value: 1, text: this.$t('page.yes') },
         { value: 0, text: this.$t('page.no') }
       ],
+      filterSide: null,
       isRelGroupShow: false,
       isCiSelectShow: false,
       relTypeList: [],
@@ -341,6 +373,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 两端条件以被选择模型为归属，尚未选择模型时不允许配置。
+    openFilter(side) {
+      if (this.relData[side + 'CiId']) {
+        this.filterSide = side;
+      }
+    },
+    // 弹窗只更新关系草稿，最终由现有保存入口一并提交。
+    setFilter(filter) {
+      this.$set(this.relData, this.filterSide + 'Filter', filter);
+    },
     getRelativeRelList() {
       if (this.fromCiId && this.toCiId) {
         this.$api.cmdb.ci
@@ -391,6 +433,9 @@ export default {
       this.$set(this.relData, 'toIsUnique', tmp.fromIsUnique);
       this.$set(this.relData, 'toIsRequired', tmp.fromIsRequired);
       this.$set(this.relData, 'toIsCascadeDelete', tmp.fromIsCascadeDelete);
+      // 交换方向时过滤条件随模型交换，避免应用到错误的候选模型。
+      this.$set(this.relData, 'fromFilter', tmp.toFilter || null);
+      this.$set(this.relData, 'toFilter', tmp.fromFilter || null);
     },
     selectToGroup: function(name) {
       if (name != 'new') {
@@ -532,12 +577,19 @@ export default {
       this.isCiSelectShow = false;
       if (targetCi) {
         if (this.relData.fromDisabled) {
+          // 更换模型时原有字段条件不再适用，重选同一模型则保留。
+          if (this.relData.toCiId !== targetCi.id) {
+            this.$set(this.relData, 'toFilter', null);
+          }
           this.$set(this.relData, 'toCiId', targetCi.id);
           this.$set(this.relData, 'toCiIcon', targetCi.icon);
           this.$set(this.relData, 'toCiLabel', targetCi.label);
           this.$set(this.relData, 'toName', targetCi.name);
           this.$set(this.relData, 'toLabel', targetCi.label);
         } else {
+          if (this.relData.fromCiId !== targetCi.id) {
+            this.$set(this.relData, 'fromFilter', null);
+          }
           this.$set(this.relData, 'fromCiId', targetCi.id);
           this.$set(this.relData, 'fromCiIcon', targetCi.icon);
           this.$set(this.relData, 'fromCiLabel', targetCi.label);

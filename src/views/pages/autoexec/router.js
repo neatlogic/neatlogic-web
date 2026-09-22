@@ -369,7 +369,7 @@ export default [
       title: $t('router.cmdb.assetlist'),
       ismenu: true,
       icon: 'tsfont-ip-list',
-      authority: 'AUTOEXEC_BASE',
+      authority: 'AUTOEXEC_RESOURCECENTER_RESOURCE_VIEW',
       type: 'resourceCenter'
     }
   },
@@ -381,7 +381,7 @@ export default [
       title: $t('router.cmdb.tagmanage'),
       ismenu: true,
       icon: 'tsfont-label',
-      authority: 'RESOURCECENTER_TAG_MODIFY',
+      authority: 'AUTOEXEC_RESOURCECENTER_TAG_MODIFY',
       type: 'resourceCenter'
     }
   },
@@ -393,7 +393,7 @@ export default [
       title: $t('router.cmdb.accountmanage'),
       ismenu: true,
       icon: 'tsfont-taskperson',
-      authority: 'RESOURCECENTER_ACCOUNT_MODIFY',
+      authority: 'AUTOEXEC_RESOURCECENTER_ACCOUNT_MODIFY',
       type: 'resourceCenter'
     }
   },
@@ -405,7 +405,7 @@ export default [
       title: $t('router.cmdb.viewmanage'),
       ismenu: true,
       icon: 'tsfont-setting',
-      authority: 'RESOURCECENTER_MODIFY',
+      authority: 'AUTOEXEC_RESOURCECENTER_VIEW_MODIFY',
       type: 'resourceCenter'
     }
   },

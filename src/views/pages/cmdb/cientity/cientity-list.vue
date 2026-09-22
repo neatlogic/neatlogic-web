@@ -1,5 +1,6 @@
 <template>
   <div class="cientity-list-box">
+    <div v-if="lockedConditionError" class="text-error mb-md">{{ lockedConditionError }}</div>
     <div v-if="!ciEntityData.error">
       <div class="condition-grid mb-nm">
         <div>
@@ -21,6 +22,7 @@
               v-auth="'CIENTITY_EXPORT'"
               type="primary"
               :ghost="true"
+              :disabled="conditionReadonly && !lockedConditionReady"
               @click="isExportDialogShow = true"
             >{{ $t('page.export') }}</Button>
           </div>
@@ -34,7 +36,7 @@
               @on-enter="searchCiEntity(1)"
             ></TsFormInput>
           </div>
-          <div v-if="needCondition && attrList && attrList.length > 0" class="action-item">
+          <div v-if="needCondition && (conditionReadonly || (attrList && attrList.length > 0))" class="action-item">
             <span :class="isAdvancedSearch ? 'tsfont-drop-down' : 'tsfont-drop-right'" @click="isAdvancedSearch = !isAdvancedSearch">
               {{ $t('page.advancesearch') }}
             </span>
@@ -46,7 +48,7 @@
         <Tag v-for="(k, index) in ciEntityData.keywordList" :key="index">{{ k }}</Tag>
       </div>
       <div v-if="isAdvancedSearch">
-        <Tabs v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
+        <Tabs v-if="!conditionReadonly && needDsl && COMMERCIAL_MODULES.includes('cmdb')" v-model="advencedSearchMode">
           <TabPane :label="$t('term.cmdb.condition')" name="condition"></TabPane>
           <TabPane :label="$t('term.cmdb.expressionbeta')" name="dsl"></TabPane>
         </Tabs>
@@ -67,9 +69,10 @@
                     textName="name"
                     :dataList="groupList"
                     :value="searchParam.groupId"
+                    :disabled="isLocked('groupId')"
                     @change="
                       val => {
-                        searchParam['groupId'] = val;
+                        if (!isLocked('groupId')) searchParam['groupId'] = val;
                       }
                     "
                   ></TsFormSelect>
@@ -83,8 +86,10 @@
                   <div v-if="attr.name === 'id'">
                     <TsFormInput
                       :value="searchParam['filterCiEntityId']"
+                      :disabled="isLocked('filterCiEntityId')"
                       @change="
                         val => {
+                          if (isLocked('filterCiEntityId')) return;
                           if (val) {
                             searchParam['filterCiEntityId'] = val;
                           } else {
@@ -99,9 +104,10 @@
                       :transfer="true"
                       :dataList="attr.itemList"
                       :value="searchParam['filterCiId']"
+                      :disabled="isLocked('filterCiId')"
                       @change="
                         val => {
-                          searchParam['filterCiId'] = val;
+                          if (!isLocked('filterCiId')) searchParam['filterCiId'] = val;
                         }
                       "
                     ></TsFormSelect>
@@ -118,6 +124,7 @@
                   <TsFormSelect
                     :transfer="true"
                     :value="globalAttrFilterList['attr_' + attr.id] && globalAttrFilterList['attr_' + attr.id]['expression']"
+                    :disabled="isLocked('globalAttrFilterList', attr.id)"
                     :dataList="globalAttrExpressionList"
                     @change="
                       val => {
@@ -129,6 +136,7 @@
                 <Col v-if="!globalAttrConditionHideData[attr.id]" span="12" class="search-condition">
                   <TsFormSelect
                     :value="globalAttrFilterList['attr_' + attr.id] && globalAttrFilterList['attr_' + attr.id]['valueList']"
+                    :disabled="isLocked('globalAttrFilterList', attr.id)"
                     dynamicUrl="/api/rest/cmdb/globalattritem/search"
                     :params="{ attrId: attr.id }"
                     valueName="id"
@@ -152,6 +160,7 @@
                   <TsFormSelect
                     :transfer="true"
                     :value="attrFilterList['attr_' + attr.id] && attrFilterList['attr_' + attr.id]['expression']"
+                    :disabled="isLocked('attrFilterList', attr.id)"
                     :dataList="attr.expressionList"
                     @change="
                       val => {
@@ -165,6 +174,7 @@
                     ref="attrHandler"
                     :attrData="attr"
                     :valueList="attrFilterList['attr_' + attr.id] && attrFilterList['attr_' + attr.id]['valueList']"
+                    :disabled="isLocked('attrFilterList', attr.id)"
                     @setData="
                       val => {
                         setAttrData(attr, 'value', val);
@@ -182,6 +192,7 @@
                     :transfer="true"
                     border="border"
                     :value="relFilterList[rel.direction + rel.id] && relFilterList[rel.direction + rel.id]['expression']"
+                    :disabled="isLocked('relFilterList', rel.id, rel.direction)"
                     :dataList="rel.expressionList"
                     @change="
                       val => {
@@ -196,6 +207,7 @@
                     :multiple="true"
                     v-bind="relSelectConfig(rel)"
                     :value="relFilterList[rel.direction + rel.id] && relFilterList[rel.direction + rel.id]['valueList']"
+                    :disabled="isLocked('relFilterList', rel.id, rel.direction)"
                     @change="
                       val => {
                         setRelData(rel, 'value', val);
@@ -212,17 +224,18 @@
               type="primary"
               :ghost="true"
               class="mr-md"
+              :disabled="conditionReadonly && !lockedConditionReady"
               @click="isExportDialogShow = true"
             >{{ $t('page.export') }}</Button>
             <Button
               type="primary"
-              :disabled="isLoading"
+              :disabled="isLoading || (conditionReadonly && !lockedConditionReady)"
               :loading="isLoading"
               @click.native="searchCiEntity(1)"
             >{{ $t('page.search') }}</Button>
           </div>
         </Card>
-        <div v-if="needDsl && COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
+        <div v-if="!conditionReadonly && needDsl && COMMERCIAL_MODULES.includes('cmdb') && advencedSearchMode === 'dsl'" class="pb-md">
           <DslEditor v-model="searchParam.dsl" :suggestList="suggestList"></DslEditor>
           <div style="text-align: right" class="mt-md">
             <Button
@@ -230,11 +243,12 @@
               type="primary"
               :ghost="true"
               class="mr-md"
+              :disabled="conditionReadonly && !lockedConditionReady"
               @click="isExportDialogShow = true"
             >{{ $t('page.export') }}</Button>
             <Button
               type="primary"
-              :disabled="isLoading"
+              :disabled="isLoading || (conditionReadonly && !lockedConditionReady)"
               :loading="isLoading"
               @click.native="searchCiEntity(1)"
             >{{ $t('page.search') }}</Button>
@@ -462,6 +476,7 @@
   </div>
 </template>
 <script>
+import { mergeLockedCondition, isConditionLocked, validateLockedCondition } from './locked-condition.js';
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
@@ -509,12 +524,16 @@ export default {
     mode: { type: String, default: 'page' }, //page模式或dialog模式，如果是dialog模式将会禁用所有路由跳转
     fixedHeader: { type: Boolean, default: true }, //如果为true则固定头部，表格自动算高度
     condition: { type: Object }, //预设条件
+    conditionReadonly: { type: Boolean, default: false }, //仅锁定预设条件字段
     selectedRemain: { type: Boolean, default: false }, //是否保留选中
     readonlyTextIsHighlight: { type: Boolean, default: false } // 只读模式下，表头背景是否高亮
   },
   data() {
     return {
       COMMERCIAL_MODULES: COMMERCIAL_MODULES,
+      fixedCondition: {},
+      lockedConditionReady: false,
+      lockedConditionError: '',
       advencedSearchMode: 'condition',
       childTheadList: [
         {
@@ -604,6 +623,7 @@ export default {
   destroyed() {},
   methods: {
     restoreHistory(historyData) {
+      if (this.conditionReadonly) return;
       this.searchParam = historyData['searchParam'] || { pageSize: this.pageSize };
       this.isAdvancedSearch = historyData['isAdvancedSearch'];
       this.attrFilterList = historyData['attrFilterList'] || {};
@@ -735,7 +755,44 @@ export default {
       this.currentRel = relentity;
       this.isRelCientityDialogShow = true;
     },
+    // 固定条件先校验元数据再检索，防止首次请求或元数据失效时展示未过滤数据。
     async init() {
+      if (this.conditionReadonly) {
+        this.lockedConditionReady = false;
+        this.lockedConditionError = '';
+        this.ciEntityData = {};
+        this.selectedIndexList = [];
+        this.selectedCiEntityList = [];
+        this.isLoading = true;
+        this.fixedCondition = this.$utils.deepClone(this.condition || {});
+        this.isAdvancedSearch = true;
+        try {
+          await Promise.all([this.getGlobalAttrList(), this.getAttrByCiId(), this.getRelByCiId(), this.getDownwardCiByCiId(), this.searchGroup()]);
+          if (!validateLockedCondition(this.fixedCondition, {
+            attrFilterList: this.searchAttrList,
+            globalAttrFilterList: this.globalAttrList,
+            relFilterList: this.relList,
+            globalExpressions: this.globalAttrExpressionList,
+            groupId: this.groupList,
+            filterCiId: this.downwardCiList.filter(ci => String(ci.id) !== String(this.ciId))
+          })) {
+            this.lockedConditionError = this.$t('term.cmdb.relfilterinvalid');
+            return;
+          }
+          this.fillLockedCondition();
+          this.lockedConditionReady = true;
+          await this.searchCiEntity();
+          await this.getCiAttrRelList();
+        } catch (e) {
+          this.lockedConditionReady = false;
+          this.ciEntityData = {};
+          this.lockedConditionError = this.$t('term.cmdb.relfilterloadfailed');
+        } finally {
+          this.isLoading = false;
+          this.tabloading = false;
+        }
+        return;
+      }
       await this.searchCiEntity();
       this.tabloading = false;
       await this.getGlobalAttrList();
@@ -745,9 +802,28 @@ export default {
       this.searchGroup();
       await this.getCiAttrRelList();
     },
+    // 回填独立草稿，并同步空值操作符对应的控件显隐。
+    fillLockedCondition() {
+      [['attrFilterList', 'attrConditionHideData'], ['globalAttrFilterList', 'globalAttrConditionHideData'], ['relFilterList', 'relConditionHideData']].forEach(([field, hideField]) => {
+        this[field] = {};
+        this[hideField] = {};
+        (this.fixedCondition[field] || []).forEach(item => {
+          const key = field === 'relFilterList' ? item.direction + item.relId : 'attr_' + item.attrId;
+          this.$set(this[field], key, this.$utils.deepClone(item));
+          const hideKey = field === 'relFilterList' ? key : item.attrId;
+          this.$set(this[hideField], hideKey, ['is-null', 'is-not-null'].includes(item.expression));
+        });
+      });
+      this.searchParam = mergeLockedCondition(this.searchParam, this.fixedCondition);
+    },
+    // 高级搜索共享控件只禁用已配置的字段。
+    isLocked(field, id, direction) {
+      return this.conditionReadonly && isConditionLocked(this.fixedCondition, field, id, direction);
+    },
     exportUrl() {
+      if (this.conditionReadonly && !this.lockedConditionReady) return null;
       //复制一个条件对象不要影响页面搜索
-      const searchParam = this.$utils.deepClone(this.searchParam);
+      let searchParam = this.$utils.deepClone(this.searchParam);
       if (this.isOnlyExportSelected && this.selectedCiEntityList && this.selectedCiEntityList.length > 0) {
         const idList = [];
         this.selectedCiEntityList.forEach(cientity => {
@@ -801,6 +877,7 @@ export default {
         }
       }
       searchParam.globalAttrStrictMode = true;
+      if (this.conditionReadonly) searchParam = mergeLockedCondition(searchParam, this.fixedCondition);
       return {
         url: 'api/binary/cmdb/cientity/export',
         params: searchParam,
@@ -815,6 +892,7 @@ export default {
       };
     },
     async searchCiEntity(current) {
+      if (this.conditionReadonly && !this.lockedConditionReady) return;
       //清空选中列表
       if (!this.selectedRemain) {
         this.selectedIndexList = [];
@@ -864,14 +942,18 @@ export default {
         }
       }
       this.searchParam.sortConfig = this.sortConfig;
-      this.$addHistoryData('searchParam', this.searchParam);
-      this.$addHistoryData('isAdvancedSearch', this.isAdvancedSearch);
-      this.$addHistoryData('attrFilterList', this.attrFilterList);
-      this.$addHistoryData('globalAttrFilterList', this.globalAttrFilterList);
-      this.$addHistoryData('relFilterList', this.relFilterList);
-      this.$addHistoryData('sortConfig', this.sortConfig);
-      this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
-      this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
+      if (!this.conditionReadonly) {
+        this.$addHistoryData('searchParam', this.searchParam);
+        this.$addHistoryData('isAdvancedSearch', this.isAdvancedSearch);
+        this.$addHistoryData('attrFilterList', this.attrFilterList);
+        this.$addHistoryData('globalAttrFilterList', this.globalAttrFilterList);
+        this.$addHistoryData('relFilterList', this.relFilterList);
+        this.$addHistoryData('sortConfig', this.sortConfig);
+        this.$addHistoryData('attrConditionHideData', this.attrConditionHideData);
+        this.$addHistoryData('globalAttrConditionHideData', this.globalAttrConditionHideData);
+      } else {
+        this.searchParam = mergeLockedCondition(this.searchParam, this.fixedCondition);
+      }
       this.searchParam['globalAttrStrictMode'] = true;
       //this.searchParam['needAccount'] = true;
       await this.$api.cmdb.cientity
@@ -1128,6 +1210,7 @@ export default {
       }
     },
     setRelData(rel, type, value) {
+      if (this.isLocked('relFilterList', rel.id, rel.direction)) return;
       const key = rel.direction + rel.id;
       if (!this.relFilterList[key]) {
         this.relFilterList[key] = { relId: rel.id, direction: rel.direction };
@@ -1153,6 +1236,7 @@ export default {
       }
     },
     setGlobalAttrData(attr, type, value) {
+      if (this.isLocked('globalAttrFilterList', attr.id)) return;
       if (!this.globalAttrFilterList['attr_' + attr.id]) {
         this.globalAttrFilterList['attr_' + attr.id] = {};
         this.globalAttrFilterList['attr_' + attr.id].attrId = attr.id;
@@ -1174,6 +1258,7 @@ export default {
       }
     },
     setAttrData(attr, type, value) {
+      if (this.isLocked('attrFilterList', attr.id)) return;
       if (!this.attrFilterList['attr_' + attr.id]) {
         this.attrFilterList['attr_' + attr.id] = {};
         this.attrFilterList['attr_' + attr.id].attrId = attr.id;
@@ -1231,11 +1316,12 @@ export default {
       }
     },
     searchGroup() {
-      this.$api.cmdb.group.getCurrentUserActiveGroupByCiId(this.ciId).then(res => {
+      return this.$api.cmdb.group.getCurrentUserActiveGroupByCiId(this.ciId).then(res => {
         this.groupList = res.Return;
       });
     },
     setGroupId(groupId) {
+      if (this.isLocked('groupId')) return;
       if (this.searchParam['groupId'] && this.searchParam['groupId'] == groupId) {
         delete this.searchParam['groupId'];
       } else {
@@ -1336,7 +1422,7 @@ export default {
     ciId: {
       handler: function(val) {
         if (val) {
-          Object.assign(this.searchParam, this.condition);
+          Object.assign(this.searchParam, this.$utils.deepClone(this.condition || {}));
           this.searchParam['groupId'] = null;
           this.searchParam['ciId'] = this.ciId;
           this.searchParam['idList'] = !this.$utils.isEmpty(this.idList) ? this.idList : null;
@@ -1392,6 +1478,7 @@ export default {
     },
     isAdvancedSearch: {
       handler: function(val) {
+        if (this.conditionReadonly) return;
         if (!val) {
           if (this.attrList && this.attrList.length > 0) {
             this.attrList.forEach(element => {
@@ -1412,6 +1499,10 @@ export default {
     },
     advencedSearchMode: {
       handler: function(val) {
+        if (this.conditionReadonly) {
+          this.advencedSearchMode = 'condition';
+          return;
+        }
         if (val === 'condition') {
           this.searchParam.dsl = null;
           this.searchCiEntity();

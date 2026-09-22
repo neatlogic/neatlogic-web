@@ -216,8 +216,18 @@ export default {
 .grid {
   display: grid;
   width: 100%;
-  grid-template-columns: 40px auto;
+  // 标签列适配中英文宽度，长网段和端口在值列内换行，避免内容重叠。
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 8px;
+  align-items: start;
+  .content {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
   .content-long {
+    min-width: 0;
+    overflow-wrap: anywhere;
     grid-column-start: 1;
     grid-column-end: 3;
   }

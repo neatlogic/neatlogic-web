@@ -2,6 +2,7 @@
   <div v-if="appData && editors[appData.type + 'Editor']">
     <component
       :is="appData.type + 'Editor'"
+      :key="appData.id"
       ref="editor"
       :appData="appData"
     ></component>
@@ -23,7 +24,8 @@ export default {
   data() {
     return {
       editors: editor,
-      appData: null
+      appData: null,
+      requestSeq: 0
     };
   },
   beforeCreate() {},
@@ -36,18 +38,21 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() { this.requestSeq++; },
   destroyed() {},
   methods: {
     getAppById() {
+      // 切换应用时隔离旧响应，并销毁旧应用的配置弹窗。
+      const seq = ++this.requestSeq;
+      this.appData = null;
       this.$api.rdm.app.getAppById(this.appId).then(res => {
-        this.appData = res.Return;
+        if (seq === this.requestSeq) this.appData = res.Return;
       });
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: { appId: 'getAppById' }
 };
 </script>
 <style lang="less"></style>

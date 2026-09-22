@@ -29,7 +29,15 @@
               @click="goTo('/view-data/' + customview.id)"
               @contextmenu="newTab($event, customview, '/view-data/' + customview.id)"
             >
-              <a class="cursor overflow" :class="customview.icon">{{ customview.name }}</a>
+              <OverflowTooltip
+                :content="customview.name"
+                placement="right"
+              >
+                <a
+                  class="cursor overflow"
+                  :class="customview.icon"
+                >{{ customview.name }}</a>
+              </OverflowTooltip>
             </li>
           </ul>
         </div>
@@ -59,7 +67,15 @@
               @click="goTo('/graph-data/' + customview.id)"
               @contextmenu="newTab($event, customview, '/graph-data/' + customview.id)"
             >
-              <a class="cursor overflow" :class="customview.icon">{{ customview.name }}</a>
+              <OverflowTooltip
+                :content="customview.name"
+                placement="right"
+              >
+                <a
+                  class="cursor overflow"
+                  :class="customview.icon"
+                >{{ customview.name }}</a>
+              </OverflowTooltip>
             </li>
           </ul>
         </div>
@@ -78,9 +94,13 @@
     </div>
     <template v-if="dataList && dataList.length > 0">
       <div v-for="(menuGroup, index) in dataList" :key="index">
-        <div class="title text-grey">
-          {{ menuGroup.menuTypeName }}
-        </div>
+        <OverflowTooltip
+          class="title text-grey"
+          :content="menuGroup.menuTypeName"
+          placement="right"
+        >
+          <span class="menu-group-name overflow">{{ menuGroup.menuTypeName }}</span>
+        </OverflowTooltip>
         <ul v-if="menuGroup.menuList && menuGroup.menuList.length > 0">
           <li
             v-for="menu in menuGroup.menuList"
@@ -90,7 +110,12 @@
             @click="goTo('/ci-view/' + menu.id)"
             @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
           >
-            <a class="cursor" :class="menu.icon">{{ menu.name }}</a>
+            <OverflowTooltip
+              :content="menu.name"
+              placement="right"
+            >
+              <a class="cursor" :class="menu.icon">{{ menu.name }}</a>
+            </OverflowTooltip>
           </li>
         </ul>
       </div>
@@ -174,5 +199,8 @@ export default {
 .grid {
   display: grid;
   grid-template-columns: auto 23px;
+}
+.menu-group-name {
+  display: block;
 }
 </style>

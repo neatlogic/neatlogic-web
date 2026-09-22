@@ -3,6 +3,7 @@
     <div>
       <TsFormInput
         ref="handler"
+        :disabled="disabled"
         type="number"
         :value="valueB"
         @change="setDataBefore"
@@ -13,6 +14,7 @@
     <div>
       <TsFormInput
         ref="handler"
+        :disabled="disabled"
         type="number"
         :value="valueA"
         @change="setDataAfter"
@@ -29,6 +31,7 @@ export default {
     TsFormInput
   },
   props: {
+    disabled: { type: Boolean, default: false },
     attrData: { type: Object },
     valueList: { type: Array }
   },
@@ -50,7 +53,11 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 禁用状态下不修改或回传固定条件。
     setDataBefore(val) {
+      if (this.disabled) {
+        return;
+      }
       this.valueBefore = val;
       let v = this.valueBefore + '~' + this.valueAfter;
       if (v == '~') {
@@ -59,7 +66,11 @@ export default {
       this.$emit('setData', [v]);
       this.$emit('setValue', [v]);
     },
+    // 禁用状态下不修改或回传固定条件。
     setDataAfter(val) {
+      if (this.disabled) {
+        return;
+      }
       this.valueAfter = val;
       let v = this.valueBefore + '~' + this.valueAfter;
       if (v == '~') {

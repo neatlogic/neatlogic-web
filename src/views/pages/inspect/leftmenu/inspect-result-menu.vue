@@ -10,7 +10,12 @@
         @contextmenu="newTab($event, item.nameIconObj, item.url)"
         @click="goTo(item.url)"
       >
-        <a class="cursor" :class="item.icon">{{ $t(item.name) }}</a>
+        <OverflowTooltip
+          :content="$t(item.name)"
+          placement="right"
+        >
+          <a class="cursor" :class="item.icon">{{ $t(item.name) }}</a>
+        </OverflowTooltip>
       </li>
     </ul>
     <div v-auth="questionClassificationMenuAuth">
@@ -29,7 +34,15 @@
               :class="{ active: $isMenuActive('/recent-issues-' + item.id)}"
             >
               <li class="overflow navlist-text">
-                <a class="router-link tsfont-baobiao" :title="item.name" @click="goTo('/recent-issues-' + item.id)">{{ $t(item.name) }}</a>
+                <OverflowTooltip
+                  :content="$t(item.name)"
+                  placement="right"
+                >
+                  <a
+                    class="router-link tsfont-baobiao"
+                    @click="goTo('/recent-issues-' + item.id)"
+                  >{{ $t(item.name) }}</a>
+                </OverflowTooltip>
                 <i class="item-icon handle tsfont-drag hide text-actiongit"></i>
                 <span class="navlist-action">
                   <Dropdown trigger="click" :transfer="true">
@@ -62,7 +75,12 @@
         @click="goTo(item.url)"
         @contextmenu="newTab($event, item.nameIconObj, item.url)"
       >
-        <a class="cursor" :class="item.icon">{{ $t(item.name) }}</a>
+        <OverflowTooltip
+          :content="$t(item.name)"
+          placement="right"
+        >
+          <a class="cursor" :class="item.icon">{{ $t(item.name) }}</a>
+        </OverflowTooltip>
       </li>
     </ul>
     <CategoryEditDialog v-if="isShowCategoryEditDialog" :id="id" @close="closeRenameDialog"></CategoryEditDialog>

@@ -210,8 +210,9 @@ const ci = {
   rebuildRelativeRel(relId) {
     return axios.post('/api/rest/cmdb/rel/relative/rebuild', { relId: relId });
   },
-  getCiTree() {
-    return axios.post('/api/rest/cmdb/ci/tree', {});
+  // 可选传入层级显示条件，未传时沿用完整模型树查询。
+  getCiTree(params = {}) {
+    return axios.post('/api/rest/cmdb/ci/tree', params);
   },
   saveCiTreeItem(params) {
     return axios.post('/api/rest/cmdb/ci/tree/save', params);

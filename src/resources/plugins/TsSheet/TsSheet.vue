@@ -725,6 +725,10 @@ export default {
           this.config = this.value;
         }
         this.config.lefterList.forEach(d => {
+          // 区分保存的行高和组件内容撑开的显示行高。
+          if (this.mode === 'edit' && d._configuredHeight === undefined) {
+            d._configuredHeight = d.height;
+          }
           if (d.height < this.minHeight) {
             d.height = this.minHeight;
           }
@@ -1004,6 +1008,9 @@ export default {
     resizeCell(row, col, needReset) {
       if (row != null) {
         const lefter = this.config.lefterList[row];
+        if (this.mode === 'edit' && lefter._configuredHeight === undefined) {
+          this.$set(lefter, '_configuredHeight', lefter.height);
+        }
         if (needReset) {
           lefter.height = this.minHeight; //先重置高度
         }
@@ -1045,7 +1052,14 @@ export default {
     //提供外部使用，返回最新配置数据
     getFormConfig() {
       //消除所有私有属性
-      const data = this.$utils.deepClone(this.config);
+      // 与接口保存的数据保持一致，剔除组件初始化时混入的运行时函数。
+      const data = JSON.parse(JSON.stringify(this.config));
+      data.lefterList.forEach(row => {
+        if (row._configuredHeight !== undefined) {
+          row.height = row._configuredHeight;
+          this.$delete(row, '_configuredHeight');
+        }
+      });
       data.tableList.forEach(cell => {
         for (let k in cell) {
           if (k.startsWith('_')) {
@@ -1130,14 +1144,17 @@ export default {
       for (let key in this.formData) {
         const formitem = this.formItemList.find(d => d.uuid === key);
         if (formitem) {
-          this.clearFormInputTableAttr(formitem, this.formData[key]);
+          // 嵌套列在提交副本上清理私有属性和不保存字段，避免修改正在编辑的记录；其他表单沿用原路径。
+          const hasNestedSelector = formitem.handler === 'formtableinputer' && formitem.config?.dataConfig?.some(column => column.handler === 'formtableselector');
+          const formValue = hasNestedSelector ? this.$utils.deepClone(this.formData[key]) : this.formData[key];
+          this.clearFormInputTableAttr(formitem, formValue);
           //注意！所有下划线开头的属性都会被清理
-          this.clearPrivateAttr(this.formData[key]);
+          this.clearPrivateAttr(formValue);
           formItemList.push({
             attributeUuid: key,
             key: formitem.key,
             handler: formitem.handler,
-            dataList: this.formData[key]
+            dataList: formValue
           });
         }
       }
@@ -1169,12 +1186,20 @@ export default {
       }
     },
     clearFormInputTableAttr(formitem, valueList) {
-      //清除表单输入组件非表头属性
+      // 清理当前场景和主场景均不存在的列，以及明确不保存的嵌套列。
       if (formitem.handler === 'formtableinputer' && !this.$utils.isEmpty(valueList)) {
-        let uuidList = formitem.config && formitem.config.dataConfig && this.$utils.mapArray(formitem.config.dataConfig, 'uuid');
+        const dataColumns = [...(formitem.config?.dataConfig || [])];
+        const referenceFormItem = this.effectiveReferenceFormItemList.find(item => item.uuid === formitem.uuid);
+        (referenceFormItem?.config?.dataConfig || []).forEach(column => {
+          if (!dataColumns.some(item => item.uuid === column.uuid)) {
+            dataColumns.push(column);
+          }
+        });
+        const uuidList = dataColumns.map(column => column.uuid);
+        const excluded = dataColumns.filter(column => column.handler === 'formtableselector' && column.config?.saveData === false).map(column => column.uuid);
         valueList.forEach(item => {
           Object.keys(item).forEach(key => {
-            if (uuidList && !uuidList.includes(key) && key !== 'uuid') {
+            if (excluded.includes(key) || (uuidList && !uuidList.includes(key) && key !== 'uuid')) {
               //uuid作为每一行的唯一标识，不能删除
               delete item[key];
             }
@@ -1787,6 +1812,7 @@ export default {
         if (height >= this.minHeight) {
           const index = this.config.lefterList.findIndex(d => d === this.resizeRow);
           this.resizeRow.height = height;
+          this.$set(this.resizeRow, '_configuredHeight', height);
           this.resizerPosition.left = 0;
           this.resizerPosition.top = this.resizerPosition.top + deltaY;
           //有些组件高度压缩不了，需要重新修正高度

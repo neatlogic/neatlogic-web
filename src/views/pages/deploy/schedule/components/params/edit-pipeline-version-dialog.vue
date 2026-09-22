@@ -74,7 +74,7 @@ export default {
       versionValidateList: ['key-special', 'required'],
       version: '',
       theadList: [
-        { key: 'appSystemAbbrName', title: this.$t('page.apply') },
+        { key: 'appSystemAbbrName', title: this.$t('page.application') },
         { key: 'appModuleAbbrName', title: this.$t('page.module') },
         { key: 'envScenario', title: this.$t('term.deploy.envscene') },
         { key: 'version', title: this.$t('page.versions')}

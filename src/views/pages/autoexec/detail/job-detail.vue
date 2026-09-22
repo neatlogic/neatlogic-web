@@ -79,6 +79,7 @@
           <span class="action-item tsfont-accessendpoint" @click="isShowFlow = true">{{ $t('page.flowchart') }}</span>
           <span class="action-item tsfont-console" @click="isShowConsoleLogDialog = true">{{ $t('term.autoexec.controlpanel') }}</span>
           <span class="action-item tsfont-config" @click="openShowParam">{{ $t('page.param') }}</span>
+          <span class="action-item tsfont-history" @click="isShowOperationAudit = true">{{ $t('page.actionaudit') }}</span>
           <span v-if="versionId != null" class="action-item tsfont-file-single icon" @click="openProjectDirectoryDialog(versionId)">{{ $t('term.deploy.projectdirectory') }}</span>
           <span class="action-item">
             <Dropdown trigger="hover" placement="bottom">
@@ -142,6 +143,8 @@
         </div>
       </template>
     </TsContain>
+    <!-- 操作记录独立管理查询状态，仅传递当前作业标识。 -->
+    <OperationAuditSlider v-if="isShowOperationAudit && jobData.id" :jobId="jobData.id" @close="isShowOperationAudit = false"></OperationAuditSlider>
     <!-- 参数 -->
     <JobParamDialog v-if="isShowJobParam" :id="jobData.id" @close="isShowJobParam = false"></JobParamDialog>
     <!-- 重跑 -->
@@ -171,6 +174,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: 'ActionDetail',
   components: {
+    OperationAuditSlider: () => import('./jobDetail/operation-audit/operation-audit-slider.vue'),
     RefireJobDialog: () => import('./jobDetail/refire-job-dialog.vue'),
     PhaseList: () => import('./jobDetail/job-phase-list.vue'),
     ConsoleLogDialog: () => import('./jobDetail/job-console-log-dialog.vue'),
@@ -189,6 +193,7 @@ export default {
   data() {
     const _this = this;
     return {
+      isShowOperationAudit: false, // 作业操作记录面板
       isShowFlow: false, //是否打开流程图
       downloadLoading: false,
       jobData: {}, //作业数据

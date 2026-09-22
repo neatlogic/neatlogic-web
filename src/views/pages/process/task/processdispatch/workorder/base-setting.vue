@@ -54,16 +54,22 @@
             </div>
           </div>
           <div class="information-list">
-            <div class="infor-left text-title overflow">{{ $t('term.process.usernumber') }}</div>
+            <OverflowTooltip class="infor-left text-title" :content="$t('term.process.usernumber')">
+              <span class="infor-label overflow">{{ $t('term.process.usernumber') }}</span>
+            </OverflowTooltip>
             <div class="infor-right">{{ userDetail.userId ||'-' }}</div>
           </div>
-          <div class="infor-left text-title overflow">{{ $t('term.process.region') }}</div>
-          <div class="infor-right">
-            <TsFormSelect
-              ref="region"
-              v-model="dispatch.regionId"
-              v-bind="getRegionSetting"
-            ></TsFormSelect>
+          <div class="information-list">
+            <OverflowTooltip class="infor-left text-title" :content="$t('term.process.region')">
+              <span class="infor-label overflow">{{ $t('term.process.region') }}</span>
+            </OverflowTooltip>
+            <div class="infor-right">
+              <TsFormSelect
+                ref="region"
+                v-model="dispatch.regionId"
+                v-bind="getRegionSetting"
+              ></TsFormSelect>
+            </div>
           </div>
         </div>
         <!-- <div class="information-list">
@@ -83,11 +89,15 @@
       </div>
       <div v-show="showBasic">
         <div class="information-list">
-          <div class="infor-left text-title overflow">{{ $t('term.process.reportcatalog') }}</div>
+          <OverflowTooltip class="infor-left text-title" :content="$t('term.process.reportcatalog')">
+            <span class="infor-label overflow">{{ $t('term.process.reportcatalog') }}</span>
+          </OverflowTooltip>
           <div class="infor-right">{{ draftData.channelPath ||'-' }}</div>
         </div>
         <div v-if="isDisplayPriority" class="information-list">
-          <div class="infor-left text-title require-label overflow">{{ $t('page.priority') }}</div>
+          <OverflowTooltip class="infor-left text-title require-label" :content="$t('page.priority')">
+            <span class="infor-label overflow">{{ $t('page.priority') }}</span>
+          </OverflowTooltip>
           <div class="infor-right">
             <TsFormSelect
               ref="priorityUuid"
@@ -103,13 +113,17 @@
           </div>
         </div>
         <div class="information-list">
-          <div class="infor-left text-title overflow">{{ $t('page.tag') }}</div>
+          <OverflowTooltip class="infor-left text-title" :content="$t('page.tag')">
+            <span class="infor-label overflow">{{ $t('page.tag') }}</span>
+          </OverflowTooltip>
           <div class="infor-right">
             <WorkLabel ref="workLabel" :list="tagList" :showLogo="false"></WorkLabel>
           </div>
         </div>
         <div class="information-list">
-          <div class="infor-left text-title overflow">{{ $t('term.process.focususer') }}</div>
+          <OverflowTooltip class="infor-left text-title" :content="$t('term.process.focususer')">
+            <span class="infor-label overflow">{{ $t('term.process.focususer') }}</span>
+          </OverflowTooltip>
           <div class="infor-right">
             <UserSelect
               v-model="dispatch.focusUserUuidList"
@@ -142,6 +156,7 @@ export default {
   },
   data() {
     return {
+      initReady: false,
       dispatch: {
         owner: '',
         priorityUuid: '',
@@ -185,16 +200,17 @@ export default {
   destroyed() {},
   methods: {
     async init() {
+      this.initReady = false;
       if (!this.$utils.isEmpty(this.draftData)) {
         if (!this.$utils.isEmpty(this.draftData.ownerVo)) {
           this.userDetail = this.draftData.ownerVo;
         } else if (this.draftData.owner) {
-          await this.userChange(this.draftData.owner);
+          this.userDetail = {};
         } else {
           this.userDetail = this.$AuthUtils.getCurrentUser();
         }
-        this.dispatch.owner = 'user#' + this.userDetail.uuid;
-        this.$emit('updateDispatchOwnerInfo', this.userDetail);
+        this.dispatch.owner = this.userDetail.uuid ? 'user#' + this.userDetail.uuid : this.draftData.owner;
+        if (this.userDetail.uuid) this.$emit('updateDispatchOwnerInfo', this.userDetail);
         if (this.draftData.tagList) {
           this.tagList = this.draftData.tagList;
         }
@@ -213,6 +229,28 @@ export default {
           }
           this.defaultPriorityUuid = this.draftData.defaultPriorityUuid;
         }
+      }
+      if (this.dispatch.owner && !this.userDetail.uuid) {
+        await this.loadInitialOwner();
+      } else {
+        this.initReady = true;
+      }
+    },
+    async loadInitialOwner() {
+      // 加载上报人信息，保留初始化期间用户对其他字段的修改。
+      const owner = this.dispatch.owner;
+      this.initReady = false;
+      try {
+        const res = await this.$api.framework.user.getUser({userUuid: (owner || '').replace(/^user#/, '')});
+        if (this._isDestroyed || this.dispatch.owner !== owner) return;
+        if (res.Status !== 'OK' || !res.Return || !res.Return.uuid) {
+          return;
+        }
+        this.userDetail = res.Return;
+        this.$emit('updateDispatchOwnerInfo', this.userDetail);
+        this.initReady = true;
+      } catch (error) {
+        // 请求错误由接口层提示，保持未就绪，避免提交不完整数据。
       }
     },
     //修改用户
@@ -233,6 +271,7 @@ export default {
           if (res.Status == 'OK') {
             this.userDetail = res.Return;
             this.$emit('updateDispatchOwnerInfo', this.userDetail);
+            this.initReady = true;
           }
         });
       } else {
@@ -347,6 +386,12 @@ export default {
     width: 60px;
     text-align: right;
     flex-shrink: 0;
+    ::v-deep .ivu-tooltip-rel {
+      width: 100%;
+    }
+    .infor-label {
+      display: block;
+    }
   }
   .infor-right {
     flex-grow:1;

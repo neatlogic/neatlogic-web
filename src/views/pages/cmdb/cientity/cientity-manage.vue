@@ -161,6 +161,7 @@ export default {
             valueName: 'id',
             textName: 'name',
             url: '/api/rest/cmdb/citype/list',
+            params: { isShowInCiEntityQuery: 1 },
             label: this.$t('page.classify'),
             multiple: true,
             transfer: true
@@ -255,18 +256,20 @@ export default {
     getTopo: function() {
       this.isCiTopoShow = true;
     },
+    // 配置项查询入口只加载允许显示的模型层级。
     getCiTypeList: function() {
-      this.$api.cmdb.citype.listCiType().then(res => {
+      this.$api.cmdb.citype.listCiType({ isShowInCiEntityQuery: 1 }).then(res => {
         if (res.Status == 'OK' && res.Return && res.Return.length > 0) {
           this.ciTypeConfig.dataList = res.Return.filter(d => d.ciCount > 0);
         }
       });
     },
+    // 过滤参数仅用于当前请求，不写入搜索历史或传给拓扑的搜索条件。
     searchCiTypeCi: function() {
       this.ciTypeList = [];
       this.isLoading = true;
       this.$addHistoryData('searchParam', this.searchParam);
-      this.$api.cmdb.ci.searchCiTypeCi(this.searchParam).then(res => {
+      this.$api.cmdb.ci.searchCiTypeCi({ ...this.searchParam, isShowInCiEntityQuery: 1 }).then(res => {
         if (res.Status == 'OK') {
           this.isLoading = false;
           let ciTypeList = res.Return || [];

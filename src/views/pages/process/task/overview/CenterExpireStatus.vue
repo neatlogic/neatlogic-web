@@ -1,52 +1,33 @@
 <template>
-  <div>
-    <div v-if="row.expireStatus === 'is-expired' || row.expireStatus === 'will-be-expired'" class="expired">
-      <div v-if="row.expireStatus === 'is-expired'" class="expired-slaname">{{ row.expireConfig.expiredSlaName }}</div>
-      <div v-if="row.expireStatus === 'will-be-expired'" class="expired-slaname">{{ row.expireConfig.willOverSlaName }}</div>
-      <div class="clearfix">
-        <div v-if="row.expireStatus === 'is-expired'">
-          <span class="expired-status">{{ $t('term.process.timedout') }}</span>
-          <span class="expired-duration">{{ (row.expireConfig.timeLeftMin) | formatTimeCost({ language: 'en', unitNumber: 1, unit: 'minute' }) }}</span>
-        </div>
-        <div v-if="row.expireStatus === 'will-be-expired'">
-          <span class="expired-status">{{ $t('term.process.distancetimeout') }}</span>
-          <span class="expired-duration">{{ (row.expireConfig.timeLeftMin) | formatTimeCost({ language: 'en', unitNumber: 1, unit: 'minute' }) }}</span>
-        </div>
+  <div class="expire-status-container">
+    <div
+      v-if="row.expireStatus === 'is-expired' || row.expireStatus === 'will-be-expired'"
+      class="expired sla"
+      :class="row.expireStatus"
+    >
+      <div class="sla-summary">
+        <span class="sla-icon" :class="row.expireStatus === 'is-expired' ? 'tsfont-warning-o' : 'tsfont-time'" aria-hidden="true"></span>
+        <span class="sla-duration">{{ row.expireConfig.timeLeftMin | formatTimeCost({ language: 'en', unitNumber: 3, unit: 'minute', separator: ' ' }) }}</span>
+        <span class="sla-status" :title="row.expireStatus === 'is-expired' ? $t('term.process.timedout') : $t('term.process.slastatus.untiltimeout')">{{ row.expireStatus === 'is-expired' ? $t('term.process.timedout') : $t('term.process.slastatus.untiltimeout') }}</span>
       </div>
+      <div class="sla-slaname" :title="slaName">{{ slaName }}</div>
     </div>
   </div>
 </template>
 
 <script>
+// 工单时效提示只展示告警时间和 SLA 名称，不改变处理人的切换规则。
 export default {
-  name: '',
-  components: {
-  },
+  name: 'CenterExpireStatus',
   props: {
     row: Object
   },
-  data() {
-    return {
-    };
-  },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
-  methods: {},
-  filter: {},
   computed: {
-    now() {
-      return this.$store.state.now;
+    // 两类告警分别读取对应 SLA，避免展示另一条规则的名称。
+    slaName() {
+      return this.row.expireStatus === 'is-expired' ? this.row.expireConfig.expiredSlaName : this.row.expireConfig.willOverSlaName;
     }
-  },
-  watch: {}
+  }
 };
 </script>
 
@@ -59,39 +40,73 @@ export default {
     left: 0;
   }
 }
-.expired {
+.expire-status-container {
+  min-width: 0;
+  width: 100%;
+}
+// 使用独立子元素类，避免卡片视图旧倒计时样式覆盖字号和间距。
+.sla {
   height: 47px;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  &-status {
-    font-size: 12px;
-    margin-right: 5px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  gap: 4px;
+  &-summary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    line-height: 20px;
   }
+  &-icon {
+    flex: none;
+    font-size: 16px;
+  }
+  // 时间始终完整显示，长文案只在自身范围内省略，避免单位换行撑高表格。
   &-duration {
-    font-size: 30px;
-    height: 42px;
-    line-height: 42px;
+    flex: none;
+    font-size: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  &-status {
+    min-width: 0;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &-slaname {
+    font-size: 12px;
+    line-height: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
-.theme(@tip-color, @title-color) {
-  .expired-slaname {
+.theme(@tip-color, @text-color, @warning-color, @error-color) {
+  .sla-slaname {
     color: @tip-color;
   }
-  .expired {
-    height: 47px;
-    &-status {
-      color: @tip-color;
-    }
-    &-duration {
-      color: @title-color;
-    }
+  .sla-status {
+    color: @text-color;
+  }
+  .expired.will-be-expired .sla-summary {
+    color: @warning-color;
+  }
+  .expired.is-expired .sla-summary {
+    color: @error-color;
   }
 }
 
 html {
-  .theme(@default-tip, @default-title);
+  // 浅色主题加深告警文字，确保白色表格上的可读性。
+  .theme(@default-icon, @default-text, darken(@default-warning-color, 35%), darken(@default-error-color, 12%));
   &.theme-dark {
-    .theme(@white, @white);
+    .theme(@dark-title, @dark-text, @dark-warning-color, @dark-error-hover-color);
   }
 }
 

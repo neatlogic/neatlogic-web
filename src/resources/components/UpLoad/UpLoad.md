@@ -122,6 +122,8 @@ export default {
 |-------|------|------|
 | getFileList | 上传成功后触发 | fileList: 文件列表, fileId: 上传的文件ID |
 | remove | 删除文件后触发 | fileList: 文件列表, fileId: 删除的文件ID |
+| batchStart | 一次文件选择开始上传时触发 | 无 |
+| batchComplete | 同一次选择的全部文件成功或失败后触发一次 | `{ successList: [{ fileId, fileName }], failureList: [{ fileName, message }] }` |
 
 ## 组件方法
 

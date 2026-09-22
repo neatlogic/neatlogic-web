@@ -12,6 +12,8 @@
           :pageSize="10"
           :isMultiple="isMultiple"
           :selectedData="selectedData"
+          :condition="condition"
+          :conditionReadonly="conditionReadonly"
           mode="dialog"
           @getCheckedCiEntity="getCheckCiEntity"
         ></CiEntityList>
@@ -32,7 +34,9 @@ export default {
   props: {
     ciId: {type: Number},
     selectedData: { type: Array }, //已选中数据，只保存id，例如[123123123,123123123]
-    isMultiple: {type: Boolean, default: true}
+    isMultiple: {type: Boolean, default: true},
+    condition: { type: Object, default: null }, // 关系对端模型的候选过滤条件
+    conditionReadonly: { type: Boolean, default: false } // 仅锁定已配置的条件字段
   },
   data() {
     return {

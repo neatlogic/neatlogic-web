@@ -116,8 +116,7 @@ export default {
         type: 'modal',
         maskClose: false,
         isShow: true,
-        width: 'large',
-        zindex: 1200
+        width: 'large'
       },
       roleSelectConfig: {
         multiple: true,
@@ -309,7 +308,8 @@ export default {
   .search-form-item {
     display: grid;
     align-items: center;
-    grid-template-columns: 45px 1fr;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
   }
   .search-label {
     height: 20px;

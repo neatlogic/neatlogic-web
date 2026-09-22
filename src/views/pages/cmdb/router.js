@@ -189,7 +189,7 @@ let routerArr = [
       ismenu: true,
       type: 'resourceCenter',
       icon: 'tsfont-setting',
-      authority: 'RESOURCECENTER_MODIFY'
+      authority: 'RESOURCECENTER_VIEW_MODIFY'
     }
   },
   {
