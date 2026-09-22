@@ -664,7 +664,7 @@
   "failed": "Failed",
   "deletewarning": "Delete Warning",
   "enumerate": "Enumeration",
-  "isdefault": "Default?",
+  "isdefault": "Is it the default",
   "customapi": "External API",
   "systemapi": "Internal API",
   "address": "Address",
