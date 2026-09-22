@@ -104,6 +104,14 @@
               moduleName="inspect"
             ></InspectionAssetsManage>
           </TabPane>
+          <TabPane :label="$t('term.inspect.inspectionrecord')" name="inspectionRecord">
+            <InspectionRecordManage
+              v-if="tabValue == 'inspectionRecord'"
+              class="tab-height-box"
+              :appSystemId="appCiEntityId"
+              :appModuleId="appModuleId"
+            ></InspectionRecordManage>
+          </TabPane>
           <div
             :is="'inspectConfigBaselineTab'"
             v-if="isHasInspectApplicationTab"
@@ -176,6 +184,7 @@ export default {
     AppModuleTree: () => import('@/views/pages/cmdb/application/app-module-tree'), // 应用模块树
     LatestQuestionsManage: () => import('./latest-questions-manage'), // 最新问题
     InspectionAssetsManage: () => import('./inspection-assets-manage'), // 资产清单
+    InspectionRecordManage: () => import('./inspection-record-manage'), // 巡检记录
     BatchSystemInspectionDialog: () => import('./batch-system-inspection-dialog'), // 批量应用巡检
     BatchModuleInspectionDialog: () => import('./batch-module-inspection-dialog'), // 批量模块巡检
     ...(ComponentManager.getComponent('inspectApplicationTab') || {})

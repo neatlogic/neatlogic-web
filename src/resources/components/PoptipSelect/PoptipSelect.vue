@@ -38,9 +38,11 @@
               :class="{'text-href':item[valueName] == selectValue}"
               @click="changeValue($event,item)"
             >
-              <div :style="{'min-width':popLable+'px'}">
+              <div class="poptip-label" :style="{'width':popLable+'px'}">
                 <span v-if="isIcon" class="icon-type text-grey" :class="iconConfig[item[valueName]]?iconConfig[item[valueName]]:'tsfont-forminput'"></span>
-                <span>{{ item[textName] }}</span>
+                <OverflowTooltip class="label-tooltip" :content="item[textName]">
+                  <span class="label-text overflow">{{ item[textName] }}</span>
+                </OverflowTooltip>
               </div>
               <div class="text-tip type-tip pl-sm">{{ item[descriptionName] }}</div>
             </div>
@@ -101,7 +103,7 @@ export default {
     },
     popLable: {
       type: Number,
-      default: 90
+      default: 120
     },
     valueName: {
       //value渲染值
@@ -283,10 +285,36 @@ export default {
     margin-bottom: 10px;
     border-bottom:1px solid;
   }
-  .type-tip{
-    width: 100%;
-    height: 100%;
+  .type-label{
+    display: flex;
+    flex-shrink: 0;
     white-space: normal;
+    overflow-wrap: anywhere;
+    .icon-type{
+      flex-shrink: 0;
+    }
+    .type-label-text{
+      min-width: 0;
+    }
+  }
+  .type-tip{
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .poptip-label {
+    display: flex;
+    align-items: center;
+    flex: none;
+    min-width: 0;
+    .label-tooltip {
+      flex: 1;
+      min-width: 0;
+      .label-text {
+        display: block;
+      }
+    }
   }
 }
 .type-select{

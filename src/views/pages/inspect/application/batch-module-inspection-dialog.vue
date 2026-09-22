@@ -259,14 +259,19 @@ export default {
       this.$api.inspect.applicationInspect.createInspectAppJob(param).then((res) => {
         if (res.Status == 'OK') {
           this.$emit('job-created');
-          this.openResultDialog(res.Return.tbodyList);
+          this.openResultDialog(res.Return.tbodyList, res.Return.parentJobId);
         }
       }).finally(() => {
         this.loadingShow = false;
         this.compobContinueLoading = false;
       });
     },
-    openResultDialog(list) {
+    openResultDialog(list, parentJobId) {
+      if (parentJobId) {
+        this.closeDialog();
+        this.$router.push({ path: '/job-detail', query: { id: parentJobId } });
+        return;
+      }
       if (list && list.length) {
         this.resultList = list;
         if (list.length == 1 && list[0].jobId && Number(list[0].isCreateJobSuccess) === 1) {

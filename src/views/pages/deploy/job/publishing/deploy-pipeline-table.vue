@@ -8,6 +8,8 @@
       :sortOrder="sortOrder"
       :sortMulti="false"
       :fixedHeader="fixedHeader"
+      canExpand
+      class="inner-table"
       @changeCurrent="(currentPage) => searchJob(currentPage, defaultSearchValue)"
       @changePageSize="changePageSize"
       @updateSort="updateSort"
@@ -76,6 +78,70 @@
       </template>
       <template slot="completionRate" slot-scope="{ row }">
         <Liquid :percent="row.completionRate" :size="7" :config="getConfig(row)" />
+      </template>
+      <template v-slot:expand="{ row }">
+        <TsTable
+          v-if="row._expand"
+          :theadList="childTheadList"
+          :tbodyList="row.children || []"
+          :fixedHeader="false"
+          :showPager="false"
+          :showTotal="false"
+          :showSizer="false"
+          class="job-child-table"
+          style="margin-left: 40px;"
+        >
+          <template v-slot:name="{ row: childRow }">
+            <span
+              class="text-href"
+              @contextmenu="newTab($event, childRow)"
+              @click="toJobDetail(childRow)"
+            ><span v-html="childRow.name"></span>
+            </span>
+            <span>
+              <Status v-if="childRow.reviewStatus != 'passed'" :statusValue="childRow.reviewStatus" :statusName="childRow.reviewStatusName"></Status>
+            </span>
+            <Tooltip
+              v-if="childRow.warnCount > 0 || childRow.isHasIgnored > 0"
+              transfer
+              class="stepStatues com-status"
+              placement="bottom"
+              theme="light"
+            >
+              <span class="tsfont-warning-o text-warn"></span>
+              <template v-slot:content>
+                <div>
+                  <div v-if="childRow.warnCount > 0">{{ $t('term.autoexec.loghaswarninfo') }}</div>
+                  <div v-if="childRow.isHasIgnored > 0">{{ $t('term.deploy.phaseexistignorenode') }}</div>
+                </div>
+              </template>
+            </Tooltip>
+          </template>
+          <template v-slot:routeName="{ row: childRow }">
+            <span v-if="childRow.source == 'batchdeploy'">
+              <span>{{ childRow.route && childRow.route.name }}</span>
+            </span>
+            <span v-else class="text-href" @click="toRoute(childRow)">
+              <span>{{ childRow.route && childRow.route.name }}</span>
+            </span>
+          </template>
+          <template v-slot:status="{ row: childRow }">
+            <Status :statusValue="childRow.status" :statusName="childRow.statusName" type="text"></Status>
+          </template>
+          <template v-slot:startTime="{ row: childRow }">
+            <div v-if="childRow.startTime" class="fz10">
+              <span>{{ childRow.startTime | formatDate }}</span>
+              <span class="text-grey ml-xs">{{ $t('page.begin') }}</span>
+            </div>
+            <div v-if="childRow.endTime" class="fz10">
+              <span>{{ childRow.endTime | formatDate }}</span>
+              <span class="text-grey ml-xs">{{ $t('page.finish') }}</span>
+            </div>
+          </template>
+          <template v-slot:completionRate="{ row: childRow }">
+            <Liquid :percent="childRow.completionRate" :size="7" :config="getConfig(childRow)" />
+          </template>
+        </TsTable>
       </template>
     </TsTable>
   </div>
@@ -201,6 +267,7 @@ export default {
         const isParentMode = hasParent === 'false';
         const isSubMode = hasParent === 'true';
         let resultList = [];
+        let highlightList = [];
         if (tbodyList.length == 0) {
           this.jobData = {
             ...(restParams || {}),
@@ -213,10 +280,12 @@ export default {
           const id = tbodyItem.id || '';
           const parentItem = {
             ...tbodyItem,
-            showChildren: false
+            showChildren: false,
+            _expand: false
           };
 
           resultList.push(parentItem);
+          highlightList.push(parentItem);
           
           // 是否有子作业命中关键字
           const hasMatchChild = keywordLower && children.some(child => (child.name || '').toLowerCase().includes(keywordLower));
@@ -226,17 +295,18 @@ export default {
           
           if (shouldExpand && children.length) {
             parentItem.showChildren = true;
-            resultList.push(...children);
+            parentItem._expand = true;
+            highlightList.push(...children);
           }
         });
 
-        let targetList = resultList.filter(item => item.name);
+        let targetList = highlightList.filter(item => item.name);
 
         if (isParentMode) {
           const parents = targetList.filter(item => item.parentId == -1);
           if (parents.length > 0) {
             targetList = parents;
-          } 
+          }
         } else if (isSubMode) {
           const subs = targetList.filter(item => item.parentId != -1);
           if (subs.length > 0) {
@@ -306,13 +376,8 @@ export default {
       const { keyword } = searchValue || {};
       if (row['showChildren']) {
         this.$set(row, 'showChildren', false);
+        this.$set(row, '_expand', false);
         this.expandIdList = this.expandIdList.filter((item) => item.id != id);
-        for (let i = this.jobData.tbodyList.length - 1; i >= 0; i--) {
-          const element = this.jobData.tbodyList[i];
-          if (element.parentId === id) {
-            this.jobData.tbodyList.splice(i, 1);
-          }
-        }
       } else {
         if (id) {
           this.expandIdList.push(id);
@@ -322,12 +387,12 @@ export default {
         const { children = [] } = findChildItem || {};
         if (pIndex >= 0) {
           this.$set(row, 'showChildren', true);
+          this.$set(row, '_expand', children.length > 0);
           children.forEach((item) => {
             if (item.name) {
               item.name = this.$utils.highlightTextByKeywords(item.name, keyword ? [keyword] : []);
             }
           });
-          this.jobData.tbodyList.splice(pIndex + 1, 0, ...children);
         }
       }
     },
@@ -385,6 +450,10 @@ export default {
   },
   filter: {},
   computed: {
+    // 子作业表格沿用主表字段，仅移除父作业的展开控制列。
+    childTheadList() {
+      return this.theadList.filter(item => item.key !== 'showChildren');
+    },
     getConfig() {
       return row => {
         let config = {};
@@ -400,5 +469,24 @@ export default {
 <style lang="less" scoped>
 .job-content {
   position: relative;
+}
+.job-child-table {
+  // 父表固定表头的样式会作用到嵌套表格，这里恢复子表的普通表头。
+  ::v-deep .tstable-no-fixedHeader .table-main > thead > tr > th {
+    height: auto;
+    overflow: visible;
+    padding: 9px !important;
+    border-bottom: 1px solid var(--dividing-color, #e8e8e8) !important;
+    line-height: inherit;
+
+    > * {
+      height: auto !important;
+      overflow: visible;
+      margin-top: initial !important;
+      margin-bottom: initial !important;
+      border-top: initial !important;
+      border-bottom: initial !important;
+    }
+  }
 }
 </style>

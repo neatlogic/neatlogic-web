@@ -10,6 +10,7 @@ import NoData from '@/resources/components/nodata/NoData.js';
 import Loading from '@/resources/components/loading/Loading.js';
 import TsContain from '@/resources/components/TsContain/TsContain.js';
 import TsRow from '@/resources/components/TsRow/TsRow';
+import OverflowTooltip from '@/resources/components/OverflowTooltip/OverflowTooltip.js';
 import TsDialog from '@/resources/plugins/TsDialog/TsDialog.js';
 import * as filters from '@/resources/filters/index'; //时间过滤器
 import HistoryUtil from '@/resources/assets/js/historyUtil.js';
@@ -57,6 +58,7 @@ locale.use(BASELANGUAGES === 'zh' ? zhCN : enUS);
 Vue.use(NoData);
 Vue.use(TsContain);
 Vue.use(TsRow);
+Vue.use(OverflowTooltip);
 Vue.use(Loading);
 Vue.use(TsDialog);
 Vue.use(HistoryUtil);

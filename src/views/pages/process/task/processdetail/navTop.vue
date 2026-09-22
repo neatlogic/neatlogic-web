@@ -15,7 +15,7 @@
             class="task-title overflow inline-block"
             :title="title"
             :style="{maxWidth: `${boxMaxWidth}`}"
-          >{{ title }}</span>
+          >{{ title.length > 50 ? $utils.substr(title, 50) + '...' : title }}</span>
           <i v-if="actionConfig && actionConfig.update" class="tsfont-edit text-action" @click="editTitle(title)"></i>
         </span>
         <span v-if="isEdit" class="edit-title">
