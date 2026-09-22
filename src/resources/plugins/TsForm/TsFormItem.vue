@@ -1,12 +1,13 @@
 <template>
   <div :class="classes" :style="getWidth">
     <label
-      :class="[prefixCls + '-label', 'overflow']"
+      :class="[prefixCls + '-label', tooltip ? 'label-with-tooltip' : 'overflow']"
       :for="labelFor"
       :style="labelStyles"
       :title="label.length > 4 ? label : ''"
     >
-      <FormSlot>{{ label }}</FormSlot>
+      <span v-if="tooltip" class="label-text overflow"><FormSlot>{{ label }}</FormSlot></span>
+      <FormSlot v-else>{{ label }}</FormSlot>
       <div v-if="labelPosition === 'top' && buttonList && buttonList.length > 0" class="ml-xs" style="display: inline-block">
         <div class="item-group">
           <div
@@ -22,6 +23,7 @@
       </div>
       <Poptip
         v-if="tooltip"
+        class="label-tooltip"
         :transfer="true"
         word-wrap
         trigger="hover"
@@ -254,9 +256,26 @@ function getRequired(validateList, required) {
     transform: translateY(-50%);
   }
 }
-.ivu-form-item-label {
-  > span {
-    // display: inline-block;
+.ivu-form-item > .ivu-form-item-label.label-with-tooltip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  > .label-text {
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+
+  > .label-tooltip,
+  > .ml-xs,
+  &::before {
+    flex-shrink: 0;
+  }
+}
+.ivu-form-item.ivu-form-label-left,
+.ivu-form-item.ivu-form-label-top {
+  > .ivu-form-item-label.label-with-tooltip {
+    justify-content: flex-start;
   }
 }
 </style>
