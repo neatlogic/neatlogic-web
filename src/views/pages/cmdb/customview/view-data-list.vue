@@ -143,7 +143,11 @@
         :fixedHeader="false"
       >
         <template v-for="(head, index) in viewData.theadList" :slot="head.key" slot-scope="{ row }">
-          <div v-if="row[head.key] && row[head.key].length > 0" :key="index">
+          <!-- 引用属性由后端返回与配置项列表一致的短文本，空值统一显示为横线。 -->
+          <div v-if="head.isInvokeAttr && !row._isGroup && !row._isPager" :key="index">
+            {{ row[head.key] || '-' }}
+          </div>
+          <div v-else-if="row[head.key] && row[head.key].length > 0" :key="index">
             <span v-for="(v, vindex) in row[head.key]" :key="vindex">{{ v }}</span>
           </div>
         </template>
@@ -308,13 +312,18 @@ export default {
     },
     setAttrData(attr, type, value) {
       if (!this.attrFilterList['attr_' + attr.uuid]) {
-        this.attrFilterList['attr_' + attr.uuid] = {};
+        // 新增过滤条件也需保持响应式，树组件选值后才能立即回显。
+        this.$set(this.attrFilterList, 'attr_' + attr.uuid, {});
         this.$set(this.attrFilterList['attr_' + attr.uuid], 'attrUuid', attr.uuid);
         this.$set(this.attrFilterList['attr_' + attr.uuid], 'alias', attr.alias);
       }
       if (type == 'value') {
         const valObj = value;
-        if (attr.attrVo.targetCiId) {
+        // 引用索引属性保留模型列表的结构化多选值，不用显示名称替换type和invokeId。
+        if (attr.attrVo.isInvokeAttr) {
+          this.$set(this.attrFilterList['attr_' + attr.uuid], 'valueList', this.$utils.deepClone(valObj.value || []));
+          this.$set(this.attrFilterList['attr_' + attr.uuid], 'actualValueList', valObj.actualValue || []);
+        } else if (attr.attrVo.targetCiId) {
           //由于视图已经将id都转换成名字，所以需要直接用名字去搜索，而不是用配置项id
           this.$set(this.attrFilterList['attr_' + attr.uuid], 'valueList', valObj.actualValue);
           this.$set(this.attrFilterList['attr_' + attr.uuid], 'actualValueList', valObj.actualValue);
@@ -355,8 +364,13 @@ export default {
             this.viewData.theadList.push({
               key: attr.uuid,
               title: attr.alias,
-              style: { cursor: 'pointer' },
+              // 引用属性当前接入数据显示，不按内部还原ID进行分组。
+              isInvokeAttr: !!(attr.attrVo && attr.attrVo.isInvokeAttr),
+              style: attr.attrVo && attr.attrVo.isInvokeAttr ? {} : { cursor: 'pointer' },
               click: row => {
+                if (row.isInvokeAttr) {
+                  return;
+                }
                 if (
                   !this.groupList.some(a => {
                     return a.uuid == row.key;
@@ -409,6 +423,20 @@ export default {
       //});
       this.searchCustomViewData(row);
     },
+    getFilterValueList(key, filter) {
+      // 机房位置仅在请求中转换为引用ID，保留页面结构化值供树节点和历史条件回显。
+      if (key.startsWith('attr_') && Array.isArray(filter.valueList)) {
+        return filter.valueList.map(value => {
+          if (value && ['datacenter', 'computerRoom', 'cabinet'].includes(value.type) && value.invokeId != null) {
+            // 安全整数按数字提交，超出JavaScript精度范围的ID保留字符串，避免引用错误。
+            const invokeId = Number(value.invokeId);
+            return Number.isSafeInteger(invokeId) ? invokeId : value.invokeId;
+          }
+          return value;
+        });
+      }
+      return filter.valueList;
+    },
     exportUrl() {
       const params = { id: this.viewId, searchMode: 'normal', attrFilterList: [] };
       params.keyword = this.searchParam.keyword;
@@ -417,7 +445,7 @@ export default {
         if (d.attrUuid && d.expression) {
           params.attrFilterList.push({
             attrUuid: d.attrUuid,
-            valueList: d.valueList,
+            valueList: this.getFilterValueList(key, d),
             actualValueList: d.actualValueList,
             expression: d.expression,
             type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
@@ -455,7 +483,7 @@ export default {
         if (d.attrUuid && d.expression) {
           this.searchParam.attrFilterList.push({
             attrUuid: d.attrUuid,
-            valueList: d.valueList,
+            valueList: this.getFilterValueList(key, d),
             actualValueList: d.actualValueList,
             expression: d.expression,
             type: key.startsWith('constattr_') ? 'constattr' : key.startsWith('globalattr_') ? 'globalattr' : 'attr'
@@ -508,7 +536,6 @@ export default {
       this.$addHistoryData('attrFilterList', this.attrFilterList);
       this.$addHistoryData('isAdvancedSearch', this.isAdvancedSearch);
       this.$api.cmdb.customview.searchCustomViewData(this.searchParam).then(res => {
-        this.loadingShow = false;
         let valueList = [];
         this.dataCount = res.Return.dataCount || 0;
         this.dataLimit = res.Return.dataLimit || 0;
@@ -570,6 +597,9 @@ export default {
           element._index = index;
         });
         // console.log(JSON.stringify(this.viewData.tbodyList, null, 2));
+      }).finally(() => {
+        // 接口失败时也结束加载，避免错误提示后页面一直被遮罩阻挡。
+        this.loadingShow = false;
       });
     }
   },
@@ -580,6 +610,7 @@ export default {
         const searchAttrList = [
           ...this.globalAttrList,
           ...this.attrList.filter(attr => {
+            // 与模型列表共用属性搜索组件，机房位置由后端通过引用索引过滤。
             return attr.attrVo && attr.attrVo.canSearch;
           }),
           ...this.constAttrList
@@ -597,7 +628,8 @@ export default {
     isAdvancedSearch: {
       handler: function(val) {
         if (!val) {
-          this.attrFilterList = [];
+          // 条件按属性UUID保存，保持对象结构以便再次展开时响应更新和历史回显。
+          this.attrFilterList = {};
           this.searchCustomViewData();
         } else {
           this.$set(this.searchParam, 'keyword', '');
