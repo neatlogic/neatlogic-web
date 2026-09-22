@@ -78,6 +78,7 @@
                   <TsCard
                     v-if="ciType && ciType.cardList && ciType.cardList.length > 0"
                     v-bind="ciType"
+                    :class="{ 'ci-select-card': isBatchAuthMode }"
                     :sm="8"
                     :lg="6"
                     :xl="6"
@@ -577,6 +578,11 @@ export default {
   }
   .ci-title-text {
     padding-left: 12px;
+  }
+}
+.ci-select-card {
+  ::v-deep .tscard-body {
+    border: 1px solid transparent;
   }
 }
 .ci-main {
