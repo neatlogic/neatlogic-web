@@ -103,7 +103,7 @@ export default {
     },
     popLable: {
       type: Number,
-      default: 90
+      default: 120
     },
     valueName: {
       //value渲染值
@@ -285,10 +285,23 @@ export default {
     margin-bottom: 10px;
     border-bottom:1px solid;
   }
-  .type-tip{
-    width: 100%;
-    height: 100%;
+  .type-label{
+    display: flex;
+    flex-shrink: 0;
     white-space: normal;
+    overflow-wrap: anywhere;
+    .icon-type{
+      flex-shrink: 0;
+    }
+    .type-label-text{
+      min-width: 0;
+    }
+  }
+  .type-tip{
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
   .poptip-label {
     display: flex;
