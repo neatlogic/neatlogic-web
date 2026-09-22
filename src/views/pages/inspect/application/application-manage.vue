@@ -374,8 +374,8 @@ export default {
               relEntityData[`rel${element.direction}_${element.id}`] = {
                 'valueList': [
                   {
-                    'ciEntityName': this.selectedApp.name, // 应用层的name
-                    'ciEntityId': this.selectedApp.id, // 应用的id
+                    'ciEntityName': this.selectedApp?.name, // 应用层的name
+                    'ciEntityId': this.selectedApp?.id, // 应用的id
                     'ciId': this.appModuleCiId
                   }
                 ]
