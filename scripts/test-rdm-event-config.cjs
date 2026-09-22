@@ -62,7 +62,7 @@ function create(options, props, api = {}) {
 
 async function main() {
   for (const name of ['story/story', 'task/task', 'bug/bug', 'testcase/testcase', 'testplan/testplan', 'iteration/iteration', 'gitlab/gitlab', 'app-editor']) load(path.join(base, name + '.vue'));
-  for (const name of ['event-setting', 'event-handler-tree', 'event-handler-dialog', 'event-handler-children']) load(path.join(eventBase, name + '.vue'));
+  for (const name of ['event-setting', 'event-handler-tree', 'event-handler-dialog', 'event-handler-children', 'event-handler-node']) load(path.join(eventBase, name + '.vue'));
   load(path.join(root, 'src/commercial-module/rdm/import.js'));
   const setting = load(path.join(eventBase, 'event-setting.vue')).default;
   const registry = load(path.join(root, 'src/resources/import/component-manager.js')).default;
@@ -221,20 +221,27 @@ async function main() {
   empty.$destroy();
   const dialog = load(path.join(eventBase, 'event-handler-dialog.vue')).default;
   const draft = create(dialog, { value: { name: 'Existing', handler: 'basic', config: { kept: true } }, plugins: [{ name: 'basic', requiresConfigEditor: false }], projectId: 1, appId: 2, event: 'event' });
-  draft.$refs.form = { valid: () => true };
+  const nodeOptions = load(path.join(eventBase, 'event-handler-node.vue')).default;
+  const rootNode = create(nodeOptions, draft.$props);
+  rootNode.$refs.form = { valid: () => true };
+  rootNode.$refs.children = { valid: async () => true, save: async () => [] };
+  draft.$refs.node = rootNode;
   let result;
   draft.$on('save', value => { result = value; });
   await draft.submit();
   assert.deepStrictEqual(result.config, { kept: true }, '无编辑器时保留原配置');
   assert.strictEqual(result.projectId, 1);
   assert.strictEqual(result.uuid, 'temporary-test-id');
-  draft.$destroy();
+  draft.$destroy(); rootNode.$destroy();
   for (const phase of ['valid', 'save']) {
     const pending = deferred();
     const stale = create(dialog, { value: { name: 'Async', handler: 'special' }, plugins: [{ name: 'special', requiresConfigEditor: true }], projectId: 1, appId: 2, event: 'event' });
-    stale.$refs.form = { valid: () => true };
+    const staleNode = create(nodeOptions, stale.$props);
+    staleNode.$refs.form = { valid: () => true };
+    staleNode.$refs.children = { valid: async () => true, save: async () => [] };
+    stale.$refs.node = staleNode;
     let saveCalled = false;
-    stale.$refs.editor = {
+    staleNode.$refs.editor = {
       valid: () => phase === 'valid' ? pending.promise : true,
       save: () => { saveCalled = true; return pending.promise; }
     };
@@ -247,6 +254,7 @@ async function main() {
     await submitting;
     assert.strictEqual(emitted, false, '异步编辑器完成后不得从已销毁的应用弹窗发出保存');
     if (phase === 'valid') assert.strictEqual(saveCalled, false, '销毁后的异步校验不得继续准备保存');
+    staleNode.$destroy();
   }
   // 公共子配置组件必须使用父插件元数据，子树的增删改只向父级回传。
   const childrenOptions = load(path.join(eventBase, 'event-handler-children.vue')).default;
@@ -257,30 +265,50 @@ async function main() {
   });
   await flush();
   assert.deepStrictEqual(childRequests, [{ projectId: 1, appId: 2, event: 'new', parentPlugin: 'parent' }]);
-  assert.strictEqual(children.valid(), true);
+  const childNodes = [];
+  function attachChild(row) {
+    const node = create(nodeOptions, { value: row, plugins: children.plugins, projectId: 1, appId: 2, event: 'new', level: 2, isChild: true });
+    node.$refs.form = { valid: () => true };
+    node.$refs.children = { valid: async () => true, save: async () => [] };
+    children.$refs['node-' + (row.id || row.uuid)] = [node];
+    childNodes.push(node);
+    return node;
+  }
+  const originalNode = attachChild(children.rows[0]);
+  assert.strictEqual(await children.valid(), true);
   let childOutput;
   children.$on('input', rows => { childOutput = rows; });
-  children.add();
-  assert.deepStrictEqual(children.dialogData, {});
-  children.saveChild({ uuid: 'child-new', name: 'Added', handler: 'basic', config: {} });
+  children.poptipVisible = true;
+  assert.strictEqual(children.rows.length, 1, '打开插件列表不会自动添加唯一插件');
+  children.add(children.plugins[0]);
   assert.strictEqual(childOutput.length, 2);
-  assert.strictEqual(children.dialogData, null);
-  children.edit(children.rows[0], 0);
-  assert.strictEqual(children.editingIndex, 0);
-  children.saveChild({ ...children.dialogData, name: 'Edited' });
-  assert.strictEqual(childOutput[0].name, 'Edited');
-  assert.strictEqual(childOutput[0].id, 10);
-  assert.strictEqual(initialChildren[0].name, 'Original', '编辑子树不得修改调用方原始树');
+  assert.strictEqual(children.poptipVisible, false, '选择插件后关闭列表');
+  assert.strictEqual(childrenOptions.components.EventHandlerDialog, undefined, '子配置不得创建弹窗');
+  const addedNode = attachChild(children.rows[1]);
+  originalNode.draft.name = 'Edited';
+  originalNode.draft.config.retained = 'unsaved-input';
+  addedNode.draft.name = 'Added';
   children.rows.reverse();
   children.change();
-  assert.strictEqual(childOutput[0].uuid, 'child-new', '子树拖动后保持回传次序');
+  const collected = await children.save();
+  assert.strictEqual(collected[0].uuid, 'temporary-test-id', '子树拖动后按当前列表顺序保存');
+  assert.strictEqual(collected[1].name, 'Edited');
+  assert.strictEqual(collected[1].config.retained, 'unsaved-input', '排序保留原节点尚未保存的输入');
+  assert.strictEqual(initialChildren[0].name, 'Original', '编辑子树不得修改调用方原始树');
+  assert.strictEqual(initialChildren[0].config.retained, true);
+  const pendingChild = deferred();
+  addedNode.$refs.editor = { valid: () => pendingChild.promise };
+  const validatingChildren = children.valid();
+  pendingChild.resolve(false);
+  assert.strictEqual(await validatingChildren, false, '异步子编辑器校验失败阻止父级提交');
   children.remove(0);
   assert.strictEqual(childOutput.length, 1);
+  assert.strictEqual((await children.save())[0].name, 'Edited', '删除其他节点不丢失剩余草稿');
   children.disabled = true;
   children.remove(0);
-  children.add();
-  assert.strictEqual(children.rows.length, 1, '只读状态不可删除子配置');
-  assert.strictEqual(children.dialogData, null, '只读状态不可新增子配置');
+  children.add(children.plugins[0]);
+  assert.strictEqual(children.rows.length, 1, '只读状态不可新增或删除子配置');
+  childNodes.forEach(node => node.$destroy());
   children.$destroy();
 
   // 使用真实模板生成的点击处理器检查各层展开方向与插件展示组件注册。
@@ -357,7 +385,7 @@ async function main() {
   const oldVariables = deferred();
   const newVariables = deferred();
   const variableRequests = [];
-  const email = create(emailEdit, { config: emailConfig, projectId: 1, appId: 2 }, {
+  const email = create(emailEdit, { config: emailConfig, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, {
     listIssueEmailVariables: params => { variableRequests.push(params); return params.appId === 2 ? oldVariables.promise : newVariables.promise; }
   });
   assert.deepStrictEqual(email.toUsers, ['user#user-a', 'rdmUserType#owner']);
@@ -420,7 +448,7 @@ async function main() {
   email.copyVariable(email.variables[0]);
   assert.strictEqual(copied, scopedVariable.snippet, '复制后端原始snippet而非自行拼接模板');
   email.$destroy();
-  const readonlyEmail = create(emailView, { config: emailConfig, projectId: 1, appId: 2 });
+  const readonlyEmail = create(emailView, { config: emailConfig, projectId: 1, appId: 2, event: 'ISSUE_CREATE' });
   assert.strictEqual(readonlyEmail.value.title, '${DATA.name!}', '查看不能执行标题模板');
   assert.strictEqual(readonlyEmail.value.content, '<p>${DATA.content!}</p>', '查看不能执行正文模板');
   assert.deepStrictEqual(readonlyEmail.toUsers, ['user#user-a', 'rdmUserType#owner']);
@@ -437,13 +465,22 @@ async function main() {
   assert.strictEqual(failures, 1, '在公共错误转换前捕获声明式请求失败');
   await assert.rejects(http.post('/api/rest/other/endpoint'), error => error === 'translated-error-without-config');
   assert.strictEqual(failures, 1, '其他模块失败不触发事件能力查询');
-  await assert.rejects(http.post('/api/rest/rdm/event/issue/integration/list'), error => error === 'translated-error-without-config');
-  assert.strictEqual(failures, 2, '集成声明式请求失败触发能力查询');
+  await assert.rejects(http.post('/api/rest/integration/search'), error => error === 'translated-error-without-config');
+  assert.strictEqual(failures, 1, '公共集成查询失败不触发 RDM 商业能力复查');
   unsubscribe();
   // 集成插件使用真实组件逻辑校验回显、参数切换和分支保存，网络仅用替身。
   const integrationBase = path.join(eventBase, 'handler/integration');
   const integrationEdit = load(path.join(integrationBase, 'integration-edit.vue')).default;
   const integrationView = load(path.join(integrationBase, 'integration-view.vue')).default;
+  const handlerBase = load(path.join(eventBase, 'handler/base.js')).default;
+  for (const component of [emailEdit, emailView, integrationEdit, integrationView]) assert.strictEqual(component.extends, handlerBase);
+  const levelProbe = create(handlerBase, { projectId: 1, appId: 2, event: 'ISSUE_CREATE' });
+  assert.strictEqual(levelProbe.levelClass, 'bg-grey');
+  levelProbe.level = 2;
+  assert.strictEqual(levelProbe.levelClass, 'bg-op');
+  levelProbe.level = 3;
+  assert.strictEqual(levelProbe.levelClass, 'bg-grey');
+  levelProbe.$destroy();
   const integrationHelpers = load(path.join(integrationBase, 'config.js'));
   assert.strictEqual(load(path.join(eventBase, 'handler/index.js')).managesChildren('ISSUE_INTEGRATION'), true);
   const firstDetail = deferred();
@@ -452,6 +489,7 @@ async function main() {
     getIssueIntegration: args => args.integrationUuid === 'first' ? firstDetail.promise : secondDetail.promise,
     listIssueIntegrationVariables: async () => ({ Return: [{ name: 'name', label: 'Name', snippet: '${DATA.name!}' }] })
   });
+  assert.deepStrictEqual(integration.integrationConfig, { dynamicUrl: '/api/rest/integration/search', params: { isActive: 1 }, rootName: 'tbodyList', valueName: 'uuid', textName: 'name', search: true, validateList: ['required'] }, '集成清单复用公共搜索与回显，不附加 Handler 或 RDM 范围过滤');
   integration.draft.integrationUuid = 'second';
   const detailRun = integration.loadIntegration();
   secondDetail.resolve({ Return: { uuid: 'second', name: 'Second', isActive: 1, paramList: [{ name: 'b', isRequired: 1, type: 'text' }] } });
@@ -460,24 +498,43 @@ async function main() {
   await flush();
   assert.strictEqual(integration.integration.uuid, 'second');
   assert.deepStrictEqual(integration.draft.paramMapping.map(row => row.name), ['b']);
-  assert.strictEqual(integration.valid(), false, '必填参数不能为空');
+  assert.strictEqual(await integration.valid(), false, '必填参数不能为空');
   integration.setExpression('b', '${DATA.name!}');
-  integration.$refs.success = { valid: () => true };
-  integration.$refs.failed = { valid: () => true };
-  assert.strictEqual(integration.valid(), true);
-  assert.strictEqual(integration.save().successCallbackList[0].uuid, 'child');
+  integration.$refs.success = { valid: async () => true, save: async () => [{ uuid: 'child', name: 'Mail' }] };
+  integration.$refs.failed = { valid: async () => true, save: async () => [] };
+  assert.strictEqual(await integration.valid(), true);
+  assert.strictEqual((await integration.save()).successCallbackList[0].uuid, 'child');
   let integrationCopied;
   integration.$utils.copyText = (_, value) => { integrationCopied = value; };
   integration.copyVariable(integration.variables[0]);
   assert.strictEqual(integrationCopied, '${DATA.name!}');
   integration.integration.isActive = 0;
-  assert.strictEqual(integration.valid(), false, '停用集成不能保存');
+  assert.strictEqual(await integration.valid(), false, '停用集成不能保存');
+  integration.integration.isActive = 1;
+  const nestedMail = create(emailEdit, { config: emailConfig, projectId: 1, appId: 2, event: 'ISSUE_CREATE', level: 2, isChild: true }, { listIssueEmailVariables: async () => ({ Return: [] }) });
+  nestedMail.draft.title = 'Unsaved nested title';
+  const nestedNode = create(nodeOptions, { value: { uuid: 'nested-mail', name: 'Mail', handler: 'ISSUE_EMAIL', config: emailConfig }, plugins: [{ name: 'ISSUE_EMAIL', requiresConfigEditor: true }], projectId: 1, appId: 2, event: 'ISSUE_CREATE', level: 2 });
+  nestedNode.$refs.form = { valid: () => true };
+  nestedNode.$refs.editor = nestedMail;
+  nestedNode.$refs.children = { valid: async () => true, save: async () => [] };
+  const nestedBranch = create(childrenOptions, { value: [{ uuid: 'nested-mail', handler: 'ISSUE_EMAIL' }], parentPlugin: 'ISSUE_INTEGRATION', projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, { listPlugins: async () => ({ Return: [{ name: 'ISSUE_EMAIL', requiresConfigEditor: true }] }) });
+  nestedBranch.$refs['node-nested-mail'] = [nestedNode];
+  await flush();
+  integration.$refs.success = nestedBranch;
+  assert.strictEqual(await integration.valid(), true, '集成递归校验内嵌邮件节点');
+  const nestedSaved = await integration.save();
+  assert.strictEqual(nestedSaved.successCallbackList[0].config.title, 'Unsaved nested title', '父集成保存收集实际邮件编辑器的未提交输入');
+  assert.deepStrictEqual(nestedSaved.failedCallbackList, [], '成功和失败分支保持独立');
+  nestedMail.draft.title = '';
+  assert.strictEqual(await integration.valid(), false, '邮件校验失败沿子节点传播到父集成');
+  nestedMail.$destroy(); nestedNode.$destroy(); nestedBranch.$destroy();
+  integration.$refs.success = { valid: async () => true, save: async () => nestedSaved.successCallbackList };
   const enriched = integrationHelpers.normalizeConfig({ failedCallbackList: [{ uuid: 'child' }] }, { handlerList: [{ uuid: 'child', isAvailable: false }] });
   assert.strictEqual(enriched.failedCallbackList[0].isAvailable, false);
-  const integrationReadonly = create(integrationView, { config: integration.save(), projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, { getIssueIntegration: async () => { throw new Error('missing'); } });
+  const integrationReadonly = create(integrationView, { config: await integration.save(), projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, { getIssueIntegration: async () => { throw new Error('missing'); } });
   await flush();
   assert.strictEqual(integrationReadonly.failed, true);
   integrationReadonly.$destroy(); integration.$destroy();
-  console.log('RDM event configuration: 16 Vue templates, component logic, child CRUD, root sort/delete, email/integration config/validation/registry, commercial capability matrix/revocation and stale scopes PASS');
+  console.log('RDM event configuration: Vue templates, shared handler base, inline child drafts/async validation/order, child CRUD, root sort/delete, email/integration config/validation/registry, commercial capability matrix/revocation and stale scopes PASS');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

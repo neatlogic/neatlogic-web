@@ -13,11 +13,18 @@
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-download" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.hierarchy') }}</div>
           <div v-auth="['CI_MODIFY']" class="action-item tsfont-edit" @click="editCiType()">{{ $t('page.hierarchy') }}</div>
+          <div
+            v-auth="['CI_MODIFY']"
+            class="action-item"
+            :class="isBatchAuthMode ? 'tsfont-close' : 'tsfont-permission'"
+            @click="toggleBatchAuthMode()"
+          >{{ isBatchAuthMode ? $t('page.exitedit') : $t('term.cmdb.batcheditmodelauth') }}</div>
           <div class="action-item">
             <TsFormSwitch
               v-model="isCiTopoShow"
               :true-value="true"
               :false-value="false"
+              :disabled="isBatchAuthMode"
               style="display: contents"
             ></TsFormSwitch>
             <span v-if="!isCiTopoShow">{{ $t('term.cmdb.showtopo') }}</span>
@@ -50,6 +57,17 @@
       </template>
       <div slot="content" class="content border-color">
         <div class="content-main">
+          <div v-if="isBatchAuthMode" class="flex-between align-center bg-grey radius-md pt-sm pr-sm pb-sm pl-sm mb-sm">
+            <div>
+              <Checkbox
+                :value="isAllCurrentCiSelected"
+                :indeterminate="isSomeCurrentCiSelected"
+                @on-change="toggleSelectCurrentCi"
+              >{{ $t('term.cmdb.selectcurrentmodels') }}</Checkbox>
+              <span class="text-grey ml-md">{{ $t('term.cmdb.selectedmodelcount', { count: selectedCiIdList.length }) }}</span>
+            </div>
+            <Button type="primary" :disabled="selectedCiIdList.length === 0" @click="openBatchAuthDialog()">{{ $t('term.cmdb.editselectedmodelauth') }}</Button>
+          </div>
           <div v-if="!isCiTopoShow && ciTypeList.length > 0">
             <div v-if="showMode === 'card'">
               <div v-for="(ciType, index) in ciTypeList" :key="index" class="type-main">
@@ -65,9 +83,21 @@
                     :xl="6"
                     :xxl="4"
                     :boxShadow="false"
+                    :canSelect="isBatchAuthMode"
+                    :value="selectedCiIdList"
+                    :multiple="true"
+                    keyName="id"
+                    :headerPosition="isBatchAuthMode ? 'right' : null"
+                    :alwaysShowHeader="isBatchAuthMode"
+                    @change="handleSelectedCiChange"
                   >
+                    <template slot="header" slot-scope="{ row }">
+                      <span v-if="isBatchAuthMode" @click.stop>
+                        <Checkbox :value="isCiSelected(row.id)" @on-change="toggleCiSelection(row)"></Checkbox>
+                      </span>
+                    </template>
                     <template slot-scope="{ row }">
-                      <div class="ci-main" @click="editCi(row.id)">
+                      <div class="ci-main" @click="handleCardCiClick(row)">
                         <div>
                           <div class="ci-icon">
                             <i :class="row.icon + ' ' + getIconClass(row)"></i>
@@ -85,24 +115,35 @@
             </div>
             <div v-else>
               <TsTable
-                :theadList="theadList"
+                v-model="selectedCiIdList"
+                :theadList="currentTheadList"
                 :tbodyList="tbodyList"
                 :sortList="sortList"
                 :sortOrder="sortOrder"
                 :sortMulti="false"
+                :multiple="true"
+                :selectedRemain="true"
+                keyName="id"
                 @updateSort="updateSort"
+                @getSelected="handleSelectedCiChange"
               >
                 <template v-slot:name="{ row }">
-                  <a href="javascript:void(0)" @click="editCi(row.id)">
+                  <a href="javascript:void(0)" @click.prevent="handleTableCiClick(row)">
                     <span :class="row.icon">{{ row.label }}</span>
                     <span class="text-grey">({{ row.name }})</span>
                   </a>
                 </template>
                 <template v-slot:parentCiId="{ row }">
-                  <a v-if="row.parentCiId" href="javascript:void(0)" @click="editCi(row.parentCiId)">
-                    <span :class="row.parentCiIcon">{{ row.parentCiLabel }}</span>
-                    <span class="text-grey">({{ row.parentCiName }})</span>
-                  </a>
+                  <template v-if="row.parentCiId">
+                    <span v-if="isBatchAuthMode">
+                      <span :class="row.parentCiIcon">{{ row.parentCiLabel }}</span>
+                      <span class="text-grey">({{ row.parentCiName }})</span>
+                    </span>
+                    <a v-else href="javascript:void(0)" @click="editCi(row.parentCiId)">
+                      <span :class="row.parentCiIcon">{{ row.parentCiLabel }}</span>
+                      <span class="text-grey">({{ row.parentCiName }})</span>
+                    </a>
+                  </template>
                 </template>
                 <template v-slot:isAbstract="{ row }">
                   <span v-if="row.isAbstract" class="text-success">{{ $t('page.yes') }}</span>
@@ -134,6 +175,11 @@
     <CiEdit v-if="isCiShow" :ciTypeId="newCiTypeId" @close="closeCiDialog"></CiEdit>
     <CiImportDialog v-if="isImportCiShow" @close="closeImportCiDialog"></CiImportDialog>
     <CiExportDialog v-if="isExportCiShow" @close="isExportCiShow = false"></CiExportDialog>
+    <BatchAuthEdit
+      v-if="isBatchAuthDialogShow"
+      :selectedCiList="selectedCiList"
+      @close="closeBatchAuthDialog"
+    ></BatchAuthEdit>
   </div>
 </template>
 <script>
@@ -150,6 +196,7 @@ export default {
     CiTopo: () => import('./ci-topo.vue'),
     CiImportDialog: () => import('./ci-import-dialog.vue'),
     CiExportDialog: () => import('./ci-export-dialog.vue'),
+    BatchAuthEdit: () => import('./batch-auth-edit.vue'),
     TsAnchor: () => import('@/resources/components/TsAnchor/TsAnchor.vue')
   },
   props: {},
@@ -213,6 +260,10 @@ export default {
       isImportCiShow: false, //导入模型窗口
       isExportCiShow: false, //导出模型窗口
       isCiTopoShow: false, //拓扑开关
+      isBatchAuthMode: false, //批量权限编辑模式
+      isBatchAuthDialogShow: false, //批量权限编辑弹窗
+      selectedCiIdList: [],
+      selectedCiMap: {},
       ciTypeList: [],
       isLoading: false,
       ciTypeConfig: {
@@ -263,6 +314,84 @@ export default {
     exportCi() {
       this.isExportCiShow = true;
     },
+    toggleBatchAuthMode() {
+      if (this.isBatchAuthMode) {
+        this.exitBatchAuthMode();
+      } else {
+        this.isCiTopoShow = false;
+        this.isBatchAuthMode = true;
+      }
+    },
+    exitBatchAuthMode() {
+      this.isBatchAuthMode = false;
+      this.isBatchAuthDialogShow = false;
+      this.selectedCiIdList = [];
+      this.selectedCiMap = {};
+    },
+    openBatchAuthDialog() {
+      if (this.selectedCiIdList.length > 0) {
+        this.isBatchAuthDialogShow = true;
+      }
+    },
+    closeBatchAuthDialog(needRefresh) {
+      this.isBatchAuthDialogShow = false;
+      if (needRefresh) {
+        this.exitBatchAuthMode();
+        this.searchCiTypeCi();
+      }
+    },
+    handleSelectedCiChange(idList) {
+      this.selectedCiIdList = idList ? idList.slice() : [];
+      this.syncSelectedCiMap();
+    },
+    syncSelectedCiMap() {
+      Object.keys(this.selectedCiMap).forEach(ciId => {
+        if (!this.selectedCiIdList.some(id => String(id) === ciId)) {
+          this.$delete(this.selectedCiMap, ciId);
+        }
+      });
+      this.allCiList.forEach(ci => {
+        if (this.selectedCiIdList.includes(ci.id)) {
+          this.$set(this.selectedCiMap, ci.id, ci);
+        }
+      });
+    },
+    toggleCiSelection(ci) {
+      const selectedCiIdList = this.selectedCiIdList.slice();
+      const index = selectedCiIdList.indexOf(ci.id);
+      if (index > -1) {
+        selectedCiIdList.splice(index, 1);
+      } else {
+        selectedCiIdList.push(ci.id);
+      }
+      this.handleSelectedCiChange(selectedCiIdList);
+    },
+    toggleSelectCurrentCi(isSelected) {
+      const selectedCiIdSet = new Set(this.selectedCiIdList);
+      this.allCiList.forEach(ci => {
+        if (isSelected) {
+          selectedCiIdSet.add(ci.id);
+        } else {
+          selectedCiIdSet.delete(ci.id);
+        }
+      });
+      this.handleSelectedCiChange(Array.from(selectedCiIdSet));
+    },
+    isCiSelected(ciId) {
+      return this.selectedCiIdList.includes(ciId);
+    },
+    handleCardCiClick(ci) {
+      if (!this.isBatchAuthMode) {
+        this.editCi(ci.id);
+      }
+    },
+    handleTableCiClick(ci) {
+      if (this.isBatchAuthMode) {
+        this.toggleCiSelection(ci);
+      } else {
+        this.editCi(ci.id);
+      }
+    },
     restoreHistory(historyData) {
       this.searchParam = historyData['searchParam'];
       //this.showMode = historyData['showMode'] || 'card';
@@ -299,6 +428,7 @@ export default {
           this.ciTypeList.forEach(citype => {
             citype.cardList = citype.ciList;
           });
+          this.syncSelectedCiMap();
         }
       });
     },
@@ -359,6 +489,34 @@ export default {
   },
   filter: {},
   computed: {
+    currentTheadList() {
+      if (this.isBatchAuthMode) {
+        return [{ key: 'selection', multiple: true }].concat(this.theadList);
+      } else {
+        return this.theadList;
+      }
+    },
+    allCiList() {
+      const ciList = [];
+      this.ciTypeList.forEach(ciType => {
+        if (ciType.cardList) {
+          ciType.cardList.forEach(ci => {
+            ciList.push(ci);
+          });
+        }
+      });
+      return ciList;
+    },
+    selectedCiList() {
+      return this.selectedCiIdList.map(ciId => this.selectedCiMap[ciId]).filter(ci => !!ci);
+    },
+    isAllCurrentCiSelected() {
+      return this.allCiList.length > 0 && this.allCiList.every(ci => this.isCiSelected(ci.id));
+    },
+    isSomeCurrentCiSelected() {
+      const selectedCount = this.allCiList.filter(ci => this.isCiSelected(ci.id)).length;
+      return selectedCount > 0 && selectedCount < this.allCiList.length;
+    },
     needSider() {
       if (this.showMode === 'card' && !this.isCiTopoShow) {
         return true;

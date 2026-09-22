@@ -19,10 +19,14 @@
       this.layoutNode();
     }
     calcWidth() {
-      let width = 0;
+      let width = 120;
       if (this.nodes.length > 0) {
         this.nodes.forEach(node => {
-          width = Math.max(node.getWidth(), width);
+          const textEl = node.iconEl && node.iconEl.node();
+          if (textEl && typeof textEl.getComputedTextLength === 'function') {
+            // 使用 SVG 文字实际宽度，左右各留 12px，且不受画布缩放影响。
+            width = Math.max(Math.ceil(textEl.getComputedTextLength()) + 24, width);
+          }
         });
       }
       return width;
@@ -79,6 +83,10 @@
       const groupHeight = this.calcHeight();
       if (this.nodes.length > 0) {
         this.nodes.forEach(node => {
+          node.setWidth(groupWidth);
+          if (node.iconEl) {
+            node.iconEl.attr('x', groupWidth / 2);
+          }
           //if (!this.draggingNode || this.draggingNode != node) {
           node.setX(this.getX());
           node.setY(this.getY() + yOffset);

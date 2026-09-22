@@ -6,10 +6,27 @@
         <div v-if="menuList && Object.keys(menuList).length">
           <div v-for="(menus, ind) in menuList" :key="ind" class="menu_link">
             <div v-if="menus.isFirst" :class="$isMenuActive(menus.url) ? 'active link' : 'link'">
-              <router-link :to="menus.url ? menus.url : '/'" :class="menus.icon">{{ menus.name }}</router-link>
+              <OverflowTooltip
+                class="menu-tooltip"
+                :content="menus.name"
+                placement="right"
+              >
+                <router-link
+                  :to="menus.url ? menus.url : '/'"
+                  class="overflow"
+                  :class="menus.icon"
+                >{{ menus.name }}</router-link>
+              </OverflowTooltip>
             </div>
             <div v-else>
-              <div v-if="menuCategoryType[ind]" class="title text-grey">{{ menuCategoryType[ind] }}</div>
+              <OverflowTooltip
+                v-if="menuCategoryType[ind]"
+                class="title text-grey menu-tooltip"
+                :content="menuCategoryType[ind]"
+                placement="right"
+              >
+                <span class="menu-name overflow">{{ menuCategoryType[ind] }}</span>
+              </OverflowTooltip>
               <ul v-if="menus && menus.length > 0">
                 <li
                   v-for="(menu, mindex) in menus"
@@ -18,7 +35,16 @@
                   @click="goTo(menu.url ? menu.url : '/')"
                   @contextmenu="newTab($event, menu, menu.url ? menu.url : '/')"
                 >
-                  <a class="cursor" :class="menu.icon">{{ menu.name }}</a>
+                  <OverflowTooltip
+                    class="menu-tooltip"
+                    :content="menu.name"
+                    placement="right"
+                  >
+                    <a
+                      class="cursor overflow"
+                      :class="menu.icon"
+                    >{{ menu.name }}</a>
+                  </OverflowTooltip>
                 </li>
               </ul>
             </div>
@@ -168,3 +194,10 @@ export default {
   }
 };
 </script>
+<style lang="less" scoped>
+.menu-tooltip {
+  .menu-name {
+    display: block;
+  }
+}
+</style>

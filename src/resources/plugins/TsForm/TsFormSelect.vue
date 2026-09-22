@@ -1748,6 +1748,7 @@ function setWidth($contain, $target, transfer) {
     display: inline-block;
     line-height: 30px;
     padding-right: 16px;
+    width: 100%;
     &:empty:before {
       content: attr(placeholder);
       width: 100%;

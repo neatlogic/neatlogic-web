@@ -93,7 +93,7 @@
                         class="text-href"
                         :title="row[tbody.key]"
                         @click.stop="clickTr(row)"
-                      >{{ substr(row[tbody.key]) }}</span>
+                      >{{ row[tbody.key].length > 50 ? substr(row[tbody.key]) + '...' : row[tbody.key] }}</span>
                     </div>
                     <div v-else :key="tindex">{{ row[tbody.key] }}</div>
                   </div>
@@ -355,7 +355,7 @@ export default {
       this.$store.dispatch('leftMenu/getWorkCenterMenuData');
     },
     substr(value) {
-      return this.$utils.substr(value, 20);
+      return this.$utils.substr(value, 50);
     },
     checkshow(headList, val) {
       //设置表格列是否可视

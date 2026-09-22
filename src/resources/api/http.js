@@ -11,7 +11,7 @@ const tip = ({desc, onClose, name, title, type = 'error', duration = 4.5, errorD
     isExpanded: false
   });
   let config = {
-    title: title || '接口异常',
+    title: title || $t('message.apiexception'),
     duration: duration,
     render: h => {
       return h('div', [
@@ -41,7 +41,7 @@ const tip = ({desc, onClose, name, title, type = 'error', duration = 4.5, errorD
                   utils.copyText('', errorDetail);
                 }
               }
-            }, '复制') : null
+            }, $t('message.copy')) : null
         ]),
         state.isExpanded && errorDetail ? h('div', {
           style: {
@@ -202,7 +202,7 @@ instance.interceptors.response.use(
       return Promise.reject(error);
     } else if (!error) {
       if (!window.navigator.onLine) {
-        tip({ desc: '网络连接失败' });
+        tip({ desc: $t('message.networkconnectionfailed') });
       } else {
         return Promise.reject(error);
       }
@@ -218,9 +218,9 @@ const errorHandle = res => {
   let rejectSource = '';
   if (res.data.Return) {
     if (res.data.Return.rejectSource == 'tenant') {
-      rejectSource = '系统繁忙，租户接口访问量限制为每秒' + res.data.Return.tenantRate + '次';
+      rejectSource = $t('message.tenantratelimit', { rate: res.data.Return.tenantRate });
     } else if (res.data.Return.rejectSource == 'api') {
-      rejectSource = '系统繁忙，当前接口访问量限制为每秒' + res.data.Return.apiRate + '次';
+      rejectSource = $t('message.apiratelimit', { rate: res.data.Return.apiRate });
     }
   }
   // 状态码判断
@@ -245,14 +245,14 @@ const errorHandle = res => {
       tip({
         desc: rejectSource,
         name: res.config.url,
-        title: '提示',
+        title: $t('page.tip'),
         type: 'info'
       });
       throw rejectSource;
     case 500:
       //未知的接口问题
       tip({
-        desc: '服务器错误',
+        desc: $t('message.servererror'),
         duration: 0,
         errorDetail: res.data.Message
       });
@@ -291,7 +291,7 @@ const errorHandle = res => {
       tip({
         desc: other,
         name: res.config.url,
-        title: '提示',
+        title: $t('page.tip'),
         type: 'info'
       });
       throw res;
@@ -308,7 +308,7 @@ const errorHandle = res => {
       toResetPassword();
       break;
     default:
-      console.error($t('message.urlnotfound', { target: res.config.url }) + '，原因：' + (res.data.Message ? res.data.Message : res.data));
+      console.error($t('message.urlnotfoundwithreason', { target: res.config.url, reason: res.data.Message ? res.data.Message : res.data }));
   }
 };
 Vue.prototype.$https = instance;

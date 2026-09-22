@@ -13,18 +13,23 @@
           class="link rdm-menu-link"
           :class="{ active: $isMenuActive('/project/' + project.id) || $isMenuActive('/project-edit/' + project.id) }"
         >
-          <a
-            class="cursor tsfont-blocks rdm-menu-a"
-            :style="{ color: project.color }"
-            @click="goTo('/project/' + project.id)"
+          <OverflowTooltip
+            :content="project.name"
+            placement="right"
           >
-            <span class="project-name overflow">{{ project.name }}</span>
-            <div
-              v-if="project.isOwner || project.isLeader"
-              class="text-grey cursor tsfont-setting rdm-menu-setting-icon"
-              @click.stop="goTo('/project-edit/' + project.id)"
-            ></div>
-          </a>
+            <a
+              class="cursor tsfont-blocks rdm-menu-a"
+              :style="{ color: project.color }"
+              @click="goTo('/project/' + project.id)"
+            >
+              <span class="project-name overflow">{{ project.name }}</span>
+              <div
+                v-if="project.isOwner || project.isLeader"
+                class="text-grey cursor tsfont-setting rdm-menu-setting-icon"
+                @click.stop="goTo('/project-edit/' + project.id)"
+              ></div>
+            </a>
+          </OverflowTooltip>
         </li>
       </ul>
       <div v-if="pageCount > 1" style="margin-top: 44px;">
