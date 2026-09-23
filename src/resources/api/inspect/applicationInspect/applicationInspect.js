@@ -27,6 +27,9 @@ const applicationInspect = {
   searchInspectAppJob(params) {
     return axios.post('/api/rest/inspect/app/job/search', params);
   },
+  getInspectAppJobDetail(parentJobId) {
+    return axios.post('/api/rest/inspect/app/job/detail/get', {parentJobId: parentJobId});
+  },
   // 获取巡检定时任务
   getSchedule(id) {
     return axios.post('/api/rest/inspect/appsystem/schedule/get', {id: id});

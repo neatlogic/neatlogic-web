@@ -95,7 +95,7 @@ export default {
       this.search(1);
     },
     openJob(row) {
-      this.$router.push({ path: '/job-detail', query: { id: row.parentJobId } });
+      this.$router.push({ path: '/application-inspect-job-detail', query: { id: row.parentJobId } });
     },
     isRunning(row) {
       return ['saved', 'pending', 'waiting', 'running', 'pausing', 'aborting', 'ready', 'waitInput'].includes(row.status);

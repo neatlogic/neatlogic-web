@@ -284,7 +284,7 @@ export default {
     openResultDialog(list, parentJobId) {
       if (parentJobId) {
         this.closeDialog();
-        this.$router.push({ path: '/job-detail', query: { id: parentJobId } });
+        this.$router.push({ path: '/application-inspect-job-detail', query: { id: parentJobId } });
         return;
       }
       if (list && list.length) {

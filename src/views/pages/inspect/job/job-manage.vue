@@ -59,6 +59,8 @@
   </div>
 </template>
 <script>
+import {isApplicationInspectParent} from './job-detail-route.js';
+
 export default {
   name: 'JobManage', // 巡检作业
   components: {
@@ -254,7 +256,7 @@ export default {
     },
     toJobDetail(row) {
       this.$router.push({
-        path: '/job-detail',
+        path: isApplicationInspectParent(row) ? '/application-inspect-job-detail' : '/job-detail',
         query: {id: row.id, status: row.status}
       });
     },
