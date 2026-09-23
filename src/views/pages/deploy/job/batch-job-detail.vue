@@ -117,7 +117,7 @@ export default {
   components: {
     Status: () => import('@/resources/components/Status/CommonStatus.vue'),
     ExecutePolicyDialog: () => import('./execute-policy-dialog.vue'),
-    PhaseBar: () => import('./phase-bar.vue')
+    PhaseBar: () => import('@/views/pages/autoexec/components/job-phase-bar.vue')
   },
   props: {},
   data() {

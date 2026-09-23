@@ -17,7 +17,7 @@
 </template>
 <script>
 export default {
-  name: '',
+  name: 'AutoexecJobPhaseBar',
   components: {},
   props: {
     jobId: { type: Number },
@@ -131,7 +131,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import './phase.less';
+@import './job-phase-bar.less';
 .phase-item {
   display: inline-block;
 }

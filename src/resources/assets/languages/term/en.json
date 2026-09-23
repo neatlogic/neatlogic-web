@@ -3277,6 +3277,9 @@
     "globalthresholdrule": "Global Threshold Rules",
     "inspect": "Inspection",
     "appinspect": "Application Inspection",
+    "appjobdetail": {
+      "abortconfirm": "Abort all running child jobs in this application inspection?"
+    },
     "noconfig": "No associated configuration item was found in the current environment. Edit the related configuration item and fill in [Application Environment].",
     "inspecttool": "Inspection Tool",
     "inspectmodule": "Inspection Module",

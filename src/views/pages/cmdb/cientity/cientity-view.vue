@@ -4,9 +4,9 @@
       :hideHeader="hideHeader"
       :enableCollapse="!ciEntityData.isVirtual"
       border="border"
+      :rightWidth="220"
       @toggleSiderHide="toggleSiderHide"
     >
-      :rightWidth="220" >
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -714,8 +714,22 @@ export default {
     grid-gap: 10px;
     grid-template-columns: 120px auto;
     .attr-title {
+      min-width: 0;
       text-align: left;
       padding: 3px;
+      ::v-deep .ivu-tooltip {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
+      ::v-deep .ivu-tooltip-rel {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
     .attr-content {
       padding: 3px;

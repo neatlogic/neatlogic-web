@@ -189,6 +189,7 @@ export default {
         textName: 'abbrName',
         transfer: true,
         disabled: false,
+        border: 'border',
         onChange: (val, item) => {
           this.$set(this.jobTemplateData, 'appSystemId', val);
           this.$set(this.jobTemplateData, 'appSystemAbbrName', item.text);

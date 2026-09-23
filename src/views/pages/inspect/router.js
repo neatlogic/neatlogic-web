@@ -9,6 +9,7 @@ const assetsDetai = () => import('./assetsInspect/assets-detail.vue');
 const definitionDetail = () => import('./definition/definition-detail.vue');
 const actionDetail = () => import('@/views/pages/autoexec/detail/action-detail.vue'); // 作业详情
 const jobDetail = () => import('pages/autoexec/detail/job-detail.vue'); // 巡检作业详情
+const applicationInspectJobDetail = () => import('./job/inspect-app-parent-job-detail.vue'); // 应用巡检父作业详情
 const scriptDetail = () => import('pages/autoexec/detail/script-detail.vue'); // 巡检作业详情
 const runnerDetail = () => import('@/views/pages/autoexec/detail/runner-detail.vue'); //执行作业
 const toolDetail = () => import('@/views/pages/autoexec/detail/tool-detail.vue'); //工具详情
@@ -208,6 +209,17 @@ export default [
     path: '/job-detail',
     name: 'job-detail',
     component: jobDetail,
+    meta: {
+      title: $t('router.inspect.jobdetails'),
+      ismenu: false,
+      icon: 'tsfont-history',
+      authority: 'INSPECT_BASE'
+    }
+  },
+  {
+    path: '/application-inspect-job-detail',
+    name: 'application-inspect-job-detail',
+    component: applicationInspectJobDetail,
     meta: {
       title: $t('router.inspect.jobdetails'),
       ismenu: false,

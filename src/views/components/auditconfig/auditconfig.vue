@@ -7,7 +7,7 @@
     :transfer="true"
   >
     <span class="tsfont-setting text-action">{{ buttonName }}</span>
-    <div slot="title">{{ title }}</div>
+    <div slot="title" class="pre">{{ title }}</div>
     <div slot="content">
       <TimeSelect
         ref="timeSelect"

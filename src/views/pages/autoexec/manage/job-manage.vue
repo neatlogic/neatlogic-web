@@ -207,6 +207,8 @@
   </div>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
+
 export default {
   name: '',
   components: {
@@ -428,18 +430,13 @@ export default {
       }
     },
     toJobDetail(row) {
-      if (this.filterParams && this.filterParams.scheduleId) {
+      const scheduleId = this.filterParams && this.filterParams.scheduleId;
+      const routeResolvers = ComponentManager.getComponent('autoexecJobDetailRoute') || [];
+      const detailUrl = routeResolvers.map(resolve => resolve(row, {scheduleId})).find(Boolean);
+      if (detailUrl) {
+        window.open(detailUrl, '_blank');
+      } else if (scheduleId) {
         window.open(HOME + `/autoexec.html#/job-detail?id=` + row.id, '_blank');
-      } else if (row.source === 'batchdeploy' || row.source === 'deployschedulepipeline') {
-        const {parentId = '', id = ''} = row || {};
-        if (parentId != -1) {
-          this.$router.push({
-            path: '/job-detail',
-            query: { id: row.id }
-          });
-        } else {
-          window.open(HOME + '/deploy.html#/batch-job-detail?id=' + id, '_blank');
-        }
       } else {
         this.$router.push({
           path: '/job-detail',

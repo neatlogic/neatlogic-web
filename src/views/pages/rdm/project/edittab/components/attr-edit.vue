@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div><a class="tsfont-plus" @click="addAttr">{{ $t('term.rdm.customattribute') }}</a></div>
+    <div class="mb-xs"><a class="tsfont-plus" @click="addAttr">{{ $t('term.rdm.customattribute') }}</a></div>
     <TsTable
       v-if="attrList && attrList.length > 0"
       :fixedHeader="false"

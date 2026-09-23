@@ -39,6 +39,7 @@
  * ragConfig RAG数据集扩展配置
  * workbenchRuntime 可选工作台首页运行时组件
  * userSettingTab 用户设置扩展页签（name、label/labelKey、component）
+ * autoexecJobDetailRoute 作业详情跳转解析器列表；业务模块按作业来源返回专用详情 URL，未命中返回空值
  * router 跨模块路由
  *   使用方法：getRouterComponent(moduleName)，moduleName为模块名称
  *   注册方法：registerRouterComponent({

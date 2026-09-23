@@ -48,6 +48,7 @@
       :isShow.sync="isShowDialog"
       type="modal"
       :okText="$t('page.save')"
+      :loading="isSaving"
       @on-ok="okDialog"
       @on-cancel="closeDialog"
       @on-close="closeDialog"
@@ -79,6 +80,7 @@ export default {
       dialogTitle: '',
       isShowDialog: false,
       isShowLoading: false,
+      isSaving: false,
       formValue: {},
       sceneForm: {
         id: {
@@ -152,16 +154,22 @@ export default {
       });
     },
     okDialog() {
+      if (this.isSaving) {
+        return;
+      }
       let form = this.$refs.form;
       if (!form.valid()) {
         return false;
       }
+      this.isSaving = true;
       this.$api.autoexec.scenario.saveSceneDefinition(this.formValue).then((res) => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.isShowDialog = false;
           this.getTableList();
         }
+      }).finally(() => {
+        this.isSaving = false;
       });
     },
     addSceneDefinition() {

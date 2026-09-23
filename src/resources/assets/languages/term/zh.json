@@ -3275,6 +3275,9 @@
     "globalthresholdrule": "全局阈值规则",
     "inspect": "巡检",
     "appinspect": "应用巡检",
+    "appjobdetail": {
+      "abortconfirm": "确认终止该应用巡检中所有执行中的子作业？"
+    },
     "noconfig": "当前环境未找到关联配置项，请编辑相关配置项，填写【应用环境】信息",
     "inspecttool": "巡检工具",
     "inspectmodule": "巡检模块",
