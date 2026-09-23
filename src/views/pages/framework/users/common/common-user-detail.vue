@@ -176,13 +176,29 @@ export default {
         top: 0.5px;
       }
       .text {
-        vertical-align: top;
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         padding-left: 40px;
       }
     }
   }
   .role-item {
     padding-top: 15px;
+    .detail-item {
+      display: flex;
+      gap: 8px;
+      > .label {
+        position: static;
+        flex-shrink: 0;
+      }
+      > .text {
+        flex: 1;
+        min-width: 0;
+        padding-left: 0;
+      }
+    }
   }
 }
 </style>
