@@ -39,6 +39,7 @@ getAccountNodeList(nodeList)                 账号下拉列表展示数据
 getRunnerGroupList(list)                     获取runner分组列表数据
 getRunnerGroupTagList(list)                  获取runner分组标签列表数据
 getAppForselect(nodeList)                    获取系统和模块下拉数据（资源中心）
+getVendorForselect(nodeList)                 获取厂商下拉数据（资源中心）
 getToolClassificationList(list)              获取工具分类下拉列表数据（自动化）
 getRoundCountList()                          获取分批数量下拉列表数据（自动化，自动发布）
 getAbbrNameAndName(obj)                      获取简称(名称)
@@ -912,6 +913,10 @@ const methods = {
         }
       });
     return columlist;
+  },
+  getVendorForselect(nodeList) {
+    // 厂商下拉数据（资源中心）
+    return (nodeList || []).map(n => ({ text: n.description || n.name, value: n.id }));
   },
   uniqueArr(arr) {
     // 数组对象去重
