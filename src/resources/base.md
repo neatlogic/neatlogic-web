@@ -49,8 +49,23 @@ rsbuild 升级到 v1 版本之后，内置的 less 从 v3 升级到 v4，导致`
 |   text-danger   |      红色告警色字体      | -                                                              |
 |  text-warning   |      橙色告警色字体      | -                                                              |
 |   text-error    |      红色错误色字体      | -                                                              |
-|  border-error   |         红色边框         | -                                                              |
-| border-primary  |        主题色边框        | -                                                              |
+|   border-base   |        基础色边框        | 设置四边 1px 实线边框                                          |
+| border-base-right |      基础色右边框      | 设置右侧 1px 实线边框                                          |
+| border-base-left |       基础色左边框      | 设置左侧 1px 实线边框                                          |
+| border-base-top |        基础色上边框      | 设置顶部 1px 实线边框                                          |
+| border-base-bottom |     基础色下边框      | 设置底部 1px 实线边框                                          |
+|  border-error   |         红色边框         | 设置四边 1px 实线边框                                          |
+| border-warning  |         橙色边框         | 设置四边 1px 实线边框                                          |
+| border-success  |         绿色边框         | 设置四边 1px 实线边框                                          |
+|   border-info   |         蓝色边框         | 设置四边 1px 实线边框                                          |
+| border-primary  |        主题色边框        | 设置四边 1px 实线边框                                          |
+| border-color-error |      红色边框颜色      | 只设置边框颜色                                                 |
+| border-color-warning |    橙色边框颜色      | 只设置边框颜色                                                 |
+| border-color-success |    绿色边框颜色      | 只设置边框颜色                                                 |
+| border-color-info |       蓝色边框颜色      | 只设置边框颜色                                                 |
+| border-color-primary |    主题色边框颜色    | 只设置边框颜色                                                 |
+| border-primary-grey |    主题浅色边框颜色   | 只设置边框颜色                                                 |
+| border-color-base |      基础色边框颜色     | 只设置边框颜色                                                 |
 |    text-tip     |   提示类文字，颜色浅色   | 跟着主题走                                                     |
 |    text-grey    |        提示类文字        | 此 class 尽量少用，早期 class，用 text-tip                     |
 | text-tip-active |   提示类文字，颜色浅色   | 鼠标上移提示类颜色变色                                         |
