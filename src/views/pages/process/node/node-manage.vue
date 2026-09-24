@@ -18,7 +18,7 @@
             :key="index"
             class="panle-contain bg-op"
           >
-            <div class="title-left">
+            <div class="title-left pr-sm">
               <i :class="['type-icon', node.icon]"></i>
               {{ node.name }}
             </div>
