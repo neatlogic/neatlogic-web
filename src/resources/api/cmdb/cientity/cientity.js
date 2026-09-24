@@ -59,6 +59,9 @@ const cientity = {
   getCiEntityBaseInfoById(id) {
     return axios.post('/api/rest/cmdb/cientity/baseinfo/get', { id: id });
   },
+  getCiEntityData(ciEntityId) {
+    return axios.post('/api/rest/cmdb/cientity/getdata', { ciEntityId }, { headers: { unConsole: 1 } });
+  },
   getCiEntityById(ciId, ciEntityId, needAction, limitRelEntity, limitAttrEntity, showAttrRelList) {
     const param = {};
     param.ciId = ciId;

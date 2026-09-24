@@ -1,8 +1,8 @@
 <template>
   <div>
     <component
-      :is="attrData.type + 'attr'"
-      v-if="attrData && attrData.type"
+      :is="handlerComponent"
+      v-if="handlerComponent"
       ref="attrHandler"
       :attrData="attrData"
       :valueList="valueList"
@@ -14,12 +14,11 @@
   </div>
 </template>
 <script>
-import * as handlers from '../ci/attrhandler/search';
+import * as coreHandlers from '../ci/attrhandler/search';
+import { getAttrHandlerComponentMap } from '../ci/attrhandler/attrhandler-extension.js';
+
 export default {
   name: '',
-  components: {
-    ...handlers
-  },
   props: {
     disabled: { type: Boolean, default: false },
     mode: { type: String, default: 'search' }, //search或condition
@@ -67,7 +66,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    handlerComponent() {
+      if (!this.attrData || !this.attrData.type) {
+        return null;
+      }
+      return getAttrHandlerComponentMap('search', coreHandlers)[this.attrData.type + 'attr'];
+    }
+  },
   watch: {}
 };
 </script>

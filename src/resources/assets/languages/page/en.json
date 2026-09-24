@@ -104,6 +104,7 @@
   "icon": "Icon",
   "language": "Chinese",
   "level": "Level",
+  "nthlevel": "Level {index}",
   "time": "Time",
   "second": "Second",
   "refresh": "Refresh",

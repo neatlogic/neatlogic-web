@@ -56,6 +56,12 @@
                 :fade="false"
                 @on-close="removeItem($event, index, selected.nodeKey)"
               >{{ selected[textName] }}</Tag>
+              <span
+                v-if="selectedList.length === 0 && (disabled || readonly || !search || !url)"
+                :placeholder="placeholder"
+                class="empty-placeholder"
+                :class="[disabled ? 'empty-placeholder-disable' : '']"
+              ></span>
               <input
                 v-if="!(disabled || readonly) && search && url"
                 v-model="searchKeyWord"

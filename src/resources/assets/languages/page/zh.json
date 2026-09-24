@@ -104,6 +104,7 @@
   "icon": "图标",
   "language": "English",
   "level": "级别",
+  "nthlevel": "第{index}层",
   "time": "时间",
   "second": "秒",
   "refresh": "刷新",
