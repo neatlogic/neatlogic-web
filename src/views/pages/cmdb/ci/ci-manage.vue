@@ -7,30 +7,21 @@
       :isSiderHide="!needSider || isSiderHide"
     >
       <template slot="topLeft">
-        <div class="action-group">
-          <div v-auth="['CI_MODIFY']" class="action-item tsfont-plus" @click="addCi()">{{ $t('page.model') }}</div>
-          <div v-auth="['CI_MODIFY']" class="action-item tsfont-upload" @click="importCi()">{{ $t('term.cmdb.importci') }}</div>
-          <div v-auth="['CI_MODIFY']" class="action-item tsfont-download" @click="exportCi()">{{ $t('term.cmdb.exportci') }}</div>
-          <div v-auth="['CI_MODIFY']" class="action-item tsfont-plus" @click="addCiType()">{{ $t('page.hierarchy') }}</div>
-          <div v-auth="['CI_MODIFY']" class="action-item tsfont-edit" @click="editCiType()">{{ $t('page.hierarchy') }}</div>
-          <div
-            v-auth="['CI_MODIFY']"
-            class="action-item"
-            :class="isBatchAuthMode ? 'tsfont-close' : 'tsfont-permission'"
-            @click="toggleBatchAuthMode()"
-          >{{ isBatchAuthMode ? $t('page.exitedit') : $t('term.cmdb.batcheditmodelauth') }}</div>
-          <div class="action-item">
-            <TsFormSwitch
-              v-model="isCiTopoShow"
-              :true-value="true"
-              :false-value="false"
-              :disabled="isBatchAuthMode"
-              style="display: contents"
-            ></TsFormSwitch>
-            <span v-if="!isCiTopoShow">{{ $t('term.cmdb.showtopo') }}</span>
-            <span v-if="isCiTopoShow">{{ $t('term.cmdb.hidetopo') }}</span>
-          </div>
-        </div>
+        <TsActionBar :actionList="topActionList" @click="handleTopAction">
+          <template #fixed>
+            <span class="action-item">
+              <TsFormSwitch
+                v-model="isCiTopoShow"
+                :true-value="true"
+                :false-value="false"
+                :disabled="isBatchAuthMode"
+                style="display: contents"
+              ></TsFormSwitch>
+              <span v-if="!isCiTopoShow">{{ $t('term.cmdb.showtopo') }}</span>
+              <span v-if="isCiTopoShow">{{ $t('term.cmdb.hidetopo') }}</span>
+            </span>
+          </template>
+        </TsActionBar>
       </template>
       <template slot="topRight">
         <TsRow>
@@ -296,6 +287,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    handleTopAction(action) {
+      const actionHandler = {
+        addCi: this.addCi,
+        importCi: this.importCi,
+        exportCi: this.exportCi,
+        addCiType: this.addCiType,
+        editCiType: this.editCiType,
+        toggleBatchAuthMode: this.toggleBatchAuthMode
+      }[action.key];
+      actionHandler && actionHandler();
+    },
     toggleSiderHide() {
       this.isSiderHide = !this.isSiderHide;
       this.$localStore.set('isSiderHide', this.isSiderHide);
@@ -490,6 +492,21 @@ export default {
   },
   filter: {},
   computed: {
+    topActionList() {
+      return [
+        { key: 'addCi', text: this.$t('page.model'), icon: 'tsfont-plus', auth: ['CI_MODIFY'] },
+        { key: 'importCi', text: this.$t('term.cmdb.importci'), icon: 'tsfont-upload', auth: ['CI_MODIFY'] },
+        { key: 'exportCi', text: this.$t('term.cmdb.exportci'), icon: 'tsfont-download', auth: ['CI_MODIFY'] },
+        { key: 'addCiType', text: this.$t('page.hierarchy'), icon: 'tsfont-plus', auth: ['CI_MODIFY'] },
+        { key: 'editCiType', text: this.$t('page.hierarchy'), icon: 'tsfont-edit', auth: ['CI_MODIFY'] },
+        {
+          key: 'toggleBatchAuthMode',
+          text: this.isBatchAuthMode ? this.$t('page.exitedit') : this.$t('term.cmdb.batcheditmodelauth'),
+          icon: this.isBatchAuthMode ? 'tsfont-close' : 'tsfont-permission',
+          auth: ['CI_MODIFY']
+        }
+      ];
+    },
     currentTheadList() {
       if (this.isBatchAuthMode) {
         return [{ key: 'selection', multiple: true }].concat(this.theadList);
