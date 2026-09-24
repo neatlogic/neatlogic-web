@@ -19,7 +19,7 @@
           <TabPane
             v-for="level of config.levelType"
             :key="level"
-            :label="levelText(level) + $t('term.framework.grade')"
+            :label="$t('term.framework.cascaderlevel', { level: levelText(level) })"
             :name="'level' + level"
           >
             <div v-if="level > 1">
@@ -29,7 +29,7 @@
               >
                 <TsFormItem
                   v-if="levelDataList['L' + subLevel]"
-                  :label="levelText(subLevel) + $t('term.framework.leveloptions')"
+                  :label="$t('term.framework.cascaderleveloptions', { level: levelText(subLevel) })"
                   labelPosition="top"
                 >
                   <TsFormSelect
@@ -170,20 +170,7 @@ export default {
   computed: {
     levelText() {
       return level => {
-        switch (level) {
-          case 1:
-            return '一';
-          case 2:
-            return '二';
-          case 3:
-            return '三';
-          case 4:
-            return '四';
-          case 5:
-            return '五';
-          case 6:
-            return '六';
-        }
+        return this.$i18n.locale === 'en' ? level : ['一', '二', '三', '四', '五', '六'][level - 1];
       };
     },
     getLevelDataList() {
