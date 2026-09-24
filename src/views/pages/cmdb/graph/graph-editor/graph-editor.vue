@@ -291,6 +291,25 @@ export default {
         }
       }
     },
+    setPanning(enabled) {
+      const selection = this.graph.getPlugin('selection');
+      const rubberbandEnabled = selection && selection.isRubberbandEnabled();
+      // X6 切换平移时未传入事件，需暂时避开框选插件对 altKey 的读取。
+      if (rubberbandEnabled) {
+        selection.disableRubberband();
+      }
+      try {
+        if (enabled) {
+          this.graph.enablePanning();
+        } else {
+          this.graph.disablePanning();
+        }
+      } finally {
+        if (rubberbandEnabled) {
+          selection.enableRubberband();
+        }
+      }
+    },
     init: function() {
       if (!this.graph) {
         let graphConfig = {
@@ -1036,7 +1055,7 @@ export default {
       handler: function(val) {
         if (val) {
           if (this.panning) {
-            this.graph.disablePanning();
+            this.setPanning(false);
           }
           const edges = this.graph.getEdges();
           if (edges && edges.length > 0) {
@@ -1055,7 +1074,7 @@ export default {
           }
         } else {
           if (this.panning) {
-            this.graph.enablePanning();
+            this.setPanning(true);
           }
           const edges = this.graph.getEdges();
           if (edges && edges.length > 0) {
