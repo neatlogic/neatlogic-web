@@ -176,7 +176,9 @@ export default {
     },
     searchPlaceholder: {
       type: String,
-      default: '请输入关键字'
+      default() {
+        return this.$t('form.placeholder.keyword');
+      }
     },
     levelTitleList: {
       type: Array,
@@ -282,7 +284,7 @@ export default {
       return this.nodeMap[String(value)] || null;
     },
     getColumnTitle(index) {
-      return this.levelTitleList[index] || `第${index + 1}层`;
+      return this.levelTitleList[index] || this.$t('page.nthlevel', { index: index + 1 });
     },
     getFilteredColumnNodeList(list, columnIndex) {
       const keyword = String(this.keywordMap[columnIndex] || '').trim().toLowerCase();
