@@ -1780,6 +1780,8 @@
     "selectlevel": "下拉级数",
     "grade": "级",
     "leveloptions": "级选项",
+    "cascaderlevel": "{level}级",
+    "cascaderleveloptions": "{level}级选项",
     "selectmode": "选择方式",
     "matrixattr": "矩阵属性",
     "pcshowtd": "PC端显示列",

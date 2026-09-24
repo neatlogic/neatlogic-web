@@ -1782,6 +1782,8 @@
     "selectlevel": "Dropdown Levels",
     "grade": "Level",
     "leveloptions": "Level Options",
+    "cascaderlevel": "Level {level}",
+    "cascaderleveloptions": "Level {level} Options",
     "selectmode": "Selection Method",
     "matrixattr": "Matrix Attributes",
     "pcshowtd": "PC Display Column",
