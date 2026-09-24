@@ -297,13 +297,11 @@
   p,
   textarea {
     &:hover {
+      // 在容器上更新变量，避免动态内容切换后滚动条伪元素保留透明样式。
+      --scrollbar-thumb-background: @scrollbar-thumb-color;
       &::-webkit-scrollbar-track,
       &::-webkit-scrollbar-track-piece {
         background: transparent;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: @scrollbar-thumb-color;
       }
 
       &::-webkit-scrollbar-thumb:hover {

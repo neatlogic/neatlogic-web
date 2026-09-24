@@ -1337,6 +1337,7 @@ li,
 i,
 p,
 textarea {
+  --scrollbar-thumb-background: transparent;
   outline: none;
   vertical-align: middle;
   &::-webkit-scrollbar {
@@ -1347,9 +1348,13 @@ textarea {
   }
 
   &::-webkit-scrollbar-track,
-  &::-webkit-scrollbar-track-piece,
-  &::-webkit-scrollbar-thumb {
+  &::-webkit-scrollbar-track-piece {
     background: transparent;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-background, transparent);
     border-radius: 4px;
   }
 
