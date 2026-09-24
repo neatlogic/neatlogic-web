@@ -164,15 +164,14 @@ export default {
   methods: {
     changeLevel(level) {
       this.$set(this.config, 'levelType', level);
+    },
+    levelText(level) {
+      const key = `term.framework.cascaderlevelnumber.${level}`;
+      return this.$te(key) ? this.$t(key) : level;
     }
   },
   filter: {},
   computed: {
-    levelText() {
-      return level => {
-        return this.$i18n.locale === 'en' ? level : ['一', '二', '三', '四', '五', '六'][level - 1];
-      };
-    },
     getLevelDataList() {
       return level => {
         const dataList = [];

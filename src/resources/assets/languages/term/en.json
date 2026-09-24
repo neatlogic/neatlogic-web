@@ -1784,6 +1784,14 @@
     "leveloptions": "Level Options",
     "cascaderlevel": "Level {level}",
     "cascaderleveloptions": "Level {level} Options",
+    "cascaderlevelnumber": {
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6"
+    },
     "selectmode": "Selection Method",
     "matrixattr": "Matrix Attributes",
     "pcshowtd": "PC Display Column",
