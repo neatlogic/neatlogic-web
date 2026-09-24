@@ -65,9 +65,9 @@
             </div>
           </template>
           <template v-slot:attrConfig>
-            <div v-if="handlers[attrData.type + 'attr']" class="ivu-form-item">
+            <div v-if="handlerConfigComponent" class="ivu-form-item">
               <component
-                :is="attrData.type + 'attr'"
+                :is="handlerConfigComponent"
                 ref="handlerConfig"
                 :config="attrData.config"
                 :ciSimpleAttrList="ciSimpleAttrList"
@@ -87,12 +87,12 @@
   </div>
 </template>
 <script>
-import * as handlers from './attrhandler/config';
+import * as coreHandlers from './attrhandler/config';
+import { getAttrHandlerComponentMap, mergeAttrTypeList } from './attrhandler/attrhandler-extension.js';
 
 export default {
   name: '',
   components: {
-    ...handlers,
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch')
@@ -109,7 +109,6 @@ export default {
     const _this = this;
     return {
       isTypeError: false,
-      handlers: handlers,
       checkedBasicAttrList: [],
       ciSimpleAttrList: [], //目标模型的简单属性值
       isPropShow: false,
@@ -279,7 +278,7 @@ export default {
     },
     getAttrTypeList() {
       this.$api.cmdb.ci.getAttrTypeList().then(res => {
-        this.attrTypeList = res.Return;
+        this.attrTypeList = mergeAttrTypeList(res.Return || []);
         let newData = [];
 
         if (this.id) {
@@ -389,7 +388,14 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    handlerConfigComponent() {
+      if (!this.attrData || !this.attrData.type) {
+        return null;
+      }
+      return getAttrHandlerComponentMap('config', coreHandlers)[this.attrData.type + 'attr'];
+    }
+  },
   watch: {}
 };
 </script>

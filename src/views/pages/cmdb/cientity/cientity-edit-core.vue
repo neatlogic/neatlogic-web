@@ -56,6 +56,7 @@
                         ref="attrHandler"
                         :allowBatchAdd="allowBatchAdd"
                         :attrEntity="ciEntityData.attrEntityData['attr_' + e.element.id]"
+                        :ciEntityId="ciEntityData.id"
                         :disabled="disabledFn('attr_' + e.element.id)"
                         :attrData="e.element"
                         :valueList="getValueList(ciEntityData.attrEntityData, e.element)"

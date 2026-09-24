@@ -293,8 +293,8 @@ export default {
   },
   watch: {
     popupMsg(newMsg) {
-      this.titleElem.innerHTML = newMsg && newMsg.title;
-      this.contentElem.innerHTML = newMsg && newMsg.content;
+      this.titleElem.innerHTML = (newMsg && newMsg.title) || '';
+      this.contentElem.innerHTML = (newMsg && newMsg.content) || '';
       const classList = this.containerElem.classList;
       classList.remove('no-msgs', 'two-msgs', 'more-msgs');
       switch (this.popupCount) {
