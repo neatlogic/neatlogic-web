@@ -1782,6 +1782,14 @@
     "leveloptions": "级选项",
     "cascaderlevel": "{level}级",
     "cascaderleveloptions": "{level}级选项",
+    "cascaderlevelnumber": {
+      "1": "一",
+      "2": "二",
+      "3": "三",
+      "4": "四",
+      "5": "五",
+      "6": "六"
+    },
     "selectmode": "选择方式",
     "matrixattr": "矩阵属性",
     "pcshowtd": "PC端显示列",
