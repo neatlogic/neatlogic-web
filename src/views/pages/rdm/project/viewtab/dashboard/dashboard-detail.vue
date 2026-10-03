@@ -159,7 +159,7 @@ export default {
       presetData['projectId'] = this.projectId;
       if (this.appList && this.appList.length > 0) {
         this.appList.forEach(app => {
-          if (app.hasIssue) {
+          if (Array.isArray(app.capabilities) && app.capabilities.includes('WORK_ITEM')) {
             presetData[app.type + 'Id'] = app.id;
           }
         });

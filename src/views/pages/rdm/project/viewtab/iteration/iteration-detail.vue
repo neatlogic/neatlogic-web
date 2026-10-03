@@ -166,7 +166,7 @@ export default {
     getAppByProjectId() {
       this.$api.rdm.project.getAppByProjectId(this.projectId, { isActive: 1, needSystemAttr: 1 }).then(res => {
         this.appList = res.Return;
-        const list = this.appList.filter(d => d.hasIssue);
+        const list = this.appList.filter(d => Array.isArray(d.capabilities) && d.capabilities.includes('WORK_ITEM'));
         if (list.length > 0) {
           this.currentApp = list[0].type;
         }

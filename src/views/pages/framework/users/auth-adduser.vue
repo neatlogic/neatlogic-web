@@ -29,6 +29,15 @@
               @deleteOk="deleteOk('role')"
             ></CommonAdduser>
           </TabPane>
+          <TabPane v-if="$AuthUtils.hasRole('AUTHORITY_MODIFY')" :label="systemUserLabel" name="system">
+            <SystemUserAuthMembers
+              v-if="authName"
+              :key="authName"
+              :authName="authName"
+              :authGroup="groupName"
+              @count="updateSystemUserCount"
+            ></SystemUserAuthMembers>
+          </TabPane>
         </Tabs>
       </div>
     </TsContain>
@@ -39,15 +48,16 @@
 export default {
   name: '',
   components: {
-    CommonAdduser: () => import('./common/common-adduser.vue')
+    CommonAdduser: () => import('./common/common-adduser.vue'),
+    SystemUserAuthMembers: () => import('./system-user-auth-members.vue')
   },
   props: [''],
   data() {
     return {
       authName: '', //权限名称
       groupName: '',
-      userLabel: '', // 用户标签名称
-      roleLabel: '', // 角色标签名称
+      userLabel: this.getLabel(this.$t('page.user'), 'user', 0), //用户标签名称及人数
+      roleLabel: this.getLabel(this.$t('page.role'), 'role', 0), //角色标签名称及人数
       tabsName: 'user', //tabs标签
       leaveName: '', //准备进入tabsname
       tabSaveTip: true,
@@ -55,8 +65,9 @@ export default {
       tabsaveModel: false,
       saveModel: false,
       routerTip: false,
-      userCount: null,
-      roleCount: null,
+      userCount: 0,
+      roleCount: 0,
+      systemUserCount: 0,
       roleUuidList: [],
       refreshListSetting: {
         isRefreshAuthUserList: false, // 权限列表
@@ -79,6 +90,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //系统用户子组件独立刷新直接成员数量，不依赖当前选中的页签。
+    updateSystemUserCount(count) {
+      this.systemUserCount = count;
+    },
     async userInit() {
       this.refreshListSetting.isRefreshAuthUserList = false;
       await this.getUserCount(this.authName, 'all');
@@ -125,7 +140,7 @@ export default {
       // tabs点击
       this.leaveName = name;
       if (this.tabsName != name) {
-        if (name == 'role' || name == 'user') {
+        if (name == 'role' || name == 'user' || name == 'system') {
           this.tabSaveTip = false; //可以跳转
         }
       }
@@ -137,8 +152,8 @@ export default {
       this.$router.push(this.path);
       this.routerTip = false;
     },
-    //自定义初始化tabs
-    getLabel(label, name) {
+    //页签名称与成员人数分开展示，Badge 隐藏零人数并保留非零完整数量。
+    getLabel(label, name, count) {
       var _this = this;
       return h => {
         return h(
@@ -156,7 +171,18 @@ export default {
               }
             }
           },
-          label
+          [
+            h('span', label),
+            h('Badge', {
+              class: 'ml-xs',
+              props: {
+                count: count,
+                showZero: false,
+                type: 'primary',
+                overflowCount: Number.MAX_SAFE_INTEGER
+              }
+            })
+          ]
         );
       };
     },
@@ -181,23 +207,28 @@ export default {
       if (type == 'user' || type == 'all') {
         await this.$api.common.getAuthUserList(data).then(res => {
           if (res.Status == 'OK') {
-            this.userCount = res.Return.rowNum || '';
-            this.userLabel = this.getLabel(this.$t('page.user') + (this.userCount ? '(' + this.userCount + ')' : ''), 'user');
+            this.userCount = res.Return.rowNum || 0;
+            this.userLabel = this.getLabel(this.$t('page.user'), 'user', this.userCount);
           }
         });
       }
       if (type == 'role' || type == 'all') {
         await this.$api.common.getAuthRoleList(data).then(res => {
           if (res.Status == 'OK') {
-            this.roleCount = res.Return.roleCount || '';
-            this.roleLabel = this.getLabel(this.$t('page.role') + (this.roleCount ? '(' + this.roleCount + ')' : ''), 'role');
+            this.roleCount = res.Return.roleCount || 0;
+            this.roleLabel = this.getLabel(this.$t('page.role'), 'role', this.roleCount);
           }
         });
       }
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    //系统用户人数变化时重建标签，沿用普通用户与角色的 Badge 展示。
+    systemUserLabel() {
+      return this.getLabel(this.$t('term.framework.systemuser'), 'system', this.systemUserCount);
+    }
+  },
   watch: {}
 };
 </script>

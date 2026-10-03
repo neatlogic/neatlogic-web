@@ -4,6 +4,10 @@ export default {
   searchUser(data) {
     return axios.post('/api/rest/user/search', data);
   },
+  //查询工厂已注册的系统内置用户，不包含认证信息。
+  searchSystemUser() {
+    return axios.post('/api/rest/user/system/search', {});
+  },
   //新用户查询接口，用于查询角色成员列表等
   newSearchUser(data) {
     return axios.post('/api/rest/role/user/list', data);

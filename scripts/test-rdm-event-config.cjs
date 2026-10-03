@@ -20,9 +20,11 @@ function load(filename) {
   let template;
   if (filename.endsWith('.vue')) {
     const parsed = sfc.parse({ source, filename });
-    const result = sfc.compileTemplate({ source: parsed.template.content, filename });
-    assert.deepStrictEqual(result.errors, [], filename);
-    template = new Function(result.code + '\nreturn { render, staticRenderFns };')();
+    if (parsed.template) {
+      const result = sfc.compileTemplate({ source: parsed.template.content, filename });
+      assert.deepStrictEqual(result.errors, [], filename);
+      template = new Function(result.code + '\nreturn { render, staticRenderFns };')();
+    }
     source = parsed.script.content;
   }
   const code = babel.transformSync(source, { filename, configFile: false, babelrc: false, plugins: ['@babel/plugin-transform-modules-commonjs'] }).code;
@@ -385,8 +387,9 @@ async function main() {
   const oldVariables = deferred();
   const newVariables = deferred();
   const variableRequests = [];
-  const email = create(emailEdit, { config: emailConfig, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, {
-    listIssueEmailVariables: params => { variableRequests.push(params); return params.appId === 2 ? oldVariables.promise : newVariables.promise; }
+  const email = create(emailEdit, { config: emailConfig, handler: { handler: 'ISSUE_EMAIL' }, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, {
+    getEmailMailServerUrl: () => '/api/rest/rdm/event/issue/email/mailserver/list',
+    listPluginVariables: (handler, params) => { assert.strictEqual(handler, 'ISSUE_EMAIL'); variableRequests.push(params); return params.appId === 2 ? oldVariables.promise : newVariables.promise; }
   });
   assert.deepStrictEqual(email.toUsers, ['user#user-a', 'rdmUserType#owner']);
   assert.deepStrictEqual(email.ccUsers, ['user#user-b', 'rdmUserType#worker']);
@@ -448,7 +451,7 @@ async function main() {
   email.copyVariable(email.variables[0]);
   assert.strictEqual(copied, scopedVariable.snippet, '复制后端原始snippet而非自行拼接模板');
   email.$destroy();
-  const readonlyEmail = create(emailView, { config: emailConfig, projectId: 1, appId: 2, event: 'ISSUE_CREATE' });
+  const readonlyEmail = create(emailView, { config: emailConfig, handler: { handler: 'ISSUE_EMAIL' }, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, { getEmailMailServerUrl: () => '/api/rest/rdm/event/issue/email/mailserver/list' });
   assert.strictEqual(readonlyEmail.value.title, '${DATA.name!}', '查看不能执行标题模板');
   assert.strictEqual(readonlyEmail.value.content, '<p>${DATA.content!}</p>', '查看不能执行正文模板');
   assert.deepStrictEqual(readonlyEmail.toUsers, ['user#user-a', 'rdmUserType#owner']);
@@ -458,16 +461,30 @@ async function main() {
   const http = require('axios').create({ adapter: async config => { throw { config, response: { config, status: 500 } }; } });
   http.interceptors.response.use(response => response, () => { throw 'translated-error-without-config'; });
   cache.set(path.join(root, 'src/resources/api/http.js'), { exports: { __esModule: true, default: http } });
-  load(path.join(root, 'src/commercial-module/rdm/api/event.js'));
+  const eventApi = load(path.join(root, 'src/commercial-module/rdm/api/event.js')).default;
   let failures = 0;
   const unsubscribe = capabilityEvents.subscribeEventRequestFailure(() => { failures++; });
   await assert.rejects(http.post('/api/rest/rdm/event/issue/email/mailserver/list'), error => error === 'translated-error-without-config');
   assert.strictEqual(failures, 1, '在公共错误转换前捕获声明式请求失败');
+  await assert.rejects(http.post('/api/rest/rdm/event/gitlab/email/mailserver/list'), error => error === 'translated-error-without-config');
+  assert.strictEqual(failures, 2, 'GitLab 邮件服务器请求失败同样触发能力复查');
   await assert.rejects(http.post('/api/rest/other/endpoint'), error => error === 'translated-error-without-config');
-  assert.strictEqual(failures, 1, '其他模块失败不触发事件能力查询');
+  assert.strictEqual(failures, 2, '其他模块失败不触发事件能力查询');
   await assert.rejects(http.post('/api/rest/integration/search'), error => error === 'translated-error-without-config');
-  assert.strictEqual(failures, 1, '公共集成查询失败不触发 RDM 商业能力复查');
+  assert.strictEqual(failures, 2, '公共集成查询失败不触发 RDM 商业能力复查');
   unsubscribe();
+  const metadataUrls = [];
+  http.defaults.adapter = async config => { metadataUrls.push(config.url); return { config, data: { Return: [] }, status: 200, statusText: 'OK', headers: {} }; };
+  for (const handler of ['ISSUE_EMAIL', 'GITLAB_EMAIL', 'ISSUE_INTEGRATION', 'GITLAB_INTEGRATION']) await eventApi.listPluginVariables(handler, { projectId: 1, appId: 2 });
+  for (const handler of ['ISSUE_INTEGRATION', 'GITLAB_INTEGRATION']) await eventApi.getPluginIntegration(handler, { projectId: 1, appId: 2, integrationUuid: 'active' });
+  assert.deepStrictEqual(metadataUrls, [
+    '/api/rest/rdm/event/issue/email/variable/list', '/api/rest/rdm/event/gitlab/variable/list',
+    '/api/rest/rdm/event/issue/integration/variable/list', '/api/rest/rdm/event/gitlab/variable/list',
+    '/api/rest/rdm/event/issue/integration/get', '/api/rest/rdm/event/gitlab/integration/get'
+  ], '插件元数据由 API 封装统一路由到原有安全接口');
+  assert.strictEqual(eventApi.getEmailMailServerUrl('ISSUE_EMAIL'), '/api/rest/rdm/event/issue/email/mailserver/list');
+  assert.strictEqual(eventApi.getEmailMailServerUrl('GITLAB_EMAIL'), '/api/rest/rdm/event/gitlab/email/mailserver/list');
+  assert.throws(() => eventApi.getEmailMailServerUrl('UNKNOWN_EMAIL'), /Unsupported RDM event plugin metadata/);
   // 集成插件使用真实组件逻辑校验回显、参数切换和分支保存，网络仅用替身。
   const integrationBase = path.join(eventBase, 'handler/integration');
   const integrationEdit = load(path.join(integrationBase, 'integration-edit.vue')).default;
@@ -485,9 +502,9 @@ async function main() {
   assert.strictEqual(load(path.join(eventBase, 'handler/index.js')).managesChildren('ISSUE_INTEGRATION'), true);
   const firstDetail = deferred();
   const secondDetail = deferred();
-  const integration = create(integrationEdit, { config: { integrationUuid: 'first', paramMapping: [{ name: 'a', expression: '${DATA.name!}' }], successCallbackList: [{ uuid: 'child', name: 'Mail' }] }, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, {
-    getIssueIntegration: args => args.integrationUuid === 'first' ? firstDetail.promise : secondDetail.promise,
-    listIssueIntegrationVariables: async () => ({ Return: [{ name: 'name', label: 'Name', snippet: '${DATA.name!}' }] })
+  const integration = create(integrationEdit, { config: { integrationUuid: 'first', paramMapping: [{ name: 'a', expression: '${DATA.name!}' }], successCallbackList: [{ uuid: 'child', name: 'Mail' }] }, handler: { handler: 'ISSUE_INTEGRATION' }, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, {
+    getPluginIntegration: (handler, args) => { assert.strictEqual(handler, 'ISSUE_INTEGRATION'); return args.integrationUuid === 'first' ? firstDetail.promise : secondDetail.promise; },
+    listPluginVariables: async handler => { assert.strictEqual(handler, 'ISSUE_INTEGRATION'); return { Return: [{ name: 'name', label: 'Name', snippet: '${DATA.name!}' }] }; }
   });
   assert.deepStrictEqual(integration.integrationConfig, { dynamicUrl: '/api/rest/integration/search', params: { isActive: 1 }, rootName: 'tbodyList', valueName: 'uuid', textName: 'name', search: true, validateList: ['required'] }, '集成清单复用公共搜索与回显，不附加 Handler 或 RDM 范围过滤');
   integration.draft.integrationUuid = 'second';
@@ -511,7 +528,7 @@ async function main() {
   integration.integration.isActive = 0;
   assert.strictEqual(await integration.valid(), false, '停用集成不能保存');
   integration.integration.isActive = 1;
-  const nestedMail = create(emailEdit, { config: emailConfig, projectId: 1, appId: 2, event: 'ISSUE_CREATE', level: 2, isChild: true }, { listIssueEmailVariables: async () => ({ Return: [] }) });
+  const nestedMail = create(emailEdit, { config: emailConfig, handler: { handler: 'ISSUE_EMAIL' }, projectId: 1, appId: 2, event: 'ISSUE_CREATE', level: 2, isChild: true }, { listPluginVariables: async () => ({ Return: [] }) });
   nestedMail.draft.title = 'Unsaved nested title';
   const nestedNode = create(nodeOptions, { value: { uuid: 'nested-mail', name: 'Mail', handler: 'ISSUE_EMAIL', config: emailConfig }, plugins: [{ name: 'ISSUE_EMAIL', requiresConfigEditor: true }], projectId: 1, appId: 2, event: 'ISSUE_CREATE', level: 2 });
   nestedNode.$refs.form = { valid: () => true };
@@ -531,10 +548,55 @@ async function main() {
   integration.$refs.success = { valid: async () => true, save: async () => nestedSaved.successCallbackList };
   const enriched = integrationHelpers.normalizeConfig({ failedCallbackList: [{ uuid: 'child' }] }, { handlerList: [{ uuid: 'child', isAvailable: false }] });
   assert.strictEqual(enriched.failedCallbackList[0].isAvailable, false);
-  const integrationReadonly = create(integrationView, { config: await integration.save(), projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, { getIssueIntegration: async () => { throw new Error('missing'); } });
+  const integrationReadonly = create(integrationView, { config: await integration.save(), handler: { handler: 'ISSUE_INTEGRATION' }, projectId: 1, appId: 2, event: 'ISSUE_CREATE' }, { getPluginIntegration: async () => { throw new Error('missing'); } });
   await flush();
   assert.strictEqual(integrationReadonly.failed, true);
   integrationReadonly.$destroy(); integration.$destroy();
+  // GitLab 与需求的同类插件指向同一组件，差异只由插件元数据和收件策略处理。
+  assert.strictEqual(registry.getComponent('rdmEventHandlerEdit').GITLAB_EMAIL, registry.getComponent('rdmEventHandlerEdit').ISSUE_EMAIL);
+  assert.strictEqual(registry.getComponent('rdmEventHandlerView').GITLAB_EMAIL, registry.getComponent('rdmEventHandlerView').ISSUE_EMAIL);
+  assert.strictEqual(registry.getComponent('rdmEventHandlerEdit').GITLAB_INTEGRATION, registry.getComponent('rdmEventHandlerEdit').ISSUE_INTEGRATION);
+  assert.strictEqual(registry.getComponent('rdmEventHandlerView').GITLAB_INTEGRATION, registry.getComponent('rdmEventHandlerView').ISSUE_INTEGRATION);
+  assert.strictEqual(load(path.join(eventBase, 'handler/index.js')).managesChildren('GITLAB_INTEGRATION'), true);
+  const gitlabMail = create(emailEdit, { config: { toUserUuidList: ['local'], title: '${DATA.repositoryName!}', content: '<p>${DATA.commitSummary!}</p>' }, handler: { handler: 'GITLAB_EMAIL' }, projectId: 1, appId: 2, event: 'GITLAB_PUSH_RECEIVED' }, {
+    getEmailMailServerUrl: () => '/api/rest/rdm/event/gitlab/email/mailserver/list',
+    listPluginVariables: async handler => { assert.strictEqual(handler, 'GITLAB_EMAIL'); return { Return: [{ name: 'commitSummary', snippet: '${DATA.commitSummary!}' }] }; }
+  });
+  await flush();
+  assert.strictEqual(gitlabMail.valid(), true);
+  assert.deepStrictEqual(gitlabMail.toUsers, ['user#local']);
+  assert.deepStrictEqual(gitlabMail.policy.groupList, ['user']);
+  assert.strictEqual(gitlabMail.serverConfig.url, '/api/rest/rdm/event/gitlab/email/mailserver/list');
+  assert.strictEqual(gitlabMail.variables[0].name, 'commitSummary');
+  gitlabMail.changeRecipients('to', ['rdmUserType#owner']);
+  assert.strictEqual(gitlabMail.valid(), false, 'GitLab 邮件不能选择需求角色');
+  gitlabMail.changeRecipients('to', ['user#local']);
+  assert.strictEqual(gitlabMail.valid(), true);
+  assert.strictEqual(Object.prototype.hasOwnProperty.call(gitlabMail.save(), 'toRoleList'), false, 'GitLab 配置不保存需求角色');
+  const gitlabReadonly = create(emailView, { config: gitlabMail.save(), handler: { handler: 'GITLAB_EMAIL' }, projectId: 1, appId: 2, event: 'GITLAB_PUSH_RECEIVED' }, { getEmailMailServerUrl: () => '/api/rest/rdm/event/gitlab/email/mailserver/list' });
+  assert.deepStrictEqual(gitlabReadonly.toUsers, ['user#local']);
+  assert.deepStrictEqual(gitlabReadonly.policy.groupList, ['user']);
+  assert.strictEqual(gitlabReadonly.serverConfig.url, '/api/rest/rdm/event/gitlab/email/mailserver/list');
+  gitlabReadonly.$destroy();
+  gitlabMail.$destroy();
+  const gitlabDetail = { uuid: 'active', isActive: 1, paramList: [{ name: 'branch', isRequired: 1 }] };
+  const gitlabIntegration = create(integrationEdit, { config: { integrationUuid: 'active', paramMapping: [{ name: 'branch', expression: '${DATA.ref!}' }] }, handler: { handler: 'GITLAB_INTEGRATION' }, projectId: 1, appId: 2, event: 'GITLAB_PUSH_RECEIVED' }, {
+    getPluginIntegration: async handler => { assert.strictEqual(handler, 'GITLAB_INTEGRATION'); return { Return: gitlabDetail }; },
+    listPluginVariables: async handler => { assert.strictEqual(handler, 'GITLAB_INTEGRATION'); return { Return: [{ name: 'ref', snippet: '${DATA.ref!}' }] }; }
+  });
+  await flush();
+  assert.strictEqual(gitlabIntegration.integration.uuid, 'active');
+  assert.strictEqual(gitlabIntegration.variables[0].name, 'ref');
+  assert.strictEqual(gitlabIntegration.integrationConfig.dynamicUrl, '/api/rest/integration/search');
+  gitlabIntegration.$refs.success = { valid: async() => true, save: async() => [{ uuid: 'mail', handler: 'GITLAB_EMAIL' }] };
+  gitlabIntegration.$refs.failed = { valid: async() => true, save: async() => [] };
+  assert.strictEqual(await gitlabIntegration.valid(), true);
+  assert.strictEqual((await gitlabIntegration.save()).successCallbackList[0].handler, 'GITLAB_EMAIL');
+  const gitlabIntegrationReadonly = create(integrationView, { config: await gitlabIntegration.save(), handler: { handler: 'GITLAB_INTEGRATION' }, projectId: 1, appId: 2, event: 'GITLAB_PUSH_RECEIVED' }, { getPluginIntegration: async handler => { assert.strictEqual(handler, 'GITLAB_INTEGRATION'); return { Return: gitlabDetail }; } });
+  await flush();
+  assert.strictEqual(gitlabIntegrationReadonly.integration.uuid, 'active');
+  gitlabIntegrationReadonly.$destroy();
+  gitlabIntegration.$destroy();
   console.log('RDM event configuration: Vue templates, shared handler base, inline child drafts/async validation/order, child CRUD, root sort/delete, email/integration config/validation/registry, commercial capability matrix/revocation and stale scopes PASS');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

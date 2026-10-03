@@ -3,27 +3,11 @@
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
     <TsContain>
       <template slot="topRight">
-        <TsRow>
-          <Col span="8">
-            <TsFormSelect
-              v-model="groupName"
-              :dataList="groupList"
-              :search="true"
-              :clearable="false"
-              transfer
-              border="border"
-              @change="searchAuthData()"
-            ></TsFormSelect>
-          </Col>
-          <Col span="16">
-            <CombineSearcher
-              v-if="searchConfig.searchList[0].dataList.length > 0"
-              v-model="searchVal"
-              v-bind="searchConfig"
-              @change="searchAuthData()"
-            ></CombineSearcher>
-          </Col>
-        </TsRow>
+        <CombineSearcher
+          v-model="searchVal"
+          v-bind="searchConfig"
+          @change="searchAuthData()"
+        ></CombineSearcher>
       </template>
       <div slot="content">
         <TsTable v-bind="tableConfig" :theadList="theadList">
@@ -63,37 +47,41 @@ export default {
   name: 'AuthManage',
   components: {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
   mixins: [BaseMenuMixin],
   props: {},
   data() {
     return {
-      groupName: '',
       loadingShow: true,
       groupList: [],
-      defaultValueList: [],
-      searchVal: {},
-      tableConfig: {
-        tbodyList: []
-      },
+      searchVal: { groupName: 'all' },
       searchConfig: {
+        labelPosition: 'left',
         search: true,
         placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
         searchList: [
           {
-            type: 'cascader',
+            type: 'select',
+            name: 'groupName',
+            label: this.$t('term.framework.belongmodule'),
             dataList: [],
+            search: true,
+            clearable: true,
+            transfer: true
+          },
+          {
+            type: 'cascader',
             name: 'defaultValue',
             label: this.$t('page.menuname'),
+            dataList: [],
             transfer: true,
-            filterable: true,
-            onChange: (val, selectedList) => {
-              this.defaultValueList = selectedList.filter(item => item.authority).map(v => v.authority);
-            }
+            filterable: true
           }
         ]
+      },
+      tableConfig: {
+        tbodyList: []
       },
       theadList: [
         {
@@ -128,7 +116,6 @@ export default {
   beforeMount() {},
   async mounted() {
     await this.searchGroupNameData();
-    this.setMenuDataList();
     this.searchAuthData();
   },
   beforeUpdate() {},
@@ -137,35 +124,40 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //模块选项同时用于组合搜索和菜单分组，因此在页面统一加载。
     searchGroupNameData() {
       return this.$api.common.getAuthGroup().then(res => {
         if (res.Status == 'OK') {
           this.groupList = res.Return.groupList || [];
-          if (this.$utils.isEmpty(this.groupName)) {
-            this.groupName = !this.$utils.isEmpty(this.groupList) ? this.groupList[0].value : '';
-          }
+          //整体更新配置以同步模块与菜单选项，避免修改嵌套配置字段。
+          this.searchConfig = {
+            ...this.searchConfig,
+            searchList: this.searchConfig.searchList.map(item => {
+              if (item.name === 'groupName') {
+                return { ...item, dataList: this.groupList };
+              }
+              return { ...item, dataList: this.menuDataList };
+            })
+          };
         }
       });
     },
-    //获取权限列表
+    //根据当前组合条件计算菜单权限，删除菜单或清空条件后不沿用旧权限过滤。
     searchAuthData() {
       this.loadingShow = true;
-      let defaultValue = [];
-      if (this.searchVal && !this.$utils.isEmpty(this.searchVal.defaultValue)) {
-        this.defaultValueList.forEach(item => {
-          if (item) {
-            defaultValue.push(...item.split(','));
-          }
-        });
-      }
+      const selectedMenus = this.searchVal.defaultValue || [];
+      const defaultValue = this.menuDataList.flatMap(group => (group.children || [])
+        .filter(menu => selectedMenus.includes(menu.value) && menu.authority)
+        .flatMap(menu => menu.authority.split(',').filter(Boolean)));
       const data = {
-        groupName: this.groupName,
-        defaultValue: [...new Set(defaultValue)], // new set 数组去重
+        groupName: this.searchVal.groupName || 'all',
+        defaultValue: [...new Set(defaultValue)],
         keyword: this.searchVal.keyword
       };
-      this.$addHistoryData('groupName', this.groupName);
+      //保留旧历史格式的兼容字段；清除模块时写 all，防止返回后恢复过期模块。
+      this.$addHistoryData('groupName', data.groupName);
       this.$addHistoryData('searchVal', this.searchVal);
-      this.$api.framework.auth
+      return this.$api.framework.auth
         .getAuthList(data)
         .then(res => {
           this.tableConfig.tbodyList = res.Return || [];
@@ -174,29 +166,29 @@ export default {
           this.loadingShow = false;
         });
     },
+    //优先恢复统一搜索状态，只在旧状态缺少模块字段时读取独立模块历史。
     restoreHistory(historyData) {
-      this.searchVal = historyData['searchVal'];
-      this.groupName = historyData['groupName'];
+      this.searchVal = { ...(historyData.searchVal || {}) };
+      if (!Object.prototype.hasOwnProperty.call(this.searchVal, 'groupName')) {
+        this.$set(this.searchVal, 'groupName', historyData.groupName || 'all');
+      }
     },
+    //进入当前权限的成员配置页，传递既有权限名称和所属模块。
     toAuthAdduserPage(item) {
       let { name = '', authGroup = '' } = item || {};
       this.$router.push({
         path: `auth-adduser`,
         query: { name: name, groupName: authGroup }
       });
-    },
-    setMenuDataList() {
-      const dataList = this.getMenuInfoList({groupList: this.groupList}) || [];
-      this.searchConfig.searchList.forEach(item => {
-        if (item.name == 'defaultValue') {
-          item.dataList = dataList;
-        }
-      });
-      this.defaultValueList = dataList.flatMap(item => (item.children || []).flatMap(v => (v && this.searchVal && this.searchVal.defaultValue && this.searchVal.defaultValue.includes(v.value) && v.authority ? [v.authority] : []))); // flatMap 将结果展开一级
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    //菜单数据由当前模块选项派生，保留公共菜单转换逻辑。
+    menuDataList() {
+      return this.getMenuInfoList({ groupList: this.groupList }) || [];
+    }
+  },
   watch: {}
 };
 </script>

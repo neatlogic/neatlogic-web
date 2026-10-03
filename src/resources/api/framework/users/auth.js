@@ -1,6 +1,10 @@
 import axios from '../../http';
 
 const auth = {
+  //查询已注册系统用户；指定权限时仅返回该权限的直接成员。
+  searchSystemUser(data) {
+    return axios.post('/api/rest/auth/system/user/search', data);
+  },
   //删除权限里的用户
   deleltAuthUser(data) {
     return axios.post('/api/rest/auth/user/delete', data);

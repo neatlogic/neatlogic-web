@@ -4,6 +4,7 @@
       <template slot="topLeft">
         <div class="action-group">
           <span class="action-item tsfont-plus" @click="editUser()">{{ $t('page.user') }}</span>
+          <span v-if="$AuthUtils.hasRole('USER_MODIFY')" class="action-item tsfont-permission" @click="showSystemUserDialog = true">{{ $t('term.framework.systemuserauth') }}</span>
           <span v-if="select && select.length > 0" class="action-item tsfont-trash-o" @click="deleteData(select)">{{ $t('page.batchdelete') }}</span>
           <span v-if="select && select.length > 0" class="action-item tsfont-export dropdown-icon" @click="deleteSession(select)">{{ $t('term.framework.batchdeleteusersession') }}</span>
         </div>
@@ -80,6 +81,7 @@
         </div>
       </div>
     </TsContain>
+    <SystemUserListDialog v-if="showSystemUserDialog" @close="showSystemUserDialog = false"></SystemUserListDialog>
     <TsDialog
       v-if="showAuth"
       type="modal"
@@ -120,7 +122,8 @@ export default {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    CommonAuth: () => import('./common/common-auth.vue')
+    CommonAuth: () => import('./common/common-auth.vue'),
+    SystemUserListDialog: () => import('./system-user-list-dialog.vue')
   },
   props: [],
   data() {
@@ -179,6 +182,7 @@ export default {
       allUserList: [], //所有用户
       authorizationTitle: this.$t('dialog.title.edittarget', {target: this.$t('term.framework.userpermission')}), //授权标题
       showAuth: false, //授权窗口
+      showSystemUserDialog: false, //系统内置用户授权窗口
       authList: [], //权限列表
       authUserList: [], //授权用户列表
       authSelectList: [], //授权选中列表
@@ -192,6 +196,7 @@ export default {
       },
       searchConfig: {
         search: true,
+        labelPosition: 'left',
         placeholder: this.$t('form.placeholder.pleaseinput', { target: this.$t('page.keyword') }),
         searchList: [
           {
@@ -260,7 +265,7 @@ export default {
       const param = { ...this.searchParams, ...this.searchValue };
       this.$addHistoryData('searchValue', this.searchValue);
       this.$addHistoryData('searchParam', this.searchParam);
-     
+
       this.$api.framework.user
         .searchUser(param)
         .then(res => {
