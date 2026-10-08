@@ -188,6 +188,7 @@ export default {
     padding-top: 15px;
     .detail-item {
       display: flex;
+      align-items: center;
       gap: 8px;
       > .label {
         position: static;
