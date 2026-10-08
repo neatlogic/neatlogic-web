@@ -2,10 +2,10 @@
   <TsDialog v-bind="dialogConfig" @on-ok="confirm()" @on-close="close()">
     <template v-slot>
       <div>
-        <TsFormItem :label="$t('page.theme')" :labelWidth="50">
+        <TsFormItem :label="$t('page.theme')">
           <span>{{ name }}</span>
         </TsFormItem>
-        <TsFormItem :label="$t('page.content')" :labelWidth="50">
+        <TsFormItem :label="$t('page.content')">
           <TsCodemirror
             ref="content"
             v-model="content"
@@ -13,7 +13,6 @@
             :validateList="['required']"
           ></TsCodemirror>
         </TsFormItem>
-       
       </div>
     </template>
   </TsDialog>
@@ -39,7 +38,7 @@ export default {
     };
   },
   beforeCreate() {},
-  async created() {},
+  created() {},
   beforeMount() {},
   mounted() {},
   beforeUpdate() {},
