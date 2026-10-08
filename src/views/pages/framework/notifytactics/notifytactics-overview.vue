@@ -183,7 +183,6 @@ export default {
       defaultPolicyFormSelectText: '',
       showDefaultPolicyDialog: false,
       defaultPolicyFormSelect: {
-        width: '300px',
         multiple: false,
         value: null,
         dynamicUrl: '/api/rest/notify/policy/search',
@@ -193,6 +192,7 @@ export default {
         rootName: 'tbodyList',
         valueName: 'id',
         textName: 'name',
+        border: 'border',
         search: true,
         transfer: true,
         onChangelabel: text => {
