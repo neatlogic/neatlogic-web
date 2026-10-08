@@ -36,7 +36,7 @@
             </ul>
             <ul class="menu-list">
               <li v-for="module in moduleList" :key="module.moduleId" class="module">
-                <h4 class="title">{{ $t(module.moduleName) }}{{ $t('page.homepage') }}</h4>
+                <h4 class="title">{{ $t(module.moduleName) }}&nbsp;{{ $t('page.homepage') }}</h4>
                 <Select
                   :value="module.defaultPage"
                   class="menu-select bg-op border-color radius-sm"
