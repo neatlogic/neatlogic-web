@@ -8,6 +8,7 @@
           suffix="tsfont-search"
           :placeholder="$t('page.keyword')"
           clearable
+          border="border"
           @on-enter="userGetPagedata()"
           @on-clear="clearGetPageData"
         ></TsFormInput>
