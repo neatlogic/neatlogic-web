@@ -153,16 +153,13 @@ instance.interceptors.request.use(config => {
   //   // 如果不在浏览器当前tab，tab中的页面无法发送请求
   //   return Promise.reject(new Error('Tab is not active'));
   // }
-  //每次调用接口时把cookie更新为当前环境的时区，按照+8:00的格式
+  // 每次调用接口时，将浏览器偏移量写为后端可解析的 ±HH:mm。
   const offset = new Date().getTimezoneOffset();
-  let f = '';
-  f += offset <= 0 ? '+' : '-';
-  const h = Math.floor(Math.abs(offset) / 60);
-  const m = Math.abs(offset) - h * 60;
-  const timezone = f + h + ':' + (m >= 10 ? m : '0' + m);
+  const sign = offset <= 0 ? '+' : '-';
+  const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
+  const minutes = String(Math.abs(offset) % 60).padStart(2, '0');
   utils.removeCookie('neatlogic_timezone');
-  utils.setCookie('neatlogic_timezone', timezone);
-  // neatlogic_timezone
+  utils.setCookie('neatlogic_timezone', `${sign}${hours}:${minutes}`);
   if (config.method === 'post' && config.contentType != 'multipart/form-data') {
     config.data = JSON.stringify(config.data || {});
   }
