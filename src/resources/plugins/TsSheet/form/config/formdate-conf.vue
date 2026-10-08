@@ -1,7 +1,7 @@
 <template>
   <div>
     <TsFormItem :label="$t('page.displayformat')" labelPosition="top">
-      <div class="padding-sm bg-op radius-sm">
+      <div class="padding-sm bg-op radius-sm date-format-options">
         <TsFormRadio
           :value="config.format"
           :dataList="formatList"
@@ -480,6 +480,18 @@ export default {
 }
 ::v-deep .ivu-radio-group-item  {
   width: calc(50% - 16px);
+}
+.date-format-options ::v-deep .ivu-radio-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.date-format-options ::v-deep .ivu-radio-group-item {
+  width: auto;
+  min-width: 0;
+  white-space: normal;
+  &:first-child {
+    grid-column: 1 / -1;
+  }
 }
 .filter-row {
   position: relative;
