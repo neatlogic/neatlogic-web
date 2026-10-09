@@ -27,6 +27,7 @@
     "syncconfirm": "Synchronization Confirmation",
     "resetconfirm": "Reset Confirmation",
     "createtarget": "Create {target}",
+    "buildtarget": "New {target}",
     "batchupgradeconfirm": "Batch Upgrade Confirmation",
     "canceltarget": "Cancel {target}",
     "saveandtarget": "Save and {target}",

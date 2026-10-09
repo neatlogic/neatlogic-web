@@ -27,6 +27,7 @@
     "syncconfirm": "同步确认",
     "resetconfirm": "重置确认",
     "createtarget": "创建{target}",
+    "buildtarget": "新建{target}",
     "batchupgradeconfirm": "批量升级确定",
     "canceltarget": "取消{target}",
     "saveandtarget": "保存并{target}",

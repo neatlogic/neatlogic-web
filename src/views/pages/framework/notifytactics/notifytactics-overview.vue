@@ -96,7 +96,7 @@
       @on-ok="okAddTactics"
     >
       <template v-slot:header>
-        <div>{{ isCopy ? $t('page.copy') : $t('page.build') }}</div>
+        <div>{{ isCopy ? $t('page.copy') : $t('dialog.title.buildtarget', { target: $t('term.process.policy') }) }}</div>
       </template>
       <TsForm ref="addTacticsForm" :itemList="tacticsForm" type="type"></TsForm>
     </TsDialog>

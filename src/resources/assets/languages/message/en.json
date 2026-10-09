@@ -139,6 +139,13 @@
     "widgetcreatefail": "Component creation failed. Open developer mode to view exception details."
   },
   "framework": {
+    "notifydraftchanged": "The configuration changed. Confirm again to save.",
+    "notifyloadfailed": "Failed to load notification policy data. Refresh to retry.",
+    "notifyconditioninvalid": "Complete the conditions or remove invalid conditions.",
+    "notifymetadatamissing": "Some configuration is unavailable. Check and select again.",
+    "notifyunconditional": "No conditions configured. Execute this action whenever triggered.",
+    "notifytemplateinvalid": "The template is unavailable or does not match the notification channel. Select again.",
+    "notifyclearconfirm": "Clear all actions for \"{target}\"? Other trigger types are unaffected.",
     "atleastonestaticsource": "Please add at least one static data source drop-down option",
     "plecompletecondition": "Please complete the filter condition",
     "teamcounttarget": "A total of {target} teams are selected",

@@ -66,6 +66,7 @@
       :trigger="trigger"
       :authorityConfig="authorityConfig"
       @close="closeConditionDialog"
+      @save="getNotifyList"
     ></ConditionEdit>
   </div>
 </template>

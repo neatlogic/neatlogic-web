@@ -139,6 +139,13 @@
     "widgetcreatefail": "组件创建失败，请打开开发者模式查看异常详情。"
   },
   "framework": {
+    "notifydraftchanged": "配置已变化，请重新确认保存",
+    "notifyloadfailed": "通知策略数据加载失败，请刷新重试",
+    "notifyconditioninvalid": "请完整配置条件，或删除已失效的条件",
+    "notifymetadatamissing": "部分配置已失效，请检查后重新选择",
+    "notifyunconditional": "未配置条件，触发时直接执行此动作",
+    "notifytemplateinvalid": "模板不存在或与通知渠道不匹配，请重新选择",
+    "notifyclearconfirm": "确认清空“{target}”的全部动作配置？其他触发类型不受影响",
     "atleastonestaticsource": "请至少添加一个静态数据源下拉选项",
     "plecompletecondition": "请填写完整过滤条件",
     "teamcounttarget": "共计选中{target}个分组",
