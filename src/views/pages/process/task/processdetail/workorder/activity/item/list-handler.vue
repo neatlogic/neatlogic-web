@@ -1,27 +1,27 @@
 <template>
   <div>
     <div v-for="(sub, subIndex) in setData(config.newContent)" :key="subIndex" class="active-form-list">
-      <div v-if="sub.type == 'content'" class="active-form-text">
+      <div v-if="sub.type == 'content'" class="active-form-text activity-compare-row">
         <span class="left-label-text text-grey">{{ sub.typeName }}</span>
-        <TsRow>
-          <Col v-if="sub.oldContent" :span="sub.newContent && sub.oldContent ? '10' : '24'" style="overflow: auto;">
-            <div style="overflow: auto;" v-html="sub.oldContent"></div>
-          </Col>
-          <Col v-if="sub.newContent && sub.oldContent" span="2">
-            <span class="change-text text-grey">{{ $t('term.process.changeto') }}</span>
-          </Col>
-          <Col v-if="sub.newContent" :span="sub.newContent && sub.oldContent ? '10' : '24'">
-            <div style="overflow: auto;" v-html="sub.newContent"></div>
-          </Col>
-        </TsRow>
+        <div class="activity-compare-grid" :class="{'activity-compare-single': !(sub.oldContent && sub.newContent)}">
+          <div v-if="sub.oldContent" class="activity-compare-value">
+            <LongHtmlContent v-if="isLongHtml(sub.oldContent)" :content="sub.oldContent" style="overflow: auto;"></LongHtmlContent>
+            <div v-else style="overflow: auto;" v-html="sub.oldContent"></div>
+          </div>
+          <span v-if="sub.newContent && sub.oldContent" class="activity-compare-marker text-grey">{{ $t('term.process.changeto') }}</span>
+          <div v-if="sub.newContent" class="activity-compare-value">
+            <LongHtmlContent v-if="isLongHtml(sub.newContent)" :content="sub.newContent" style="overflow: auto;"></LongHtmlContent>
+            <div v-else style="overflow: auto;" v-html="sub.newContent"></div>
+          </div>
+        </div>
       </div>
-      <div v-else-if="sub.type == 'targetTime'" class="active-form-text">
+      <div v-else-if="sub.type == 'targetTime'" class="active-form-text" :class="{'activity-compare-full': sub.oldContent && sub.newContent}">
         <span class="left-label-text text-grey">{{ sub.typeName }}</span>
         <span v-if="sub.oldContent">{{ sub.oldContent | formatDate }}</span>
         <span v-if="sub.newContent && sub.oldContent" class="change-text text-grey">{{ $t('term.process.changeto') }}</span>
         <span v-if="sub.newContent">{{ sub.newContent | formatDate }}</span>
       </div>
-      <div v-else-if="sub.type == 'planStartEndTime'" class="active-form-text">
+      <div v-else-if="sub.type == 'planStartEndTime'" class="active-form-text" :class="{'activity-compare-full': sub.oldContent && sub.newContent}">
         <span class="left-label-text text-grey">{{ sub.typeName }}</span>
         <span v-if="sub.oldContent">
           <TsFormDatePicker
@@ -41,7 +41,7 @@
           ></TsFormDatePicker>
         </span>
       </div>
-      <div v-else-if="sub.type == 'fileList'" class="active-form-text">
+      <div v-else-if="sub.type == 'fileList'" class="active-form-text" :class="{'activity-compare-full': sub.oldContent && sub.newContent}">
         <span class="left-label-text text-grey">{{ sub.typeName }}</span>
         <div v-if="sub.oldContent">
           <div v-for="(file, flindex) in sub.oldContent" :key="flindex" class="file-list-down">
@@ -61,7 +61,7 @@
           </div>
         </div>
       </div>
-      <div v-else-if="sub.type == 'worker'" class="active-form-text">
+      <div v-else-if="sub.type == 'worker'" class="active-form-text" :class="{'activity-compare-full': sub.oldContent && sub.newContent}">
         <span class="left-label-text text-grey">{{ sub.typeName }}</span>
         <span v-if="sub.oldContent">
           <UserCard
@@ -78,7 +78,7 @@
           ></UserCard>
         </span>
       </div>
-      <div v-else class="active-form-text">
+      <div v-else class="active-form-text" :class="{'activity-compare-full': sub.oldContent && sub.newContent}">
         <span class="left-label-text text-grey">{{ sub.typeName }}</span>
         <span v-if="sub.oldContent">{{ sub.oldContent }}</span>
         <span v-if="sub.newContent && sub.oldContent" class="change-text text-grey">{{ $t('term.process.changeto') }}</span>
@@ -90,10 +90,13 @@
 <script>
 import download from '@/resources/directives/download.js';
 import TsFormDatePicker from '@/resources/plugins/TsForm/TsFormDatePicker';
+import LongHtmlContent from '../../long-html-content.vue';
+import {isLongHtml} from '../../long-html-content.js';
 export default {
   name: '',
   components: {
     TsFormDatePicker,
+    LongHtmlContent,
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
   },
   directives: { download },
@@ -115,6 +118,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    isLongHtml,
     setData(str) {
       let data = JSON.parse(str);
       return data;

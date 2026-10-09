@@ -143,6 +143,7 @@
               :processTaskConfig="processTaskConfig"
               :defaultActiveData="activeData"
               :stepDataList="stepData"
+              v-bind="item.tabValue === 'activity' ? { selectedStepIdList: selectedProcessTaskStepIdList, loading: activityLoading, loadingMore: activityLoadingMore, hasMore: activityHasMore, loadError: activityLoadError } : {}"
               :relationAuth="actionConfig.tranferreport"
               :actionConfig="actionConfig"
               :repeatList="repeatList"
@@ -152,6 +153,8 @@
               @closeRepeatTab="closeRepeatTab"
               @upActivityList="updateStepActive()"
               @updataActive="(val)=>updataActive(val)"
+              @loadMore="loadMoreActivity"
+              @retry="retryActivity"
             ></Component>
           </template>
         </div>
@@ -324,19 +327,19 @@
             >
               <!-- 时间线 -->
               <template v-if="tabValue === 'activity'">
-                <Loading
-                  v-if="activityLoading"
-                  :loadingShow="true"
-                  :text="false"
-                  class="tab-local-loading"
-                ></Loading>
                 <ActivityOverview
-                  v-else
                   :processTaskId="processTaskId"
                   :stepDataList="stepData"
+                  :selectedStepIdList="selectedProcessTaskStepIdList"
+                  :loading="activityLoading"
+                  :loadingMore="activityLoadingMore"
+                  :hasMore="activityHasMore"
+                  :loadError="activityLoadError"
                   :defaultActiveData="activeData"
                   :formConfig="frozenFormConfig"
                   @updataActive="(val)=>updataActive(val)"
+                  @loadMore="loadMoreActivity"
+                  @retry="retryActivity"
                 ></ActivityOverview>
               </template>
             </TabPane>
@@ -516,6 +519,7 @@
               :processTaskConfig="processTaskConfig"
               :defaultActiveData="activeData"
               :stepDataList="stepData"
+              v-bind="item.tabValue === 'activity' ? { selectedStepIdList: selectedProcessTaskStepIdList, loading: activityLoading, loadingMore: activityLoadingMore, hasMore: activityHasMore, loadError: activityLoadError } : {}"
               :relationAuth="actionConfig.tranferreport"
               :actionConfig="actionConfig"
               :repeatList="repeatList"
@@ -525,6 +529,8 @@
               @closeRepeatTab="closeRepeatTab"
               @upActivityList="updateStepActive()"
               @updataActive="(val)=>updataActive(val)"
+              @loadMore="loadMoreActivity"
+              @retry="retryActivity"
             ></Component>
           </template>
         </div>
@@ -698,7 +704,13 @@ export default {
       auditId: null, //活动id
       buttonLog: '1', //活动日志
       activeData: [], //按活动分
+      selectedProcessTaskStepIdList: [], //时间线步骤筛选
       activityLoading: false, //时间线加载状态
+      activityLoadingMore: false,
+      activityHasMore: false,
+      activityLoadError: false,
+      activityNextPage: 1,
+      activityRequestId: 0,
       stepContent: null, //描述
       selectStepId: this.defaultProcessTaskStepId,
       timeSortIcon: false, //活动排序
@@ -1155,6 +1167,7 @@ export default {
       this.defaultTaskContent = null;
       this.defaultTaskFileList.splice(0);
       this.timeSortIcon = false;
+      this.selectedProcessTaskStepIdList = [];
       this.handlerStepInfo = null;
       this.changeStepList = [];
     },
@@ -1235,27 +1248,87 @@ export default {
       clearInterval(this.timerForm);
       this.timerForm = null;
     },
-    getActivityList(processTaskStepIdList) {
-      //活动列表
-      this.activityLoading = true;
-      let data = {
+    getActivityRequestData(currentPage) {
+      const data = {
         processTaskId: this.processTaskId,
-        processTaskStepIdList: processTaskStepIdList
+        currentPage,
+        pageSize: 10,
+        sortDirection: this.timeSortIcon ? 'asc' : 'desc'
       };
-      this.$api.process.processtask.getAuditList(data).then(res => {
-        if (res.Status == 'OK') {
-          let activeList = res.Return;
-          this.activeData.splice(0);
-          activeList.forEach(active => {
-            if (active.auditDetailList && active.auditDetailList.length > 0) {
-              this.$set(active, 'isShow', false);
-            }
-          });
-          this.activeData = activeList;
+      if (this.selectedProcessTaskStepIdList.length > 0) {
+        data.processTaskStepIdList = [...this.selectedProcessTaskStepIdList];
+      }
+      return data;
+    },
+    prepareActivityPage(list) {
+      const activeList = Array.isArray(list) ? [...list] : [];
+      activeList.forEach(active => {
+        if (active.auditDetailList && active.auditDetailList.length > 0) {
+          this.$set(active, 'isShow', false);
         }
-      }).finally(() => {
-        this.activityLoading = false;
       });
+      return activeList;
+    },
+    async getActivityList() {
+      // 刷新筛选或排序时从第一页开始，旧分页结果不能混入新列表。
+      const requestId = ++this.activityRequestId;
+      const processTaskId = this.processTaskId;
+      this.activityLoading = true;
+      this.activityLoadingMore = false;
+      this.activityHasMore = false;
+      this.activityLoadError = false;
+      this.activeData = [];
+      try {
+        const data = this.getActivityRequestData(1);
+        const res = await this.$api.process.processtask.getAuditList(data);
+        if (requestId !== this.activityRequestId || processTaskId !== this.processTaskId) return;
+        if (res.Status !== 'OK') {
+          this.activityLoadError = true;
+          return;
+        }
+        const page = res.Return || {};
+        this.activeData = this.prepareActivityPage(page.tbodyList);
+        this.activityNextPage = 2;
+        this.activityHasMore = this.activityNextPage <= (Number(page.pageCount) || 0);
+      } catch (error) {
+        if (requestId === this.activityRequestId && processTaskId === this.processTaskId) this.activityLoadError = true;
+      } finally {
+        if (requestId === this.activityRequestId && processTaskId === this.processTaskId) {
+          this.activityLoading = false;
+        }
+      }
+    },
+    async loadMoreActivity() {
+      if (this.activityLoading || this.activityLoadingMore || !this.activityHasMore) return;
+      const requestId = this.activityRequestId;
+      const processTaskId = this.processTaskId;
+      const currentPage = this.activityNextPage;
+      this.activityLoadingMore = true;
+      this.activityLoadError = false;
+      try {
+        const res = await this.$api.process.processtask.getAuditList(this.getActivityRequestData(currentPage));
+        if (requestId !== this.activityRequestId || processTaskId !== this.processTaskId) return;
+        if (res.Status !== 'OK') {
+          this.activityLoadError = true;
+          return;
+        }
+        const nextList = this.prepareActivityPage((res.Return || {}).tbodyList);
+        if (nextList.length > 0) {
+          this.activeData = [...this.activeData, ...nextList];
+          this.activityNextPage = currentPage + 1;
+        }
+        this.activityHasMore = nextList.length > 0 && this.activityNextPage <= Number((res.Return || {}).pageCount);
+      } catch (error) {
+        if (requestId === this.activityRequestId && processTaskId === this.processTaskId) this.activityLoadError = true;
+      } finally {
+        if (requestId === this.activityRequestId && processTaskId === this.processTaskId) {
+          this.activityLoadingMore = false;
+        }
+      }
+    },
+    retryActivity() {
+      if (this.activeData.length > 0) this.loadMoreActivity();
+      else this.getActivityList();
     },
 
     getStepStatusList() {
@@ -1475,11 +1548,16 @@ export default {
     //排序
     timeSort() {
       this.timeSortIcon = !this.timeSortIcon;
-      this.activeData.reverse();
+      this.getActivityList();
     },
     //更新活动（时间线）
     updataActive(processTaskStepIdList) {
-      this.getActivityList(processTaskStepIdList);
+      const selectedList = Array.isArray(processTaskStepIdList) ? processTaskStepIdList : [];
+      if (selectedList.length === this.selectedProcessTaskStepIdList.length && selectedList.every((id, index) => id === this.selectedProcessTaskStepIdList[index])) {
+        return;
+      }
+      this.selectedProcessTaskStepIdList = [...selectedList];
+      this.getActivityList();
     },
     updateStepActive() {
       //更新活动和步骤
@@ -1621,7 +1699,10 @@ export default {
             h('span', {
               class: ['text-action', 'tsfont', 'sort-icon', 'text-grey', { 'select-icon-left': this.tabValue == 'activity' && this.timeSortIcon }, { 'select-icon-right': this.tabValue == 'activity' && !this.timeSortIcon }],
               on: {
-                click: this.timeSort
+                click: e => {
+                  e.stopPropagation();
+                  this.timeSort();
+                }
               }
             }),
             h('span', labelName),
@@ -1867,6 +1948,13 @@ export default {
       }
     },
     clickTabValue(name) {
+      const commonMain = this.$refs.commonMain;
+      if (commonMain) {
+        const offset = commonMain.getBoundingClientRect().top - this.$el.getBoundingClientRect().top;
+        if (offset < 0) {
+          this.$el.scrollTop += offset;
+        }
+      }
       if (name === 'report') {
         if (this.hasForm) {
           //重现渲染表单组件（重新计算），避免表单宽度为0
@@ -2109,8 +2197,11 @@ export default {
       deep: true,
       immediate: true
     },
-    defaultProcessTaskId(val) {
+    defaultProcessTaskId(val, oldVal) {
       this.taskLoading = true;
+      if (val !== oldVal) {
+        this.selectedProcessTaskStepIdList = [];
+      }
     },
     newTaskContent(val) {
       if (val != this.defaultTaskContent) {
@@ -2156,6 +2247,19 @@ function getParent(node) {
 </script>
 <style lang="less">
 @import '~@/resources/assets/css/process/taskdetail.less';
+@import (reference) '~@/resources/assets/css/variable.less';
+.CenterDetail > .common-main > .block-tabs {
+  overflow: visible;
+  > .ivu-tabs-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: @default-background;
+  }
+}
+html.theme-dark .CenterDetail > .common-main > .block-tabs > .ivu-tabs-bar {
+  background-color: @dark-background;
+}
 .reply-poptip {
   z-index: 999 !important;
 }

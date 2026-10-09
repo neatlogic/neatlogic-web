@@ -72,7 +72,8 @@
               <UserCard v-bind="stepItem.fcuVo" class="user-name" hideAvatar></UserCard>
               <span class="text-grey">{{ stepItem.fcd | formatDate }}</span>
             </div>
-            <div v-html="stepItem.content"></div>
+            <LongHtmlContent v-if="isLongHtml(stepItem.content)" :content="stepItem.content"></LongHtmlContent>
+            <div v-else v-html="stepItem.content"></div>
             <div v-if="stepItem.fileList && stepItem.fileList.length > 0">
               <TsRow>
                 <Col v-for="(file, flindex) in stepItem.fileList" :key="flindex" span="12">
@@ -92,11 +93,14 @@
 <script>
 import download from '@/resources/directives/download.js';
 import UserCard from '@/resources/components/UserCard/UserCard.vue';
+import LongHtmlContent from '../../long-html-content.vue';
+import {isLongHtml} from '../../long-html-content.js';
 
 export default {
   name: '',
   components: {
-    UserCard
+    UserCard,
+    LongHtmlContent
   },
   directives: { download },
   filters: {},
@@ -117,7 +121,7 @@ export default {
   deactivated() {},
   beforeDestroy() {},
   destroyed() {},
-  methods: {},
+  methods: {isLongHtml},
   computed: {
     downurl() {
       return function(url, param) {

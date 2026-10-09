@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex;">
+  <div class="activity-file-row" :class="{'activity-compare-full': textShow(config) == $t('term.process.changeto')}">
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <div v-if="textShow(config) && textShow(config) ==$t('page.delete')" class="text-grey">{{ textShow(config) }}</div>
     <div v-if="config.oldContent && setData(config.oldContent).length > 0">
@@ -71,4 +71,7 @@ export default {
 };
 </script>
 <style lang='less' scoped>
+.activity-file-row {
+  display: flex;
+}
 </style>
