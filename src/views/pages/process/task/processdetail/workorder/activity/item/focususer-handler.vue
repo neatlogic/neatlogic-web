@@ -1,5 +1,5 @@
 <template>
-  <div class="focususer-handler">
+  <div class="focususer-handler" :class="{'activity-compare-full': config.changeType === 'update'}">
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <template v-if="config.changeType === 'new'">
       <span class="text-grey change-text">{{ $t('page.new') }}</span>

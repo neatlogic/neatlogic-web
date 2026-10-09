@@ -36,7 +36,14 @@
       <div class="content-box">
         <div v-if="stepItem.content" class="text-grey mr-md ml-xs title">{{ $t('page.replycontent') }}</div>
         <div>
-          <div 
+          <LongHtmlContent
+            v-if="isLongHtml(stepItem.content)"
+            :content="stepItem.content"
+            sanitize
+            class="ml-xs"
+          ></LongHtmlContent>
+          <div
+            v-else
             v-imgViewer
             v-dompurify-html="stepItem.content"
             class="ck-content content-text-padding overflow-y ml-xs"
@@ -45,7 +52,7 @@
           >
           </div>
           <div
-            v-if="stepItem.showViewMore"
+            v-if="stepItem.showViewMore && !isLongHtml(stepItem.content)"
             class="content-text-padding text-href pt-xs ml-xs pr-md"
             :class="stepItem.fileList && stepItem.fileList.length > 0 ? 'pb-xs' : ''"
           >
@@ -65,10 +72,13 @@
 <script>
 import UserCard from '@/resources/components/UserCard/UserCard.vue';
 import imgViewer from '@/resources/directives/img-viewer.js';
+import LongHtmlContent from '../long-html-content.vue';
+import {isLongHtml} from '../long-html-content.js';
 export default {
   name: '',
   components: {
     UserCard,
+    LongHtmlContent,
     ImagePreview: () => import('@/resources/components/image-preview/index.vue')
   },
   directives: { imgViewer },
@@ -119,6 +129,7 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    isLongHtml,
     viewMore(stepItem) {
       if (stepItem.maxheight == '200px') {
         this.$set(stepItem, 'maxheight', 'auto');

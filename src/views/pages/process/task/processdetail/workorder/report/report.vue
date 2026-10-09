@@ -4,41 +4,49 @@
     <template v-if="!loadingShow">
       <div v-if="startHandler == 'changecreate' && isEditchange" class="tsfont-edit text-action edit-report" @click="edit()"></div>
       <template v-if="startHandler !== 'changecreate'">
-        <TsFormItem
-          v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)"
-          :label="$t('page.description')"
-          labelPosition="top"
-          :buttonList="
-            actionConfig.update
-              ? [
-                {
-                  icon: 'tsfont-edit',
-                  name: '',
-                  click: () => {
-                    edit();
-                  }
-                }
-              ]
-              : []
-          "
-        >
-          <div class="padding radius-md bg-op">
-            <div
-              v-if="dataConfig.content"
-              v-imgViewer
-              class="content-detail"
-              style="overflow: hidden"
-              :style="{ height: maxheight }"
-            >
-              <div ref="getheight" v-dompurify-html="dataConfig.content" class="ck-content"></div>
+        <div v-if="dataConfig.content || (dataConfig.fileList && dataConfig.fileList.length > 0)" class="report-description-item">
+          <div ref="descriptionSection" class="report-description-section">
+            <div class="report-description-header" :class="{ 'is-sticky': descriptionIsTall }">
+              <span class="text-grey">{{ $t('page.description') }}</span>
+              <Tooltip
+                v-if="isView"
+                :content="descriptionCollapsed ? $t('page.viewmore') : $t('page.clickandputaway')"
+                transfer
+              >
+                <span
+                  class="text-tip-active"
+                  :class="descriptionCollapsed?'tsfont-down':'tsfont-up'"
+                  @click="toggleDescription"
+                >
+                </span>
+              </Tooltip>
+              <span
+                v-if="actionConfig.update"
+                class="tsfont-edit text-action cursor description-edit"
+                :title="$t('page.revise')"
+                role="button"
+                tabindex="0"
+                @click="edit()"
+                @keydown.enter="edit()"
+              ></span>
             </div>
-            <div v-if="isView" class="text-href pt-xs" @click="viewMoreContent">{{ maxheight == '200px' ? $t('page.viewmore') : $t('page.clickandputaway') }}</div>
-            <Divider v-if="dataConfig.fileList.length > 0" orientation="start">
+            <div v-if="dataConfig.content" class="padding radius-md bg-op" :class="{ 'description-card-with-files': dataConfig.fileList.length > 0 }">
+              <div
+                v-imgViewer
+                class="content-detail"
+                :style="{ height: descriptionCollapsed ? '200px' : 'auto' }"
+              >
+                <div ref="getheight" v-dompurify-html="dataConfig.content" class="ck-content"></div>
+              </div>
+            </div>
+          </div>
+          <div v-if="dataConfig.fileList.length > 0" class="padding radius-md bg-op" :class="{ 'description-files-after-content': dataConfig.content }">
+            <Divider orientation="start">
               <span class="text-grey">{{ $t('page.accessory') }}</span>
             </Divider>
-            <ImagePreview v-if="dataConfig.fileList.length > 0" class="report-content" :fileList="dataConfig.fileList"></ImagePreview>
+            <ImagePreview class="report-content" :fileList="dataConfig.fileList"></ImagePreview>
           </div>
-        </TsFormItem>
+        </div>
         <div v-else class="padding border-base radius-md" style="border-style: dotted !important; text-align: center">
           <span v-if="actionConfig.update" class="tsfont-plus cursor text-grey" @click="edit()">{{ $t('dialog.title.addtarget', { target: $t('page.description') }) }}</span>
           <span v-else class="text-grey">{{ $t('page.nocomment') }}</span>
@@ -205,7 +213,9 @@ export default {
         fileList: [],
         fileIdList: []
       },
-      isView: false, //查看更多内容
+      isView: false, //内容超过200px时显示展开/收起按钮
+      descriptionCollapsed: false,
+      descriptionIsTall: false,
       maxheight: '18px',
       isShow: false,
       dataDialog: {
@@ -317,13 +327,16 @@ export default {
     this.$nextTick(() => {
       // 页面渲染完成后的回调
       this.getHeight();
+      this.observeDescriptionHeight();
     });
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    if (this.descriptionResizeObserver) this.descriptionResizeObserver.disconnect();
+  },
   destroyed() {},
   methods: {
     initData() {
@@ -339,13 +352,7 @@ export default {
       }
       if (startProcessTaskStep.comment) {
         if (startProcessTaskStep.comment.content) {
-          const RegEx = /(?<=(img src="))[^"]*?(?=")/gims;
-          const images = startProcessTaskStep.comment.content.match(RegEx);
           this.dataConfig.content = startProcessTaskStep.comment.content;
-          if (!this.$utils.isEmpty(images)) {
-            this.isView = true;
-            this.maxheight = '200px';
-          }
         }
         if (startProcessTaskStep.comment.fileList && startProcessTaskStep.comment.fileList.length > 0) {
           this.dataConfig.fileList = startProcessTaskStep.comment.fileList;
@@ -404,6 +411,31 @@ export default {
       } else {
         this.maxheight = '200px';
       }
+    },
+    toggleDescription() {
+      if (!this.descriptionCollapsed) {
+        const scrollContainer = this.$el.closest('.CenterDetail');
+        const section = this.$refs.descriptionSection;
+        if (scrollContainer && section) {
+          const sectionTop = section.getBoundingClientRect().top;
+          const containerTop = scrollContainer.getBoundingClientRect().top;
+          if (sectionTop < containerTop) {
+            scrollContainer.scrollTop += sectionTop - containerTop;
+          }
+        }
+      }
+      this.descriptionCollapsed = !this.descriptionCollapsed;
+      this.$nextTick(this.getHeight);
+    },
+    observeDescriptionHeight() {
+      if (this.startHandler === 'changecreate' || typeof ResizeObserver === 'undefined') return;
+      if (this.descriptionResizeObserver) this.descriptionResizeObserver.disconnect();
+      const content = this.$refs.getheight;
+      const scrollContainer = this.$el.closest('.CenterDetail');
+      if (!content || !scrollContainer) return;
+      this.descriptionResizeObserver = new ResizeObserver(() => this.getHeight());
+      this.descriptionResizeObserver.observe(content);
+      this.descriptionResizeObserver.observe(scrollContainer);
     },
     edit() {
       if (this.startHandler == 'changecreate') {
@@ -555,6 +587,13 @@ export default {
     },
     getHeight() {
       if (this.$refs.getheight) {
+        if (this.startHandler !== 'changecreate') {
+          const scrollContainer = this.$el.closest('.CenterDetail');
+          const contentHeight = this.$refs.getheight.offsetHeight;
+          this.isView = contentHeight > 200;
+          this.descriptionIsTall = !this.descriptionCollapsed && !!scrollContainer && contentHeight >= scrollContainer.clientHeight;
+          return;
+        }
         if (this.$refs.getheight.offsetHeight > 200) {
           this.isView = true;
           this.maxheight = '200px';
@@ -566,12 +605,59 @@ export default {
     }
   },
   computed: {},
-  watch: {}
+  watch: {
+    'dataConfig.content'() {
+      if (this.startHandler === 'changecreate') return;
+      this.descriptionCollapsed = false;
+      this.$nextTick(() => {
+        this.getHeight();
+        this.observeDescriptionHeight();
+      });
+    }
+  }
 };
 </script>
+<style lang="less">
+@import (reference) '~@/resources/assets/css/variable.less';
+.report-description-header.is-sticky {
+  background-color: @default-background;
+}
+html.theme-dark .report-description-header.is-sticky {
+  background-color: @dark-background;
+}
+</style>
 <style lang="less" scoped>
 .report-detail {
   position: relative;
+  .report-description-item {
+    margin-bottom: 24px;
+  }
+  .report-description-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 28px;
+    padding-bottom: 8px;
+    &.is-sticky {
+      position: sticky;
+      top: 0;
+      z-index: 11;
+    }
+  }
+  .description-edit {
+    flex-shrink: 0;
+  }
+  .description-card-with-files {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .description-files-after-content {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .content-detail {
+    overflow: hidden;
+  }
   .pb10 {
     padding-bottom: 10px;
   }

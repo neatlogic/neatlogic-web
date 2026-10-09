@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{'activity-compare-full': config.oldContent && config.newContent}">
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <span v-if="config.oldContent">
       <span v-for="(item,index) in setData(config.oldContent)" :key="index">

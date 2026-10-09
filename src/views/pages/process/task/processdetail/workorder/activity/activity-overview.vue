@@ -286,6 +286,48 @@ export default {
   font-size: 22px;
 }
 .activity-box {
+  ::v-deep .activity-compare-row > .left-label-text {
+    flex: 0 0 72px;
+  }
+  ::v-deep .activity-compare-full {
+    display: grid;
+    grid-template-columns: 87px minmax(0, 1fr) 48px minmax(0, 1fr);
+    min-width: 0;
+    > * {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    > :nth-child(3) {
+      align-self: start;
+      text-align: center;
+      padding: 0;
+    }
+    > :nth-child(4) {
+      padding-left: 8px;
+      overflow-wrap: anywhere;
+    }
+  }
+  ::v-deep .activity-compare-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+    column-gap: 8px;
+    flex: 1;
+    min-width: 0;
+    > div {
+      min-width: 0;
+    }
+  }
+  ::v-deep .activity-compare-grid.activity-compare-single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  ::v-deep .activity-compare-value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  ::v-deep .activity-compare-marker {
+    text-align: center;
+    padding: 0;
+  }
   ::v-deep .left-label-text {
     display: inline-block;
     width: 72px;
@@ -294,6 +336,27 @@ export default {
   }
   ::v-deep .ivu-timeline-item-tail {
     left: 3px; // 解决时间线不对齐问题
+  }
+}
+@media (max-width: 800px) {
+  .activity-box {
+    ::v-deep .activity-compare-grid:not(.activity-compare-single) {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 4px;
+      .activity-compare-marker {
+        text-align: left;
+      }
+    }
+    ::v-deep .activity-compare-full {
+      grid-template-columns: 87px minmax(0, 1fr);
+      > :nth-child(3) {
+        text-align: right;
+        padding-right: 15px;
+      }
+      > :nth-child(4) {
+        padding-left: 0;
+      }
+    }
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{'activity-compare-full': config.oldContent && config.newContent}">
     <span class="left-label-text text-grey">{{ config.typeName }}</span>
     <span v-html="setPriority(config.oldContent)"></span>
     <span v-if="config.newContent && config.oldContent" class="text-grey change-text">{{ $t('term.process.changeto') }}</span>
