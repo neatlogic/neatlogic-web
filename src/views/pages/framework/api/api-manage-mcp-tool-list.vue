@@ -15,6 +15,7 @@
         valueName="value"
         textName="text"
         :clearable="true"
+        border="border"
         transfer
         :placeholder="$t('term.framework.queryallmodulesplaceholder')"
       ></TsFormSelect>

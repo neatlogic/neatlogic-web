@@ -29,7 +29,7 @@
       <Button
         type="primary"
         :loading="isSaving"
-        :disabled="isLoading || loadFailed || !selectedUuids.length"
+        :disabled="isLoading || loadFailed || !selectedCandidateUuids.length"
         @click="save()"
       >{{ $t('page.save') }}</Button>
     </template>
@@ -66,7 +66,7 @@ export default {
     this.loadCandidates();
   },
   methods: {
-    //从全部注册用户排除完整直接成员，不受列表页的搜索关键词影响。
+    //从全部注册用户排除完整有效成员，不受列表页的搜索关键词影响。
     async loadCandidates() {
       this.isLoading = true;
       this.loadFailed = false;
@@ -77,6 +77,7 @@ export default {
           this.$api.framework.auth.searchSystemUser({ auth: this.authName })
         ]);
         if (allRes.Status == 'OK' && memberRes.Status == 'OK') {
+          //接口已统一展开代码包含权限，所有已有授权成员均不能重复添加。
           const memberUuids = new Set(memberRes.Return.tbodyList.map(user => user.uuid));
           this.candidateList = allRes.Return.tbodyList.filter(user => !memberUuids.has(user.uuid));
         } else {
@@ -90,7 +91,7 @@ export default {
     },
     //仅追加选中候选的当前权限，不覆盖这些用户的其他直接授权。
     async save() {
-      if (this.isLoading || this.loadFailed || this.isSaving || !this.selectedUuids.length) {
+      if (this.isLoading || this.loadFailed || this.isSaving || !this.selectedCandidateUuids.length) {
         return;
       }
       this.isSaving = true;
@@ -98,7 +99,7 @@ export default {
         const res = await this.$api.common.saveAuthUser({
           auth: this.authName,
           authGroup: this.authGroup,
-          userUuidList: [...this.selectedUuids],
+          userUuidList: [...this.selectedCandidateUuids],
           userType: 'system'
         });
         if (res.Status == 'OK') {
@@ -118,6 +119,13 @@ export default {
       }
       this.dialogConfig.isShow = false;
       this.$emit('close', isSaved);
+    }
+  },
+  computed: {
+    //保存只接受本次候选中的 UUID，过滤旧选择及已授权成员并去重。
+    selectedCandidateUuids() {
+      const candidateUuids = new Set(this.candidateList.map(user => user.uuid));
+      return [...new Set(this.selectedUuids)].filter(uuid => candidateUuids.has(uuid));
     }
   }
 };

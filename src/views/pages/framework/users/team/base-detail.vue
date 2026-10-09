@@ -1,25 +1,37 @@
 <template>
-  <div>
+  <div class="team-detail">
     <TsForm ref="teamForm" :itemList="formData">
       <template v-slot:teamUserTitleList>
-        <div>
-          <div class="text-href tsfont-plus addBtn" @click="editUserTitle()">{{ $t('dialog.title.addtarget', { target: $t('page.user') }) }}</div>
-          <ul v-if="teamUserTitleList && teamUserTitleList.length" class="leader-ul">
-            <li v-for="(data, index) in teamUserTitleList" :key="index" class="bg-op radius-sm">
-              <div class="div-header">
-                <span class="text-tip">{{ data.title }}</span>
-                <div class="div-btn">
-                  <span class="tsfont-edit text-tip-active ml-md" :title="$t('page.edit')" @click="editUserTitle(data, index)"></span>
-                  <span class="tsfont-trash-o text-tip-active ml-md" :title="$t('page.delete')" @click="removeUserTitle(index, data)"></span>
+        <div class="title-list">
+          <div class="text-href tsfont-plus addBtn" @click="editUserTitle()">
+            {{ $t('dialog.title.addtarget', { target: $t('page.user') }) }}</div>
+          <div ref="titleTable">
+            <TsTable
+              :theadList="titleTheadList"
+              :tbodyList="teamUserTitleList"
+              :height="titleTableHeight"
+              :showPager="false"
+            >
+              <template v-slot:userList="{ row }">
+                <div class="title-users">
+                  <UserSelect
+                    v-for="(item, index) in row.userList || []"
+                    :key="index"
+                    :value="item && item.includes('user#') ? item : `user#${item}`"
+                    :readonly="true"
+                  ></UserSelect>
                 </div>
-              </div>
-              <div v-if="data.userList && data.userList.length > 0" class="div-content">
-                <div v-for="item in data.userList" :key="item">
-                  <UserSelect :value="item && item.includes('user#') ? item : `user#${item}`" :readonly="true"></UserSelect>
+              </template>
+              <template v-slot:action="{ row }">
+                <div class="tstable-action">
+                  <ul class="tstable-action-ul">
+                    <li class="tsfont-edit text-action" @click="editUserTitle(row, teamUserTitleList.indexOf(row))">{{ $t('page.edit') }}</li>
+                    <li class="tsfont-trash-o text-action" @click="removeUserTitle(teamUserTitleList.indexOf(row))">{{ $t('page.delete') }}</li>
+                  </ul>
                 </div>
-              </div>
-            </li>
-          </ul>
+              </template>
+            </TsTable>
+          </div>
         </div>
       </template>
     </TsForm>
@@ -39,6 +51,7 @@ export default {
   name: '',
   components: {
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
+    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
     UserSelect: () => import('@/resources/components/UserSelect/UserSelect.vue')
   },
   filters: {},
@@ -98,6 +111,12 @@ export default {
         }
       },
       teamUserTitleList: [],
+      titleTableHeight: 240,
+      titleTheadList: [
+        { title: this.$t('term.framework.position'), key: 'title', width: 160 },
+        { title: this.$t('page.user'), key: 'userList' },
+        { title: ' ', key: 'action', type: 'action', width: 160 }
+      ],
       isShowEditUserDialog: false,
       addConfig: {
         title: '',
@@ -113,7 +132,8 @@ export default {
             rootName: 'tbodyList',
             valueName: 'name',
             textName: 'name',
-            validateList: ['required']
+            validateList: ['required'],
+            desc: this.$t('term.framework.positionoptiondesc')
           },
           userList: {
             type: 'userselect',
@@ -132,14 +152,35 @@ export default {
   beforeMount() {},
   mounted() {
     this.getteamForm();
+    this.$nextTick(this.updateTitleTableHeight);
+    window.addEventListener('resize', this.updateTitleTableHeight);
+    if (window.ResizeObserver) {
+      this.titleTableObserver = new ResizeObserver(() => this.$nextTick(this.updateTitleTableHeight));
+      this.titleTableObserver.observe(this.$el);
+    }
   },
   beforeUpdate() {},
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    window.removeEventListener('resize', this.updateTitleTableHeight);
+    if (this.titleTableObserver) {
+      this.titleTableObserver.disconnect();
+    }
+  },
   destroyed() {},
   methods: {
+    updateTitleTableHeight() {
+      const table = this.$refs.titleTable;
+      if (!table || !table.getBoundingClientRect().width) return;
+      const form = this.$el.closest('.detail-form');
+      const footer = form && form.querySelector('.detail-footer');
+      const content = this.$el.closest('.tscontain-body');
+      if (!content) return;
+      const bottom = footer ? footer.getBoundingClientRect().top : content.getBoundingClientRect().bottom - 56;
+      this.titleTableHeight = Math.max(120, Math.floor(bottom - table.getBoundingClientRect().top - 16));
+    },
     getteamForm() {
       let _this = this;
       if (this.uuid && !this.isAdd) {
@@ -154,8 +195,11 @@ export default {
               let item = _this.formData[key];
               item.value = teamConfig[key];
             }
-            this.teamUserTitleList = teamConfig.teamUserTitleList;
-            _this.formData.pathNameList.value = _this.formData.pathNameList.value.join('>');
+            this.teamUserTitleList = teamConfig.teamUserTitleList || [];
+            this.$nextTick(this.updateTitleTableHeight);
+            _this.formData.pathNameList.value = _this.formData.pathNameList.value.join(' / ');
+            //向页面提供同一次查询的完整分组路径，标题无需重复请求详情。
+            this.$emit('loaded', teamConfig);
           }
         });
       }
@@ -236,32 +280,9 @@ export default {
   margin-left: 0px !important;
   margin-bottom: @space-sm;
 }
-.leader-ul {
-  > li {
-    margin-bottom: @space-sm;
-    padding: @space-sm @space-normal;
-    .div-header {
-      position: relative;
-      padding-right: 50px;
-      > .div-btn {
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        visibility: hidden;
-      }
-    }
-    .div-content {
-      padding: 0px @space-normal;
-      .desc {
-        padding-left: 6px;
-        vertical-align: baseline;
-      }
-    }
-    &:hover {
-      .div-btn {
-        visibility: visible;
-      }
-    }
-  }
+.title-users {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 </style>

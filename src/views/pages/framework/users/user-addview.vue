@@ -11,6 +11,13 @@
       </template>
       <template v-slot:topLeft>
         <span>{{ uuid && readonly?$t('term.framework.viewuser'):(uuid && !readonly?$t('dialog.title.edittarget', {target: $t('page.user')}):$t('dialog.title.createtarget', {target: $t('page.user')})) }}</span>
+        <template v-if="uuid && userDetail">
+          <Divider type="vertical" />
+          <span class="user-edit-target">
+            {{ userDetail.userName || userDetail.userId }}
+            <span v-if="userDetail.userId && userDetail.userId !== userDetail.userName" class="text-grey">({{ userDetail.userId }})</span>
+          </span>
+        </template>
       </template>
       <div slot="topRight" class="top">
         <div class="bar-top">

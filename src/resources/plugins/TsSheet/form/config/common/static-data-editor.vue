@@ -328,7 +328,7 @@ function getDefaultValue(list, value, index) {
   display: grid;
   column-gap: 6px;
   width: 100%;
-  grid-template-columns: 40% 40% auto;
+  grid-template-columns: 38% 38% auto;
   &:not(:last-child) {
     padding-bottom: 10px;
   }

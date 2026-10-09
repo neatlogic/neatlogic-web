@@ -19,7 +19,7 @@
           <Checkbox v-model="config.actionEdit" :disabled="disabled" class="actionItem">{{ $t('page.edit') }}</Checkbox>
           <Checkbox v-model="config.actionDel" :disabled="disabled" class="actionItem">{{ $t('page.delete') }}</Checkbox>
         </div>
-        <div class="tstable-container">
+        <div class="tstable-container action-table-container">
           <table class="dynamic-table tstable-body">
             <thead>
               <tr>
@@ -204,8 +204,12 @@ export default {
   }
 }
 .dynamic-table {
+  min-width: 480px;
   .first-td {
     padding-left: 0 !important;
   }
+}
+.action-table-container {
+  overflow-x: auto;
 }
 </style>

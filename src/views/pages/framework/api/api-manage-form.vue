@@ -6,8 +6,25 @@
     @on-ok="handleOk"
   >
     <template v-slot>
+      <Loading :loadingShow="isLoading" type="fix"></Loading>
       <div class="input-border">
         <TsForm ref="form" :itemList="formConfig" labelPosition="right">
+          <template v-slot:requiredAuthList>
+            <div v-if="!isLoading" class="required-auth-list">
+              <template v-if="Array.isArray(currentApiData && currentApiData.requiredAuthList)">
+                <template v-if="currentApiData.requiredAuthList.length">
+                  <div class="required-auth-tags">
+                    <Tag v-for="auth in currentApiData.requiredAuthList" :key="auth.name" class="required-auth-tag">
+                      <span v-if="auth.displayName">{{ auth.displayName }} · </span><span class="text-grey">{{ auth.name }}</span>
+                    </Tag>
+                  </div>
+                  <div v-if="currentApiData.requiredAuthList.length > 1" class="text-tip">{{ $t('term.framework.apirequiredauthany') }}</div>
+                </template>
+                <div v-else class="text-grey">{{ $t('term.framework.apirequiredauthnone') }}</div>
+              </template>
+              <div v-else class="text-grey">{{ $t('term.framework.apirequiredauthunavailable') }}</div>
+            </div>
+          </template>
           <template v-slot:basicInfo>
             <div v-if="formConfig?.basic?.value === 'true'">
               <TsForm ref="basicForm" :item-list="basicFormConfig"></TsForm>
@@ -40,13 +57,14 @@ export default {
   },
   data() {
     return {
+      isLoading: true,
       dialogConfig: {
         type: 'modal',
         title: this.$t('dialog.title.edittarget', {'target': this.$t('page.interface')}),
         isShow: true,
         width: 'medium',
         loading: false,
-        isButtonDisabled: false
+        isButtonDisabled: true
       },
       formConfig: {
         token: {
@@ -73,6 +91,11 @@ export default {
             }
           ],
           disabled: true
+        },
+        requiredAuthList: {
+          type: 'slot',
+          label: this.$t('page.executeauthority'),
+          tooltip: this.$t('term.framework.apirequiredauthhelp')
         },
         needAudit: {
           type: 'radio',
@@ -167,8 +190,8 @@ export default {
       currentApiData: null
     };
   },
-  created() {
-    this.fetchFormValue(this.token);
+  async created() {
+    await this.fetchFormValue(this.token);
   },
   methods: {
     isObjectApiType(type) {
@@ -193,7 +216,11 @@ export default {
       this.dialogConfig.title = '';
       this.currentApiData = null;
     },
-    handleOk() {
+    // 详情未就绪或保存中时禁止提交，只提交可编辑配置，不回传声明权限。
+    async handleOk() {
+      if (this.isLoading || this.dialogConfig.loading || this.dialogConfig.isButtonDisabled || !this.currentApiData) {
+        return;
+      }
       const isValid = Object.values(this.$refs)
         .filter(ref => ref)
         .every(ref => ref.valid());
@@ -201,37 +228,40 @@ export default {
         return;
       }
       this.dialogConfig.loading = true;
-      const params = {
-        ...this.$refs.form.getFormValue(),
-        ...(this.$refs.basicForm ? this.$refs.basicForm.getFormValue() : {})
-      };
-      params.handler = this.currentApiData.handler;
-      params.isActive = this.currentApiData.isActive;
-      if (!this.isObjectApiType(this.currentApiData && this.currentApiData.type)) {
-        params.isMcp = 0;
+      try {
+        const params = {
+          ...this.$refs.form.getFormValue(),
+          ...(this.$refs.basicForm ? this.$refs.basicForm.getFormValue() : {})
+        };
+        delete params.requiredAuthList;
+        params.handler = this.currentApiData.handler;
+        params.isActive = this.currentApiData.isActive;
+        if (!this.isObjectApiType(this.currentApiData && this.currentApiData.type)) {
+          params.isMcp = 0;
+        }
+        const res = await this.$api.framework.apiManage.save(params);
+        if (res.Status === 'OK') {
+          setTimeout(() => {
+            this.$Message.success(this.$t('message.savesuccess'));
+          }, 200);
+          this.$parent.getTableConfig();
+          this.$parent.getTree();
+          this.$emit('on-hide');
+        }
+      } finally {
+        this.dialogConfig.loading = false;
       }
-      this.$api.framework.apiManage
-        .save(params)
-        .then(res => {
-          if (res.Status === 'OK') {
-            setTimeout(() => {
-              this.$Message.success(this.$t('message.savesuccess'));
-            }, 200);
-            this.$parent.getTableConfig();
-            this.$parent.getTree();
-            this.$emit('on-hide');
-          }
-        })
-        .finally(() => {
-          this.dialogConfig.loading = false;
-        });
     },
-    fetchFormValue(token) {
+    // 加载失败保留禁用状态，避免把未知权限误显示为无需权限。
+    async fetchFormValue(token) {
+      this.isLoading = true;
+      this.currentApiData = null;
       this.dialogConfig.isButtonDisabled = true;
       Object.values(this.formConfig).forEach(item => {
         item.disabled = true;
       }); //从服务器获取数据时禁止修改表单内容
-      return this.$api.framework.apiManage.get({ token }).then(res => {
+      try {
+        const res = await this.$api.framework.apiManage.get({ token });
         if (res.Status === 'OK') {
           this.currentApiData = res.Return;
           Object.values(this.formConfig).forEach(item => {
@@ -254,8 +284,30 @@ export default {
           this.updateMcpFormItem(res.Return);
           this.dialogConfig.isButtonDisabled = false;
         }
-      });
+      } finally {
+        this.isLoading = false;
+      }
     }
   }
 };
 </script>
+
+<style lang="less" scoped>
+.required-auth-list {
+  overflow-wrap: anywhere;
+  // 与 TsForm 的 32px 表单行保持一致，避免 Tag 的默认外边距和行内基线造成偏移。
+  .required-auth-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    min-height: 32px;
+  }
+  .required-auth-tag {
+    margin: 0;
+    max-width: 100%;
+    height: auto;
+    white-space: normal;
+  }
+}
+</style>
