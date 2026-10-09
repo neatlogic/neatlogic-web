@@ -6,6 +6,13 @@
       </template>
       <template v-slot:topLeft>
         <span>{{ $t('page.editauthority') }}</span>
+        <template v-if="authName">
+          <Divider type="vertical" />
+          <span>
+            {{ authDisplayName || authName }}
+            <span v-if="authDisplayName && authDisplayName !== authName" class="text-grey">({{ authName }})</span>
+          </span>
+        </template>
       </template>
       <div slot="content" class="content border-color">
         <Tabs v-model="tabsName">
@@ -55,6 +62,7 @@ export default {
   data() {
     return {
       authName: '', //权限名称
+      authDisplayName: '', //当前权限的展示名称，由既有权限查询接口返回。
       groupName: '',
       userLabel: this.getLabel(this.$t('page.user'), 'user', 0), //用户标签名称及人数
       roleLabel: this.getLabel(this.$t('page.role'), 'role', 0), //角色标签名称及人数
@@ -90,6 +98,24 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //按权限标识精确匹配展示名称；加载失败时标题仍展示标识，过期响应不覆盖当前目标。
+    async loadAuthDisplayName() {
+      this.authDisplayName = '';
+      const authName = this.authName;
+      const groupName = this.groupName;
+      if (!authName) {
+        return;
+      }
+      try {
+        const res = await this.$api.framework.auth.getAuthList({ groupName: groupName || 'all', keyword: authName });
+        if (res.Status == 'OK' && this.authName === authName && this.groupName === groupName) {
+          const auth = (res.Return || []).find(item => item.name === authName);
+          this.authDisplayName = auth ? auth.displayName : '';
+        }
+      } catch (error) {
+        //请求错误由统一 HTTP 层提示，标题继续展示权限标识以便定位。
+      }
+    },
     //系统用户子组件独立刷新直接成员数量，不依赖当前选中的页签。
     updateSystemUserCount(count) {
       this.systemUserCount = count;
@@ -229,7 +255,12 @@ export default {
       return this.getLabel(this.$t('term.framework.systemuser'), 'system', this.systemUserCount);
     }
   },
-  watch: {}
+  watch: {
+    //初始化及权限切换均重新查询名称，不沿用上一个权限的标题。
+    authName() {
+      this.loadAuthDisplayName();
+    }
+  }
 };
 </script>
 <style lang="less">

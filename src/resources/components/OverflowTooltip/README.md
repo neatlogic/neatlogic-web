@@ -4,7 +4,7 @@
 
 ```vue
 <OverflowTooltip :content="name" placement="right">
-  <span class="overflow">{{ name }}</span>
+  <div class="overflow">{{ name }}</div>
 </OverflowTooltip>
 ```
 

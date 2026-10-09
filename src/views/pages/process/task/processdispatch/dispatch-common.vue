@@ -41,6 +41,7 @@
               v-show="showDetailConfig.form"
               ref="formSetting"
               :draftData="draftData"
+              :copyReport="copyReport"
               :externalData="externalData"
               :priorityList="priorityList"
               @hook:mounted="syncContentRefs"
@@ -93,6 +94,10 @@ export default {
     },
     draftData: {//暂存数据
       type: Object
+    },
+    copyReport: {
+      type: Boolean,
+      default: false
     },
     isOrderRightHide: {
       type: Boolean,

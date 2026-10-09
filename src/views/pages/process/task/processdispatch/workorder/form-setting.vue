@@ -32,6 +32,10 @@ export default {
   mixins: [dealFormMix],
   props: {
     draftData: Object,
+    copyReport: {
+      type: Boolean,
+      default: false
+    },
     priorityList: Array,
     externalData: {
       // 外部数据，非表单数据，例如工单上报人数据等
@@ -274,10 +278,38 @@ export default {
         formData.hidecomponentList = this.$refs.FormPreview.getHidecomponent();
         formData.readcomponentList = this.$refs.FormPreview.getReadcomponent();
       } else if (this.$refs.formSheet) {
-        formData.formAttributeDataList = this.$refs.formSheet.getFormData();
-        formData.hidecomponentList = this.$refs.formSheet.getHiddenComponents();
-        formData.readcomponentList = this.$refs.formSheet.getReadComponents();
-        formData.formExtendAttributeDataList = this.$refs.formSheet.getFormExtendData();
+        const formSheet = this.$refs.formSheet;
+        formData.formAttributeDataList = formSheet.getFormData();
+        if (this.copyReport) {
+          // 复制来源可能包含其他场景的数据，以当前页面使用的场景配置为准。
+          const componentMap = new Map();
+          const addComponent = component => {
+            if (Array.isArray(component)) {
+              component.forEach(addComponent);
+            } else if (component) {
+              if (component.uuid) componentMap.set(component.uuid, component);
+              if (component.isContainer && component.component) addComponent(component.component);
+            }
+          };
+          (formSheet.config.tableList || []).forEach(cell => addComponent(cell && cell.component));
+          formData.formAttributeDataList = formData.formAttributeDataList.filter(item => componentMap.has(item.attributeUuid)).map(item => {
+            const component = componentMap.get(item.attributeUuid);
+            if (component.handler !== 'formtableinputer' || !Array.isArray(item.dataList)) return item;
+            // 表格实际渲染的列由 isPC 控制，其他列可能只是供过滤或联动使用。
+            const columnUuidSet = new Set((component.config?.dataConfig || []).filter(column => column.isPC).map(column => column.uuid));
+            const dataList = item.dataList.map(row => {
+              const currentRow = {};
+              Object.keys(row).forEach(key => {
+                if (key === 'uuid' || columnUuidSet.has(key)) currentRow[key] = row[key];
+              });
+              return currentRow;
+            }).filter(row => Object.keys(row).some(key => key !== 'uuid'));
+            return {...item, dataList};
+          });
+        }
+        formData.hidecomponentList = formSheet.getHiddenComponents();
+        formData.readcomponentList = formSheet.getReadComponents();
+        formData.formExtendAttributeDataList = formSheet.getFormExtendData();
       }
       return formData;
     },

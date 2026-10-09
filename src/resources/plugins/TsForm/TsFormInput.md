@@ -72,7 +72,7 @@ TsFormInput 是一个基于 Input / InputNumber 封装的表单输入组件，�
 | rows          | Number                    | 5               | 否  | textarea 行数       | 仅 type=textarea 生效                          |
 | height        | String / Number / Boolean | false           | 否  | textarea 固定高度     | 仅 type=textarea 生效                          |
 | monospace     | Boolean                   | false           | 否  | textarea 等宽字体     | 仅 type=textarea 生效                          |
-| border        | String                    | -               | 否  | 边框样式              | border、bottom、none                          |
+| border        | String                    | -               | 否  | 边框样式              | border、bottom、none、nobdbg                        |
 | className     | String                    | -               | 否  | 外层自定义 class       | -                                           |
 | readonlyClass | String                    | tsform-readonly | 否  | 只读状态 class        | 可覆盖只读样式                                     |
 | desc          | String                    | -               | 否  | 底部描述文案            | 显示在控件下方                                     |

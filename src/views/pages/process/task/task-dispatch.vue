@@ -89,6 +89,7 @@
           ref="dispatchCommon"
           :handler="handler"
           :draftData="draftData"
+          :copyReport="!!copyProcessTaskId"
           :isOrderRightHide="isOrderRightHide"
           :processTaskId="processTaskId"
           @ready-change="dispatchReady = $event"
