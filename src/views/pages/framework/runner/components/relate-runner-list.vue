@@ -138,7 +138,7 @@ export default {
       if (view == 'del' && row) {
         this.$createDialog({
           title: this.$t('page.warning'),
-          content: `${this.$t('term.framework.deleteconfirm')}Runner<span style="color: red">${row.name}</span>?`,
+          content: `${this.$t('term.framework.deleteconfirm')} Runner<span style="color: red;margin: 0 5px;">${row.name}</span>?`,
           btnType: 'error',
           'on-ok': vnode => {
             vnode.isShow = false;
