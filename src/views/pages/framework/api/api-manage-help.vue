@@ -3,7 +3,7 @@
     <template v-slot>
       <div>
         <Tabs
-          v-if="rowData.isMcp"
+          v-if="isMcpAvailable && rowData.isMcp"
           v-model="activeTab"
           :animated="false"
           class="mb-md"
@@ -11,7 +11,7 @@
           <TabPane :label="$t('term.framework.apihelp')" name="api"></TabPane>
           <TabPane :label="$t('term.framework.mcpdescription')" name="mcp"></TabPane>
         </Tabs>
-        <div v-if="!rowData.isMcp || activeTab === 'api'">
+        <div v-if="!isMcpAvailable || !rowData.isMcp || activeTab === 'api'">
           <div v-if="Object.keys(helpData).length">
             <TsFormItem :label="$t('page.interface')" :labelWidth="80">
               <strong>{{ rowData.url }}</strong>
@@ -52,7 +52,7 @@
           </div>
           <div v-else>{{ helpMessage }}</div>
         </div>
-        <div v-if="rowData.isMcp && activeTab === 'mcp'">
+        <div v-if="isMcpAvailable && rowData.isMcp && activeTab === 'mcp'">
           <div v-if="Object.keys(mcpHelpData).length">
             <TsFormItem :label="$t('page.interface')" :labelWidth="100">
               <strong>{{ mcpHelpData.title || rowData.name || '-' }}</strong>
@@ -115,6 +115,7 @@
 </template>
 
 <script>
+import { hasMcpSupport } from './mcp-capability';
 export default {
   name: 'ApiHelp',
   components: {
@@ -178,7 +179,7 @@ export default {
       while (true) yield i++;
     })();
     this.getHelpData(this.rowData);
-    if (this.rowData.isMcp) {
+    if (this.isMcpAvailable && this.rowData.isMcp) {
       this.getMcpHelp();
     }
   },
@@ -203,6 +204,10 @@ export default {
         });
     },
     getMcpHelp() {
+      // 同时保护初始化和直接方法调用，隐藏页签后不再加载 MCP 说明。
+      if (!this.isMcpAvailable || !this.rowData.isMcp) {
+        return;
+      }
       this.mcpHelpMessage = this.$t('page.loadingtip');
       return this.$api.framework.apiManage
         .getMcpHelp({ token: this.rowData.token })
@@ -239,6 +244,7 @@ export default {
     }
   },
   computed: {
+    isMcpAvailable: hasMcpSupport,
     isDangerousTool() {
       return this.mcpHelpData.annotations && this.mcpHelpData.annotations.readOnlyHint !== true;
     }

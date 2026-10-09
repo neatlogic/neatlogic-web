@@ -1,5 +1,6 @@
 <template>
   <TsDialog
+    v-if="isMcpAvailable"
     :isShow="isShow"
     :title="$t('term.framework.mcptoollisttest')"
     type="slider"
@@ -41,6 +42,8 @@
 </template>
 
 <script>
+import { hasMcpSupport } from './mcp-capability';
+
 export default {
   name: 'ApiManageMcpToolList',
   components: {
@@ -66,6 +69,9 @@ export default {
       this.$emit('close');
     },
     executeListTools() {
+      if (!this.isMcpAvailable) {
+        return;
+      }
       this.isLoading = true;
       this.result = null;
       this.$api.framework.apiManage
@@ -82,6 +88,7 @@ export default {
     }
   },
   computed: {
+    isMcpAvailable: hasMcpSupport,
     endpoint() {
       return this.moduleScope ? `/api/mcp/${TENANT}/${this.moduleScope}` : `/api/mcp/${TENANT}`;
     },

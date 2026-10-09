@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import { hasMcpSupport } from './mcp-capability';
+
 export default {
   name: 'ApiForm',
   components: {
@@ -124,6 +126,7 @@ export default {
           value: 0,
           label: this.$t('term.framework.mcpservice'),
           disabled: false,
+          isHidden: !hasMcpSupport(),
           validateList: ['required'],
           valueName: 'value',
           textName: 'text',
@@ -198,7 +201,8 @@ export default {
       return type === 'object';
     },
     updateMcpFormItem(apiData) {
-      if (!this.formConfig || !this.formConfig.isMcp) {
+      // 隐藏 MCP 设置时保留详情值，类型限制只作用于可编辑的 MCP 开关。
+      if (!this.isMcpAvailable || !this.formConfig || !this.formConfig.isMcp) {
         return;
       }
       const currentApiMode = apiData && apiData.type;
@@ -236,7 +240,10 @@ export default {
         delete params.requiredAuthList;
         params.handler = this.currentApiData.handler;
         params.isActive = this.currentApiData.isActive;
-        if (!this.isObjectApiType(this.currentApiData && this.currentApiData.type)) {
+        // 未开放 MCP 时回传原配置，避免普通配置保存被 DTO 默认值覆盖。
+        if (!this.isMcpAvailable) {
+          params.isMcp = this.currentApiData.isMcp;
+        } else if (!this.isObjectApiType(this.currentApiData && this.currentApiData.type)) {
           params.isMcp = 0;
         }
         const res = await this.$api.framework.apiManage.save(params);
@@ -288,6 +295,9 @@ export default {
         this.isLoading = false;
       }
     }
+  },
+  computed: {
+    isMcpAvailable: hasMcpSupport
   }
 };
 </script>

@@ -6,7 +6,7 @@
     <template v-slot>
       <div>
         <Tabs
-          v-if="rowData.isMcp"
+          v-if="isMcpAvailable && rowData.isMcp"
           v-model="activeTab"
           :animated="false"
           class="mb-md"
@@ -14,7 +14,7 @@
           <TabPane :label="$t('term.framework.apitest')" name="api"></TabPane>
           <TabPane :label="$t('term.framework.mcptest')" name="mcp"></TabPane>
         </Tabs>
-        <div v-if="!rowData.isMcp || activeTab === 'api'">
+        <div v-if="!isMcpAvailable || !rowData.isMcp || activeTab === 'api'">
           <TsFormItem :label="$t('page.interface')" :labelWidth="100">
             <strong>{{ rowData.url }}</strong>
           </TsFormItem>
@@ -109,7 +109,7 @@
             ></JsonViewer>
           </TsFormItem>
         </div>
-        <div v-if="rowData.isMcp && activeTab === 'mcp'">
+        <div v-if="isMcpAvailable && rowData.isMcp && activeTab === 'mcp'">
           <TsFormItem :label="$t('term.framework.toolname')" :labelWidth="100">
             <span>{{ mcpHelpData.toolName || '-' }}</span>
           </TsFormItem>
@@ -160,6 +160,7 @@
 
 <script>
 import * as authHandler from './authhandler/index.js';
+import { hasMcpSupport } from './mcp-capability';
 
 export default {
   name: 'ApiTest',
@@ -227,7 +228,7 @@ export default {
     this.getHelpData(this.rowData);
     this.testData.token = this.rowData.url;
     this.testData.param = {};
-    if (this.rowData.isMcp) {
+    if (this.isMcpAvailable && this.rowData.isMcp) {
       this.getMcpHelp();
     }
   },
@@ -379,6 +380,10 @@ export default {
         });
     },
     getMcpHelp() {
+      // 未开放 MCP 时不加载说明，避免仅隐藏界面却继续发送请求。
+      if (!this.isMcpAvailable || !this.rowData.isMcp) {
+        return;
+      }
       this.mcpHelpMessage = this.$t('page.loadingtip');
       return this.$api.framework.apiManage
         .getMcpHelp({ token: this.rowData.token })
@@ -404,6 +409,9 @@ export default {
       }
     },
     executeMcpCall() {
+      if (!this.isMcpAvailable || !this.rowData.isMcp) {
+        return;
+      }
       this.isMcpDebugLoading = true;
       this.mcpDebugResult = null;
       this.$api.framework.apiManage
@@ -420,6 +428,7 @@ export default {
     }
   },
   computed: {
+    isMcpAvailable: hasMcpSupport,
     displayInputColumns() {
       const inputList = Array.isArray(this.helpData.input) ? this.helpData.input : [];
       const hiddenColumnKeyList = ['rule', 'help'].filter(key => !inputList.some(item => !this.$utils.isEmpty(item[key])));

@@ -88,6 +88,7 @@
 
 <script>
 import download from '@/resources/directives/download.js';
+import { hasMcpSupport } from './mcp-capability';
 export default {
   name: 'CallRecord',
   directives: {download},
@@ -261,14 +262,14 @@ export default {
         }
       });
     },
-    // 获取访问类型下拉列表
+    // 商业标识缺失时隐藏 MCP 筛选项，历史记录及其访问类型仍正常展示。
     getTypeList() {
       const data = {
         enumClass: 'neatlogic.framework.restful.enums.ApiAccessType'
       };
       this.$api.common.getSelectList(data).then(res => {
         if (res.Status === 'OK') {
-          const list = res.Return || [];
+          const list = (res.Return || []).filter(item => this.isMcpAvailable || item.value !== 'mcp');
           if (list.length > 0) {
             this.typeDataList.push(...list);
           }
@@ -283,6 +284,7 @@ export default {
     }
   },
   computed: {
+    isMcpAvailable: hasMcpSupport,
     auditDetailDownloadParams() {
       return {
         url: 'api/binary/apimanage/audit/detail/download',

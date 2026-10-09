@@ -8,7 +8,7 @@
             <AuditConfig auditName="API-AUDIT" :title="$t('term.framework.apiaccesstime')"></AuditConfig>
           </span>
           <span class="action-item tsfont-download" @click="exportHelp()">{{ $t('page.export') }}</span>
-          <span class="action-item tsfont-agent" @click="showMcpToolList()">{{ $t('term.framework.mcptoollist') }}</span>
+          <span v-if="isMcpAvailable" class="action-item tsfont-agent" @click="showMcpToolList()">{{ $t('term.framework.mcptoollist') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
@@ -98,7 +98,7 @@
     />
     <ApiTest v-if="isTestShow" :rowData="rowData" @close="isTestShow = false"></ApiTest>
     <McpToolList
-      v-if="isMcpToolListShow"
+      v-if="isMcpAvailable && isMcpToolListShow"
       :isShow="isMcpToolListShow"
       @close="isMcpToolListShow = false"
     ></McpToolList>
@@ -107,6 +107,7 @@
 
 <script>
 import download from '@/resources/mixins/download.js';
+import { hasMcpSupport } from './mcp-capability';
 export default {
   name: 'ApiManage',
   components: {
@@ -149,7 +150,7 @@ export default {
         { title: this.$t('page.module'), key: 'moduleGroupName', minWidth: 60 },
         { title: this.$t('page.visittimes'), key: 'visitTimes', minWidth: 60 },
         { title: ' ', key: 'action', align: 'right', width: 10 }
-      ]),
+      ].filter(column => hasMcpSupport() || column.key !== 'isMcp')),
       tableConfig: {
         //表格配置
         tbodyList: [],
@@ -215,7 +216,7 @@ export default {
             params: { enumClass: 'neatlogic.framework.restful.constvalue.ApiAuthType' },
             transfer: true
           }
-        ]
+        ].filter(item => hasMcpSupport() || item.name !== 'isMcp')
       }
     };
   },
@@ -285,6 +286,10 @@ export default {
       let searchVal = { ...this.initSearchVal};
       searchVal = { ...searchVal, ...this.searchVal };
       this.searchParams = { ...this.searchParams, currentPage: 1, ...params, ...searchVal };
+      // 商业标识缺失时清除合并后的 MCP 条件，避免历史搜索值继续限制普通接口列表。
+      if (!this.isMcpAvailable) {
+        delete this.searchParams.isMcp;
+      }
       this.$api.framework.apiManage
         .search(this.searchParams)
         .then(res => {
@@ -345,6 +350,9 @@ export default {
       this.isFormDialogShow = true;
     },
     showMcpToolList() {
+      if (!this.isMcpAvailable) {
+        return;
+      }
       this.isMcpToolListShow = true;
     },
     t(arg) {
@@ -364,6 +372,7 @@ export default {
     }
   },
   computed: {
+    isMcpAvailable: hasMcpSupport,
     isSiderHide: {
       get() {
         return this.$store.state.isSiderTreeHide;
