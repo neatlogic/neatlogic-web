@@ -1445,6 +1445,7 @@
     "usercount": "User Count",
     "teamcount": "User Group Count",
     "teamname": "User Group Name",
+    "positionoptiondesc": "Job title options are empty by default. Enter a job title and press Enter to add it.",
     "authname": "Permission Name",
     "belongmodule": "Module",
     "authdesc": "Permission Description",
