@@ -24,3 +24,6 @@ pnpm-lock.yaml
 public/version.md
 *.zip
 tests
+
+# 本地回归测试脚本不提交到仓库
+/scripts/test-*
