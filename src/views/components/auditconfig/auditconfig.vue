@@ -15,8 +15,8 @@
         clearable
         v-bind="timeSelectConfig"
       ></TimeSelect>
-      <div v-if="!help" class="mt-nm text-grey">{{ $t('message.autoexec.savedeadlinenolimit') }}</div>
-      <div v-else style="white-space: normal; work-break: break-all" class="mt-nm text-grey">
+      <div v-if="!help" class="mt-nm text-grey pre">{{ $t('message.autoexec.savedeadlinenolimit') }}</div>
+      <div v-else style="white-space: normal; work-break: break-all;" class="mt-nm text-grey">
         {{ help }}
       </div>
       <div class="mt-nm text-right">
