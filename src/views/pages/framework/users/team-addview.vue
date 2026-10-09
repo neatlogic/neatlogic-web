@@ -51,28 +51,36 @@
               :isEdit="isEdit"
               :isAdd="isAdd"
             ></BaseDetail>
-            <Button v-show="current != 2 && current == 0" type="primary" @click="next(current+1)">{{ $t('page.thenextstep') }}</Button>
+            <Button
+              v-show="current != 2 && current == 0"
+              class="mt-sm"
+              type="primary"
+              @click="next(current+1)"
+            >{{ $t('page.thenextstep') }}</Button>
           </div>
           <div v-show="current == 1" class="adduser">
             <CommonAdduser ref="commonAdduser" :type="type" :isTeam="true"></CommonAdduser>
           </div>
         </div>
         <div v-else style="height:100%;">
-          <Tabs v-model="tabsName">
+          <Tabs v-model="tabsName" class="team-tabs">
             <TabPane :label="label1" name="teamTabs">
-              <div class="form">
+              <div class="form detail-form">
                 <BaseDetail
                   ref="teamForm"
+                  class="detail-content"
                   :uuid="uuid"
                   :isEdit="isEdit"
                   :isAdd="isAdd"
                 ></BaseDetail>
-                <Button
-                  type="primary"
-                  class="save"
-                  :loading="isLoading"
-                  @click="saveTeam()"
-                >{{ $t('page.save') }}</Button>
+                <div class="detail-footer">
+                  <Button
+                    type="primary"
+                    class="save"
+                    :loading="isLoading"
+                    @click="saveTeam()"
+                  >{{ $t('page.save') }}</Button>
+                </div>
               </div>
             </TabPane>
             <TabPane :label="label2" name="userTabs">
@@ -564,6 +572,12 @@ export default {
   display: inline-block;
 }
 .team-addview {
+  .content .form {
+    width: 60%;
+    @media (min-width: 1921px) {
+      width: 40%;
+    }
+  }
   .ivu-tabs-nav .ivu-tabs-tab {
     padding: 0px;
   }
@@ -577,6 +591,34 @@ export default {
   }
   .ivu-tabs {
     height: 100%;
+  }
+  .detail-form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .detail-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .detail-footer {
+      flex: none;
+      padding: @space-normal 0;
+    }
+  }
+  ::v-deep .team-tabs {
+    display: flex;
+    flex-direction: column;
+    > .ivu-tabs-bar {
+      flex: none;
+    }
+    > .ivu-tabs-content {
+      flex: 1;
+      min-height: 0;
+      > .ivu-tabs-tabpane {
+        height: 100%;
+      }
+    }
   }
 }
 .submitModelBox {

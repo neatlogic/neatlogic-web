@@ -1441,6 +1441,7 @@
     "usercount": "用户数量",
     "teamcount": "分组数量",
     "teamname": "分组名称",
+    "positionoptiondesc": "职务选项默认为空。输入职务名称后按回车键即可添加。",
     "authname": "权限名称",
     "belongmodule": "所属模块",
     "authdesc": "权限描述",
