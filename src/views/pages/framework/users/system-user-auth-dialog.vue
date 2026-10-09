@@ -12,9 +12,11 @@
       <CommonAuth
         v-else-if="!isLoading"
         ref="commonAuth"
+        class="system-user-auth-list"
         :authList="authList"
         :authUserSelectList="authUserSelectList"
         :authRoleSelectList="authRoleSelectList"
+        :authCodeSelectList="authCodeSelectList"
         :readOnly="isSaving"
       ></CommonAuth>
     </template>
@@ -47,7 +49,7 @@ export default {
       dialogConfig: {
         type: 'modal',
         isShow: true,
-        width: 'large',
+        width: '80%',
         maskClose: false
       },
       isLoading: true,
@@ -55,6 +57,7 @@ export default {
       isSaving: false,
       authList: [],
       authUserSelectList: {},
+      authCodeSelectList: {},
       authRoleSelectList: {}
     };
   },
@@ -75,6 +78,7 @@ export default {
           this.authList = groupRes.Return.authGroupList;
           this.authUserSelectList = userRes.Return.userAuthObj || {};
           this.authRoleSelectList = userRes.Return.userRoleAuthObj || {};
+          this.authCodeSelectList = userRes.Return.userCodeAuthObj || {};
         } else {
           this.loadFailed = true;
         }
@@ -84,7 +88,7 @@ export default {
         this.isLoading = false;
       }
     },
-    //覆盖直接授权并允许空权限撤权，失败保留当前勾选；继承权限由 CommonAuth 只读展示。
+    //仅保存页面授权，角色和代码权限由 CommonAuth 合并只读展示，不增加持久化记录。
     async save() {
       if (this.isSaving || this.isLoading || this.loadFailed || !this.$refs.commonAuth) {
         return;
@@ -117,3 +121,11 @@ export default {
   }
 };
 </script>
+
+<style lang="less" scoped>
+//弹窗由 TsDialog 统一负责内容滚动，权限组件不再创建第二个滚动区域。
+.common-auth.system-user-auth-list {
+  height: auto;
+  overflow: visible;
+}
+</style>

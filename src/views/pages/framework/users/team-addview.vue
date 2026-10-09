@@ -1,6 +1,6 @@
 <template>
   <div class="team-addview">
-    <TsContain>
+    <TsContain :topLeftWidth="isAdd ? '' : '100%'" :topRightWidth="isAdd ? '' : '0px'">
       <template v-slot:navigation>
         <template v-if="canBack">
           <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
@@ -11,6 +11,10 @@
       </template>
       <template v-slot:topLeft>
         <span class="block-item">{{ isAdd? $t('dialog.title.createtarget', {target: $t('page.group')}):$t('dialog.title.edittarget', {target: $t('page.group')}) }}</span>
+        <template v-if="!isAdd && teamPathList.length">
+          <Divider type="vertical" />
+          <span class="team-edit-target" :title="teamPathList.join(' / ')">{{ teamPathList.join(' / ') }}</span>
+        </template>
       </template>
       <div slot="topRight" class="top">
         <div class="bar-top">
@@ -72,6 +76,7 @@
                   :uuid="uuid"
                   :isEdit="isEdit"
                   :isAdd="isAdd"
+                  @loaded="updateTeamPath"
                 ></BaseDetail>
                 <div class="detail-footer">
                   <Button
@@ -154,6 +159,7 @@ export default {
     return {
       type: 'team',
       uuid: null, //分组id
+      teamPathList: [], //当前编辑分组的完整路径，复用基本信息组件加载结果。
       isAdd: null,
       current: 0, //步骤
       stepList: [this.$t('page.basicinfo'), this.$t('dialog.title.addtarget', {target: this.$t('page.member')})],
@@ -213,6 +219,10 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    //接口完整路径包含当前分组，避免只展示直接父级或额外查询祖先分组。
+    updateTeamPath(team) {
+      this.teamPathList = (team.upwardNamePath || team.name || '').split('/').filter(Boolean);
+    },
     clear() {
       clearInterval(this.timer);
       this.timer = null;
@@ -357,6 +367,10 @@ export default {
             .then(res => {
               if (res.Status == 'OK') {
                 this.uuid = res.Return.uuid;
+                //保存改名后仅更新当前分组名称，父级路径沿用已加载数据。
+                if (this.teamPathList.length) {
+                  this.$set(this.teamPathList, this.teamPathList.length - 1, data.name);
+                }
                 this.teamTabsDataList = this.$refs.teamForm.getFormValue();
                 this.teamData = this.getData();
                 this.$Message.success(this.$t('message.savesuccess'));

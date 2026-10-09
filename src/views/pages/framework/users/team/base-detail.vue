@@ -197,7 +197,9 @@ export default {
             }
             this.teamUserTitleList = teamConfig.teamUserTitleList || [];
             this.$nextTick(this.updateTitleTableHeight);
-            _this.formData.pathNameList.value = _this.formData.pathNameList.value.join('>');
+            _this.formData.pathNameList.value = _this.formData.pathNameList.value.join(' / ');
+            //向页面提供同一次查询的完整分组路径，标题无需重复请求详情。
+            this.$emit('loaded', teamConfig);
           }
         });
       }

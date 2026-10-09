@@ -25,7 +25,6 @@
     "relfilterconfigured": "Configured",
     "relfilterinvalid": "A filter reference is unavailable or its operator is no longer supported. Correct it or clear the filters and configure them again.",
     "relfilterloadfailed": "Failed to load filter metadata. Close this dialog and try again.",
-
     "cabinetone": "Cabinet 1",
     "switch1": "Switch 1",
     "objectstorage1": "Object Storage 1",
@@ -1428,10 +1427,13 @@
     "ignoreall": "Ignore all nodes?"
   },
   "framework": {
+    "codeauth": "Code-Defined Permissions",
+    "codeauthreadonly": "Code-defined permissions are declared by modules and cannot be modified.",
     "filterquerylabel": "Query When Linked Fields Have Values",
     "filterquerytip": "When enabled, query only when at least one linked field has a value. When disabled, this restriction does not apply. Table column references use non-empty values from all rows as filter conditions; current-row field references use only the current row's value.",
     "filterquerywaiting": "Enter a value in at least one linked field to query data.",
     "filterqueryinvalid": "Invalid filter reference or circular dependency. Please reconfigure.",
+    "pageauth": "Page-Assigned Permissions",
     "savealldata": "Save All Data",
     "savealldatahelp": "When enabled, all matching records are saved automatically without manual row selection. Saved data is displayed while the filter conditions remain unchanged and reloaded when they change.",
     "accesstype": "Access Type",
@@ -1697,6 +1699,10 @@
     "timeout": "Request Timeout",
     "qps": "QPS",
     "apirecord": "API Call Records",
+    "apirequiredauthany": "Any one of these permissions is sufficient.",
+    "apirequiredauthhelp": "Only the functional permissions declared by the API are shown here. Business object permissions are checked during execution.",
+    "apirequiredauthnone": "No API-Level Functional Permissions Required",
+    "apirequiredauthunavailable": "Execution Permissions Unavailable",
     "calltime": "Call Time",
     "region": "Region",
     "parentregion": "Parent Region",
