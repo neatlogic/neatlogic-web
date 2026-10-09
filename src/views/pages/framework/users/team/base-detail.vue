@@ -155,7 +155,9 @@ export default {
               item.value = teamConfig[key];
             }
             this.teamUserTitleList = teamConfig.teamUserTitleList;
-            _this.formData.pathNameList.value = _this.formData.pathNameList.value.join('>');
+            _this.formData.pathNameList.value = _this.formData.pathNameList.value.join(' / ');
+            //向页面提供同一次查询的完整分组路径，标题无需重复请求详情。
+            this.$emit('loaded', teamConfig);
           }
         });
       }

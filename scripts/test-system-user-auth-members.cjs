@@ -1,7 +1,12 @@
-/* 独立运行：node scripts/test-system-user-auth-members.cjs；只执行真实组件脚本与 API 替身。 */
+/* 独立运行：node scripts/test-system-user-auth-members.cjs；真实组件交互与 API 替身，不写入真实授权。 */
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const { JSDOM } = require('jsdom');
+const dom = new JSDOM('<!doctype html><html><body></body></html>');
+global.window = dom.window;
+global.document = dom.window.document;
+global.navigator = dom.window.navigator;
 const Vue = require('vue');
 const sfc = require('vue/compiler-sfc');
 const babel = require('@babel/core');
@@ -9,18 +14,42 @@ const root = path.resolve(__dirname, '..');
 const directory = path.join(root, 'src/views/pages/framework/users');
 const clone = value => JSON.parse(JSON.stringify(value));
 const flush = async() => { await Promise.resolve(); await Promise.resolve(); await Vue.nextTick(); };
+Vue.config.productionTip = false;
+Vue.config.devtools = false;
+Vue.prototype.$utils = {
+  deepClone: clone,
+  isEmpty: value => value == null || value === '' || (Array.isArray(value) && !value.length),
+  isSame: (first, second) => JSON.stringify(first) === JSON.stringify(second)
+};
+Vue.prototype.$t = key => key;
 
-//真实 Vue 编译器校验新增页签和两个组件模板，行为测试直接调用真实组件方法。
-function load(filename) {
-  const source = fs.readFileSync(path.join(directory, filename), 'utf8');
-  const parsed = sfc.parse({ source, filename });
-  const template = sfc.compileTemplate({ source: parsed.template.content, filename });
-  assert.deepStrictEqual(template.errors, [], filename);
-  const code = babel.transformSync(parsed.script.content, { filename, babelrc: false, configFile: false, plugins: ['@babel/plugin-transform-modules-commonjs'] }).code;
+//编译真实页面、TsFormCheckbox 和 UI 依赖；本测试不设置校验规则，无需装载校验器的网络依赖。
+function loadModule(filename) {
+  const source = fs.readFileSync(filename, 'utf8');
+  let script = source;
+  let template;
+  if (filename.endsWith('.vue')) {
+    const parsed = sfc.parse({ source, filename });
+    template = sfc.compileTemplate({ source: parsed.template.content, filename });
+    assert.deepStrictEqual(template.errors, [], filename);
+    script = parsed.script.content;
+  }
+  const code = babel.transformSync(script, { filename, babelrc: false, configFile: false, plugins: ['@babel/plugin-transform-modules-commonjs'] }).code;
   const module = { exports: {} };
-  new Function('module', 'exports', code)(module, module.exports);
-  Object.assign(module.exports.default, new Function(template.code + '\nreturn { render, staticRenderFns };')());
-  return module.exports.default;
+  const localRequire = name => {
+    if (name === '@/resources/plugins/TsForm/TsValidtor') return {};
+    if (name.startsWith('@/')) return loadModule(require.resolve(path.join(root, 'src', name.slice(2))));
+    if (name.startsWith('.')) return loadModule(require.resolve(path.resolve(path.dirname(filename), name)));
+    return require(name);
+  };
+  new Function('module', 'exports', 'require', code)(module, module.exports, localRequire);
+  if (template) Object.assign(module.exports.default, new Function(template.code + '\nreturn { render, staticRenderFns };')());
+  return module.exports;
+}
+
+//页面和成员组件共用真实模板及脚本。
+function load(filename) {
+  return loadModule(path.join(directory, filename)).default;
 }
 
 //手工控制请求完成时间，以覆盖防重复提交和失败后保留编辑状态。
@@ -76,6 +105,7 @@ async function main() {
   let removing;
   const api = {
     framework: { auth: {
+      getAuthList: async({ keyword }) => ({ Status: 'OK', Return: [{ name: keyword, displayName: keyword === 'USER_VIEW' ? '用户查看权限' : '其他权限' }] }),
       searchSystemUser: async data => {
         searches.push(clone(data));
         const tbodyList = data.auth ? directMembers : users;
@@ -180,6 +210,7 @@ async function main() {
   const shallowPageOptions = { ...pageOptions, components: { CommonAdduser: { render: h => h('div') }, SystemUserAuthMembers: { render: h => h('div') } } };
   const page = create(shallowPageOptions, {}, api);
   await flush();
+  assert.strictEqual(page.authDisplayName, '用户查看权限', '编辑页标题读取当前权限展示名称');
   page.updateSystemUserCount(3);
   assert.strictEqual(page.tabClick('system'), false, '系统用户页签允许切换');
   page.tabsName = 'role';
@@ -192,6 +223,7 @@ async function main() {
   assert.strictEqual(findNode(rendered, node => node.componentOptions?.tag === 'SystemUserAuthMembers').key, 'USER_VIEW');
   page.authName = 'OTHER_AUTH';
   await flush();
+  assert.strictEqual(page.authDisplayName, '其他权限', '切换权限后标题同步更新');
   assert.strictEqual(findNode(page._render(), node => node.componentOptions?.tag === 'SystemUserAuthMembers').key, 'OTHER_AUTH', '权限切换通过不同 key 销毁旧成员组件并重新加载');
   const otherMembers = create(membersOptions, { authName: 'OTHER_AUTH', authGroup: 'tenant' }, api);
   await flush();
@@ -222,8 +254,125 @@ async function main() {
   const previousSaveCount = saves.length;
   await noCandidates.save();
   assert.strictEqual(saves.length, previousSaveCount, '没有可选成员时不发送保存请求');
-  for (const vm of [members, add, page, noAuthority, failed, otherMembers, failedMembers, noCandidates]) vm.$destroy();
-  console.log('系统用户权限成员：模板、权限门控、初始计数、搜索/全选、候选去重、新增/移除防重与失败保留、单/批删、归零计数及切页独立状态检查通过。');
+
+  //代码来源优先，双重来源与后端展开的包含权限同样禁止选择、单删和批删。
+  directMembers = [
+    { ...users[0], isPageAuth: false, isCodeAuth: true },
+    { ...users[1], isPageAuth: true, isCodeAuth: true },
+    { ...users[2], isPageAuth: true, isCodeAuth: false },
+    { uuid: 'included', userId: 'included-id', userName: '包含权限用户', isPageAuth: false, isCodeAuth: true }
+  ];
+  const mixed = create(membersOptions, { authName: 'USER_VIEW', authGroup: 'tenant' }, api);
+  await flush();
+  mixed.toggleSelectAll();
+  assert.deepStrictEqual(clone(mixed.selectedUuids), ['anonymous'], '全选排除代码、双重来源及包含权限');
+  mixed.toggleSelectAll();
+  assert.deepStrictEqual(clone(mixed.selectedUuids), [], '取消全选仅清除可操作成员');
+  mixed.updateSelection(['system', 'autoexec', 'anonymous', 'included']);
+  assert.deepStrictEqual(clone(mixed.selectedUuids), ['anonymous'], '选择方法过滤所有代码成员');
+  mixed.confirmRemove(['system', 'autoexec', 'included']);
+  assert.deepStrictEqual(clone(mixed.removeUuids), [], '全部代码来源均不能单独移除');
+  mixed.confirmRemove(['system', 'autoexec', 'anonymous', 'included']);
+  assert.deepStrictEqual(clone(mixed.removeUuids), ['anonymous'], '混合批次仅确认页面来源');
+  mixed.closeRemove();
+  const previousRemoveCount = removals.length;
+  mixed.removeUuids = ['system', 'autoexec', 'included'];
+  await mixed.removeMembers();
+  assert.strictEqual(removals.length, previousRemoveCount, '提交方法再次拦截代码来源，不依赖确认弹窗');
+  mixed.removeUuids = ['system', 'autoexec', 'anonymous', 'included'];
+  removing = deferred();
+  const mixedRemove = mixed.removeMembers();
+  assert.deepStrictEqual(removals.at(-1).userUuidList, ['anonymous'], '删除请求不包含双重来源或代码包含权限');
+  removing.resolve({ Status: 'ERROR' });
+  await mixedRemove;
+  mixed.closeRemove();
+
+  const mixedAdd = create(addOptions, { authName: 'USER_VIEW', authGroup: 'tenant' }, api);
+  await flush();
+  assert.deepStrictEqual(clone(mixedAdd.candidateList), [], '已有页面、代码及双重来源均不重复添加');
+  mixedAdd.selectedUuids = ['system', 'autoexec', 'anonymous', 'included'];
+  const previousMixedSaveCount = saves.length;
+  await mixedAdd.save();
+  assert.strictEqual(saves.length, previousMixedSaveCount, '旧选择不能绕过候选过滤保存已有授权');
+  directMembers = directMembers.filter(user => user.uuid !== 'anonymous');
+  await mixedAdd.loadCandidates();
+  assert.deepStrictEqual(clone(mixedAdd.selectedUuids), [], '重新加载清除旧选择');
+  assert.deepStrictEqual(clone(mixedAdd.candidateList), [users[2]], '仅未授权用户保留在候选中');
+  mixedAdd.selectedUuids = ['system', 'autoexec', 'anonymous', 'anonymous', 'included', 'unknown'];
+  saving = deferred();
+  const mixedSave = mixedAdd.save();
+  assert.deepStrictEqual(saves.at(-1).userUuidList, ['anonymous'], '保存仅提交未授权候选并去重');
+  saving.resolve({ Status: 'ERROR' });
+  await mixedSave;
+
+  //挂载真实 TsFormCheckbox 与底层 Checkbox，验证浏览器输入状态；仅替换卡片布局和浮层定位。
+  const checkboxDirectory = path.join(root, 'node_modules/neatlogic-ui/iview/components/checkbox');
+  Vue.component('Checkbox', loadModule(path.join(checkboxDirectory, 'checkbox.vue')).default);
+  Vue.component('CheckboxGroup', loadModule(path.join(checkboxDirectory, 'checkbox-group.vue')).default);
+  Vue.component('Tooltip', {
+    props: ['content', 'disabled'],
+    render: function(h) { return h('span', { attrs: { 'data-tooltip': this.disabled ? null : this.content } }, this.$slots.default); }
+  });
+  Vue.component('Loading', { render: h => h('div') });
+  Vue.component('TsRow', { render: function(h) { return h('div', this.$slots.default); } });
+  Vue.component('Col', { render: function(h) { return h('div', this.$slots.default); } });
+  Vue.component('NoData', { render: h => h('div') });
+  Vue.component('TsDialog', { render: h => h('div') });
+  const domOptions = { ...membersOptions, components: {
+    TsFormCheckbox: loadModule(path.join(root, 'src/resources/plugins/TsForm/TsFormCheckbox.vue')).default,
+    TsFormInput: { render: h => h('div') },
+    TsAvatar: { props: ['userName', 'size'], render: function(h) { return h('span', { attrs: { 'data-avatar': this.userName } }); } }
+  } };
+  directMembers = [...directMembers, { ...users[2], isPageAuth: true, isCodeAuth: false }];
+  const mounted = create(domOptions, { authName: 'USER_VIEW', authGroup: 'tenant' }, api).$mount();
+  document.body.appendChild(mounted.$el);
+  await flush();
+  //按可见名称定位成员卡片，布局复用角色页签的 Col，不引入测试专用业务属性。
+  const findCard = uuid => [...mounted.$el.querySelectorAll('.system-user-member')].find(card => card.querySelector('.member-name').title === directMembers.find(user => user.uuid === uuid).userName);
+  for (const uuid of ['system', 'autoexec', 'included']) {
+    const card = findCard(uuid);
+    const checkbox = card.querySelector('input[type="checkbox"]');
+    assert.strictEqual(checkbox.checked, false, `${uuid} 保持未勾选`);
+    assert.strictEqual(checkbox.disabled, true, `${uuid} 禁止勾选`);
+    assert.strictEqual(card.querySelector('.tsfont-close'), null, `${uuid} 无移除入口`);
+    assert.strictEqual(card.querySelector('tag'), null, `${uuid} 无常驻授权标签`);
+    const tooltip = card.querySelector('[data-tooltip="term.framework.codeauthreadonly"]');
+    assert(tooltip && tooltip.contains(checkbox), '只读提示绑定勾选框');
+    const name = card.querySelector('.member-name');
+    assert.strictEqual(tooltip.contains(name), false, '用户名不触发只读提示');
+    assert(card.querySelector('.member-actions').contains(checkbox), '勾选框位于独立的卡片操作区');
+    checkbox.click();
+    name.click();
+    await flush();
+    assert.deepStrictEqual(clone(mounted.selectedUuids), [], '代码来源不能通过勾选框或名称进入选择');
+  }
+  const editableCard = findCard('anonymous');
+  const editableCheckbox = editableCard.querySelector('input[type="checkbox"]');
+  assert.strictEqual(editableCheckbox.disabled, false, '页面来源保持可选择');
+  assert.strictEqual(editableCheckbox.checked, false, '页面来源默认也未勾选');
+  assert(editableCard.querySelector('.tsfont-close'), '页面来源保留单个移除入口');
+  assert.strictEqual(editableCard.querySelector('tag'), null, '页面来源也不显示常驻授权标签');
+  assert.strictEqual(editableCard.querySelector('[data-tooltip]'), null, '页面来源无代码只读提示');
+  editableCard.querySelector('.member-name').click();
+  await flush();
+  assert.strictEqual(editableCheckbox.checked, false, '名称与其他两个页签一致，不承担选择操作');
+  editableCheckbox.click();
+  await flush();
+  assert.deepStrictEqual(clone(mounted.selectedUuids), ['anonymous'], '页面勾选框仍可选中');
+  editableCheckbox.click();
+  await flush();
+  assert.strictEqual(editableCheckbox.checked, false, '页面勾选框仍可取消选择');
+  mounted.selectedUuids = ['system', 'autoexec', 'included'];
+  await flush();
+  assert([...mounted.$el.querySelectorAll('input[type="checkbox"]')].every(input => !input.checked), '旧选择不会把代码来源显示为已勾选');
+  mounted.keyword = 'executor';
+  await flush();
+  assert.strictEqual(mounted.editableVisibleMembers.length, 0, '搜索双重来源后没有可全选成员');
+  assert.strictEqual(mounted.$el.querySelector('.tsfont-minus-square'), null, '仅只读成员时隐藏全选');
+  mounted.$el.remove();
+  for (const vm of [members, add, page, noAuthority, failed, otherMembers, failedMembers, noCandidates, mixed, mixedAdd, mounted]) vm.$destroy();
+  dom.window.close();
+  console.log('系统用户权限成员：代码及双重来源只读、真实勾选框状态与提示范围、候选去重、选择/单删/批删及保存参数、权限切换和异步边界检查通过。');
 }
 
 main().catch(error => { console.error(error); process.exitCode = 1; });

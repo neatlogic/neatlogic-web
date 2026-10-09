@@ -1,64 +1,101 @@
 <template>
-  <div class="pt-nm">
-    <div class="flex-between mb-md">
-      <div class="action-group">
+  <div class="system-user-auth-members">
+    <div class="member-toolbar">
+      <div class="member-toolbar-left action-group">
         <span class="action-item tsfont-plus" :class="{ 'text-disabled': isBusy || loadFailed }" @click="openAdd()">{{ $t('page.newtarget', {target: $t('page.member')}) }}</span>
-        <span
-          v-if="visibleMembers.length"
-          class="action-item"
-          :class="[isAllSelected ? 'tsfont-check-square-o' : 'tsfont-minus-square', { 'text-disabled': isBusy }]"
-          @click="toggleSelectAll()"
-        >{{ isAllSelected ? $t('page.unselectall') : $t('page.selectall') }}</span>
-        <span
-          v-if="selectedVisibleUuids.length"
-          class="action-item tsfont-trash-o"
-          :class="{ 'text-disabled': isBusy }"
-          @click="confirmRemove(selectedVisibleUuids)"
-        >{{ $t('page.batchdelete') }}</span>
       </div>
-      <TsFormInput
-        v-model="keyword"
-        width="300px"
-        :disabled="isBusy"
-        :placeholder="$t('form.placeholder.keyword')"
-        clearable
-      ></TsFormInput>
+      <div class="member-toolbar-right">
+        <div class="action-group">
+          <span
+            v-if="editableVisibleMembers.length"
+            class="action-item"
+            :class="[isAllSelected ? 'tsfont-check-square-o' : 'tsfont-minus-square', { 'text-disabled': isBusy }]"
+            @click="toggleSelectAll()"
+          >{{ isAllSelected ? $t('page.unselectall') : $t('page.selectall') }}</span>
+          <span
+            v-if="selectedVisibleUuids.length"
+            class="action-item tsfont-trash-o"
+            :class="{ 'text-disabled': isBusy }"
+            @click="confirmRemove(selectedVisibleUuids)"
+          >{{ $t('page.batchdelete') }}</span>
+        </div>
+        <div class="member-search">
+          <span class="tsfont-search text-grey" aria-hidden="true"></span>
+          <TsFormInput
+            v-model="keyword"
+            width="400px"
+            :disabled="isBusy"
+            :placeholder="$t('page.keyword')"
+            clearable
+          ></TsFormInput>
+        </div>
+      </div>
     </div>
     <Loading :loadingShow="isLoading"></Loading>
     <div v-if="loadFailed" class="text-grey">
       <span class="mr-md">{{ $t('term.framework.systemuserloadfailed') }}</span>
       <span class="text-action" @click="loadMembers()">{{ $t('page.retry') }}</span>
     </div>
-    <TsCard
-      v-else-if="!isLoading"
-      keyName="uuid"
-      :cardList="visibleMembers"
-      :padding="false"
-      :boxShadow="false"
-      :sm="12"
-      :lg="8"
-      :xl="6"
-      :xxl="4"
-    >
-      <template v-slot="{ row }">
-        <div class="flex-between mb-sm">
-          <TsFormCheckbox
-            v-model="selectedUuids"
-            :dataList="[row]"
-            valueName="uuid"
-            textName="userName"
-            :disabled="isBusy"
-          ></TsFormCheckbox>
-          <span
-            class="tsfont-close text-action"
-            :class="{ 'text-disabled': isBusy }"
-            :title="$t('page.delete')"
-            @click="confirmRemove([row.uuid])"
-          ></span>
-        </div>
-        <div class="text-grey overflow" :title="row.userId">{{ $t('page.userid') }}：{{ row.userId }}</div>
-      </template>
-    </TsCard>
+    <div v-else-if="!isLoading" class="member-card-content">
+      <TsRow>
+        <Col
+          v-for="row in visibleMembers"
+          :key="row.uuid"
+          :sm="6"
+          :md="6"
+          :xs="24"
+          :xxl="4"
+        >
+          <div class="system-user-member bg-block radius-md">
+            <div class="member-detail-left">
+              <div class="member-avatar">
+                <TsAvatar :userName="row.userName" size="40"></TsAvatar>
+              </div>
+            </div>
+            <div class="member-detail-right">
+              <div class="member-detail-item">
+                <span class="text-grey">ID</span>
+                <span class="member-detail-value overflow" :title="row.userId">{{ row.userId }}</span>
+              </div>
+              <div class="member-detail-item">
+                <span class="text-grey">{{ $t('page.name') }}</span>
+                <span class="member-name member-detail-value overflow" :title="row.userName">{{ row.userName }}</span>
+              </div>
+            </div>
+            <div class="member-actions">
+              <Tooltip
+                theme="light"
+                max-width="300"
+                :disabled="!row.isCodeAuth"
+                :content="$t('term.framework.codeauthreadonly')"
+                transfer
+              >
+                <TsFormCheckbox
+                  :value="isEditableMember(row) ? selectedVisibleUuids : []"
+                  :dataList="[row]"
+                  valueName="uuid"
+                  textName="userName"
+                  :disabled="isBusy || !isEditableMember(row)"
+                  @change="updateSelection($event)"
+                >
+                  <template v-slot:label>
+                    <span class="member-checkbox-name">{{ row.userName }}</span>
+                  </template>
+                </TsFormCheckbox>
+              </Tooltip>
+              <span
+                v-if="isEditableMember(row)"
+                class="tsfont-close item-del text-action"
+                :class="{ 'text-disabled': isBusy }"
+                :title="$t('page.delete')"
+                @click="confirmRemove([row.uuid])"
+              ></span>
+            </div>
+          </div>
+        </Col>
+        <NoData v-if="!visibleMembers.length"></NoData>
+      </TsRow>
+    </div>
     <SystemUserAuthAddDialog
       v-if="showAdd"
       :authName="authName"
@@ -72,7 +109,7 @@
       @on-close="closeRemove()"
     >
       <template v-slot>
-        <span>{{ $t('dialog.content.deleteconfirm', {target: $t('term.framework.selectedtarget')}) }}</span>
+        <span>{{ $t('dialog.content.deleteconfirm', {target: $t('term.framework.pageauth')}) }}</span>
       </template>
       <template v-slot:footer>
         <Button :disabled="isDeleting" @click="closeRemove()">{{ $t('page.cancel') }}</Button>
@@ -86,7 +123,7 @@
 export default {
   name: 'SystemUserAuthMembers',
   components: {
-    TsCard: () => import('@/resources/components/TsCard/TsCard.vue'),
+    TsAvatar: () => import('@/resources/components/TsAvatar/TsAvatar.vue'),
     TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox.vue'),
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
     SystemUserAuthAddDialog: () => import('./system-user-auth-add-dialog.vue')
@@ -118,7 +155,18 @@ export default {
     this.loadMembers();
   },
   methods: {
-    //读取完整直接授权成员，计数与本地关键词过滤彼此独立。
+    //代码授权优先于页面来源，历史双重来源同样禁止选择和移除。
+    isEditableMember(user) {
+      return !user.isCodeAuth && user.isPageAuth !== false;
+    },
+    //选择仅保留当前可见的页面授权成员，过滤旧状态或组件传入的只读 UUID。
+    updateSelection(uuids) {
+      if (this.isBusy || this.loadFailed) {
+        return;
+      }
+      this.selectedUuids = this.editableVisibleMembers.filter(user => uuids.includes(user.uuid)).map(user => user.uuid);
+    },
+    //读取页面与代码授权成员，计数与本地关键词过滤彼此独立。
     async loadMembers() {
       if (this.showAdd || this.isDeleting) {
         return;
@@ -142,13 +190,13 @@ export default {
     },
     //仅切换当前可见成员的选择，不把搜索隐藏的成员纳入批量操作。
     toggleSelectAll() {
-      if (this.isBusy) {
+      if (this.isBusy || this.loadFailed) {
         return;
       }
       if (this.isAllSelected) {
         this.selectedUuids = [];
       } else {
-        this.selectedUuids = this.visibleMembers.map(user => user.uuid);
+        this.selectedUuids = this.editableVisibleMembers.map(user => user.uuid);
       }
     },
     //新增弹窗独立获取候选，打开期间阻止列表同时写入授权。
@@ -164,17 +212,23 @@ export default {
         this.loadMembers();
       }
     },
-    //单个和批量移除共用确认弹窗，快照只包含当前完整成员中的 UUID。
+    //单个和批量移除共用确认弹窗，代码来源及双重来源均不能成为移除目标。
     confirmRemove(uuids) {
       if (this.isBusy || this.loadFailed) {
         return;
       }
-      this.removeUuids = this.memberList.filter(user => uuids.includes(user.uuid)).map(user => user.uuid);
+      this.removeUuids = this.memberList.filter(user => this.isEditableMember(user) && uuids.includes(user.uuid)).map(user => user.uuid);
       this.removeDialogConfig.isShow = true;
     },
     //按系统用户边界移除直接授权，失败保留选择与确认弹窗供重试。
     async removeMembers() {
-      if (this.isDeleting || !this.removeUuids.length) {
+      if (this.isDeleting || this.isLoading || this.loadFailed || this.showAdd || !this.removeUuids.length) {
+        return;
+      }
+      //提交前再次按当前来源过滤，避免确认期间的旧目标或只读 UUID 被写入请求。
+      this.removeUuids = this.memberList.filter(user => this.isEditableMember(user) && this.removeUuids.includes(user.uuid)).map(user => user.uuid);
+      if (!this.removeUuids.length) {
+        this.closeRemove();
         return;
       }
       this.isDeleting = true;
@@ -214,11 +268,15 @@ export default {
     },
     //批量移除只收集当前搜索可见的已选成员。
     selectedVisibleUuids() {
-      return this.visibleMembers.filter(user => this.selectedUuids.includes(user.uuid)).map(user => user.uuid);
+      return this.editableVisibleMembers.filter(user => this.selectedUuids.includes(user.uuid)).map(user => user.uuid);
+    },
+    //全选和批量移除只覆盖页面来源，代码来源始终只读。
+    editableVisibleMembers() {
+      return this.visibleMembers.filter(user => this.isEditableMember(user));
     },
     //由当前可见集合判断全选，避免独立标记与勾选状态不同步。
     isAllSelected() {
-      return this.visibleMembers.length > 0 && this.selectedVisibleUuids.length == this.visibleMembers.length;
+      return this.editableVisibleMembers.length > 0 && this.selectedVisibleUuids.length == this.editableVisibleMembers.length;
     },
     //任何弹窗打开时都阻止列表变更，避免新增和移除相互覆盖。
     isBusy() {
@@ -233,3 +291,109 @@ export default {
   }
 };
 </script>
+
+<style lang="less" scoped>
+.system-user-auth-members {
+  height: 100%;
+  .member-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 32px;
+    margin-bottom: 16px;
+    line-height: 32px;
+    .member-toolbar-left {
+      height: 32px;
+    }
+    .member-toolbar-right {
+      display: flex;
+      align-items: center;
+      width: 700px;
+      gap: 20px;
+      > .action-group {
+        flex: 1;
+        text-align: right;
+      }
+    }
+    .member-search {
+      position: relative;
+      width: 400px;
+      height: 32px;
+      .tsfont-search {
+        position: absolute;
+        top: 0;
+        left: 8px;
+        z-index: 1;
+        pointer-events: none;
+      }
+      ::v-deep .ivu-input {
+        padding-left: 26px;
+      }
+    }
+  }
+  .member-card-content {
+    height: calc(100vh - 186px);
+    overflow: auto;
+    padding-bottom: 60px;
+  }
+}
+.system-user-member {
+  position: relative;
+  min-height: 112px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+  .member-detail-left {
+    width: 74px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    float: left;
+    text-align: center;
+    .member-avatar {
+      width: 60px;
+    }
+  }
+  .member-detail-right {
+    padding-left: 64px;
+    padding-top: 15px;
+    .member-detail-item {
+      display: flex;
+      gap: 8px;
+      > .text-grey {
+        flex-shrink: 0;
+      }
+      .member-detail-value {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+  }
+  //与用户、角色页签一致，选择与移除控件置于卡片右上角，名称独立展示。
+  .member-actions {
+    position: absolute;
+    right: 8px;
+    top: 6px;
+    display: grid;
+    grid-template-columns: 30px 14px;
+    align-items: center;
+    z-index: 9;
+    .item-del {
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+  &:hover .item-del {
+    opacity: 1;
+  }
+}
+.member-checkbox-name {
+  //保留勾选框的可访问名称，将可见用户名放到 Tooltip 外以限定提示范围。
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+</style>
