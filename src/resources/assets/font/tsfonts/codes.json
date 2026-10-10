@@ -3688,5 +3688,11 @@
     "css": "tsfont-document-directory",
     "hexCodepoint": "0xea6c",
     "codepoint": 60012
+  },
+  {
+    "name": "moveto",
+    "css": "tsfont-moveto",
+    "hexCodepoint": "0xea6d",
+    "codepoint": 60013
   }
 ]

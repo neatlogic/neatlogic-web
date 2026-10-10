@@ -627,3 +627,4 @@
 .tsfont-whiteboard { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea6a;&nbsp;'); }
 .tsfont-cardview { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea6b;&nbsp;'); }
 .tsfont-document-directory { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea6c;&nbsp;'); }
+.tsfont-moveto { *zoom: expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xea6d;&nbsp;'); }
