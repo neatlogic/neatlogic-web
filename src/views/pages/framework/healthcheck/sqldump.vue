@@ -394,13 +394,13 @@ export default {
       sqlExplainData: {},
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
+        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
         { key: 'id', title: 'id' },
         { key: 'threadName', title: this.$t('page.thread') },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'databaseName', title: this.$t('page.database') },
         { key: 'userId', title: this.$t('page.user') },
         { key: 'recordCount', title: this.$t('page.datacapacity') },
-        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
         { key: 'useCacheLevel', title: this.$t('page.cache') },
         { key: 'sql', title: this.$t('term.framework.sqlsstatement') }
       ],
@@ -408,13 +408,13 @@ export default {
       requestTheadList: [
         { key: 'expander', width: 40 },
         { key: 'totalTimeCost', title: this.$t('page.timecost'), width: 200 },
+        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
         { key: 'notUseCacheTotalTimeCost', title: this.$t('term.framework.notusecachetimecostms'), width: 160 },
         { key: 'url', title: 'url' },
         { key: 'threadName', title: this.$t('page.thread') },
         { key: 'tenant', title: this.$t('page.tenant') },
         { key: 'userId', title: this.$t('page.user') },
-        { key: 'sqlCount', title: this.$t('term.framework.sqlcount') },
-        { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' }
+        { key: 'sqlCount', title: this.$t('term.framework.sqlcount') }
       ],
       // URL监控嵌套表格表头，用于展示每个请求内按sqlId聚合后的SQL明细
       requestSqlDetailTheadList: [
