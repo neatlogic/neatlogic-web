@@ -5,20 +5,18 @@
         <div class="action-group">
           <div class="action-item tsfont-plus" @click="addSql">{{ $t('page.setting') }}</div>
           <div class="action-item">
-            <RadioGroup
-              v-model="searchParam.orderBy"
-              type="button"
-              button-style="solid"
-              @on-change="
-                val => {
-                  searchParam.orderBy = val;
-                  searchSql();
-                }
-              "
-            >
-              <Radio label="runtime">{{ $t('term.framework.runtimesort') }}</Radio>
-              <Radio label="timecost">{{ $t('term.framework.timecostsort') }}</Radio>
-            </RadioGroup>
+            <TsFormRadio
+              v-model="saveMode"
+              :dataList="saveModeList"
+              radioType="button"
+              :disabled="isSavingMode || !confirmedSaveMode"
+              :isChangeWrite="false"
+              class="block-item"
+              @on-change="updateSaveMode"
+            ></TsFormRadio>
+            <Tooltip :content="$t('term.framework.sqlauditsavemodehint')" :max-width="400" transfer>
+              <span class="tsfont-info-o text-tip ml-xs"></span>
+            </Tooltip>
           </div>
           <div class="action-item">
             <TsFormSwitch
@@ -141,7 +139,15 @@
           </div>
           <Tabs v-model="activeTab" :animated="false" @on-click="changeTab">
             <TabPane :label="$t('term.framework.sqlidmonitor')" name="sql">
-              <TsTable v-if="sqlAuditData" v-bind="sqlAuditData" @changeCurrent="searchSql">
+              <TsTable
+                v-if="sqlAuditData"
+                v-bind="sqlAuditData"
+                :sortList="['timeCost', 'runTime']"
+                :sortOrder="sqlSortOrder"
+                :sortMulti="false"
+                @updateSort="updateSort"
+                @changeCurrent="searchSql"
+              >
                 <template v-slot:id="{ row }">
                   <Tooltip :content="row.id" max-width="200">
                     {{ row.id.substring(row.id.lastIndexOf('.') + 1) }}
@@ -153,6 +159,9 @@
                       <span>{{ row.timeCost }}{{ $t('page.ms') }}</span>
                     </Progress>
                   </div>
+                </template>
+                <template v-slot:databaseName="{ row }">
+                  <span>{{ row.databaseName || '—' }}</span>
                 </template>
                 <template v-slot:sql="{ row, index }">
                   <Poptip
@@ -175,8 +184,13 @@
                       <div :id="'sql_' + row.id.replace(/\./ig,'_') + '_' + index">{{ row.sql }}</div>
                       <div class="action-group" style="text-align:right">
                         <div class="action-item">
-                          <!-- SQL ID监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
-                          <Button size="small" @click="openSqlExplain(row.sql)">{{ $t('term.framework.viewexecutionplan') }}</Button>
+                          <!-- 传递完整执行记录，确保计划使用本次SQL执行的数据源。 -->
+                          <Button
+                            size="small"
+                            :disabled="!!row.databaseName && !row.datasourceKey"
+                            :title="row.databaseName && !row.datasourceKey ? $t('term.framework.sqlplandatasourceunknown') : ''"
+                            @click="openSqlExplain(row)"
+                          >{{ $t('term.framework.viewexecutionplan') }}</Button>
                         </div>
                         <div class="action-item">
                           <Button size="small" @click="copySql('#sql_' + row.id.replace(/\./ig,'_') + '_' + index)">{{ $t('page.copy') }}</Button>
@@ -191,7 +205,11 @@
               <TsTable
                 v-if="requestSqlAuditData"
                 v-bind="requestSqlAuditData"
+                :sortList="['totalTimeCost', 'runTime']"
+                :sortOrder="requestSortOrder"
+                :sortMulti="false"
                 :canExpand="true"
+                @updateSort="updateSort"
                 @toggleExpand="toggleRequestExpand"
                 @changeCurrent="searchRequestSql"
               >
@@ -244,14 +262,20 @@
                               <div class="request-sql-meta text-grey">
                                 <span>{{ $t('page.timecost') }}：{{ sqlAudit.timeCost }}{{ $t('page.ms') }}</span>
                                 <span class="ml-sm">{{ $t('page.cache') }}：{{ getSqlAuditCacheLevel(sqlAudit) }}</span>
+                                <span class="ml-sm">{{ $t('page.database') }}：{{ sqlAudit.databaseName || '—' }}</span>
                                 <span class="ml-sm">{{ $t('page.datacapacity') }}：{{ sqlAudit.recordCount }}</span>
                                 <span class="ml-sm">{{ $t('term.autoexec.executiontime') }}：{{ sqlAudit.runTime | formatDate }}</span>
                               </div>
                               <div :id="getRequestSqlDomId(row, sqlRow, itemIndex)">{{ sqlAudit.sql }}</div>
                               <div class="action-group" style="text-align:right">
                                 <div class="action-item">
-                                  <!-- URL监控SQL弹窗新增查看执行计划入口，点击后把当前SQL提交给sqlexplain接口 -->
-                                  <Button size="small" @click="openSqlExplain(sqlAudit.sql)">{{ $t('term.framework.viewexecutionplan') }}</Button>
+                                  <!-- 请求内同一SQL可能跨库执行，使用每条执行记录的数据源。 -->
+                                  <Button
+                                    size="small"
+                                    :disabled="!!sqlAudit.databaseName && !sqlAudit.datasourceKey"
+                                    :title="sqlAudit.databaseName && !sqlAudit.datasourceKey ? $t('term.framework.sqlplandatasourceunknown') : ''"
+                                    @click="openSqlExplain(sqlAudit)"
+                                  >{{ $t('term.framework.viewexecutionplan') }}</Button>
                                 </div>
                                 <div class="action-item">
                                   <Button size="small" @click="copySql('#' + getRequestSqlDomId(row, sqlRow, itemIndex))">{{ $t('page.copy') }}</Button>
@@ -276,21 +300,25 @@
       v-bind="sqlExplainDialogConfig"
       @on-close="closeSqlExplainDialog"
     >
-      <template v-slot>
-        <!-- SQL执行计划弹框使用TsTable展示/healthcheck/sqlexplain返回的tbodyList -->
-        <div class="sql-explain-dialog">
-          <div v-if="sqlExplainSql" class="sql-explain-text">
-            <span class="text-title">SQL：</span>{{ sqlExplainSql }}
-          </div>
-          <TsTable
-            v-bind="sqlExplainData"
-            :showPager="false"
-            :canResize="false"
-          ></TsTable>
+      <template v-slot:header>
+        <div>
+          <span>{{ $t('term.framework.sqlexecutionplan') }}</span>
+          <Tag class="ml-sm">{{ $t('term.framework.sqlplanestimated') }}</Tag>
         </div>
       </template>
+      <template v-slot>
+        <SqlExplain
+          v-if="sqlExplainDialogConfig.isShow"
+          :sql="sqlExplainSql"
+          :explainData="sqlExplainData"
+          :database="datasourceData.database"
+        ></SqlExplain>
+      </template>
       <template v-slot:footer>
-        <Button @click="closeSqlExplainDialog">{{ $t('page.close') }}</Button>
+        <div class="flex-between">
+          <span class="text-tip fz10">{{ $t('term.framework.sqlplanestimatenote') }}</span>
+          <Button @click="closeSqlExplainDialog">{{ $t('page.close') }}</Button>
+        </div>
       </template>
     </TsDialog>
   </div>
@@ -303,10 +331,21 @@ export default {
     SqlDumpEdit: () => import('./sqldump-edit.vue'),
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    StatusDialog: () => import('./status-dialog.vue')
+    TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
+    StatusDialog: () => import('./status-dialog.vue'),
+    SqlExplain: () => import('./sql-explain.vue')
   },
   props: {},
   data() {
+    // 排序按框架模块和当前路由保存；无有效记录时由首次查询使用服务端保存模式默认排序。
+    let sortOrder = null;
+    try {
+      sortOrder = this.$localStore.get('sortOrder');
+    } catch (error) {
+      // 损坏的本地JSON不影响页面加载，按无缓存处理。
+      sortOrder = null;
+    }
+    const isValidSort = sortOrder && ((['runtime', 'timecost'].includes(sortOrder.orderBy) && ['ASC', 'DESC'].includes(sortOrder.orderType)) || (sortOrder.orderBy === '' && sortOrder.orderType === ''));
     return {
       isAutoRefresh: true,
       datasourceData: {},
@@ -320,7 +359,15 @@ export default {
       isInitDefaultTab: false,
       isDialogShow: false,
       isStatusDialogShow: false,
-      searchParam: { orderBy: 'runtime' },
+      searchParam: { orderBy: isValidSort ? sortOrder.orderBy : null, orderType: isValidSort ? sortOrder.orderType : null },
+      saveMode: 'recent',
+      confirmedSaveMode: null,
+      isSavingMode: false,
+      sqlSearchSequence: 0,
+      saveModeList: [
+        { value: 'recent', text: this.$t('term.framework.sqlauditrecentmode') },
+        { value: 'slowest', text: this.$t('term.framework.sqlauditslowestmode') }
+      ],
       searchValue: {},
       // SQL监控组合搜索器统一输出keyword、tenant、userId，避免SQL ID和URL两个Tab使用不同入参
       searchConfig: {
@@ -339,31 +386,18 @@ export default {
         type: 'modal',
         maskClose: true,
         isShow: false,
-        width: 'huge', // huge large
+        width: 'large',
+        fullscreen: true,
         title: this.$t('term.framework.sqlexecutionplan')
       },
       sqlExplainSql: '',
       sqlExplainData: {},
-      // SQL执行计划表头固定按EXPLAIN结果字段展示，ken_len字段由后端兼容返回
-      // sqlExplainTheadList: [
-      //   { key: 'id', title: 'id' },
-      //   { key: 'select_type', title: 'select_type' },
-      //   { key: 'table', title: 'table' },
-      //   { key: 'partitions', title: 'partitions' },
-      //   { key: 'type', title: 'type' },
-      //   { key: 'possible_keys', title: 'possible_keys' },
-      //   { key: 'key', title: 'key' },
-      //   { key: 'key_len', title: 'key_len' },
-      //   { key: 'ref', title: 'ref' },
-      //   { key: 'rows', title: 'rows' },
-      //   { key: 'filtered', title: 'filtered' },
-      //   { key: 'Extra', title: 'Extra' }
-      // ],
       theadList: [
         { key: 'timeCost', title: this.$t('page.timecost'), width: 200 },
         { key: 'id', title: 'id' },
         { key: 'threadName', title: this.$t('page.thread') },
         { key: 'tenant', title: this.$t('page.tenant') },
+        { key: 'databaseName', title: this.$t('page.database') },
         { key: 'userId', title: this.$t('page.user') },
         { key: 'recordCount', title: this.$t('page.datacapacity') },
         { key: 'runTime', title: this.$t('term.autoexec.executiontime'), type: 'time' },
@@ -408,6 +442,8 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {
+    // 页面离开后丢弃未完成的SQL查询，防止响应重新启动刷新定时器。
+    this.sqlSearchSequence += 1;
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = null;
@@ -421,15 +457,25 @@ export default {
     openStatusDialog() {
       this.isStatusDialogShow = true;
     },
-    openSqlExplain(sql) {
-      // 查看执行计划时把当前Poptip里展示的SQL原文传给后端，由后端拼接EXPLAIN并返回表格数据
-      this.$api.framework.healthcheck.getSqlExplain({ sql: sql }).then(res => {
+    openSqlExplain(sqlAudit) {
+      // 按单次执行记录请求计划；未采集库信息的旧记录或字符串入口兼容当前请求数据源。
+      const record = typeof sqlAudit === 'string' ? { sql: sqlAudit } : (sqlAudit || {});
+      // 已确认执行库但未能匹配注册数据源时，禁止回退到当前库执行计划。
+      if (record.databaseName && !record.datasourceKey) {
+        return;
+      }
+      const params = { sql: record.sql, includePlanJson: 1 };
+      if (record.datasourceKey) {
+        params.datasourceKey = record.datasourceKey;
+      }
+      this.$api.framework.healthcheck.getSqlExplain(params).then(res => {
         const result = res.Return || {};
         this.sqlExplainSql = result.sql || '';
         this.sqlExplainData = {
-          // theadList: this.sqlExplainTheadList,
           theadList: result.theadList || [],
-          tbodyList: result.tbodyList || []
+          tbodyList: result.tbodyList || [],
+          planJson: result.planJson || null,
+          databaseName: result.databaseName || ''
         };
         this.sqlExplainDialogConfig.isShow = true;
       });
@@ -571,11 +617,73 @@ export default {
     searchRequestSql(currentPage) {
       this.searchSql(null, currentPage);
     },
+    saveSortOrder() {
+      // 只保存两张主表共用的排序字段和方向，取消排序的空值也保留，不保存分页及筛选条件。
+      this.$localStore.set('sortOrder', { orderBy: this.searchParam.orderBy, orderType: this.searchParam.orderType });
+    },
+    updateSort(sort) {
+      // 两张主表共用排序条件，耗时列映射到相同查询字段；取消排序交给后端使用保存模式默认值。
+      if (this.isSavingMode || !this.confirmedSaveMode) {
+        return;
+      }
+      const selected = Object.keys(sort).find(key => ['timeCost', 'totalTimeCost', 'runTime'].includes(key) && ['ASC', 'DESC'].includes(sort[key]));
+      this.searchParam.orderBy = selected ? (selected === 'runTime' ? 'runtime' : 'timecost') : '';
+      this.searchParam.orderType = selected ? sort[selected] : '';
+      this.saveSortOrder();
+      return this.searchSql();
+    },
+    async updateSaveMode(value) {
+      // 保存模式以服务端确认为准；切换期间暂停查询，避免旧响应覆盖新的模式和记录。
+      if (!this.confirmedSaveMode || this.isSavingMode || value === this.confirmedSaveMode) {
+        return;
+      }
+      this.isSavingMode = true;
+      const sequence = ++this.sqlSearchSequence;
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      try {
+        const res = await this.$api.framework.healthcheck.updateSqlAuditMode({ saveMode: value });
+        // 切换请求返回前页面可能已经销毁，此时不再更新页面或恢复自动刷新。
+        if (sequence !== this.sqlSearchSequence) {
+          return;
+        }
+        this.confirmedSaveMode = res.Return.saveMode;
+        this.saveMode = this.confirmedSaveMode;
+        this.searchParam.orderBy = this.saveMode === 'slowest' ? 'timecost' : 'runtime';
+        this.searchParam.orderType = 'DESC';
+        this.saveSortOrder();
+        this.searchParam.currentPage = 1;
+        this.searchParam.requestCurrentPage = 1;
+        this.$Message.success(this.$t('message.executesuccess'));
+      } catch (error) {
+        if (sequence !== this.sqlSearchSequence) {
+          return;
+        }
+        // 接口错误由公共HTTP封装提示；失败时还原选项，保留原排序和分页。
+        this.saveMode = this.confirmedSaveMode;
+      } finally {
+        if (sequence === this.sqlSearchSequence) {
+          this.isSavingMode = false;
+        }
+      }
+      return this.searchSql(this.searchParam.currentPage, this.searchParam.requestCurrentPage);
+    },
     getSqlSearchParam() {
       // /healthcheck/sqldump接口统一接收keyword、tenant、userId，这里合并排序分页和组合搜索条件
-      return Object.assign({}, this.searchParam, this.searchValue);
+      const params = Object.assign({}, this.searchParam, this.searchValue);
+      // 已恢复的本地排序用于首次查询；无缓存或取消排序时交给后端按保存模式选择默认排序。
+      if (!params.orderBy) {
+        delete params.orderBy;
+        delete params.orderType;
+      }
+      return params;
     },
     searchSql(currentPage, requestCurrentPage) {
+      if (this.isSavingMode) {
+        return;
+      }
       if (this.timer) {
         clearTimeout(this.timer);
         this.timer = null;
@@ -591,7 +699,27 @@ export default {
       } else if (!currentPage) {
         this.searchParam.requestCurrentPage = 1;
       }
-      this.$api.framework.healthcheck.searchSqlAudit(this.getSqlSearchParam()).then(res => {
+      const sequence = ++this.sqlSearchSequence;
+      return this.$api.framework.healthcheck.searchSqlAudit(this.getSqlSearchParam()).then(res => {
+        if (sequence !== this.sqlSearchSequence) {
+          return;
+        }
+        const saveMode = res.Return.saveMode;
+        if (saveMode !== this.confirmedSaveMode) {
+          const wasInitialized = !!this.confirmedSaveMode;
+          this.confirmedSaveMode = saveMode;
+          this.saveMode = saveMode;
+          // 首次进入优先恢复用户排序；已加载后的外部模式变化才重置为新模式默认值。
+          if (wasInitialized || this.searchParam.orderBy === null) {
+            this.searchParam.orderBy = saveMode === 'slowest' ? 'timecost' : 'runtime';
+            this.searchParam.orderType = 'DESC';
+            this.saveSortOrder();
+          }
+          // 其他管理员切换模式后按新默认排序重新取第一页，避免选项和已查询数据不一致。
+          if (wasInitialized) {
+            return this.searchSql();
+          }
+        }
         this.sqlAuditData = res.Return.sqlAuditData || {};
         this.sqlAuditData.theadList = this.theadList;
         this.requestSqlAuditData = res.Return.requestSqlAuditData || {};
@@ -613,7 +741,16 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    sqlSortOrder() {
+      // TsTable会合并排序配置，两个可排序字段均返回以清除上一次字段的箭头。
+      return [{ timeCost: this.searchParam.orderBy === 'timecost' ? this.searchParam.orderType : '', runTime: this.searchParam.orderBy === 'runtime' ? this.searchParam.orderType : '' }];
+    },
+    requestSortOrder() {
+      // URL表耗时使用累计SQL耗时，箭头状态仍由同一查询条件派生。
+      return [{ totalTimeCost: this.searchParam.orderBy === 'timecost' ? this.searchParam.orderType : '', runTime: this.searchParam.orderBy === 'runtime' ? this.searchParam.orderType : '' }];
+    }
+  },
   watch: {
     isAutoRefresh: {
       handler: function(val) {

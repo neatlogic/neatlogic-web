@@ -7,6 +7,10 @@ const healthcheck = {
   searchSqlAudit(params) {
     return axios.post('/api/rest/healthcheck/sqldump', params);
   },
+  updateSqlAuditMode(params) {
+    // 切换当前服务进程的SQL及URL监控记录保留方式。
+    return axios.post('/api/rest/healthcheck/sqlaudit/mode/update', params);
+  },
   toggleSqlInterceptor(params) {
     return axios.post('/api/rest/healthcheck/togglesqlinterceptor', params);
   },
