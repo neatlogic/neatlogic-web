@@ -1,390 +1,249 @@
 <template>
   <div>
-    <TsContain :siderWidth="800" :isDrag="true" :isSiderHide="!isShowThreaddump">
+    <TsContain>
       <template v-slot:topLeft>
         <div class="action-group">
-          <div class="action-item" @click="toggleThreaddump()">
-            <span class="tsfont-fangbingduwangguan">{{ $t('term.framework.printsnapshot') }}</span>
-            <span v-if="isShowThreaddump" class="tsfont-close"></span>
-          </div>
-          <div class="action-item">
-            <span class="mr-xs text-grey">{{ $t('term.framework.onlycurrenttenantthread') }}</span>
-            <span>
-              <i-switch
-                v-model="isShowCurrentTenant"
-                :true-value="1"
-                :false-value="0"
-                @on-change="handleSwitchChange()"
-              ></i-switch>
-            </span>
-          </div>
+          <template v-if="activeTab === 'snapshot'">
+            <div class="action-item tsfont-fangbingduwangguan" :class="{ disable: collecting }" @click="capture(false)">{{ text('capture') }}</div>
+            <div class="action-item tsfont-refresh" :class="{ disable: collecting }" @click="capture(true)">{{ text('continuous') }}</div>
+            <div v-if="collecting" class="action-item">{{ progress }}/{{ targetCount }}</div>
+            <div v-if="collecting" class="action-item text-action" @click="cancelCapture">{{ $t('page.cancel') }}</div>
+            <div v-if="samples.length" class="action-item tsfont-download" @click="exportReport">{{ text('exportReport') }}</div>
+          </template>
+          <template v-else>
+            <div class="action-item">
+              <div class="flex-start">
+                <span class="mr-xs">{{ $t('term.framework.onlycurrenttenantthread') }}</span>
+                <TsFormSwitch
+                  v-model="currentTenantOnly"
+                  width="auto"
+                  :true-value="1"
+                  :false-value="0"
+                  @on-change="refreshPool"
+                ></TsFormSwitch>
+              </div>
+            </div>
+            <div class="action-item">
+              <div class="flex-start">
+                <span class="mr-xs">{{ $t('page.autorefresh') }}</span>
+                <TsFormSwitch
+                  v-model="autoRefresh"
+                  width="auto"
+                  :true-value="true"
+                  :false-value="false"
+                ></TsFormSwitch>
+              </div>
+            </div>
+            <div class="action-item tsfont-refresh" :class="{ disable: poolLoading }" @click="refreshPool">{{ $t('page.refresh') }}</div>
+          </template>
         </div>
       </template>
       <template v-slot:topRight>
-        <div v-if="threadPoolData" class="action-group">
-          <div class="action-item">
-            <span class="mr-xs text-grey">{{ $t('page.serverid') }}</span>
-            <span>
-              <b>{{ threadPoolData.serverId }}</b>
-            </span>
-          </div>
-          <div class="action-item">
-            <span class="mr-xs text-grey">{{ $t('term.framework.maxthread') }}</span>
-            <span>
-              <b>{{ threadPoolData.maxThreadCount }}</b>
-            </span>
-          </div>
-          <div v-if="threadPoolData.mainActiveCount" class="action-item">
-            <span class="mr-xs text-grey">{{ $t('term.framework.currenttask') }}</span>
-            <span>
-              <b class="text-success">{{ threadPoolData.mainActiveCount }}</b>
-            </span>
-          </div>
-          <div v-if="threadPoolData.mainPoolSize" class="action-item">
-            <span class="mr-xs text-grey">{{ $t('term.framework.currentthread') }}</span>
-            <span>
-              <b class="text-primary">{{ threadPoolData.mainPoolSize }}</b>
-            </span>
-          </div>
-          <div v-if="threadPoolData.mainQueueSize" class="action-item">
-            <span class="mr-xs text-grey">{{ $t('term.framework.queued') }}</span>
-            <span>
-              <b class="text-error">{{ threadPoolData.mainQueueSize }}</b>
-            </span>
-          </div>
+        <div v-if="activeTab === 'snapshot' && snapshot" class="action-group text-grey">
+          <span class="action-item">{{ $t('page.serverid') }} {{ snapshot.serverId }}</span>
+          <span class="action-item">{{ snapshot.capturedAt | formatDate }}</span>
+          <span class="action-item">{{ text('captureDuration') }} {{ snapshot.captureDurationMs }} {{ $t('page.ms') }}</span>
         </div>
+        <div v-if="activeTab === 'pool' && poolUpdatedAt" class="text-grey">{{ text('updatedAt') }} {{ poolUpdatedAt | formatDate }}</div>
       </template>
       <template v-slot:content>
-        <div class="bg-op radius-md" style="height: 100%">
-          <div v-if="threadPoolData" class="container">
-            <div
-              v-for="(thread, index) in threadPoolData.threadList"
-              :key="'pool' + index"
-              class="item cursor"
-              :class="getThreadInfo(thread.id) ? 'bg-success' : 'bg-info'"
-              @click="searchThread(thread.id)"
-            >
-              <Tooltip :max-width="300" :transfer="true">
-                <div v-if="getThreadInfo(thread.id)" style="margin-top: 4px"><LoadingIcon></LoadingIcon></div>
-                <span v-else class="text-op tsfont-formtime"></span>
-                <div slot="content">
-                  <div v-if="getThreadInfo(thread.id)" class="grid">
-                    <div class="text-grey">{{ $t('page.tenant') }}</div>
-                    <div>
-                      <b class="text-grey">{{ getThreadInfo(thread.id).tenantUuid }}</b>
-                    </div>
-                  </div>
-                  <div v-if="getThreadInfo(thread.id)" class="grid">
-                    <div class="text-grey">{{ $t('page.task') }}</div>
-                    <div>
-                      <b class="text-grey">{{ getThreadInfo(thread.id).name }}</b>
-                    </div>
-                  </div>
-                  <div v-else class="grid">
-                    <div class="text-grey">{{ $t('page.name') }}</div>
-                    <div>
-                      <b class="text-grey">{{ thread.name }}</b>
-                    </div>
-                  </div>
-                  <div class="grid">
-                    <div class="text-grey">{{ $t('page.thread') }}</div>
-                    <div>
-                      <b v-if="getThreadInfo(thread.id)" class="text-grey">{{ getThreadInfo(thread.id).id }}</b>
-                      <b v-else class="text-grey">{{ thread.id }}</b>
-                    </div>
-                  </div>
-                  <div class="grid">
-                    <div class="text-grey">{{ $t('page.begin') }}</div>
-                    <div>
-                      <b v-if="getThreadInfo(thread.id)" class="text-grey">{{ getThreadInfo(thread.id).startTime | formatDate }}</b>
-                      <b v-else class="text-grey">{{ thread.startTime | formatDate }}</b>
-                    </div>
-                  </div>
-                  <div v-if="getThreadInfo(thread.id)" class="grid">
-                    <div class="text-grey">{{ $t('page.term.rank') }}</div>
-                    <div>
-                      <b class="text-grey">{{ getThreadInfo(thread.id).priority }}</b>
-                    </div>
-                  </div>
-                  <div v-if="getThreadInfo(thread.id)" class="grid">
-                    <div class="text-grey">{{ $t('page.timecost') }}</div>
-                    <div>
-                      <b class="text-grey">{{ formatTimeCost(getThreadInfo(thread.id).timeCost) }}</b>
-                    </div>
-                  </div>
-                  <div v-else class="grid">
-                    <div class="text-grey">{{ $t('page.term.alived') }}</div>
-                    <div>
-                      <b class="text-grey">{{ formatTimeCost(thread.timeCost) }}</b>
-                    </div>
-                  </div>
-                </div>
-              </Tooltip>
+        <!-- 嵌套页签明确归属，避免顶部切换同时隐藏分析页签内容。 -->
+        <Tabs v-model="activeTab" name="threadPoolTabs" :animated="false">
+          <TabPane :label="text('snapshotAnalysis')" name="snapshot" tab="threadPoolTabs">
+            <div v-if="captureNotice" class="bg-grey padding-md radius-md mb-md text-warning">{{ text(captureNotice) }}</div>
+            <div v-if="samples.length > 1" class="action-group mb-md">
+              <span
+                v-for="(sample, index) in samples"
+                :key="sample.snapshotId"
+                class="action-item text-action"
+                :class="{ 'text-primary': selectedIndex === index }"
+                @click="selectedIndex = index"
+              >{{ text('sampleNumber', { number: index + 1 }) }} · {{ sample.capturedAt | formatDate }}</span>
             </div>
-            <div v-for="index in Math.min(threadPoolData.mainQueueSize, maxsize)" :key="'queue' + index" class="item bg-error"></div>
-            <span v-if="threadPoolData.mainQueueSize > maxsize" class="text-grey">{{ $t('term.framework.remainingcount', { target: threadPoolData.mainQueueSize - maxsize }) }}</span>
-          </div>
-        </div>
+            <ThreadSnapshotAnalysis
+              v-if="snapshot"
+              :snapshot="snapshot"
+              :samples="samples"
+              :comparison="comparison"
+              :selectedIndex="selectedIndex"
+              @select-thread="openThread"
+              @select-sample="selectedIndex = $event"
+              @export-text="exportText"
+            ></ThreadSnapshotAnalysis>
+            <div v-else class="bg-op padding-lg radius-md">
+              <div class="text-title mb-sm">{{ text('welcome') }}</div>
+              <div class="text-grey mb-md">{{ text('welcomeHint') }}</div>
+              <div class="text-grey">{{ text('samplingHint') }}</div>
+            </div>
+          </TabPane>
+          <TabPane :label="text('livePool')" name="pool" tab="threadPoolTabs">
+            <ThreadPoolStatus :pool="pool" :currentTenantOnly="currentTenantOnly" @analyze="analyzeTask"></ThreadPoolStatus>
+          </TabPane>
+        </Tabs>
       </template>
-      <div slot="sider">
-        <div style="position: relative; padding-top: 80px">
-          <div style="width: 100%; position: absolute; top: 0px; left: 0px">
-            <div class="action-group">
-              <div class="action-item">
-                <InputSearcher v-model="keyword" :width="400" @change="searchKeyword()"></InputSearcher>
-              </div>
-              <div v-if="matches.length > 0" class="action-item">{{ $t('term.framework.matchcount', { target: matches.length }) }}</div>
-              <div
-                v-if="matches.length > 0"
-                class="action-item"
-                :class="{ disable: currentMatchIndex === 0 }"
-                @click="prevMatch()"
-              >{{ $t('page.term.prev') }}</div>
-              <div
-                v-if="matches.length > 0"
-                class="action-item"
-                :class="{ disable: currentMatchIndex === matches.length - 1 }"
-                @click="nextMatch()"
-              >{{ $t('page.term.next') }}</div>
-              <div class="action-item tsfont-fangbingduwangguan" @click="printThreaddump()">{{ $t('page.term.printagent') }}</div>
-              <div v-if="threaddump" class="action-item tsfont-download" @click="exportThreaddump()">{{ $t('page.export') }}</div>
-            </div>
-            <Divider></Divider>
-          </div>
-          <div ref="textContainer" style="height: calc(100vh - 200px); overflow: auto; white-space: pre" v-html="threaddump"></div>
-        </div>
-      </div>
     </TsContain>
+    <ThreadSnapshotDetail
+      v-if="detailId"
+      :threadId="detailId"
+      :samples="samples"
+      :selectedIndex="selectedIndex"
+      @select-sample="selectedIndex = $event"
+      @select-thread="detailId = $event"
+      @close="detailId = null"
+    ></ThreadSnapshotDetail>
   </div>
 </template>
 <script>
+import { compareSnapshots } from './thread-snapshot-analysis';
+
 export default {
-  name: '',
+  name: 'ThreadPool',
   components: {
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
-    LoadingIcon: () => import('@/views/pages/process/flow/floweditor/element/components/shape/loading.vue')
+    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
+    ThreadPoolStatus: () => import('./thread-pool-status.vue'),
+    ThreadSnapshotAnalysis: () => import('./thread-snapshot-analysis.vue'),
+    ThreadSnapshotDetail: () => import('./thread-snapshot-detail.vue')
   },
-  props: {},
   data() {
     return {
-      keyword: '',
-      maxsize: 500,
-      isShowThreaddump: false,
-      timer: null,
-      threadPoolData: null,
-      threaddump: null,
-      currentMatchIndex: 0,
-      isShowCurrentTenant: 1,
-      matches: []
+      activeTab: 'snapshot', samples: [], selectedIndex: 0, detailId: null,
+      collecting: false, progress: 0, targetCount: 1, captureNotice: '', captureToken: 0,
+      sampleTimer: null, sampleResolve: null, poolTimer: null, pageActive: true,
+      currentTenantOnly: 1, autoRefresh: true, pool: null, poolLoading: false, poolUpdatedAt: null
     };
   },
-  beforeCreate() {},
-  async created() {
-    this.getThreadPoolStatus();
+  created() {
+    this.refreshPool();
   },
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {
-    if (this.timer) {
-      this.timer.clear();
-    }
+  activated() {
+    this.pageActive = true;
+    this.schedulePool();
   },
-  destroyed() {},
+  deactivated() { this.stopPage(); },
+  beforeDestroy() { this.stopPage(); },
   methods: {
-    searchThread(id) {
-      if (this.isShowThreaddump && this.threaddump) {
-        this.keyword = 'tid=' + id.toString();
-        this.searchKeyword();
+    // 页面文案集中使用框架语言资源。
+    text(key, values) { return this.$t('term.framework.threadsnapshot.' + key, values); },
+    // 轮询仅在上次请求完成后安排，避免请求积压。
+    schedulePool() {
+      clearTimeout(this.poolTimer);
+      if (this.pageActive && this.autoRefresh && !this.poolLoading) {
+        this.poolTimer = setTimeout(() => this.refreshPool(), 3000);
       }
     },
-    exportThreaddump() {
-      // 获取 textContainer 的内容
-      const container = this.$refs.textContainer;
-      const textContent = container.innerText || container.textContent; // 提取纯文本
-
-      // 创建 Blob 对象
-      const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
-
-      // 创建下载链接
+    // 租户仅过滤任务；服务器容量由接口完整保留。
+    async refreshPool() {
+      if (this.poolLoading || !this.pageActive) return;
+      clearTimeout(this.poolTimer);
+      this.poolLoading = true;
+      const tenantScope = this.currentTenantOnly;
+      try {
+        const res = await this.$api.framework.healthcheck.getThreadpoolStatus({ isShowCurrentTenant: tenantScope });
+        if (this.pageActive && tenantScope === this.currentTenantOnly) {
+          this.pool = res.Return;
+          this.poolUpdatedAt = Date.now();
+        }
+      } catch (error) {
+        // 接口统一处理错误，下一轮仍继续刷新。
+      } finally {
+        this.poolLoading = false;
+        if (this.pageActive && tenantScope !== this.currentTenantOnly) this.refreshPool();
+        else this.schedulePool();
+      }
+    },
+    // 等待可立即取消，取消之后不会再发送下一个采集请求。
+    waitSample() {
+      return new Promise(resolve => {
+        this.sampleResolve = resolve;
+        this.sampleTimer = setTimeout(() => {
+          this.sampleResolve = null;
+          resolve();
+        }, 5000);
+      });
+    },
+    // 单次采集成功后才替换旧证据；连续采样串行执行并保留已成功样本。
+    async capture(continuous, task) {
+      if (this.collecting || !this.pageActive) return;
+      const token = ++this.captureToken;
+      this.collecting = true;
+      this.progress = 0;
+      this.targetCount = continuous ? 3 : 1;
+      this.captureNotice = '';
+      const nextSamples = [];
+      try {
+        for (let index = 0; index < this.targetCount; index++) {
+          if (index) await this.waitSample();
+          if (token !== this.captureToken || !this.pageActive) return;
+          const res = await this.$api.framework.healthcheck.captureThreadSnapshot();
+          if (token !== this.captureToken || !this.pageActive) return;
+          const sample = res.Return;
+          if (!sample || !Array.isArray(sample.threads)) throw new Error('Invalid thread snapshot');
+          if (nextSamples.length) {
+            const result = compareSnapshots([...nextSamples, sample]);
+            if (!result.compatible) {
+              this.captureNotice = result.reason === 'invalidTime' ? 'invalidTime' : 'processChanged';
+              return;
+            }
+          }
+          nextSamples.push(sample);
+          this.samples = nextSamples.slice();
+          this.selectedIndex = nextSamples.length - 1;
+          this.progress = nextSamples.length;
+          if (task) {
+            const thread = sample.threads.find(item => String(item.id) === String(task.id) && item.task && item.task.startTime === task.startTime && item.task.name === task.name && item.task.tenantUuid === task.tenantUuid);
+            if (thread) this.openThread(thread.id);
+            else this.captureNotice = 'taskEnded';
+          }
+        }
+      } catch (error) {
+        if (token === this.captureToken && this.pageActive) this.captureNotice = nextSamples.length ? 'samplingFailed' : 'captureFailed';
+      } finally {
+        if (token === this.captureToken) this.collecting = false;
+      }
+    },
+    // 取消使在途请求失效，已采集的成功结果仍保留。
+    cancelCapture() {
+      this.captureToken++;
+      clearTimeout(this.sampleTimer);
+      if (this.sampleResolve) this.sampleResolve();
+      this.sampleResolve = null;
+      this.collecting = false;
+      this.captureNotice = 'samplingCancelled';
+    },
+    // 离开页面停止后台工作，保持快照证据不受实时刷新影响。
+    stopPage() {
+      this.pageActive = false;
+      clearTimeout(this.poolTimer);
+      if (this.collecting) this.cancelCapture();
+    },
+    // 从任务入口采集新证据，并校验任务是否仍属于同一线程。
+    analyzeTask(task) {
+      if (this.collecting) return;
+      this.activeTab = 'snapshot';
+      this.capture(false, task);
+    },
+    openThread(id) { this.detailId = String(id); },
+    // 下载内容来自原始采集数据，避免页面筛选影响证据。
+    download(content, extension, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'threaddump-' + this.threadPoolData.serverId + '-' + this.$utils.getCurrenttime('yyyyMMddHHmmss') + '.txt'; // 指定文件名
+      link.href = url;
+      link.download = 'thread-snapshot-' + this.snapshot.serverId + '-' + this.snapshot.capturedAt + '.' + extension;
       link.click();
-
-      // 释放 URL 对象
-      URL.revokeObjectURL(link.href);
+      URL.revokeObjectURL(url);
     },
-    toggleThreaddump() {
-      if (!this.isShowThreaddump) {
-        this.isShowThreaddump = true;
-        this.printThreaddump();
-      } else {
-        this.isShowThreaddump = false;
-        this.threaddump = null;
-      }
-    },
-    handleSwitchChange() {
-      this.$api.framework.healthcheck.getThreadpoolStatus({isShowCurrentTenant: this.isShowCurrentTenant}).then(res => {
-        this.threadPoolData = res.Return;
-      });
-    },
-    formatTimeCost(ms) {
-      const units = [
-        { label: this.$t('page.day'), value: 24 * 60 * 60 * 1000 },
-        { label: this.$t('page.hour'), value: 60 * 60 * 1000 },
-        { label: this.$t('page.minute'), value: 60 * 1000 },
-        { label: this.$t('page.second'), value: 1000 }
-      ];
-
-      let remainingMs = ms;
-      const result = [];
-
-      for (const { label, value } of units) {
-        if (remainingMs >= value) {
-          const count = Math.floor(remainingMs / value);
-          remainingMs %= value;
-          result.push(`${count}${label}`);
-        }
-      }
-
-      // 如果剩余毫秒小于1秒，单独显示
-      if (remainingMs > 0) {
-        result.push(`${remainingMs}${this.$t('page.ms')}`);
-      }
-
-      return result.join(' ');
-    },
-    getThreadInfo(tid) {
-      return this.threadTaskMap[tid];
-    },
-    getThreadPoolStatus() {
-      this.timmer = this.$utils.setInterval(async() => {
-        await this.$api.framework.healthcheck.getThreadpoolStatus({isShowCurrentTenant: this.isShowCurrentTenant}).then(res => {
-          this.threadPoolData = res.Return;
-        });
-      }, 3000);
-    },
-    printThreaddump() {
-      this.threaddump = null;
-      this.$api.framework.healthcheck.threaddump().then(res => {
-        if (res.Return) {
-          this.threaddump = res.Return;
-        }
-      });
-    },
-    searchKeyword() {
-      const keyword = this.keyword.trim();
-      const container = this.$refs.textContainer;
-
-      // 清除当前高亮状态
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) selection.removeAllRanges();
-
-      // 重置匹配信息
-      this.matches = [];
-      this.currentMatchIndex = 0;
-      if (!keyword) return;
-
-      // 遍历文本节点并记录匹配位置
-      const range = document.createRange();
-      range.selectNodeContents(container);
-      const treeWalker = document.createTreeWalker(range.commonAncestorContainer, NodeFilter.SHOW_TEXT, null, false);
-
-      while (treeWalker.nextNode()) {
-        const textNode = treeWalker.currentNode;
-        const text = textNode.nodeValue.toLowerCase();
-        const searchKeyword = keyword.toLowerCase();
-        let startIndex = 0;
-
-        while ((startIndex = text.indexOf(searchKeyword, startIndex)) !== -1) {
-          this.matches.push({
-            node: textNode,
-            start: startIndex,
-            end: startIndex + keyword.length
-          });
-          startIndex += keyword.length; // 防止重复匹配同一位置
-        }
-      }
-
-      if (this.matches.length > 0) {
-        this.highlightMatch(0); // 高亮第一个匹配
-      } else {
-        this.$Message.info(this.$t('term.framework.nomatchingkeyword'));
-      }
-    },
-    highlightMatch(index) {
-      const match = this.matches[index];
-      if (!match) return;
-
-      // 高亮指定的匹配范围
-      const range = document.createRange();
-      range.setStart(match.node, match.start);
-      range.setEnd(match.node, match.end);
-
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-
-      // 滚动到匹配位置
-      const container = this.$refs.textContainer;
-      const bounding = range.getBoundingClientRect();
-      const containerBounding = container.getBoundingClientRect();
-      container.scrollTop += bounding.top - containerBounding.top - 20; // 调整偏移
-    },
-    nextMatch() {
-      if (this.currentMatchIndex < this.matches.length - 1) {
-        this.currentMatchIndex++;
-        this.highlightMatch(this.currentMatchIndex);
-      }
-    },
-    prevMatch() {
-      if (this.currentMatchIndex > 0) {
-        this.currentMatchIndex--;
-        this.highlightMatch(this.currentMatchIndex);
-      }
+    exportText() { this.download(this.snapshot.rawText || '', 'txt', 'text/plain;charset=utf-8'); },
+    exportReport() {
+      this.download(JSON.stringify({ selectedSnapshotId: this.snapshot.snapshotId, samples: this.samples, comparison: this.comparison, samplingStatus: this.collecting ? 'collecting' : (this.captureNotice || 'complete') }, null, 2), 'json', 'application/json;charset=utf-8');
     }
   },
-  filter: {},
   computed: {
-    poolSum() {
-      return this.threadPoolData.mainPoolSize + this.threadPoolData.backupPoolSize;
-    },
-    threadTaskMap() {
-      const data = {};
-      if (this?.threadPoolData?.threadTaskList) {
-        this.threadPoolData.threadTaskList.forEach(d => {
-          data[d.id] = d;
-        });
-      }
-      return data;
-    }
+    snapshot() { return this.samples[this.selectedIndex] || null; },
+    comparison() { return compareSnapshots(this.samples); }
   },
-  watch: {}
+  watch: {
+    autoRefresh() { this.schedulePool(); }
+  }
 };
 </script>
-<style lang="less" scoped>
-.grid {
-  display: grid;
-  grid-template-columns: 35px auto;
-}
-.container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(30px, 0.05fr));
-  gap: 8px; /* 圆圈之间的间距 */
-  padding: 8px; /* 页面两边的间距 */
-  box-sizing: border-box;
-}
-.item {
-  width: 100%; /* 自适应宽度 */
-  aspect-ratio: 1; /* 保证是圆形 */
-  border-radius: 50%;
-  display: flex; /* 启用 flex 布局 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  //padding-top: 3px;
-}
-</style>

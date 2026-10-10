@@ -1,6 +1,10 @@
 import axios from '../../http';
 
 const healthcheck = {
+  captureThreadSnapshot() {
+    // 采集同一时刻的线程、锁与线程池诊断数据。
+    return axios.post('/api/rest/healthcheck/thread/snapshot', {});
+  },
   threaddump() {
     return axios.post('/api/rest/healthcheck/threaddump', {});
   },
