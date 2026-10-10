@@ -251,8 +251,8 @@ export default {
           setTimeout(() => {
             this.$Message.success(this.$t('message.savesuccess'));
           }, 200);
+          // 保存仅更新接口配置，刷新列表即可，保留目录树的展开状态和当前选中节点。
           this.$parent.getTableConfig();
-          this.$parent.getTree();
           this.$emit('on-hide');
         }
       } finally {
