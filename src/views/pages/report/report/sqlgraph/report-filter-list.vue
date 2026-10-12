@@ -15,7 +15,7 @@
     <div
       v-for="(filter, index) in filterList"
       :key="index"
-      class="filter-item"
+      class="bg-op radius-md padding-sm mb-md"
     >
       <Select
         v-model="filter.fieldKey"
@@ -173,9 +173,6 @@ export default {
     justify-content: space-between;
     margin-bottom: 8px;
     font-weight: bold;
-  }
-  .filter-item {
-    margin-bottom: 10px;
   }
   .filter-row {
     display: flex;

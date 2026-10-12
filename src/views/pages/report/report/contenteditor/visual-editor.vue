@@ -1,11 +1,11 @@
 <template>
-  <div class="visual-content-editor">
+  <div class="visual-content-editor bg-op">
     <div v-if="!content" class="empty-tip text-grey">
       {{ $t('term.report.emptycontentvisualtip') }}
     </div>
     <div
       v-else
-      class="visual-canvas"
+      class="visual-canvas bg-op"
       @click="handleCanvasClick"
       v-html="renderedContent"
     ></div>
@@ -53,7 +53,6 @@ export default {
 .visual-content-editor {
   height: 100%;
   overflow: auto;
-  background: var(--body-bg);
   .empty-tip {
     padding: 16px;
   }
@@ -61,7 +60,6 @@ export default {
     min-height: 100%;
     padding: 16px;
     color: var(--text-color);
-    background: var(--blockbg);
   }
   ::v-deep .report-template-directive {
     display: inline-block;

@@ -1,10 +1,12 @@
 <template>
   <div class="report-content">
-    <Alert>
-      <div class="report-content-top">
-        <div class="report-content-help">
+    <div v-if="sqlGraphSyncErrorList.length > 0" class="text-error mb-xs">
+      <div v-for="(error, index) in sqlGraphSyncErrorList" :key="index">{{ error }}</div>
+    </div>
+    <div v-if="editMode === 'xml'" class="report-xml-editor bg-op radius-md">
+      <div class="flex-between pl-nm pr-nm pt-xs pb-xs">
+        <div class="action-group">
           <Poptip
-            v-if="editMode === 'xml'"
             v-model="isHelpShow"
             trigger="hover"
             placement="right"
@@ -12,7 +14,7 @@
             :transfer="true"
             :title="$t('term.report.datasourceconfigexample')"
           >
-            <a href="javascript:void(0)">{{ $t('term.report.datasourceconfigexample') }}</a>
+            <span class="text-action">{{ $t('term.report.datasourceconfigexample') }}</span>
             <div slot="content" style="height:600px;">
               <div>
                 <Tag><strong>&lt;</strong><i class="text-grey tsfont-arrow-right"></i><strong>&amp;lt;</strong></Tag>
@@ -30,39 +32,32 @@
             </div>
           </Poptip>
         </div>
-        <div v-if="editMode === 'graph' && isSyncingSqlGraph" class="report-content-query action-group">
-          <div v-if="isSyncingSqlGraph" class="action-item text-grey">
+        <div class="action-group">
+          <span v-if="isSyncingSqlGraph" class="action-item text-grey">
             <Icon type="ios-loading" size="14" class="loading"></Icon>
             {{ $t('term.report.configsyncing') }}
-          </div>
+          </span>
+          <ReportModeSwitch :value="editMode" @change="changeEditMode"></ReportModeSwitch>
         </div>
-        <RadioGroup v-model="editMode" type="button" @on-change="changeEditMode">
-          <Radio label="xml">XML</Radio>
-          <Radio label="graph">Graph</Radio>
-        </RadioGroup>
       </div>
-    </Alert>
-    <div v-if="editMode === 'xml' && reportData.paramList && reportData.paramList.length > 0" class="mb-xs">
-      <i
-        v-for="(param, index) in reportData.paramList"
-        :key="index"
-        v-clipboard="param.name"
-        v-clipboard:success="clipboardSuc"
-        class="ivu-tag ivu-tag-size-default ivu-tag-default ivu-tag-checked"
-      >{{ param.label }}({{ param.name }})</i>
-    </div>
-    <div v-if="sqlGraphSyncErrorList.length > 0" class="text-error mb-xs">
-      <div v-for="(error, index) in sqlGraphSyncErrorList" :key="index">{{ error }}</div>
-    </div>
-    <div v-if="editMode === 'xml'">
+      <div v-if="reportData.paramList && reportData.paramList.length > 0" class="mb-xs pl-nm pr-nm">
+        <i
+          v-for="(param, index) in reportData.paramList"
+          :key="index"
+          v-clipboard="param.name"
+          v-clipboard:success="clipboardSuc"
+          class="ivu-tag ivu-tag-size-default ivu-tag-default ivu-tag-checked"
+        >{{ param.label }}({{ param.name }})</i>
+      </div>
       <TsCodemirror
+        class="report-xml-code"
         codeMode="xml"
         :value.sync="sql"
-        height="500px"
+        height="100%"
       ></TsCodemirror>
     </div>
     <div v-else class="sqlgraph-layout">
-      <div class="sqlgraph-left border-base-right">
+      <div class="sqlgraph-left">
         <div class="search-box">
           <Input
             v-model="tableKeyword"
@@ -92,27 +87,46 @@
         <ReportEditor
           ref="reportEditor"
           v-model="graphData"
-          height="calc(100vh - 260px)"
+          height="100%"
           @node:selected="selectNode"
           @node:unselected="clearSelected"
           @edge:selected="selectEdge"
           @edge:unselected="clearSelected"
           @join:change="syncGraphConfig"
           @change="changeGraph"
-        ></ReportEditor>
+        >
+          <template v-slot:toolbarRight>
+            <div class="action-group">
+              <span v-if="isSyncingSqlGraph" class="action-item text-grey">
+                <Icon type="ios-loading" size="14" class="loading"></Icon>
+                {{ $t('term.report.configsyncing') }}
+              </span>
+              <ReportModeSwitch :value="editMode" @change="changeEditMode"></ReportModeSwitch>
+            </div>
+          </template>
+        </ReportEditor>
       </div>
-      <div class="sqlgraph-right border-base-left">
+      <div class="sqlgraph-right">
         <div v-if="selectedNodeData" class="right-section">
           <div class="section-title">{{ selectedNodeData.alias }} · {{ selectedNodeData.tableName }}</div>
-          <CheckboxGroup v-model="selectedFieldKeyList" @on-change="changeSelectedFields">
-            <Checkbox
-              v-for="field in selectedNodeData.fields"
-              :key="selectedNodeData.alias + '.' + field.name"
-              :label="selectedNodeData.alias + '.' + field.name"
-            >
-              {{ field.name }}
-            </Checkbox>
-          </CheckboxGroup>
+          <TsFormCheckbox
+            :value="selectedFieldNameList"
+            :dataList="selectedNodeData.fields"
+            valueName="name"
+            textName="name"
+            vertical
+            class="selected-field-list"
+            @on-change="changeSelectedFields"
+          >
+            <template v-slot:label="{ node }">
+              <OverflowTooltip :content="`${getFieldLabel(node)} (${node.name}) · ${node.type || ''}`" placement="left" :maxWidth="480">
+                <div class="overflow">
+                  {{ getFieldLabel(node) }}
+                  <span class="text-grey">({{ node.name }}) · {{ node.type }}</span>
+                </div>
+              </OverflowTooltip>
+            </template>
+          </TsFormCheckbox>
         </div>
         <div v-if="selectedEdge" class="right-section">
           <div class="section-title">JOIN</div>
@@ -167,7 +181,7 @@
             @change="changeFilters"
           ></ReportFilterList>
         </div>
-        <div v-if="!isGraphComponentSelected" class="right-section">
+        <div v-if="!isGraphComponentSelected" class="right-section mt-md">
           <ReportOrderList
             :value="queryConfig.orders"
             :fieldList="graphFieldOptionList"
@@ -184,6 +198,7 @@ import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
 import ReportEditor from './sqlgraph/report-editor.vue';
 import ReportFilterList from './sqlgraph/report-filter-list.vue';
 import ReportOrderList from './sqlgraph/report-order-list.vue';
+import ReportModeSwitch from './sqlgraph/report-mode-switch.vue';
 import { replaceToken, tokenizeContent } from './contenteditor/content-tokenizer';
 
 const DEFAULT_QUERY_ID = 'queryData';
@@ -193,9 +208,11 @@ export default {
   name: '',
   components: {
     TsCodemirror,
+    TsFormCheckbox: () => import('@/resources/plugins/TsForm/TsFormCheckbox.vue'),
     ReportEditor,
     ReportFilterList,
-    ReportOrderList
+    ReportOrderList,
+    ReportModeSwitch
   },
   directives: { clipboard },
   props: {
@@ -320,7 +337,13 @@ export default {
         this.graphData = { version: 1, nodes: [], joins: [] };
       }
     },
+    // 两种编辑器共用切换入口，并沿用 Graph 与 XML 的同步流程。
     changeEditMode(mode) {
+      if (mode === this.editMode) {
+        return;
+      }
+      this.editMode = mode;
+      this.isHelpShow = false;
       this.$emit('setSqlEditMode', mode);
       if (mode === 'graph') {
         this.searchTable();
@@ -375,11 +398,15 @@ export default {
       this.cleanQueryConfigByGraph();
       this.syncGraphConfig();
     },
-    changeSelectedFields(fieldKeyList) {
+    // 优先使用字段名称；旧表定义从说明首句提取名称，缺失时回退到字段名。
+    getFieldLabel(field) {
+      return field.label || (field.description || '').split(/[，。]/)[0].trim() || field.name;
+    },
+    // 当前表内使用字段名勾选，保存时仍由表别名区分不同表的同名字段。
+    changeSelectedFields(fieldNameList) {
       const currentAlias = this.selectedNodeData.alias;
       this.queryConfig.fields = this.queryConfig.fields.filter(field => field.tableAlias !== currentAlias);
-      fieldKeyList.forEach(fieldKey => {
-        const fieldName = fieldKey.split('.')[1];
+      fieldNameList.forEach(fieldName => {
         const field = (this.selectedNodeData.fields || []).find(item => item.name === fieldName);
         this.queryConfig.fields.push({
           tableAlias: currentAlias,
@@ -577,14 +604,14 @@ export default {
     isGraphComponentSelected() {
       return !!(this.selectedNodeData || this.selectedEdge);
     },
-    selectedFieldKeyList: {
+    selectedFieldNameList: {
       get() {
         if (!this.selectedNodeData) {
           return [];
         }
         return this.queryConfig.fields
           .filter(field => field.tableAlias === this.selectedNodeData.alias)
-          .map(field => `${field.tableAlias}.${field.fieldName}`);
+          .map(field => field.fieldName);
       },
       set() {}
     },
@@ -703,40 +730,60 @@ export default {
 </script>
 <style lang="less" scoped>
 .report-content {
-  .report-content-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    user-select: none;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  > :not(.sqlgraph-layout):not(.report-xml-editor) {
+    flex-shrink: 0;
   }
-  .report-content-help {
+  .report-xml-editor {
+    display: flex;
+    flex-direction: column;
     flex: 1;
-    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    > :not(.report-xml-code) {
+      flex-shrink: 0;
+    }
+  }
+  .report-xml-code {
+    flex: 1;
+    min-height: 0;
   }
   .sqlgraph-layout {
     display: grid;
     grid-template-columns: 240px minmax(360px, 1fr) 260px;
-    min-height: 500px;
-    height: calc(100vh - 260px);
+    // 三栏填满正文剩余空间，模式切换合并到编辑器工具栏中。
+    grid-template-rows: minmax(0, 1fr);
+    min-height: 0;
+    flex: 1;
     border: 1px solid var(--border-color);
   }
   .sqlgraph-left,
   .sqlgraph-right {
     min-width: 0;
+    min-height: 0;
     overflow: auto;
     background: var(--blockbg);
     user-select: none;
+  }
+  .sqlgraph-left {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
   .sqlgraph-center {
     min-width: 0;
     min-height: 0;
   }
   .search-box {
+    flex-shrink: 0;
     padding: 8px;
   }
   .table-list {
-    max-height: 452px;
+    flex: 1;
+    min-height: 0;
     overflow: auto;
   }
   .table-item {
@@ -762,6 +809,21 @@ export default {
   .section-title {
     margin-bottom: 8px;
     font-weight: bold;
+  }
+  .selected-field-list {
+    ::v-deep .ivu-checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin-right: 0;
+      > .ivu-checkbox {
+        flex-shrink: 0;
+      }
+      > span:last-child {
+        flex: 1;
+        min-width: 0;
+      }
+    }
   }
   .join-field-type {
     float: right;

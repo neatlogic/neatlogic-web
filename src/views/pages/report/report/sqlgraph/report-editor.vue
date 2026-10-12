@@ -1,5 +1,5 @@
 <template>
-  <div ref="editorRef" class="report-editor" :style="{ height: height || '100%', width: width || '100%' }">
+  <div ref="editorRef" class="report-editor radius-md bg-op" :style="{ height: height || '100%', width: width || '100%' }">
     <ReportEditorToolbar
       v-if="!readonly"
       :canUndo="canUndo"
@@ -13,13 +13,13 @@
       @zoom-fit="zoomFit"
       @fullscreen="toggleFullscreen"
       @delete="removeSelectedCells"
-    ></ReportEditorToolbar>
+    >
+      <template v-slot:right>
+        <slot name="toolbarRight"></slot>
+      </template>
+    </ReportEditorToolbar>
     <div ref="container" class="graph-main"></div>
-    <div
-      v-if="showMinimap"
-      ref="minimap"
-      class="shadow radius-md bg-grey minimap"
-    ></div>
+    <div v-if="showMinimap" ref="minimap" class="shadow radius-md bg-grey minimap"></div>
     <RightClickMenu
       :isVisible="isRightClickMenuVisible"
       :x="rightClickX"
@@ -109,40 +109,43 @@ export default {
   },
   methods: {
     registerTableNode() {
-      register({
-        shape: 'report-table-node',
-        width: 260,
-        height: 340,
-        component: ReportTableNode,
-        ports: {
-          groups: {
-            left: {
-              position: 'left',
-              attrs: {
-                circle: {
-                  r: 5,
-                  magnet: true,
-                  stroke: '#5f95ff',
-                  strokeWidth: 1,
-                  fill: '#fff'
+      register(
+        {
+          shape: 'report-table-node',
+          width: 260,
+          height: 340,
+          component: ReportTableNode,
+          ports: {
+            groups: {
+              left: {
+                position: 'left',
+                attrs: {
+                  circle: {
+                    r: 5,
+                    magnet: true,
+                    stroke: '#5f95ff',
+                    strokeWidth: 1,
+                    fill: '#fff'
+                  }
                 }
-              }
-            },
-            right: {
-              position: 'right',
-              attrs: {
-                circle: {
-                  r: 5,
-                  magnet: true,
-                  stroke: '#5f95ff',
-                  strokeWidth: 1,
-                  fill: '#fff'
+              },
+              right: {
+                position: 'right',
+                attrs: {
+                  circle: {
+                    r: 5,
+                    magnet: true,
+                    stroke: '#5f95ff',
+                    strokeWidth: 1,
+                    fill: '#fff'
+                  }
                 }
               }
             }
           }
-        }
-      }, true);
+        },
+        true
+      );
     },
     init() {
       if (this.graph) {
@@ -237,26 +240,30 @@ export default {
       if (!this.readonly) {
         this.graph.use(new History({ enabled: true }));
         this.graph.use(new Clipboard({ enabled: true }));
-        this.graph.use(new Selection({
-          enabled: true,
-          multiple: true,
-          multipleSelectionModifiers: ['ctrl', 'meta'],
-          rubberband: true,
-          showNodeSelectionBox: true,
-          showEdgeSelectionBox: false,
-          pointerEvents: 'none'
-        }));
+        this.graph.use(
+          new Selection({
+            enabled: true,
+            multiple: true,
+            multipleSelectionModifiers: ['ctrl', 'meta'],
+            rubberband: true,
+            showNodeSelectionBox: true,
+            showEdgeSelectionBox: false,
+            pointerEvents: 'none'
+          })
+        );
         this.graph.use(new Transform({ resizing: false }));
       } else {
-        this.graph.use(new Selection({
-          enabled: true,
-          multiple: false,
-          rubberband: false,
-          movable: false,
-          showNodeSelectionBox: false,
-          showEdgeSelectionBox: false,
-          pointerEvents: 'none'
-        }));
+        this.graph.use(
+          new Selection({
+            enabled: true,
+            multiple: false,
+            rubberband: false,
+            movable: false,
+            showNodeSelectionBox: false,
+            showEdgeSelectionBox: false,
+            pointerEvents: 'none'
+          })
+        );
       }
       if (this.showMinimap) {
         this.$nextTick(() => {
@@ -629,12 +636,9 @@ export default {
 </script>
 <style lang="less">
 @import (reference) '~@/resources/assets/css/variable.less';
-.theme(@background-color, @blockbg, @border-color, @primary-color) {
+.theme(@blockbg, @border-color, @primary-color) {
   .report-editor {
     background: @blockbg;
-    .x6-graph-background {
-      background: @background-color;
-    }
     .x6-port-body {
       fill: @blockbg;
       stroke: @primary-color;
@@ -669,10 +673,10 @@ export default {
   }
 }
 html {
-  .theme(@default-background, @default-blockbg, @default-border, @default-primary-color);
+  .theme(@default-blockbg, @default-border, @default-primary-color);
 
   &.theme-dark {
-    .theme(@dark-background, @dark-blockbg, @dark-border, @dark-primary-color);
+    .theme(@dark-blockbg, @dark-border, @dark-primary-color);
   }
 }
 </style>

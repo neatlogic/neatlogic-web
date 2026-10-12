@@ -14,7 +14,7 @@
     <div
       v-for="(order, index) in orderList"
       :key="index"
-      class="order-item"
+      class="bg-op radius-md padding-sm mb-md"
     >
       <Select
         v-model="order.fieldKey"
@@ -142,9 +142,6 @@ export default {
     justify-content: space-between;
     margin-bottom: 8px;
     font-weight: bold;
-  }
-  .order-item {
-    margin-bottom: 10px;
   }
   .order-row {
     display: flex;

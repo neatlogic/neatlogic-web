@@ -1,5 +1,5 @@
 <template>
-  <div class="report-edit">
+  <div class="report-edit" :class="{ 'report-edit-editor': activeTab === 'datasource' || activeTab === 'content' }">
     <TsContain
       v-if="reportData"
       topLeftWidth="80%"
@@ -64,13 +64,13 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="padding">
-          <Tabs v-model="activeTab" :animated="false">
+        <div class="padding report-edit-content">
+          <Tabs v-model="activeTab" :animated="false" class="report-edit-tabs">
             <TabPane :label="$t('term.report.datasourceconfig')" name="datasource"></TabPane>
             <TabPane :label="$t('term.report.conditionconfig')" name="condition"></TabPane>
             <TabPane :label="$t('term.report.contentconfig')" name="content"></TabPane>
           </Tabs>
-          <div class="pt-sm">
+          <div class="pt-sm report-edit-panel">
             <ReportParam v-if="activeTab === 'condition'" :paramList="reportData.paramList" @setParam="setParam"></ReportParam>
             <ReportContent
               v-if="activeTab === 'datasource'"
@@ -248,6 +248,27 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.report-edit-editor {
+  // 数据源和内容编辑器填满正文剩余空间，各自的列表、画布和代码区在内部滚动。
+  overflow: hidden !important;
+  ::v-deep .tscontain-body {
+    overflow: hidden;
+  }
+  .report-edit-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
+  }
+  .report-edit-tabs {
+    flex-shrink: 0;
+  }
+  .report-edit-panel {
+    flex: 1;
+    min-height: 0;
+  }
+}
 .userselect-wrap {
   ::v-deep .userselect-top {
     overflow: auto;

@@ -1,6 +1,6 @@
 <template>
   <div class="report-content-editor">
-    <div class="editor-toolbar border-base-bottom">
+    <div class="editor-toolbar">
       <RadioGroup v-model="editMode" type="button">
         <Radio label="visual">{{ $t('term.report.visual') }}</Radio>
         <Radio label="source">{{ $t('term.report.source') }}</Radio>
@@ -25,7 +25,7 @@
       </div>
     </div>
     <div v-if="editMode === 'visual'" class="visual-layout">
-      <div class="visual-main border-base-right">
+      <div class="visual-main bg-op radius-md">
         <VisualEditor
           :content="contentLocal"
           :tokenList="tokenList"
@@ -44,14 +44,15 @@
         ></ComponentPropertyPanel>
       </div>
     </div>
-    <div v-else class="source-layout">
+    <div v-else class="source-layout padding-sm">
       <div class="source-help">
         <ContentHelp></ContentHelp>
       </div>
       <TsCodemirror
+        class="source-code"
         codeMode="xml"
         :value.sync="contentLocal"
-        height="calc(100vh - 300px)"
+        height="100%"
       ></TsCodemirror>
     </div>
   </div>
@@ -149,9 +150,11 @@ export default {
 </script>
 <style lang="less" scoped>
 .report-content-editor {
-  height: calc(100vh - 240px);
-  min-height: 480px;
-  border: 1px solid var(--border-color);
+  // 由页面正文提供可用高度，工具栏固定，编辑区域使用剩余空间。
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
   color: var(--text-color);
   background: var(--blockbg);
   .editor-toolbar {
@@ -159,6 +162,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     height: 48px;
+    flex-shrink: 0;
     padding: 0 12px;
     background: var(--blockbg);
   }
@@ -170,7 +174,8 @@ export default {
   .visual-layout {
     display: grid;
     grid-template-columns: minmax(420px, 1fr) 300px;
-    height: calc(100% - 48px);
+    grid-template-rows: minmax(0, 1fr);
+    flex: 1;
     min-height: 0;
   }
   .visual-main,
@@ -179,20 +184,24 @@ export default {
     min-height: 0;
     overflow: hidden;
   }
-  .visual-main {
-    background: var(--body-bg);
-  }
   .visual-property {
     background: var(--blockbg);
   }
   .source-layout {
-    height: calc(100% - 48px);
-    padding: 10px;
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
     background: var(--blockbg);
   }
   .source-help {
+    flex-shrink: 0;
     margin-bottom: 8px;
+  }
+  .source-code {
+    flex: 1;
+    min-height: 0;
   }
 }
 </style>
