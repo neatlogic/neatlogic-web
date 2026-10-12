@@ -134,17 +134,17 @@
         <span>{{ $t('page.accessory') }}</span>
         <span class="detail-icon text-tip-active" :class="showDetailConfig.file?'tsfont-down':'tsfont-up'"></span>
       </div>
+      <!-- 变更上报附件使用起始节点配置，未配置时仍使用 change 类型。 -->
       <TsUpLoad
         v-show="showDetailConfig.file"
         ref="changeFileList"
         class="upload"
-        data-type="itsm"
+        :dataType="attachmentFileType"
         styleType="button"
         className="smallUpload"
         :multiple="true"
         :defaultList="defaultFileList"
         :hasScreenshotFromClipboard="true"
-        dataType="change"
       ></TsUpLoad>
     </div>
   </div>
@@ -152,6 +152,7 @@
 <script>
 import {store} from './dispatchState.js';
 import dispatchMixin from './dispatch-mixin.js';
+import { getFileTypeHandler } from '../taskcommon/file-type-handler.js';
 export default {
   name: '',
   components: {
@@ -285,6 +286,10 @@ export default {
   },
   filter: {},
   computed: {
+    attachmentFileType() {
+      // 只调整附件参数，不改变变更表单及富文本上传配置。
+      return getFileTypeHandler(this.draftData?.startProcessTaskStep?.config, 'changecreate');
+    },
     showDetailConfig() {
       return store.showDetailConfig;
     }

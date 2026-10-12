@@ -42,11 +42,12 @@
         <span>{{ $t('page.accessory') }}</span>
         <span class="detail-icon text-tip-active" :class="showDetailConfig.file?'tsfont-down':'tsfont-up'"></span>
       </div>
+      <!-- 附件按钮使用起始节点配置，富文本图片和视频保持原有上传方式。 -->
       <TsUpLoad
         v-show="showDetailConfig.file"
         ref="dispatchFiles"
         class="upload"
-        data-type="itsm"
+        :dataType="attachmentFileType"
         styleType="button"
         className="smallUpload"
         :multiple="true"
@@ -61,6 +62,7 @@
 <script>
 import {store} from './dispatchState.js';
 import dispatchMixin from './dispatch-mixin.js';
+import { getFileTypeHandler } from '../taskcommon/file-type-handler.js';
 export default {
   name: '',
   components: {
@@ -146,6 +148,10 @@ export default {
   },
   filter: {},
   computed: {
+    attachmentFileType() {
+      // 直接依赖最新草稿配置，切换服务或起始节点时不缓存旧上传类型。
+      return getFileTypeHandler(this.draftData?.startProcessTaskStep?.config, 'omnipotent');
+    },
     showDetailConfig() {
       return store.showDetailConfig;
     }

@@ -602,6 +602,11 @@ export default {
     }
   },
   watch: {
+    dataType(value) {
+      // 同步动态上传类型但保留自定义参数优先级，不重建组件或清空已有附件。
+      const params = this.params || {};
+      this.filedata.type = Object.prototype.hasOwnProperty.call(params, 'type') ? params.type : value;
+    },
     defaultList: {
       async handler(newVal) {
         if (newVal) {

@@ -58,6 +58,8 @@
         </div>
       </div>
     </div>
+    <!-- 事件节点主回复附件可指定处理器，留空沿用 itsm。 -->
+    <FileTypeHandlerSetting v-model="configData.stepConfig.fileTypeHandler"></FileTypeHandlerSetting>
     <div v-if="showIsRequired" class="settingList">
       <div class="control-box">
         <div class="control-setting">
@@ -105,6 +107,7 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
+    FileTypeHandlerSetting: () => import('./nodesetting/file-type-handler-setting.vue'), // 共用附件处理器设置。
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     StrategySetting: () => import('./nodesetting/strategy-setting.vue'),
     AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),

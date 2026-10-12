@@ -7,11 +7,12 @@
       class="reply-box-margin-bottom order-list comment-box"
     >
       <div v-if="actionConfigs.complete || actionConfigs.comment" class="center-detail-upload-wrap">
+        <!-- 主回复附件使用当前流程节点配置，其他变更子步骤附件不受影响。 -->
         <TsUpLoad
           ref="uploadFileComment"
           className="smallUpload"
           styleType="text"
-          :dataType="handler == 'changecreate'||handler == 'changehandle'?'change':'itsm'"
+          :dataType="attachmentFileType"
           rowSpan="24"
           :multiple="true"
           :defaultList="commentContent.fileList && commentContent.fileList.length > 0?commentContent.fileList :[]"
@@ -148,6 +149,8 @@
   </div>
 </template>
 <script>
+import { getFileTypeHandler } from '../../../taskcommon/file-type-handler.js';
+
 export default {
   name: '',
   components: {
@@ -409,6 +412,10 @@ export default {
   },
   filter: {},
   computed: {
+    attachmentFileType() {
+      // 直接读取当前节点 props，节点切换及清空配置后恢复对应节点的默认类型。
+      return getFileTypeHandler(this.processTaskStepConfig?.config, this.handler);
+    },
     isRequiredContent() {
       //回复必填判断
       let valid = false;
