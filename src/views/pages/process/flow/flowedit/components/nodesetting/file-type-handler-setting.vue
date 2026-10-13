@@ -2,7 +2,7 @@
   <div class="pt-sm pb-sm pl-nm pr-nm">
     <!-- 注释放在根标签内以兼容路径注入；沿用通知设置的间距及左右开关布局。 -->
     <div class="flex-between">
-      <span class="text-tip">{{ $t('term.process.filetypehandler') }}</span>
+      <span class="text-grey">{{ $t('term.process.filetypehandler') }}</span>
       <div class="flex-start">
         <span v-if="!isActive" class="text-tip pr-xs">{{ $t('page.default') }}</span>
         <TsFormSwitch
