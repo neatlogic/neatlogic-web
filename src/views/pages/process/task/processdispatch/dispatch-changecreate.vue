@@ -287,8 +287,8 @@ export default {
   filter: {},
   computed: {
     attachmentFileType() {
-      // 只调整附件参数，不改变变更表单及富文本上传配置。
-      return getFileTypeHandler(this.draftData?.startProcessTaskStep?.config, 'changecreate');
+      // 从首节点平级字段读取附件类型，未配置时继续使用变更附件默认类型。
+      return getFileTypeHandler(this.draftData?.startProcessTaskStep, 'changecreate');
     },
     showDetailConfig() {
       return store.showDetailConfig;

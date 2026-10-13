@@ -413,8 +413,8 @@ export default {
   filter: {},
   computed: {
     attachmentFileType() {
-      // 直接读取当前节点 props，节点切换及清空配置后恢复对应节点的默认类型。
-      return getFileTypeHandler(this.processTaskStepConfig?.config, this.handler);
+      // props 对应 currentProcessTaskStep；只读平级字段，节点切换或清空后同步更新类型。
+      return getFileTypeHandler(this.processTaskStepConfig, this.handler);
     },
     isRequiredContent() {
       //回复必填判断

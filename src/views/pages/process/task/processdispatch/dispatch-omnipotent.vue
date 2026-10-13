@@ -149,8 +149,8 @@ export default {
   filter: {},
   computed: {
     attachmentFileType() {
-      // 直接依赖最新草稿配置，切换服务或起始节点时不缓存旧上传类型。
-      return getFileTypeHandler(this.draftData?.startProcessTaskStep?.config, 'omnipotent');
+      // 从最新草稿首节点的平级字段读取附件类型，切换服务或恢复草稿时同步更新。
+      return getFileTypeHandler(this.draftData?.startProcessTaskStep, 'omnipotent');
     },
     showDetailConfig() {
       return store.showDetailConfig;
