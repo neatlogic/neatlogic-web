@@ -7,12 +7,13 @@
       class="reply-box-margin-bottom order-list comment-box"
     >
       <div v-if="actionConfigs.complete || actionConfigs.comment" class="center-detail-upload-wrap">
-        <!-- 主回复附件使用当前流程节点配置，其他变更子步骤附件不受影响。 -->
+        <!-- 主回复附件使用当前节点处理器，并在已有工单时通过扩展参数携带工单 ID。 -->
         <TsUpLoad
           ref="uploadFileComment"
           className="smallUpload"
           styleType="text"
           :dataType="attachmentFileType"
+          :params="attachmentUploadParams"
           rowSpan="24"
           :multiple="true"
           :defaultList="commentContent.fileList && commentContent.fileList.length > 0?commentContent.fileList :[]"
@@ -162,6 +163,11 @@ export default {
     ReplyTemplate: () => import('../reply/reply-template')
   },
   props: {
+    processTaskId: {
+      // LONG 类型 ID 兼容接口返回的数字和字符串，不强制转为 Number 以避免精度丢失。
+      type: [Number, String],
+      default: null
+    },
     handler: {
       type: String,
       default: ''
@@ -412,6 +418,10 @@ export default {
   },
   filter: {},
   computed: {
+    attachmentUploadParams() {
+      // multipart 表单以 JSON 字符串提交扩展对象；无工单 ID 时完全省略该字段。
+      return this.processTaskId ? { extendParam: JSON.stringify({ processTaskId: this.processTaskId }) } : {};
+    },
     attachmentFileType() {
       // props 对应 currentProcessTaskStep；只读平级字段，节点切换或清空后同步更新类型。
       return getFileTypeHandler(this.processTaskStepConfig, this.handler);
