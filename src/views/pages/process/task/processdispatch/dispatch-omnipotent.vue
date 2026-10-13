@@ -42,12 +42,13 @@
         <span>{{ $t('page.accessory') }}</span>
         <span class="detail-icon text-tip-active" :class="showDetailConfig.file?'tsfont-down':'tsfont-up'"></span>
       </div>
-      <!-- 附件按钮使用起始节点配置，富文本图片和视频保持原有上传方式。 -->
+      <!-- 附件按钮使用起始节点处理器，并为已暂存工单携带当前工单 ID。 -->
       <TsUpLoad
         v-show="showDetailConfig.file"
         ref="dispatchFiles"
         class="upload"
         :dataType="attachmentFileType"
+        :params="attachmentUploadParams"
         styleType="button"
         className="smallUpload"
         :multiple="true"
