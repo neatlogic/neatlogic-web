@@ -872,6 +872,7 @@
     "flowname": "Workflow Name",
     "relform": "Associated Form",
     "enableattachments": "Enable Attachments",
+    "filetypehandler": "Attachment Handler",
     "enabledesc": "Enable Description",
     "flowrult": "Routing Rule",
     "flowrulttip": "The workflow is not associated with a form, so combined conditions cannot be configured. Go to",

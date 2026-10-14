@@ -41,6 +41,8 @@
       @updatebutton="updatebutton"
     ></ButtonSetting>
 
+    <!-- 处理变更节点主回复附件可指定处理器，留空沿用 change。 -->
+    <FileTypeHandlerSetting v-model="configData.stepConfig.fileTypeHandler"></FileTypeHandlerSetting>
     <div class="settingList">
       <div class="control-box">
         <div class="control-setting">
@@ -139,6 +141,7 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
+    FileTypeHandlerSetting: () => import('./nodesetting/file-type-handler-setting.vue'), // 共用附件处理器设置。
     // StrategySetting:()=>import('./nodesetting/strategy-setting.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     AuthoritySetting: () => import('./nodesetting/authority-setting.vue'),

@@ -548,12 +548,13 @@
       ></ScoreEdit>
       <!-- 用户评分end -->
 
-      <!-- 回复 -->
+      <!-- 回复附件通过工单对象传递当前 ID，尚无工单 ID 时不附加扩展参数。 -->
       <ReplyContent
         ref="replyContent"
         :handler="handler"
         :actionConfig="actionConfig"
         :commentObj="commentObj"
+        :processTaskId="processTaskConfig.id"
         :isStepRequired="isStepRequired"
         :processTaskStepConfig="processTaskStepConfig"
         :isDisableCommet.sync="isDisableCommet"

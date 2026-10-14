@@ -602,6 +602,19 @@ export default {
     }
   },
   watch: {
+    'params.extendParam'(value) {
+      // 扩展参数随业务对象切换更新或移除，普通附件和剪贴板共用 filedata，保留已上传附件。
+      if (value == null) {
+        this.$delete(this.filedata, 'extendParam');
+      } else {
+        this.$set(this.filedata, 'extendParam', value);
+      }
+    },
+    dataType(value) {
+      // 同步动态上传类型但保留自定义参数优先级，不重建组件或清空已有附件。
+      const params = this.params || {};
+      this.filedata.type = Object.prototype.hasOwnProperty.call(params, 'type') ? params.type : value;
+    },
     defaultList: {
       async handler(newVal) {
         if (newVal) {

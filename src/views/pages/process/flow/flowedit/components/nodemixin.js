@@ -136,6 +136,10 @@ export default {
     clearNodeData(stepConfig) {
       // 清空隐藏节点值
       let stepConfigs = this.$utils.deepClone(stepConfig);
+      // 暂存、复制及发布使用同一规整值；旧配置缺少该字段时保持原样，不写入默认处理器。
+      if (typeof stepConfigs.fileTypeHandler === 'string') {
+        stepConfigs.fileTypeHandler = stepConfigs.fileTypeHandler.trim();
+      }
       for (let key in this.activeSetting) {
         if (key == 'actionSetting' && this.activeSetting[key] == 0) {
           // 动作设置

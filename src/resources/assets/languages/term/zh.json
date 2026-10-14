@@ -870,6 +870,7 @@
     "flowname": "流程名称",
     "relform": "关联表单",
     "enableattachments": "启用附件",
+    "filetypehandler": "附件处理器",
     "enabledesc": "启用描述",
     "flowrult": "流转规则",
     "flowrulttip": "流程未关联表单，无法配置组合条件，请前往",
