@@ -1427,7 +1427,7 @@
   },
   "framework": {
     "codeauth": "代码内置授权",
-    "codeauthreadonly": "代码内置授权由模块声明，只读且不可修改。",
+    "codeauthreadonly": "系统默认授权，只读不允许修改。",
     "filterquerylabel": "联动条件有值时查询",
     "filterquerytip": "开启后，至少一个关联字段有值时才查询；关闭后，不受此限制。引用表格列时，使用该列所有行的非空值作为过滤条件；引用当前行字段时，仅使用当前行的值。",
     "filterquerywaiting": "请至少填写一个关联字段后再查询。",
