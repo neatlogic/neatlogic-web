@@ -8,7 +8,7 @@
           <Divider orientation="start">{{ $t('page.paramslist') }}</Divider>
           <Table
             size="small"
-            row-key="key"
+            row-key="_integrationParamKey"
             :columns="helpTheadList"
             :data="integrationHelpData"
           >
@@ -30,6 +30,8 @@
   </div>
 </template>
 <script>
+import {withParamRowKeys} from './integration-param-utils.js';
+
 export default {
   name: '',
   components: {},
@@ -72,7 +74,8 @@ export default {
       this.integrationHelpData = [];
       this.$api.framework.integration.getIntegrationParamListByUuid({ uuid: this.uuid }).then(res => {
         if (res.Status == 'OK') {
-          this.integrationHelpData = res.Return;
+          // 查询接口返回完整参数；层级行键允许不同方向或不同层级存在同名参数。
+          this.integrationHelpData = withParamRowKeys(res.Return);
           this.isShow = true;
         }
       });

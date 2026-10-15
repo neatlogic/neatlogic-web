@@ -4,20 +4,14 @@
       {{ $t('page.help') }}：
       <template slot="desc">
         <div>{{ $t('term.framework.paramcheckdesc') }}</div>
-        <div>
-          <b v-if="needValid == 1" style="margin-right:10px" class="text-primary">{{ $t('term.framework.checkenable') }}</b>
-          <b v-if="needValid == 0" style="margin-right:10px">{{ $t('term.framework.checkenable') }}</b>
-          <i-switch
-            v-model="needValid"
-            size="large"
-            :true-value="1"
-            :false-value="0"
-          ></i-switch>
+        <div class="flex-start">
+          <b class="mr-sm" :class="{ 'text-primary': needValid == 1 }">{{ $t('term.framework.checkenable') }}</b>
+          <TsFormSwitch v-model="needValid" :true-value="1" :false-value="0"></TsFormSwitch>
         </div>
         <div>{{ $t('term.framework.aftercheckdesc') }}</div>
       </template>
     </Alert>
-    <div v-if="(allowEditParam == 1 && paramList && paramList.length > 0) || (allowEditParam == 0 && handlerPattern && handlerPattern.length > 0)" class="tstable-container">
+    <div v-if="fixedParamList.length || paramList.length" class="tstable-container">
       <table class="tstable-body">
         <thead>
           <tr>
@@ -28,179 +22,220 @@
             <th style="width:10%">{{ $t('page.require') }}</th>
             <th style="width:10%">{{ $t('term.cmdb.searchable') }}</th>
             <th style="width:30%">{{ $t('page.description') }}</th>
-            <th v-if="allowEditParam == 1">
-              <a href="javascript:void(0)" style="margin-right:5px" @click="addParam">
-                <i class="tsfont-plus-o"></i>
-              </a>
+            <th v-if="canAddParam">
+              <span class="tsfont-plus-o text-action" data-add-param @click="addParam"></span>
             </th>
           </tr>
         </thead>
+        <!-- 固定定义及其子节点始终只读，独立于可拖动的自定义列表。 -->
+        <tbody v-if="fixedParamList.length" class="tbody-main">
+          <tr v-for="item in fixedParamList" :key="item._integrationParamKey" data-fixed-param>
+            <td></td>
+            <td>{{ item._integrationParamPath }}</td>
+            <td>{{ getModeText(item.mode) }}</td>
+            <td>{{ item.typeName || item.type }}</td>
+            <td>{{ $t(item.isRequired == 1 ? 'page.yes' : 'page.no') }}</td>
+            <td>{{ item.mode == 'input' ? $t(item.isSearchAble == 1 ? 'page.yes' : 'page.no') : '' }}</td>
+            <td>{{ item.description }}</td>
+            <td v-if="canAddParam"></td>
+          </tr>
+        </tbody>
         <Draggable
-          v-if="allowEditParam == 1 && paramList && paramList.length > 0"
+          v-if="paramList.length"
           :list="paramList"
           :animation="150"
+          :move="canMoveParam"
           tag="tbody"
-          handle=".drag-handle"
+          class="tbody-main"
+          handle="[data-param-drag]"
           draggable="tr"
         >
-          <tr v-for="(item, index) in paramList" :key="item.uuid || index">
-            <td class="drag-handle">
-              <span class="tsfont-drag" style="cursor:move;"></span>
+          <tr v-for="(item, index) in paramList" :key="item.uuid || index" data-custom-param>
+            <td>
+              <span v-if="canEditParam(item)" class="tsfont-drag cursor-pointer" data-param-drag></span>
             </td>
             <td>
-              <TsFormInput ref="txtParamName" v-model="item.name" :maxlength="30"></TsFormInput>
-            </td>
-            <td>
-              <TsFormSelect v-model="item.mode" :data-list="modeList" transfer></TsFormSelect>
+              <TsFormInput
+                v-if="canEditParam(item)"
+                v-model="item.name"
+                :maxlength="30"
+                :validate-list="['required']"
+                :error-message="paramError && paramError.index === index ? $t(paramError.message, {target: $t('page.param')}) : ''"
+              ></TsFormInput>
+              <span v-else>{{ item.name }}</span>
             </td>
             <td>
               <TsFormSelect
+                v-if="canEditParam(item)"
+                v-model="item.mode"
+                :data-list="editableModeList"
+                :validate-list="['required']"
+                transfer
+              ></TsFormSelect>
+              <span v-else>{{ getModeText(item.mode) }}</span>
+            </td>
+            <td>
+              <TsFormSelect
+                v-if="canEditParam(item)"
                 v-model="item.type"
                 :data-list="paramTypeList"
+                :validate-list="['required']"
                 transfer
                 @change-label="changeLabel($event, index)"
               ></TsFormSelect>
+              <span v-else>{{ item.typeName || item.type }}</span>
             </td>
             <td>
-              <i-switch
+              <TsFormSwitch
                 v-if="item.mode == 'input'"
                 v-model="item.isRequired"
+                :disabled="!canEditParam(item)"
                 :true-value="1"
                 :false-value="0"
-              ></i-switch>
+              ></TsFormSwitch>
             </td>
             <td>
-              <i-switch
+              <TsFormSwitch
                 v-if="item.mode == 'input'"
                 v-model="item.isSearchAble"
+                :disabled="!canEditParam(item)"
                 :true-value="1"
                 :false-value="0"
-              ></i-switch>
+              ></TsFormSwitch>
             </td>
             <td>
-              <TsFormInput v-model="item.description" :maxlength="200" transfer></TsFormInput>
+              <TsFormInput v-if="canEditParam(item)" v-model="item.description" :maxlength="200"></TsFormInput>
+              <span v-else>{{ item.description }}</span>
             </td>
-            <td style="width:50px">
-              <span class="tsfont-plus-o text-action mr-xs" @click.stop="addRowParam(index)"></span>
-              <span class="tsfont-minus-o text-action" @click.stop="delParam(index)"></span>
+            <td v-if="canAddParam" style="width:50px">
+              <template v-if="canEditParam(item)">
+                <span class="tsfont-plus-o text-action mr-xs" data-insert-param @click.stop="addRowParam(index)"></span>
+                <span class="tsfont-minus-o text-action" data-delete-param @click.stop="delParam(index)"></span>
+              </template>
             </td>
           </tr>
         </Draggable>
-        <tbody v-if="allowEditParam == 0 && handlerPattern && handlerPattern.length > 0">
-          <tr v-for="(item, index) in handlerPattern" :key="index">
-            <td>
-              {{ item.name }}
-            </td>
-            <td>
-              {{ getModeText(item.mode) }}
-            </td>
-            <td>
-              {{ item.typeName }}
-            </td>
-            <td>
-              <span v-if="item.isRequired==1">{{ $t('page.yes') }}</span>
-              <span v-if="item.isRequired==0">{{ $t('page.no') }}</span>
-            </td>
-            <td>
-              {{ item.description }}
-            </td>
-          </tr>
-        </tbody>
       </table>
     </div>
-    <div v-if="allowEditParam == 1 && (!paramList || paramList.length == 0)" class="text-action tsfont-plus" @click="addParam">{{ $t('page.param') }}</div>
+    <div
+      v-if="canAddParam && !fixedParamList.length && !paramList.length"
+      class="text-action tsfont-plus"
+      data-add-param
+      @click="addParam"
+    >{{ $t('page.param') }}</div>
   </div>
 </template>
 <script>
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
+import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
 import Draggable from 'vuedraggable';
+import {cloneParamConfig, flattenHandlerParams, validateCustomParams} from './integration-param-utils.js';
+
 export default {
-  components: {
-    Draggable,
-    TsFormInput,
-    TsFormSelect
-  },
+  components: {Draggable, TsFormInput, TsFormSelect, TsFormSwitch},
   props: {
-    integration: { type: Object },
-    allowEditParam: { type: Number },
-    handlerPattern: { type: Array }
+    integration: {type: Object},
+    allowEditInputParam: {type: Number, default: 0},
+    allowEditOutputParam: {type: Number, default: 0},
+    handlerPattern: {type: Array, default: () => []}
   },
   data() {
     return {
       paramList: [],
       paramTypeList: [],
       needValid: 0,
+      paramError: null,
       modeList: [
-        { value: 'input', text: this.$t('page.inputparam') },
-        { value: 'output', text: this.$t('page.outputparam') }
+        {value: 'input', text: this.$t('page.inputparam')},
+        {value: 'output', text: this.$t('page.outputparam')}
       ]
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
   mounted() {
     this.getParamTypeList();
   },
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
-    getModeText: function(val) {
-      for (var i = 0; i < this.modeList.length; i++) {
-        if (this.modeList[i].value == val) {
-          return this.modeList[i].text;
-        }
-      }
+    getModeText(val) {
+      const mode = this.modeList.find(item => item.value === val);
+      return mode ? mode.text : val;
     },
-    changeLabel: function(label, i) {
-      this.paramList[i].typeName = label;
+    // 修改、删除和拖动均使用当前行的方向权限，禁止影响只读方向。
+    canEditParam(item) {
+      if (item.mode === 'input') return this.allowEditInputParam === 1;
+      if (item.mode === 'output') return this.allowEditOutputParam === 1;
+      // 旧版允许保存空方向的行，有编辑权限时允许修正或删除，避免无法通过保存校验。
+      return this.allowEditInputParam === 1 || this.allowEditOutputParam === 1;
     },
-    getParamTypeList: function() {
+    canMoveParam(event) {
+      const {element, index, futureIndex} = event.draggedContext;
+      return this.canEditParam(element) && this.paramList.slice(Math.min(index, futureIndex), Math.max(index, futureIndex) + 1).every(this.canEditParam);
+    },
+    changeLabel(label, index) {
+      if (this.canEditParam(this.paramList[index])) this.$set(this.paramList[index], 'typeName', label);
+    },
+    getParamTypeList() {
       this.$api.framework.integration.getParamTypeList().then(res => {
-        if (res.Status == 'OK') {
-          this.paramTypeList = res.Return;
-        }
+        if (res.Status === 'OK') this.paramTypeList = res.Return;
       });
     },
+    // 新增默认首个允许编辑的方向，固定参数从不加入保存配置。
     addRowParam(index) {
-      this.paramList.splice(index + 1, 0, {uuid: this.$utils.setUuid()});
+      if (!this.canAddParam || (index >= 0 && !this.canEditParam(this.paramList[index]))) return;
+      this.paramList.splice(index + 1, 0, {uuid: this.$utils.setUuid(), mode: this.editableModeList[0].value, isRequired: 0, isSearchAble: 0});
     },
     addParam() {
-      this.paramList.push({uuid: this.$utils.setUuid()});
+      if (this.canAddParam) this.paramList.push({uuid: this.$utils.setUuid(), mode: this.editableModeList[0].value, isRequired: 0, isSearchAble: 0});
     },
     delParam(index) {
-      this.paramList.splice(index, 1);
+      if (this.canEditParam(this.paramList[index])) this.paramList.splice(index, 1);
+    },
+    getConfig() {
+      return cloneParamConfig(this.config);
+    },
+    valid() {
+      this.paramError = validateCustomParams(this.config, this.handlerPattern);
+      if (this.paramError) this.$Message.warning(this.$t(this.paramError.message, {target: this.$t('page.param')}));
+      return !this.paramError;
     }
   },
-  filter: {},
   computed: {
-    config: function() {
-      return { needValid: this.needValid, paramList: this.paramList };
+    editableModeList() {
+      return this.modeList.filter(item => this.canEditParam({mode: item.value}));
+    },
+    canAddParam() {
+      return this.editableModeList.length > 0;
+    },
+    fixedParamList() {
+      return flattenHandlerParams(this.handlerPattern);
+    },
+    savedParam() {
+      return this.integration && this.integration.config && this.integration.config.param;
+    },
+    config() {
+      return {needValid: this.needValid, paramList: this.paramList};
     }
   },
   watch: {
-    integration: {
-      handler: function(val) {
-        if (val.config.param) {
-          this.paramList = val.config.param.paramList || [];
-          this.needValid = val.config.param.needValid;
+    // 仅观察参数配置，初始化先回显；相同配置不往返回写，避免复制和父组件更新造成覆盖。
+    savedParam: {
+      handler(val) {
+        const next = cloneParamConfig(val);
+        if (JSON.stringify(next) !== JSON.stringify(this.config)) {
+          this.paramList = next.paramList;
+          this.needValid = next.needValid;
+          this.paramError = null;
         }
-      },
-      deep: true
-    },
-    config: {
-      handler: function(val) {
-        this.$emit('setParam', val);
       },
       deep: true,
       immediate: true
+    },
+    config: {
+      handler(val) {
+        if (JSON.stringify(val) !== JSON.stringify(cloneParamConfig(this.savedParam))) this.$emit('setParam', cloneParamConfig(val));
+      },
+      deep: true
     }
   }
 };
 </script>
-<style lang="less"></style>

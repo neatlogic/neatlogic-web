@@ -41,7 +41,9 @@
                 tab="integrationEditTabs"
               >
                 <ParamEdit
-                  :allow-edit-param="allowEditInputParam"
+                  ref="paramEdit"
+                  :allow-edit-input-param="allowEditInputParam"
+                  :allow-edit-output-param="allowEditOutputParam"
                   :integration="integrationData"
                   :handler-pattern="handlerPattern"
                   @setParam="setParam"
@@ -115,7 +117,12 @@
           <span v-if="!testing">{{ $t('page.test') }}</span>
           <span v-else>{{ $t('page.running') }}...</span>
         </Button>
-        <Button type="primary" :loading="isSaving" @click="saveIntegration()">{{ $t('page.confirm') }}</Button>
+        <Button
+          type="primary"
+          :loading="isSaving"
+          :disabled="!handlerPatternReady"
+          @click="saveIntegration()"
+        >{{ $t('page.confirm') }}</Button>
       </template>
     </TsDialog>
   </div>
@@ -131,6 +138,7 @@ import OutputTransform from './output-transform.vue';
 import InputTransform from './input-transform.vue';
 import Test from './integration-test.vue';
 import ParamEdit from './param-edit.vue';
+import {cloneParamConfig, getParamEditPermission, validateCustomParams, withPatternMode} from './integration-param-utils.js';
 
 export default {
   components: {
@@ -163,6 +171,8 @@ export default {
       handlerOutputPattern: [],
       allowEditInputParam: 0,
       allowEditOutputParam: 0,
+      handlerPatternRequest: 0,
+      handlerPatternReady: false,
       methodList: [
         { value: 'get', text: 'GET' },
         { value: 'post', text: 'POST' }
@@ -229,27 +239,36 @@ export default {
   destroyed() {},
   methods: {
     getHandlerPatternFormat: function() {
-      var _this = this;
-      if (this.integrationData.handler) {
-        this.$api.framework.integration
+      // 切换规范保留自定义配置；每次请求清理固定定义和权限，旧响应不得覆盖新选择。
+      const handler = this.integrationData.handler;
+      const request = ++this.handlerPatternRequest;
+      this.handlerInputPattern = [];
+      this.handlerOutputPattern = [];
+      this.allowEditInputParam = 0;
+      this.allowEditOutputParam = 0;
+      this.handlerPatternReady = false;
+      if (handler) {
+        return this.$api.framework.integration
           .getIntegrationHandlerByHandler({
-            handler: this.integrationData.handler
+            handler
           })
           .then(res => {
-            if (res.Status == 'OK') {
-              _this.handlerInputPattern = res.Return['inputPattern'] || [];
-              _this.handlerOutputPattern = res.Return['outputPattern'] || [];
-              _this.allowEditInputParam = res.Return['hasInputPattern'] == 0 ? 1 : 0;
-              _this.allowEditOutputParam = res.Return['hasOutputPattern'] == 0 ? 1 : 0;
-              _this.setMethodList(res.Return['methodList']);
+            if (request !== this.handlerPatternRequest || handler !== this.integrationData.handler) return;
+            if (res.Status === 'OK') {
+              // 非空规范始终展示，编辑开关仅控制自定义行，不控制固定参数可见性。
+              this.handlerInputPattern = withPatternMode(res.Return.inputPattern, 'input');
+              this.handlerOutputPattern = withPatternMode(res.Return.outputPattern, 'output');
+              this.allowEditInputParam = getParamEditPermission(res.Return, 'input');
+              this.allowEditOutputParam = getParamEditPermission(res.Return, 'output');
+              this.setMethodList(res.Return.methodList);
+              this.handlerPatternReady = true;
             }
           });
       } else {
-        _this.handlerInputPattern = [];
-        _this.handlerOutputPattern = [];
-        _this.allowEditInputParam = 1;
-        _this.allowEditOutputParam = 1;
-        _this.setMethodList();
+        this.allowEditInputParam = 1;
+        this.allowEditOutputParam = 1;
+        this.handlerPatternReady = true;
+        this.setMethodList();
       }
     },
     setMethodList: function(methodList) {
@@ -265,16 +284,17 @@ export default {
       }
     },
     setInput: function(input) {
-      this.integrationData.config.input = input;
+      this.$set(this.integrationData.config, 'input', input);
     },
     setOutput: function(output) {
-      this.integrationData.config.output = output;
+      this.$set(this.integrationData.config, 'output', output);
     },
     setHead: function(head) {
       this.integrationData.config.head = head;
     },
     setParam: function(param) {
-      this.integrationData.config.param = param;
+      // 固定定义只来自处理器，配置仅保存自定义参数及校验开关。
+      this.$set(this.integrationData.config, 'param', cloneParamConfig(param));
     },
     setAuthentication: function(authentication) {
       this.integrationData.config.authentication = authentication;
@@ -284,7 +304,7 @@ export default {
     },
     saveIntegration: function() {
       let form = this.$refs['integrationForm'];
-      if (form.valid() && this.validRateLimitConfig()) {
+      if (this.handlerPatternReady && form.valid() && this.validParamConfig() && this.validRateLimitConfig()) {
         this.isSaving = true;
         this.$api.framework.integration
           .saveIntegration(this.integrationData)
@@ -298,6 +318,20 @@ export default {
             this.isSaving = false;
           });
       }
+    },
+    validParamConfig() {
+      // 参数页可能尚未挂载，父级仍须检查完整性及同方向重名，禁止绕过保存校验。
+      const editor = this.$refs.paramEdit;
+      const config = editor ? editor.getConfig() : cloneParamConfig(this.integrationData.config.param);
+      const error = validateCustomParams(config, this.handlerPattern);
+      if (error) {
+        this.activedTab = 'param';
+        if (editor) editor.valid();
+        else this.$Message.warning(this.$t(error.message, {target: this.$t('page.param')}));
+        return false;
+      }
+      this.setParam(config);
+      return true;
     },
     validRateLimitConfig: function() {
       let otherConfig = (this.integrationData.config && this.integrationData.config.other) || {};
@@ -362,7 +396,7 @@ export default {
           name: null,
           handler: null,
           config: {
-            param: [],
+            param: {needValid: 0, paramList: []},
             authentication: {},
             head: [],
             body: {},

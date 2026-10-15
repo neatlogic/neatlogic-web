@@ -45,13 +45,14 @@
 </template>
 <script>
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
+import {mergeIntegrationParams, withPatternMode} from './integration-param-utils.js';
 
 export default {
   components: { TsCodemirror },
   props: { integration: { type: Object }, handlerPattern: { type: Array } },
   data() {
     return {
-      paramList: [],
+      lastGeneratedContent: '',
       rawResult: '',
       content: '',
       isRunned: false,
@@ -120,10 +121,11 @@ export default {
     buildJson: function(elements, type) {
       let json = {};
       elements.forEach(element => {
-        if (element.children) {
+        if (element.children && element.children.length) {
           json[element.name] = this.buildJson(element.children, element.type);
         } else {
-          json[element.name] = element.typeName;
+          // 历史自定义参数可能没有 typeName，也必须生成对应的测试入口。
+          json[element.name] = element.typeName || element.type;
         }
       });
       if (type == 'jsonArray') {
@@ -139,28 +141,21 @@ export default {
       return this.integration && this.integration.method === 'mcp';
     },
     computedContent: function() {
-      if (this.handlerPattern) {
-        return JSON.stringify(this.buildJson(this.handlerPattern), null, 2);
-      } else {
-        return '';
-      }
+      return JSON.stringify(this.buildJson(this.paramList), null, 2);
+    },
+    // 测试请求只合并输入，输出定义不得混入生成的请求参数。
+    paramList() {
+      return mergeIntegrationParams(withPatternMode(this.handlerPattern, 'input'), this.integration && this.integration.config && this.integration.config.param, 'input');
     }
   },
   watch: {
-    integration: {
-      handler: function(val) {
-        if (val.config.input) {
-          this.paramList = val.config.input.paramList;
-        }
-      },
-      deep: true
-      // immediate: true
-    },
     computedContent: {
       handler: function(val) {
-        this.content = val;
+        // 仅更新未经手动修改的示例；异步规范回显和参数变更不得清空用户测试数据。
+        if (this.content === this.lastGeneratedContent) this.content = val;
+        this.lastGeneratedContent = val;
       },
-      deep: true
+      immediate: true
     }
   }
 };

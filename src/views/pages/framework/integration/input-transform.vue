@@ -8,28 +8,19 @@
       </template>
     </Alert>
     <TsRow>
-      <Col v-if="allowEditParam == 0 && handlerPattern && handlerPattern.length > 0" :span="10">
+      <Col v-if="paramList.length" :span="10">
         <Table
           size="small"
-          row-key="name"
-          :columns="columns"
-          :data="handlerPattern"
-          border
-        ></Table>
-      </Col>
-      <Col v-if="allowEditParam == 1 && paramList && paramList.length > 0" :span="10">
-        <Table
-          size="small"
-          row-key="name"
+          row-key="_integrationParamKey"
           :columns="columns"
           :data="paramList"
           border
         ></Table>
       </Col>
-      <Col v-if="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0)" :span="1">
+      <Col v-if="paramList.length" :span="1">
         <i class="tsfont-double-arrow-right"></i>
       </Col>
-      <Col :span="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0) ? 13 : 24">
+      <Col :span="paramList.length ? 13 : 24">
         <TsCodemirror :value.sync="content" height="300px"></TsCodemirror>
         <TransformTest :content="content"></TransformTest>
       </Col>
@@ -37,6 +28,8 @@
   </div>
 </template>
 <script>
+import {mergeIntegrationParams, withParamRowKeys, withPatternMode} from './integration-param-utils.js';
+
 export default {
   components: {
     TransformTest: () => import('./transform-test.vue'),
@@ -50,7 +43,6 @@ export default {
   data() {
     return {
       content: '',
-      paramList: [],
       columns: [
         { title: this.$t('page.name'), key: 'name', tree: true },
         { title: this.$t('page.type'), key: 'typeName' }
@@ -70,34 +62,24 @@ export default {
   methods: {},
   filter: {},
   computed: {
-    config: function() {
-      return { content: this.content };
+    // 转换提示同时列出固定和自定义输入，树行键保留层级，编辑权限不影响展示。
+    paramList() {
+      return withParamRowKeys(mergeIntegrationParams(withPatternMode(this.handlerPattern, 'input'), this.integration && this.integration.config && this.integration.config.param, 'input'));
+    },
+    savedContent() {
+      return (this.integration && this.integration.config && this.integration.config.input && this.integration.config.input.content) || '';
     }
   },
   watch: {
-    integration: {
-      handler: function(val) {
-        if (val.config.input) {
-          this.content = val.config.input.content;
-        } else {
-          this.content = '';
-        }
-        this.paramList = [];
-        if (val.config.param && val.config.param.paramList) {
-          val.config.param.paramList.forEach(element => {
-            if (element.name && element.type && element.mode == 'input') {
-              this.paramList.push(element);
-            }
-          });
-        }
+    // 仅回显对应脚本，避免其它配置更新覆盖尚未同步的编辑内容。
+    savedContent: {
+      handler(val) {
+        if (val !== this.content) this.content = val;
       },
-      deep: true
+      immediate: true
     },
-    config: {
-      handler: function(val) {
-        this.$emit('setInput', val);
-      },
-      deep: true
+    content(val) {
+      if (val !== this.savedContent) this.$emit('setInput', {content: val});
     }
   }
 };
