@@ -27,11 +27,11 @@
             </th>
           </tr>
         </thead>
-        <!-- 固定定义及其子节点始终只读，独立于可拖动的自定义列表。 -->
+        <!-- 仅展示顶层固定参数且保持只读，子节点保留在定义中供其它页面使用。 -->
         <tbody v-if="fixedParamList.length" class="tbody-main">
           <tr v-for="item in fixedParamList" :key="item._integrationParamKey" data-fixed-param>
             <td></td>
-            <td>{{ item._integrationParamPath }}</td>
+            <td>{{ item.name }}</td>
             <td>{{ getModeText(item.mode) }}</td>
             <td>{{ item.typeName || item.type }}</td>
             <td>{{ $t(item.isRequired == 1 ? 'page.yes' : 'page.no') }}</td>
@@ -130,7 +130,7 @@ import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
 import Draggable from 'vuedraggable';
-import {cloneParamConfig, flattenHandlerParams, validateCustomParams} from './integration-param-utils.js';
+import {cloneParamConfig, validateCustomParams, withParamRowKeys} from './integration-param-utils.js';
 
 export default {
   components: {Draggable, TsFormInput, TsFormSelect, TsFormSwitch},
@@ -207,7 +207,8 @@ export default {
       return this.editableModeList.length > 0;
     },
     fixedParamList() {
-      return flattenHandlerParams(this.handlerPattern);
+      // 所有规范均只遍历顶层固定定义，复用层级行键但不展开 children。
+      return withParamRowKeys(this.handlerPattern);
     },
     savedParam() {
       return this.integration && this.integration.config && this.integration.config.param;

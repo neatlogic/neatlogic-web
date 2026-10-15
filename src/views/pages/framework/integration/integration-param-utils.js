@@ -51,18 +51,6 @@ export function withParamRowKeys(params, parentKey = '') {
   });
 }
 
-// 参数说明保留原表格结构，使用完整参数路径显示固定子节点，不引入缩进样式。
-export function flattenHandlerParams(pattern, parentPath = '', parentKey = '') {
-  const result = [];
-  (pattern || []).forEach((item, index) => {
-    const path = parentPath ? `${parentPath}.${item.name}` : item.name;
-    const key = `${parentKey}/${index}:${item.mode}:${item.name}`;
-    result.push({...item, _integrationParamPath: path, _integrationParamKey: key});
-    if (item.children) result.push(...flattenHandlerParams(item.children, path, key));
-  });
-  return result;
-}
-
 // 保存前校验全部自定义顶层定义；不同方向及不同层级允许同名。
 export function validateCustomParams(config, pattern) {
   const seen = new Set((pattern || []).map(item => JSON.stringify([item.mode, item.name])));
