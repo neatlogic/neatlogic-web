@@ -138,7 +138,7 @@ function getDirectUrl() {
     if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
       SSOTICKETVALUE = hashParams[SSOTICKETKEY];
     }
-    xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
+    xhr.setRequestHeader('AuthType', AUTHTYPE);
     xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
