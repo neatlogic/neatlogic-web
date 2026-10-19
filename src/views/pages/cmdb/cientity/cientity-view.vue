@@ -54,6 +54,12 @@
       </template>
       <template v-slot:topRight>
         <div class="action-group" style="text-align: right">
+          <component
+            :is="cmdbEventAuditEntry"
+            v-if="cmdbEventAuditEntry && mode === 'page' && ciEntityData.id && !ciEntityData.isVirtual"
+            :ciId="ciId"
+            :ciEntityId="ciEntityData.id"
+          ></component>
           <span v-if="ciEntityData && ciEntityData.authData && ciEntityData.authData.cientityupdate" class="action-item tsfont-edit" @click="toEditCiEntity">{{ $t('page.edit') }}</span>
           <span v-if="ciEntityData && ciEntityData.authData && ciEntityData.authData.cimanage" class="action-item tsfont-ci" @click="editCustomView()">{{ $t('term.cmdb.customview') }}</span>
           <span v-if="unCommitTransactionCount && ciEntityData && ciEntityData.authData && ciEntityData.authData.transactionmanage" class="action-item tsfont-unsend" @click="openTransactionDialog">
@@ -278,6 +284,7 @@
 <script>
 import AttrViewer from './attr-viewer.vue';
 import SubCiEntityList from './cientity-list.vue';
+import ComponentManager from '@/resources/import/component-manager.js';
 
 export default {
   name: '',
@@ -528,6 +535,11 @@ export default {
   },
   filter: {},
   computed: {
+    /** 公共配置项页面只读取可选商业入口，缺失商业模块时完全不显示。 */
+    cmdbEventAuditEntry() {
+      if (typeof COMMERCIAL_MODULES === 'undefined' || !COMMERCIAL_MODULES.includes('cmdb') || !this.$AuthUtils.hasRole('CMDB_EVENT_VIEW')) return null;
+      return (ComponentManager.getComponent('cmdbEventAudit') || {}).entry;
+    },
     attrListGrouped() {
       let finalList = [];
       if (this.attrList && this.attrList.length > 0) {
