@@ -1423,7 +1423,11 @@
     "jobcategory": "作业分类",
     "parentjob": "父作业",
     "subjob": "子作业",
-    "ignoreall": "是否忽略所有节点"
+    "ignoreall": "是否忽略所有节点",
+    "mappingconstantdesc": "在服务中预先填写参数值，发起作业时使用该值。",
+    "mappingemptydesc": "将参数值设为空，不使用默认值。",
+    "mappingformdesc": "可以选择某个表单组件，将该组件填写的值作为参数值。",
+    "mappingunsetdesc": "通过服务发起作业时填写参数值。"
   },
   "framework": {
     "codeauth": "代码内置授权",
