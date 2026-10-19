@@ -65,7 +65,8 @@ export default {
   computed: {
     // 输出转换使用同一合并规则，同时保留固定和自定义输出定义。
     paramList() {
-      return withParamRowKeys(mergeIntegrationParams(withPatternMode(this.handlerPattern, 'output'), this.integration && this.integration.config && this.integration.config.param, 'output'));
+      // 按当前处理器关联固定默认值，保留输入输出隔离和完整子字段结构。
+      return withParamRowKeys(mergeIntegrationParams(withPatternMode(this.handlerPattern, 'output'), this.integration && this.integration.config && this.integration.config.param, 'output', this.integration && this.integration.handler));
     },
     savedContent() {
       return (this.integration && this.integration.config && this.integration.config.output && this.integration.config.output.content) || '';

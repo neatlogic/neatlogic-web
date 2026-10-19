@@ -46,6 +46,7 @@
                   :allow-edit-output-param="allowEditOutputParam"
                   :integration="integrationData"
                   :handler-pattern="handlerPattern"
+                  :disabled="!canEditIntegration || !handlerPatternReady || isSaving"
                   @setParam="setParam"
                 ></ParamEdit>
               </TabPane>
@@ -120,7 +121,7 @@
         <Button
           type="primary"
           :loading="isSaving"
-          :disabled="!handlerPatternReady"
+          :disabled="!canEditIntegration || !handlerPatternReady"
           @click="saveIntegration()"
         >{{ $t('page.confirm') }}</Button>
       </template>
@@ -139,6 +140,7 @@ import InputTransform from './input-transform.vue';
 import Test from './integration-test.vue';
 import ParamEdit from './param-edit.vue';
 import {cloneParamConfig, getParamEditPermission, validateCustomParams, withPatternMode} from './integration-param-utils.js';
+import {validateIntegrationDefaults} from './integration-default-utils.js';
 
 export default {
   components: {
@@ -293,7 +295,7 @@ export default {
       this.integrationData.config.head = head;
     },
     setParam: function(param) {
-      // 固定定义只来自处理器，配置仅保存自定义参数及校验开关。
+      // 固定定义只来自处理器，配置保存自定义参数、校验开关及独立固定默认值。
       this.$set(this.integrationData.config, 'param', cloneParamConfig(param));
     },
     setAuthentication: function(authentication) {
@@ -304,7 +306,7 @@ export default {
     },
     saveIntegration: function() {
       let form = this.$refs['integrationForm'];
-      if (this.handlerPatternReady && form.valid() && this.validParamConfig() && this.validRateLimitConfig()) {
+      if (this.canEditIntegration && this.handlerPatternReady && form.valid() && this.validParamConfig() && this.validRateLimitConfig()) {
         this.isSaving = true;
         this.$api.framework.integration
           .saveIntegration(this.integrationData)
@@ -328,6 +330,14 @@ export default {
         this.activedTab = 'param';
         if (editor) editor.valid();
         else this.$Message.warning(this.$t(error.message, {target: this.$t('page.param')}));
+        return false;
+      }
+      // 参数页可能未打开，默认值的类型、必填和失效结构仍由保存入口统一校验。
+      const defaultError = validateIntegrationDefaults(this.handlerPattern, config, this.integrationData.handler);
+      if (defaultError) {
+        this.activedTab = 'param';
+        if (editor) editor.valid();
+        else this.$Message.warning(defaultError.message);
         return false;
       }
       this.setParam(config);
@@ -427,6 +437,10 @@ export default {
   },
   filter: {},
   computed: {
+    canEditIntegration() {
+      // 默认值沿用集成保存权限，与处理器是否允许增删参数定义无关。
+      return this.$AuthUtils.hasRole('INTERFACE_MODIFY') || this.$AuthUtils.hasRole('ADMIN');
+    },
     handlerPattern: function() {
       return this.handlerInputPattern.concat(this.handlerOutputPattern);
     },

@@ -62,9 +62,9 @@ export default {
   methods: {},
   filter: {},
   computed: {
-    // 转换提示同时列出固定和自定义输入，树行键保留层级，编辑权限不影响展示。
+    // 转换提示同时列出固定和自定义输入，并关联当前规范默认值，树行键保留层级。
     paramList() {
-      return withParamRowKeys(mergeIntegrationParams(withPatternMode(this.handlerPattern, 'input'), this.integration && this.integration.config && this.integration.config.param, 'input'));
+      return withParamRowKeys(mergeIntegrationParams(withPatternMode(this.handlerPattern, 'input'), this.integration && this.integration.config && this.integration.config.param, 'input', this.integration && this.integration.handler));
     },
     savedContent() {
       return (this.integration && this.integration.config && this.integration.config.input && this.integration.config.input.content) || '';

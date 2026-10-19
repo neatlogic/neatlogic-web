@@ -1,3 +1,16 @@
+import {cloneJson, normalizeDefaultType, cloneDefaultConfig, getBuiltinDefault} from './integration-default-utils.js';
+
+// 只处理自定义定义和它的默认值结构，处理器原始规范及业务值保持不变。
+function cloneCustomParam(param) {
+  const copy = cloneJson(param);
+  if (!copy || typeof copy !== 'object') return copy;
+  if (normalizeDefaultType(copy.type) === 'enum') delete copy.options;
+  if (Object.prototype.hasOwnProperty.call(copy, 'defaultConfig')) copy.defaultConfig = cloneDefaultConfig(copy.defaultConfig);
+  if (Array.isArray(copy.children)) copy.children = copy.children.map(cloneCustomParam);
+  if (copy.items && typeof copy.items === 'object') copy.items = cloneCustomParam(copy.items);
+  return copy;
+}
+
 // 新版后端独立控制输入、输出编辑权限；缺少字段时兼容旧版规范开关。
 export function getParamEditPermission(handler, mode) {
   const direction = mode === 'input' ? 'Input' : 'Output';
@@ -5,11 +18,17 @@ export function getParamEditPermission(handler, mode) {
   return permission == null ? (handler[`has${direction}Pattern`] == 0 ? 1 : 0) : (permission == 1 ? 1 : 0);
 }
 
-// 配置始终只包含自定义参数，复制后编辑，避免回显时直接改写父组件或接口数据。
+// 固定定义不进入 paramList；固定默认值单独保留，切换处理器时不能丢失其他规范的草稿。
 export function cloneParamConfig(config) {
   return {
     needValid: config && config.needValid == 1 ? 1 : 0,
-    paramList: config && Array.isArray(config.paramList) ? JSON.parse(JSON.stringify(config.paramList)) : []
+    paramList: config && Array.isArray(config.paramList) ? config.paramList.map(cloneCustomParam) : [],
+    // 所有处理器的草稿都迁移历史结构，切换规范或复制时保留各自的值及启用状态。
+    ...(config && Array.isArray(config.builtinDefaultList) ? {builtinDefaultList: config.builtinDefaultList.map(entry => {
+      const copy = cloneJson(entry);
+      if (copy && Object.prototype.hasOwnProperty.call(copy, 'defaultConfig')) copy.defaultConfig = cloneDefaultConfig(copy.defaultConfig);
+      return copy;
+    })} : {})
   };
 }
 
@@ -23,16 +42,26 @@ export function withPatternMode(pattern, mode) {
 }
 
 // 合并只用于展示和使用：固定优先，历史重复自定义项保留首条，不改变保存列表。
-export function mergeIntegrationParams(pattern, config, mode) {
+export function mergeIntegrationParams(pattern, config, mode, handler) {
   const result = [];
   const seen = new Set();
   const custom = config && Array.isArray(config.paramList) ? config.paramList : [];
-  [...(pattern || []), ...custom].forEach(item => {
+  // 合并结果与来源深度隔离，当前处理器的默认值只关联到固定定义副本。
+  const fixed = (pattern || []).filter(Boolean).map(item => {
+    const copy = cloneJson(item);
+    if (handler != null) {
+      delete copy.defaultConfig;
+      const defaults = getBuiltinDefault(config, handler, item);
+      if (defaults !== undefined) copy.defaultConfig = defaults;
+    }
+    return copy;
+  });
+  [...fixed, ...custom].forEach(item => {
     if (!item || !item.name || !item.type || !['input', 'output'].includes(item.mode) || (mode && item.mode !== mode)) return;
     const key = JSON.stringify([item.mode, item.name]);
     if (!seen.has(key)) {
       seen.add(key);
-      result.push(item);
+      result.push(cloneJson(item));
     }
   });
   return result;
