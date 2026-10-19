@@ -1,5 +1,8 @@
 import ExcelJS from 'exceljs';
 import FileSaver from 'file-saver';
+import filterReaction from '../../reaction/filter.js';
+import filterValueMixin from '../common/filter-value-mixin.js';
+import { hasFilterValue } from '../../reaction/filter-source.js';
 export default {
   // 处理表格导入导出的mixin
   data() {
@@ -108,7 +111,13 @@ export default {
       });
     },
     handleBeforeUpload({ file, extraList = [], tbodyList = [] }) {
-      this._handleExcelImportData({ file, extraList, tbodyList });
+      if (this.isImportOperationLoading) return false;
+      this.isImportOperationLoading = true;
+      this._handleExcelImportData({ file, extraList, tbodyList }).catch(() => {
+        this.$Notice.error({ title: this.$t('message.importfailed') });
+      }).finally(() => {
+        this.isImportOperationLoading = false;
+      });
       return false; // 阻止自动上传，完全前端处理。
     },
     async _handleExcelImportData({ file, extraList = [], tbodyList = [] }) {
@@ -169,6 +178,9 @@ export default {
                 theadKey,
                 list: matrixVal
               });
+            } else {
+              const { isMultiple, handler } = this._getTableColumnConfigByUuid({ uuid: theadKey, extraList });
+              this.$set(rowData.rowValue, theadKey, isMultiple || handler === 'formcheckbox' ? [] : null);
             }
           } else {
             value = this._setDisplayValueByCompType({ uuid: theadKey, value: cellValue, extraList: extraList });
@@ -205,7 +217,114 @@ export default {
           newTbodyList.push({ ...mergedItem, uuid: this.$utils.setUuid() });
         }
       }
+      const invalidCells = await this._filterImportedMatrixRows(newTbodyList.slice(0, allRows.length), extraList);
       this.tbodyList = newTbodyList;
+      if (invalidCells.length) {
+        invalidCells.sort((a, b) => a.rowIndex - b.rowIndex);
+        this.$Notice.warning({
+          title: this.$t('term.framework.tableimportfiltertitle'),
+          duration: 30,
+          // 列名和导入值通过文本节点展示，避免被通知组件当作 HTML 解析。
+          render: h => h('div', { class: 'mt-xs lh-2 pre' }, [
+            h('p', { class: 'mb-md' }, this.$t('term.framework.tableimportfiltersummary', { count: invalidCells.length })),
+            h('div', { class: 'pb-xs', style: { maxHeight: '200px', overflowY: 'auto' } },
+              invalidCells.map(({ rowIndex, label, value }) => h('p', { class: 'mb-md' }, this.$t('term.framework.tableimportfilterdetail', {
+                row: rowIndex, column: label, value
+              }))))
+          ])
+        });
+      }
+    },
+    async _filterImportedMatrixRows(rows, extraList) {
+      // 导入值不能仅凭矩阵中存在就直接回显；未挂载的分页行也必须应用相同过滤规则。
+      const definitions = [...(this.config.dataConfig || extraList), ...(this.effectiveReferenceFormItemList || this.formItemList || [])];
+      const columns = extraList.filter(column => this.dataValidateFormList.includes(column.handler) && column.config?.dataSource === 'matrix');
+      const pending = new Map(columns.map(column => [column.uuid, column]));
+      const invalidCells = [];
+      const requestCache = new Map();
+      const recordInvalid = (column, rowIndex, value) => {
+        const values = Array.isArray(value) ? value : [value];
+        invalidCells.push({
+          rowIndex: rowIndex + 2, label: column.label || column.uuid,
+          value: values.map(item => item && typeof item === 'object' ? item.text ?? item.value : item).join(', ')
+        });
+      };
+      const clearCell = (row, column, rowIndex) => {
+        if (!this.$utils.isEmpty(row[column.uuid])) recordInvalid(column, rowIndex, row[column.uuid]);
+        row[column.uuid] = column.config.isMultiple || column.handler === 'formcheckbox' ? [] : null;
+      };
+      while (pending.size) {
+        // 先校验过滤条件引用的列，避免下游继续使用已被剔除的上游值。
+        const ready = [...pending.values()].filter(column => {
+          const refs = [
+            ...(column.config.sourceColumnList || []).map(item => item.valueColumn),
+            ...(column.reaction?.filter?.ruleList || []).map(rule => (rule.formItemUuid || '').split('#')[0])
+          ];
+          return !refs.some(uuid => pending.has(uuid));
+        });
+        if (!ready.length) {
+          // 循环依赖无法得到稳定的有效选项，不允许直接保留导入值。
+          pending.forEach(column => rows.forEach((row, index) => clearCell(row, column, index)));
+          break;
+        }
+        const tasks = [];
+        ready.forEach(column => rows.forEach((row, index) => {
+          if (this.$utils.isEmpty(row[column.uuid])) return;
+          tasks.push(async() => {
+            const view = {
+              formItem: column, formData: { ...(this.formData || {}), ...row },
+              formItemList: definitions, extraFormItemList: [], filter: [], $utils: this.$utils,
+              $set: (object, key, value) => { object[key] = value; },
+              addExecuteCount() {}, ...filterValueMixin.methods
+            };
+            filterReaction({ reaction: column.reaction?.filter || {}, view });
+            const filterList = this.$utils.deepClone(view.filter);
+            let canQuery = view.filterReady;
+            (column.config.sourceColumnList || []).forEach(source => {
+              if (!source.column) return;
+              let values = source.valueList || [];
+              if (source.valueColumn) {
+                const value = row[source.valueColumn];
+                values = (Array.isArray(value) ? value : [value]).map(item => item && typeof item === 'object' ? item.value : item).filter(hasFilterValue);
+                if (!values.length) canQuery = false;
+              }
+              if (source.valueColumn || source.expression) {
+                filterList.push({ uuid: source.column, expression: source.valueColumn ? 'equal' : source.expression, valueList: values });
+              }
+            });
+            if (!canQuery) {
+              clearCell(row, column, index);
+              return;
+            }
+            const { matrixUuid, mapping = {}, hiddenFieldList = [] } = column.config;
+            if (!filterList.length && !hiddenFieldList.length) return;
+            const params = { matrixUuid, valueField: mapping.value, textField: mapping.text, filterList, needPage: false };
+            if (hiddenFieldList.length) params.hiddenFieldList = hiddenFieldList.map(item => item.value);
+            const key = JSON.stringify(params);
+            if (!requestCache.has(key)) {
+              requestCache.set(key, this.$api.framework.matrix.getMatrixDataForSelect(params).then(res => {
+                // 请求失败时终止本次导入，防止把校验失败误当成没有候选项。
+                if (res?.Status !== 'OK' || !Array.isArray(res.Return?.dataList)) throw new Error('Matrix import validation failed');
+                return res.Return.dataList;
+              }));
+            }
+            const allowed = await requestCache.get(key);
+            const value = row[column.uuid];
+            const candidates = Array.isArray(value) ? value : [value];
+            const resolved = candidates.map(item => allowed.find(option => this.$utils.isSame(option.value, item && typeof item === 'object' ? item.value : item)));
+            const matched = resolved.filter(Boolean);
+            if (matched.length !== candidates.length) recordInvalid(column, index, candidates.filter((item, candidateIndex) => !resolved[candidateIndex]));
+            row[column.uuid] = column.config.isMultiple || column.handler === 'formcheckbox' ? matched : matched[0] || null;
+          });
+        }));
+        let taskIndex = 0;
+        const worker = async() => {
+          while (taskIndex < tasks.length) await tasks[taskIndex++]();
+        };
+        await Promise.all(Array.from({ length: Math.min(this.matrixSearchRequestConcurrency || 1, tasks.length) }, () => worker()));
+        ready.forEach(column => pending.delete(column.uuid));
+      }
+      return invalidCells;
     },
     async _fetchMatrixDataConcurrently({ columnsUuidList = [], extraList = [] }) {
       // 并发获取矩阵数据
@@ -276,7 +395,6 @@ export default {
       // 处理 Excel 导入数据：通过矩阵数据，依据显示名查询对应 value 值，用于数据回显
       let configList = [];
       let list = [];
-      this.isImportOperationLoading = true;
       if (searchParamList && searchParamList.length > 0) {
         searchParamList.forEach(item => {
           if (item && item.list && item.list.length > 0) {
@@ -292,15 +410,12 @@ export default {
         });
       }
       if (list && list.length == 0) {
-        this.isImportOperationLoading = false;
         return configList;
       }
       const batchSize = this.matrixSearchParamBatchSize;
       const requestConcurrency = this.matrixSearchRequestConcurrency;
       const requestList = this._generateMatrixSearchRequestList({ list, batchSize });
-      await this._searchMatrixColumnDataByBatch({ requestList, requestConcurrency, configList }).finally(() => {
-        this.isImportOperationLoading = false;
-      });
+      await this._searchMatrixColumnDataByBatch({ requestList, requestConcurrency, configList });
       return configList;
     },
     _generateMatrixSearchRequestList({ list = [], batchSize = 50 } = {}) {
@@ -322,13 +437,12 @@ export default {
             await this.$api.framework.form.searchMatrixColumnData({ searchParamList }).then(res => {
               const { Status = '', Return = {} } = res || {};
               const { tbodyList = [] } = Return || {};
-              if (Status == 'OK') {
-                tbodyList.forEach((item, index) => {
-                  if (item && item.dataList && item.dataList.length > 0 && configList[startIndex + index]) {
-                    configList[startIndex + index].list = item.dataList;
-                  }
-                });
-              }
+              if (Status !== 'OK' || !Array.isArray(tbodyList) || tbodyList.length !== searchParamList.length) throw new Error('Matrix import lookup failed');
+              tbodyList.forEach((item, index) => {
+                if (item && item.dataList && item.dataList.length > 0 && configList[startIndex + index]) {
+                  configList[startIndex + index].list = item.dataList;
+                }
+              });
             });
           }
         }
