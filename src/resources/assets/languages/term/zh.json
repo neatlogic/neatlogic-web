@@ -1426,6 +1426,9 @@
     "ignoreall": "是否忽略所有节点"
   },
   "framework": {
+    "tableimportfiltertitle": "部分导入值不符合联动/过滤条件",
+    "tableimportfiltersummary": "已清除 {count} 个单元格中的无效值，其余数据已导入。请根据当前行的联动/过滤条件重新选择。",
+    "tableimportfilterdetail": "Excel 第 {row} 行【{column}】：值“{value}”不在当前可选范围内，已清除。",
     "codeauth": "代码内置授权",
     "codeauthreadonly": "系统默认授权，只读不允许修改。",
     "filterquerylabel": "联动条件有值时查询",

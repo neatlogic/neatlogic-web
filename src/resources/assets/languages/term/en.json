@@ -1428,6 +1428,9 @@
     "ignoreall": "Ignore all nodes?"
   },
   "framework": {
+    "tableimportfiltertitle": "Some imported values do not meet the dependency or filter conditions",
+    "tableimportfiltersummary": "Invalid values were removed from {count} cells. The remaining data was imported. Select replacements using the dependency or filter conditions for each row.",
+    "tableimportfilterdetail": "Excel row {row} [{column}]: Value \"{value}\" is not among the currently available options and was removed.",
     "codeauth": "Code-Defined Permissions",
     "codeauthreadonly": "The system grants read-only access by default; modifications are not permitted.",
     "filterquerylabel": "Query When Linked Fields Have Values",
