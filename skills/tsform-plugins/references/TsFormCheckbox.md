@@ -24,7 +24,7 @@ desc|String|-|否|描述|-
 descType|String|-|否|描述显示的类型普通模式和Alert组件模式|值为info、success、warning、error时为Alert模式，如果值为空则为普通模式
 dealDataByUrl|Function|-|否|从新处理下拉数据|主要用于通过接口获取的数据如果需要从新处理一层时调用
 ajaxType|String|post|否|通过url拿去数据的时调用接口的类型|post get
-dataList|Array|-|否|下拉选项数据|在url数据为空时有效,数据格式值为：{text:'名称',value:'值',disabled: true} 如果 disabled 为false，可直接不加这个字段
+dataList|Array|-|否|下拉选项数据|在url数据为空时有效,数据格式值为：{text:'名称',value:'值',disabled: true,indeterminate: true}；indeterminate 控制单项半选展示，不改变选中值；布尔字段为 false 时可省略
 sperateText|String|-|否|readonly为true时，分割符|-
 url|String|-|否|通过url来一次性获取下拉数据|接口在组件初始化时调用
 rootName|String|-|否|通过接口获取数据的路径key值|支持层级嵌套如果 root1.root2

@@ -1,8 +1,11 @@
 export function parseSseEvent(rawEvent) {
   let eventName = 'message';
+  let id = '';
   const dataLines = [];
   for (const line of rawEvent.split(/\r?\n/)) {
-    if (line.startsWith('event:')) {
+    if (line.startsWith('id:')) {
+      id = line.slice(3).trim();
+    } else if (line.startsWith('event:')) {
       eventName = line.slice(6).trim();
     } else if (line.startsWith('data:')) {
       dataLines.push(line.slice(5).trim());
@@ -19,12 +22,14 @@ export function parseSseEvent(rawEvent) {
   }
   return {
     eventName,
+    id,
     payload,
     dataStr
   };
 }
 
-export function createSseParser(onEvent) {
+// 可选活动通知只针对完整业务帧或注释心跳，旧调用方保持原事件语义。
+export function createSseParser(onEvent, onActivity) {
   let pending = '';
   return {
     reset() {
@@ -35,8 +40,10 @@ export function createSseParser(onEvent) {
       while (true) {
         let sepIndex = pending.indexOf('\n\n');
         let sepLen = 2;
-        if (sepIndex === -1) {
-          sepIndex = pending.indexOf('\r\n\r\n');
+        const crlfIndex = pending.indexOf('\r\n\r\n');
+        // 混合换行时始终消费最早的分隔符，避免吞并相邻事件。
+        if (crlfIndex !== -1 && (sepIndex === -1 || crlfIndex < sepIndex)) {
+          sepIndex = crlfIndex;
           sepLen = 4;
         }
         if (sepIndex === -1) {
@@ -44,7 +51,11 @@ export function createSseParser(onEvent) {
         }
         const rawEvent = pending.slice(0, sepIndex);
         pending = pending.slice(sepIndex + sepLen);
-        onEvent(parseSseEvent(rawEvent));
+        // 注释心跳与空帧不产生业务事件。
+        if (/^(?:event|data):/m.test(rawEvent)) {
+          if (onActivity) onActivity();
+          onEvent(parseSseEvent(rawEvent));
+        } else if (/^:/m.test(rawEvent) && onActivity) onActivity();
       }
     }
   };

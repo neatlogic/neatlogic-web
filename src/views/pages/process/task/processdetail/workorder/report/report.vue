@@ -159,8 +159,10 @@
             </template>
           </TsForm>
           <div v-if="isShowUploadFile" class="file-box">
+            <!-- 编辑上报附件使用首节点处理器，并在已有工单时携带工单 ID。 -->
             <TsUpLoad
-              :dataType="startHandler == 'changecreate' ? 'change' : 'itsm'"
+              :dataType="attachmentFileType"
+              :params="attachmentUploadParams"
               styleType="button"
               className="smallUpload"
               rowSpan="24"
@@ -178,6 +180,7 @@
 <script>
 import imgViewer from '@/resources/directives/img-viewer.js';
 import TsFormItem from '@/resources/plugins/TsForm/TsFormItem';
+import { getFileTypeHandler } from '../../../taskcommon/file-type-handler.js';
 export default {
   name: '',
   components: {
@@ -604,7 +607,17 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    attachmentFileType() {
+      // 直接依赖最新首节点平级字段，避免沿用当前处理节点或旧嵌套配置的附件类型。
+      const startStep = this.processTaskConfig?.startProcessTaskStep;
+      return getFileTypeHandler(startStep, startStep?.handler || this.startHandler);
+    },
+    attachmentUploadParams() {
+      // multipart 扩展对象以 JSON 字符串提交；无工单 ID 时省略，保留字符串 ID 的精度。
+      return this.processTaskId ? { extendParam: JSON.stringify({ processTaskId: this.processTaskId }) } : {};
+    }
+  },
   watch: {
     'dataConfig.content'() {
       if (this.startHandler === 'changecreate') return;

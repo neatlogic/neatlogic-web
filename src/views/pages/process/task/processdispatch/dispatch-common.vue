@@ -48,10 +48,12 @@
               @setPriorityByForm="setPriorityByForm"
             ></FormSetting>
           </div>
+          <!-- 将当前工单 ID 传给上报附件，首次暂存成功后也能同步到后续上传请求。 -->
           <component
             :is="handlerName"
             ref="dispatchHandler"
             :draftData="draftData"
+            :processTaskId="processTaskId"
             @hook:mounted="syncContentRefs"
           ></component>
         </div>

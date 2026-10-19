@@ -870,6 +870,7 @@
     "flowname": "流程名称",
     "relform": "关联表单",
     "enableattachments": "启用附件",
+    "filetypehandler": "附件处理器",
     "enabledesc": "启用描述",
     "flowrult": "流转规则",
     "flowrulttip": "流程未关联表单，无法配置组合条件，请前往",
@@ -1426,7 +1427,7 @@
   },
   "framework": {
     "codeauth": "代码内置授权",
-    "codeauthreadonly": "代码内置授权由模块声明，只读且不可修改。",
+    "codeauthreadonly": "系统默认授权，只读不允许修改。",
     "filterquerylabel": "联动条件有值时查询",
     "filterquerytip": "开启后，至少一个关联字段有值时才查询；关闭后，不受此限制。引用表格列时，使用该列所有行的非空值作为过滤条件；引用当前行字段时，仅使用当前行的值。",
     "filterquerywaiting": "请至少填写一个关联字段后再查询。",

@@ -76,6 +76,8 @@
         </div>
       </div>
     </div>
+    <!-- 起始节点位于启用附件下方，其他节点位于回复设置前，留空沿用 itsm。 -->
+    <FileTypeHandlerSetting v-model="configData.stepConfig.fileTypeHandler"></FileTypeHandlerSetting>
     <div v-if="isStart" class="settingList">
       <div class="control-box">
         <div class="control-setting">
@@ -150,6 +152,7 @@ import itemmixin from './itemmixin.js';
 export default {
   name: '',
   components: {
+    FileTypeHandlerSetting: () => import('./nodesetting/file-type-handler-setting.vue'), // 共用附件处理器设置。
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
     AuthoritySetting: () => import('./nodesetting/authority-setting.vue'), // 权限设置
     NoticeSetting: () => import('./nodesetting/notice-setting.vue'), // 通知设置

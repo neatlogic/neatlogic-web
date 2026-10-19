@@ -26,6 +26,7 @@
             :key="data[valueName]"
             :label="data[valueName]"
             :disabled="disabled || data.disabled"
+            :indeterminate="!!data.indeterminate"
           ><slot
             name="label"
             :node="data"

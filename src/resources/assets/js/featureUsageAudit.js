@@ -43,7 +43,7 @@ function buildFeatureUsage(route, store) {
 function sendFeatureUsageByBeacon(payload) {
   const url = BASEURLPREFIX + FEATURE_USAGE_AUDIT_URL;
   const data = JSON.stringify(payload);
-  if (!(AUTHTYPE || SSOTICKETKEY) && navigator && navigator.sendBeacon) {
+  if (!AUTHTYPE && navigator && navigator.sendBeacon) {
     const blob = new Blob([data], { type: 'application/json' });
     return navigator.sendBeacon(url, blob);
   }
@@ -51,9 +51,8 @@ function sendFeatureUsageByBeacon(payload) {
   xhr.open('POST', url, false);
   xhr.setRequestHeader('Content-Type', 'application/json');
   xhr.setRequestHeader('source', 'pc');
-  if ((AUTHTYPE || SSOTICKETKEY) && SSOTICKETVALUE) {
-    xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
-    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE);
+  if (AUTHTYPE) {
+    xhr.setRequestHeader('AuthType', AUTHTYPE);
   }
   xhr.send(data);
   return true;
