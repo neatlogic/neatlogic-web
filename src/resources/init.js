@@ -112,11 +112,7 @@ export function initRouter(VueRouter, store) {
   router.beforeEach(async (to, from, next) => {
     let title = to.meta.title ? to.meta.title : to.name || to.path;
     document.title = $t(title);
-    let usertoken = utils.getCookie('neatlogic_authorization');
-    //如果是租户不存在，进路由前拦截统一外层404
-    if ((AUTHTYPE || SSOTICKETKEY) && SSOTICKETVALUE) {
-      usertoken = 'Bearer_' + SSOTICKETVALUE;
-    }
+    const usertoken = utils.getCookie('neatlogic_authorization');
 
     if (!usertoken) {
       authHeartbeat.stop();

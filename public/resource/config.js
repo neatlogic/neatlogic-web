@@ -16,8 +16,6 @@ var MODULEID = '';
 var MENULIST = [];
 var MENUTYPE = {};
 var AUTHTYPE = ''; // 授权类型
-var SSOTICKETKEY = ''; // 单点登录key值
-var SSOTICKETVALUE = ''; // 单点登录value值
 var ISNEEDAUTH = false; //是否需要免登录认证。如果需要，则页面会在第一个接口请求走myAuth认证后，才请求后续的接口。
 const COMMERCIAL_MODULES = []; //已激活的商业模块
 var HTTP_RESPONSE_STATUS_CODE = ''; // http返回状态码，用于错误回显
@@ -135,11 +133,7 @@ function getDirectUrl() {
     for (const key in hashParams) {
       xhr.setRequestHeader(key, hashParams[key]);
     }
-    if (SSOTICKETKEY && currentUrl && currentUrl.includes(SSOTICKETKEY)) {
-      SSOTICKETVALUE = hashParams[SSOTICKETKEY];
-    }
-    xhr.setRequestHeader('AuthType', AUTHTYPE || SSOTICKETKEY);
-    xhr.setRequestHeader('AuthValue', SSOTICKETVALUE || getCookie(SSOTICKETKEY));
+    xhr.setRequestHeader('AuthType', AUTHTYPE);
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         const responseText = xhr.responseText;
@@ -186,7 +180,7 @@ function getDirectUrl() {
   }
 }
 
-async function getSsoTokenKey() {
+async function initTenantConfig() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', BASEURLPREFIX + '/tenant/check', false); // 第三个参数设置为 false 表示同步请求
   xhr.send();
@@ -201,7 +195,6 @@ async function getSsoTokenKey() {
         USERLANGUAGE = BASELANGUAGES;
         USERLANGUAGECOOKIE = BASELANGUAGES;
         getFaviconUrl(responseText.themeConfig);
-        SSOTICKETKEY = responseText.ssoTicketKey || '';
         AUTHTYPE = responseText.authType || '';
         ISNEEDAUTH = responseText.isNeedAuth || false;
         MATRIX_COLUMN_DATA_SEARCH_FORBATCH_INPUT_PARAM_SEARCH_PARAM_LIST_SIZE = getPositiveInteger(responseText.matrixColumnDataSearchForbatchInputParamSearchParamListSize, MATRIX_COLUMN_DATA_SEARCH_FORBATCH_INPUT_PARAM_SEARCH_PARAM_LIST_SIZE);
@@ -230,7 +223,7 @@ async function getSsoTokenKey() {
     console.error(xhr.status + ' ' + xhr.statusText);
   }
 }
-getSsoTokenKey();
+initTenantConfig();
 function getBaseUrl() {
   // 获取租户域名
   const protocal = location.protocol;
