@@ -49,6 +49,18 @@ export default {
       this.hasEmitted = false;
       this.jsonError = '';
       this.text = value === undefined ? '' : typeof value === 'string' ? value : JSON.stringify(value);
+    },
+    refreshPathError() {
+      // 行移动只更新错误定位，不重新发送数据或格式化文本，保留非法 JSON 草稿。
+      if (!this.hasEmitted) return;
+      this.jsonError = '';
+      if (!this.text.trim()) return;
+      try {
+        const parsed = JSON.parse(this.text);
+        this.jsonError = validateDefaultValue(parsed, this.schema, this.path, true) || '';
+      } catch (error) {
+        this.jsonError = error instanceof SyntaxError ? `${this.path}：JSON 格式不正确` : error.message;
+      }
     }
   },
   computed: {
@@ -58,6 +70,9 @@ export default {
       return validateDefaultValue(this.value, this.schema, this.path, true);
     }
   },
-  watch: { value: { handler: 'syncValue', deep: true, immediate: true } }
+  watch: {
+    value: { handler: 'syncValue', deep: true, immediate: true },
+    path: 'refreshPathError'
+  }
 };
 </script>

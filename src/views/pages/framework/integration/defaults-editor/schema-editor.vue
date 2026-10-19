@@ -50,6 +50,7 @@
       :columns="columnSchema.children || []"
       :fixedColumns="declaredColumnSchema.children || []"
       :disabled="disabled"
+      :readonlyFixed="readonlyFixed"
       @change="changeColumns"
     ></ColumnsEditor>
   </div>
@@ -89,6 +90,7 @@ export default {
     declared: { type: Object, default: () => ({}) },
     initialSteps: { type: Array, default: () => [] },
     disabled: { type: Boolean, default: false },
+    readonlyFixed: { type: Boolean, default: false },
     path: { type: String, default: '' }
   },
   data() { return { steps: inlineObjectSteps(this.schema, this.initialSteps) }; },

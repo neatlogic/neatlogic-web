@@ -70,16 +70,14 @@
                 <DefaultValueCell
                   :pattern="item"
                   :config="getFixedDefault(item)"
-                  :expanded="expandedDefaultKey === fixedKey(item)"
                   :disabled="disabled"
                   @change="setFixedDefault(item, $event)"
                   @open="openDefault(fixedKey(item), $event)"
-                  @toggle="toggleDefault(fixedKey(item))"
                 ></DefaultValueCell>
               </td>
               <td v-if="canAddParam" :style="mainCellStyle"></td>
             </tr>
-            <tr v-if="(isComplex(item) && !isArray(item)) || expandedDefaultKey === fixedKey(item)" data-default-row>
+            <tr v-if="isComplex(item) && !isArray(item)" data-default-row>
               <td></td>
               <td :colspan="columnCount - 1">
                 <div v-if="isComplex(item) && !isArray(item)" class="flex-start mb-xs">
@@ -93,7 +91,7 @@
                 </div>
                 <DefaultValuePanel
                   v-if="expandedDefaultKey === fixedKey(item)"
-                  :key="fixedKey(item) + defaultPanelRevision"
+                  :key="fixedKey(item)"
                   :pattern="item"
                   :config="getFixedDefault(item)"
                   :view="defaultView"
@@ -178,11 +176,9 @@
               <DefaultValueCell
                 :pattern="item"
                 :config="item.defaultConfig"
-                :expanded="expandedDefaultKey === customKey(item)"
                 :disabled="disabled"
                 @change="setCustomDefault(item, $event)"
                 @open="openDefault(customKey(item), $event)"
-                @toggle="toggleDefault(customKey(item))"
               ></DefaultValueCell>
             </td>
             <td v-if="canAddParam" :style="mainCellStyle">
@@ -192,7 +188,7 @@
               </div>
             </td>
           </tr>
-          <tr v-if="(isComplex(item) && !isArray(item)) || expandedDefaultKey === customKey(item)" data-default-row>
+          <tr v-if="isComplex(item) && !isArray(item)" data-default-row>
             <td></td>
             <td :colspan="columnCount - 1">
               <div v-if="isComplex(item) && !isArray(item)" class="flex-start mb-xs">
@@ -206,7 +202,7 @@
               </div>
               <DefaultValuePanel
                 v-if="expandedDefaultKey === customKey(item)"
-                :key="customKey(item) + defaultPanelRevision"
+                :key="customKey(item)"
                 :pattern="item"
                 :config="item.defaultConfig"
                 :view="defaultView"
@@ -220,7 +216,7 @@
         </tbody>
       </Draggable>
     </div>
-    <!-- 结构设置独立于行下默认值表格，取消弹窗不影响已展开的值和导航。 -->
+    <!-- 数组结构和默认数据合并在独立草稿弹窗中，确认后才更新外层集成表单。 -->
     <SchemaDialog
       v-if="schemaDialogTarget && schemaDialogParam"
       :key="schemaDialogTarget.key"
@@ -279,7 +275,6 @@ export default {
       defaultError: null,
       expandedDefaultKey: '',
       defaultView: 'value',
-      defaultPanelRevision: 0,
       schemaDialogTarget: null,
       typeSelectKeys: {},
       modeList: [
@@ -343,7 +338,8 @@ export default {
     openDefault(key, view) {
       if (this.disabled) return;
       const target = this.findDefaultParam(key);
-      if (view === 'schema' && target && normalizeDefaultType(target.item.type) === 'array') {
+      // 数组所有编辑入口（含保存校验定位）均进入同一个弹窗，不再渲染行下表格。
+      if (target && normalizeDefaultType(target.item.type) === 'array') {
         this.openSchemaDialog(key);
         return;
       }
@@ -352,12 +348,6 @@ export default {
     },
     closeDefault() {
       this.expandedDefaultKey = '';
-    },
-    toggleDefault(key) {
-      if (this.disabled) return;
-      // 只保留一个展开区；收起销毁视图和子级导航，已编辑的配置继续留在外层表单。
-      if (this.expandedDefaultKey === key) this.closeDefault();
-      else this.openDefault(key, 'value');
     },
     findDefaultParam(key) {
       const fixed = this.fixedParamList.find(item => this.fixedKey(item) === key);
@@ -374,6 +364,7 @@ export default {
       if (this.disabled) return;
       const target = this.findDefaultParam(key);
       if (!target || normalizeDefaultType(target.item.type) !== 'array') return;
+      this.closeDefault();
       // 使用稳定行键定位，快照只用于阻止切换规范或外部更新后的过期写回。
       this.schemaDialogTarget = { key, stamp: this.getSchemaDialogStamp(target), schemaSteps: cloneJson(schemaSteps) };
     },
@@ -388,8 +379,7 @@ export default {
       }
       if (target.kind === 'builtin') this.setFixedDefault(target.item, config);
       else this.setCustomDefault(target.item, config);
-      // 应用结构后仅将对应的已展开值面板归根，不主动展开任何参数。
-      if (this.expandedDefaultKey === target.key) this.defaultPanelRevision++;
+      // 弹窗提交完整默认值配置，关闭时不产生额外行，也不复制固定参数定义。
       this.closeSchemaDialog();
     },
     changeParamType(item, type) {

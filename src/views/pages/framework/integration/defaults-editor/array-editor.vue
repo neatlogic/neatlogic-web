@@ -2,70 +2,52 @@
   <div :style="viewportStyle">
     <div v-if="!schema.items" class="text-tip">请先设置数组元素类型。</div>
     <template v-else>
-      <!-- 复用表格输入的容器和列布局，数组操作集中在左侧，不加入勾选列。 -->
-      <div class="tstable-container border bg-grey radius-lg tstable-no-fixedHeader">
-        <!-- 共用表格滚动容器，表头和数据一起横向滚动，编辑权限不影响滚动。 -->
-        <div class="tstable-main" data-array-scroll>
-          <table class="tstable-body">
-            <thead>
-              <tr>
-                <th>{{ $t('page.dragrow') }}</th>
-                <th>{{ $t('page.action') }}</th>
-                <th v-for="(column, index) in columns" :key="index">
-                  <span :class="{ 'require-label': column.isRequired === 1 || column.isRequired === true }">{{ objectItems ? column.name : '值' }}</span>
-                </th>
-              </tr>
-            </thead>
-            <Draggable
-              :value="rowList"
+      <!-- 复用用户管理的行尾悬浮栏及横向滚动，行操作不再占用字段左侧空间。 -->
+      <TsTable
+        :theadList="theadList"
+        :tbodyList="rowList"
+        keyName="id"
+        :fixedHeader="false"
+        :showPager="false"
+        :canSelectRow="false"
+        data-array-table
+      >
+        <template v-for="field in tableFields" :slot="field.key" slot-scope="{row}">
+          <!-- 行键和字段名共同稳定单元格，移动后保留 JSON 原文本及非法输入草稿。 -->
+          <!-- 固定控件外框为当前字号的九个汉字宽度，错误在同一宽度内换行。 -->
+          <div
+            :key="field.key"
+            data-default-control-width
+            style="width: 9em; min-width: 9em; max-width: 9em; white-space: normal; overflow-wrap: anywhere"
+            @click.stop
+          >
+            <ValueCell
+              :key="`${row.id}:${field.column.name || field.key}:${field.column.type}`"
+              :value="cellValue(row.value, field.column)"
+              :schema="field.column"
               :disabled="disabled"
-              :animation="150"
-              tag="tbody"
-              handle="[data-array-drag]"
-              class="tbody-main"
-              draggable="[data-array-row]"
-              @input="changeRows"
-            >
-              <tr v-for="(row, rowIndex) in rowList" :key="row.id" data-array-row>
-                <td>
-                  <span class="tsfont-drag cursor-pointer" :class="{ disable: disabled }" data-array-drag></span>
-                </td>
-                <td>
-                  <div class="flex-start">
-                    <span
-                      class="tsfont-plus text-action mr-nm"
-                      :class="{ disable: disabled }"
-                      data-array-add-row
-                      @click.stop="addRow(rowIndex)"
-                    ></span>
-                    <span
-                      class="tsfont-close text-action mr-nm"
-                      :class="{ disable: disabled }"
-                      data-array-delete-row
-                      @click.stop="deleteRow(rowIndex)"
-                    ></span>
-                  </div>
-                </td>
-                <td v-for="(column, columnIndex) in columns" :key="columnIndex" @click.stop>
-                  <!-- 数组基础单元格仅保留输入控件，隐藏提示和移除入口，不隐式补写空值。 -->
-                  <ValueCell
-                    :value="cellValue(row.value, column)"
-                    :schema="column"
-                    :disabled="disabled"
-                    :showRemove="false"
-                    :showValueHints="false"
-                    :path="cellPath(rowIndex, column)"
-                    @change="changeCell(rowIndex, column, $event)"
-                    @open="openCell(rowIndex, column, columnIndex)"
-                  ></ValueCell>
-                </td>
-              </tr>
-            </Draggable>
-          </table>
-        </div>
-      </div>
+              :showRemove="false"
+              :showValueHints="false"
+              :path="cellPath(rowList.indexOf(row), field.column)"
+              @change="changeCell(rowList.indexOf(row), field.column, $event)"
+              @open="openCell(rowList.indexOf(row), field.column, field.index)"
+            ></ValueCell>
+          </div>
+        </template>
+        <template v-if="!disabled" slot="action" slot-scope="{row}">
+          <div class="tstable-action">
+            <ul class="tstable-action-ul">
+              <li data-array-add-row @click.stop="addRow(rowList.indexOf(row))">添加</li>
+              <li data-array-copy-row @click.stop="copyRow(rowList.indexOf(row))">复制</li>
+              <li data-array-delete-row @click.stop="deleteRow(rowList.indexOf(row))">删除</li>
+              <li :class="{ disable: rowList.indexOf(row) === 0 }" data-array-move-up @click.stop="moveRow(rowList.indexOf(row), -1)">上移</li>
+              <li :class="{ disable: rowList.indexOf(row) === rowList.length - 1 }" data-array-move-down @click.stop="moveRow(rowList.indexOf(row), 1)">下移</li>
+            </ul>
+          </div>
+        </template>
+      </TsTable>
       <span
-        v-if="!rowList.length"
+        v-if="!disabled && !rowList.length"
         class="text-href tsfont-plus"
         :class="{ disable: disabled }"
         data-array-add-first
@@ -75,14 +57,14 @@
   </div>
 </template>
 <script>
-import Draggable from 'vuedraggable';
+import TsTable from './default-value-table.js';
 import isEqual from 'lodash/isEqual';
 import ValueBase from './value-base.js';
 import ValueCell from './value-cell.vue';
 import { setAtPath, hasOwn } from './editor-utils.js';
 import { cloneJson, createDefaultValue, normalizeDefaultType } from '../integration-default-utils.js';
 export default {
-  components: { Draggable, ValueCell },
+  components: { TsTable, ValueCell },
   extends: ValueBase,
   data() {
     return { rowList: [], rowSequence: 0, viewportWidth: null };
@@ -121,7 +103,7 @@ export default {
       if (this.viewportWidth !== width) this.viewportWidth = width;
     },
     createRow(value) {
-      // 临时行键与值分离，相同的基础值也能稳定拖动；行键不写入默认值配置。
+      // 临时行键与值分离，相同基础值可独立编辑和排序；行键不写入默认值配置。
       return { id: ++this.rowSequence, value: cloneJson(value) };
     },
     syncRows(value) {
@@ -138,9 +120,9 @@ export default {
     cellPath(index, column) { return `${this.path} 第 ${index + 1} 行${this.objectItems ? '的 ' + column.name : '的值'}`; },
     changeCell(index, column, value) {
       if (this.disabled || !this.rowList[index]) return;
-      // 单元格编辑仅替换本地值副本，保留当前行的键和其余行的顺序。
+      // 仅替换本地值副本，保留包装对象身份，同一轮多字段输入仍可定位当前行。
       const rows = this.rowList.slice();
-      rows[index] = { ...rows[index], value: setAtPath(rows[index].value, this.objectItems ? [column.name] : [], value) };
+      rows[index].value = setAtPath(rows[index].value, this.objectItems ? [column.name] : [], value);
       this.changeRows(rows);
     },
     openCell(index, column, columnIndex) {
@@ -163,6 +145,22 @@ export default {
       const rows = this.rowList.slice();
       rows.splice(index, 1);
       this.changeRows(rows);
+    },
+    copyRow(index) {
+      if (this.disabled || !this.rowList[index]) return;
+      // 复制值使用深副本和新行键，避免对象、数组的后续编辑影响来源。
+      const rows = this.rowList.slice();
+      rows.splice(index + 1, 0, this.createRow(this.rowList[index].value));
+      this.changeRows(rows);
+    },
+    moveRow(index, offset) {
+      const target = index + offset;
+      if (this.disabled || (offset !== -1 && offset !== 1) || !this.rowList[index] || target < 0 || target >= this.rowList.length) return;
+      // 仅移动行记录，保留临时键和单元格草稿，首末边界同时在方法内拦截。
+      const rows = this.rowList.slice();
+      const [row] = rows.splice(index, 1);
+      rows.splice(target, 0, row);
+      this.changeRows(rows);
     }
   },
   computed: {
@@ -172,7 +170,22 @@ export default {
     },
     rows() { return this.rowList.map(row => row.value); },
     objectItems() { return this.schema.items && normalizeDefaultType(this.schema.items.type) === 'object'; },
-    columns() { return this.objectItems ? (this.schema.items.children || []) : [this.schema.items]; }
+    columns() { return this.objectItems ? (this.schema.items.children || []) : [this.schema.items]; },
+    tableFields() {
+      // 内部列键不使用业务字段名，避免 action、selection 等名称占用公共表格插槽。
+      return this.columns.map((column, index) => ({ key: `arrayField${index}`, column, index }));
+    },
+    theadList() {
+      // 数据列宽由局部表格按九字控件宽度计算，不再受表头长度或可用空间均分影响。
+      const actionWidth = this.disabled ? 0 : 24;
+      const fields = this.tableFields.map(field => ({
+        key: field.key,
+        title: this.objectItems ? field.column.name : '值',
+        isRequired: field.column.isRequired === 1 || field.column.isRequired === true
+      }));
+      if (!this.disabled) fields.push({ key: 'action', width: actionWidth });
+      return fields;
+    }
   },
   watch: {
     value: { handler: 'syncRows', deep: true, immediate: true }

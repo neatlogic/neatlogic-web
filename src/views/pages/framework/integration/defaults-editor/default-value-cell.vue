@@ -6,17 +6,10 @@
       <span
         class="text-href"
         :class="{ disable: disabled }"
+        data-open-schema
         @click="openSchema"
-      >{{ schema.type === 'array' ? '设置' : '结构设置' }}</span>
-      <!-- 数组值的展开入口与结构入口并列，二者独立控制，不额外占用参数行。 -->
-      <span
-        v-if="schema.type === 'array'"
-        class="text-href ml-xs"
-        :class="{ disable: disabled }"
-        data-toggle-default
-        @click="toggleDefault"
-      >{{ expanded ? '收起' : '展开' }}</span>
-      <!-- 仅展示有效默认值的顶层行数，空数组和未设置不显示，增删后随表单即时更新。 -->
+      >{{ schema.type === 'array' ? '设置默认值' : '结构设置' }}</span>
+      <!-- 数组统一在弹窗录入默认数据；主表仅展示入口及有效顶层行数，避免与参数定义混淆。 -->
       <span v-if="schema.type === 'array' && rowCount" class="text-tip ml-xs" data-default-row-count>{{ rowCount }}行</span>
     </div>
     <template v-else>
@@ -45,12 +38,10 @@ export default {
   props: {
     pattern: { type: Object, required: true },
     config: { type: Object, default: undefined },
-    expanded: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false }
   },
   methods: {
     openSchema() { if (!this.disabled) this.$emit('open', 'schema'); },
-    toggleDefault() { if (!this.disabled) this.$emit('toggle'); },
     changeValue(value) {
       if (this.disabled || this.resolved.error) return;
       const next = cloneDefaultConfig(this.config || {});
