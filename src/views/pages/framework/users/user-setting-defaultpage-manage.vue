@@ -36,7 +36,7 @@
           <h4 class="title">{{ $t(module.moduleName) }}{{ $t('page.homepage') }}</h4>
           <Select
             :value="module.defaultPage"
-            class="menu-select bg-op"
+            class="menu-select bg-op radius-sm"
             :placeholder="$t('page.default')"
             clearable
             transfer
