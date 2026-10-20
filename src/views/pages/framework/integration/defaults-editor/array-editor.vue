@@ -23,11 +23,13 @@
           >
             <ValueCell
               :key="`${row.id}:${field.key}:${field.column.type}`"
+              ref="valueCells"
               :value="cellValue(row.value, field.column)"
               :schema="field.column"
               :disabled="disabled"
               :showRemove="false"
               :showValueHints="false"
+              :deferValidation="deferValidation"
               :path="cellPath(rowList.indexOf(row), field.column)"
               @change="changeCell(rowList.indexOf(row), field.column, $event)"
               @open="openCell(rowList.indexOf(row), field.column, field.index)"
@@ -66,7 +68,10 @@ import { cloneJson, createDefaultValue, normalizeDefaultType } from '../integrat
 export default {
   components: { TsTable, ValueCell },
   extends: ValueBase,
-  props: { columnKeys: { type: Object, default: () => ({}) } },
+  props: {
+    columnKeys: { type: Object, default: () => ({}) },
+    deferValidation: { type: Boolean, default: false }
+  },
   data() {
     return { rowList: [], rowSequence: 0, viewportWidth: null };
   },
@@ -90,6 +95,17 @@ export default {
     window.removeEventListener('resize', this.updateViewportWidth);
   },
   methods: {
+    valueCells() {
+      // 插槽内循环引用由 Vue 汇集，稳定行列键保证排序、改名仍保留各单元格校验阶段。
+      const cells = this.$refs.valueCells;
+      return Array.isArray(cells) ? cells : cells ? [cells] : [];
+    },
+    flushInputs() { this.valueCells().forEach(cell => cell.flushInput()); },
+    validateForSubmit() {
+      // 不用 every 短路，让全部必填错误都在本次确定后显现。
+      const results = this.valueCells().map(cell => cell.validateForSubmit());
+      return results.every(Boolean);
+    },
     updateViewportWidth() {
       const boundary = this.widthBoundary;
       if (!boundary || !boundary.clientWidth || !this.$el) return;

@@ -1,11 +1,13 @@
 <template>
   <div>
     <TsFormInput
+      ref="input"
       :value="value"
       type="text"
       :disabled="disabled"
       :maxlength="null"
       @change="updateValue"
+      @on-blur="blurInput"
     ></TsFormInput>
   </div>
 </template>

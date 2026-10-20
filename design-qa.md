@@ -147,3 +147,18 @@ final result: passed
 - 截图：本任务 visualizations 目录下 blur-fields-empty-draft-20261020.png（空列草稿与原数据并存）、blur-fields-confirmed-draft-20261020.png（确定后重新打开回显）。
 
 final result: passed
+
+# 默认数据失焦类型校验与确定必填校验（2026-10-20）
+
+- 仅合并默认值弹窗的下方表格启用延迟校验：打开、新增、复制和输入时不显示新错；非空输入失焦检查类型，空值失焦不提示；确定时同步当前输入并完整检查必填和结构。上方列名失焦联动不变。
+- 必填 string/enum/date 的空串及纯空白在前后端均拒绝，可选空串仍合法，0/false/[]/{} 不视为空。后端空白集合精确匹配 JavaScript trim，含 NBSP、BOM 等；显式传入值仍不被默认值覆盖。
+- 本地 8081 原页面仍表现旧校验，独立新页面加载也未及时完成，因此未停止或替换用户 8081 服务。页面验收使用本轮成功编译、可被本机浏览器访问的临时 8082 实例；首次沙箱内服务无法从浏览器访问，改为本机网络实例后完成验收。
+- 实测 theadList 原 3 行：新增空行后 4 行、错误数 0；空字符串和空数字失焦错误数仍为 0。整数输入 1.5 时无错，Tab 后显示“必须为整数”，清空再失焦无错。
+- 必填 key 输入纯空白并失焦仍无错；点击确定后四个必填单元格和底部摘要显示错误，弹窗保持打开。改正 key 后仅清除该格错误和底部旧摘要，其他已提交错误保留；补齐其他字段并填写整数 0 后确定成功，外层表单显示 4 行。
+- filterList.valueList 输入 [1, 时无错，失焦显示 JSON 格式错误，原文本保留；清空再失焦不报类型错误。取消弹窗及外层验收表单后重新打开，theadList 恢复原 3 行，未保存到数据库，也没有执行集成测试请求。
+- 前端 125 项测试全部通过（原 113 + 本轮 12），含递归跳过必填、JSON 原文、稳定身份、迟到失焦保护、连续确定一次提交、等待更新时取消不泄漏、未触碰可选字符串保持缺失。10 个业务文件与 3 个测试文件 ESLint --no-fix --no-cache 通过；git diff --check 通过。日志 node_modules/.cache/validation-ui-tests.out。
+- 后端 JDK 17 Maven 默认值 19 项、输入校验 6 项、参数合并 4 项共 29 项全部通过；tenant 及依赖 develop compile BUILD SUCCESS。日志位于 neatlogic-framework/target/validation-timing-*.log。运行 JVM 未部署或重启，后端实际联调仍需加载更新 framework 类。
+- npm run serve -- --no-open 成功编译，最终本机实例增量编译 44624ms；临时服务均已停止，原 8081 保留。新实例页面控制台 error/warn 查询为空，验收标签页关闭，浏览器尺寸恢复。
+- 截图位于本任务 visualizations 目录：validation-new-row-before-confirm-20261020.png（新增空行无错误）、validation-type-on-blur-20261020.png（失焦类型错误）、validation-required-on-confirm-20261020.png（确定后必填提示）、validation-original-restored-20261020.png（取消恢复）。
+
+final result: passed (new-build UI); runtime backend reload pending

@@ -1,11 +1,13 @@
 <template>
   <div>
     <TsFormInput
+      ref="input"
       :value="text"
       type="text"
       :disabled="disabled"
       :maxlength="null"
       @change="changeText"
+      @on-blur="blurInput"
     ></TsFormInput>
     <div v-if="error" class="text-error">{{ error }}</div>
   </div>
@@ -21,6 +23,7 @@ export default {
   extends: ValueBase,
   data() { return { text: '', jsonError: '', emittedValue: undefined, hasEmitted: false }; },
   methods: {
+    flushInput() { if (!this.disabled) this.changeText(this.readInputValue(this.text)); },
     changeText(value) {
       if (this.disabled) return;
       this.text = value == null ? '' : String(value);
@@ -65,9 +68,18 @@ export default {
   },
   computed: {
     error() {
-      if (this.jsonError) return this.jsonError;
-      if (this.value === undefined) return this.schema.isRequired === true || this.schema.isRequired === 1 ? `${this.path}为必填字段` : '';
-      return validateDefaultValue(this.value, this.schema, this.path, true);
+      if (this.validationMode === 'none') return '';
+      if (this.validationMode === 'type' && !this.text.trim()) return '';
+      if (this.value === undefined) return this.validationMode === 'all' && (this.schema.isRequired === true || this.schema.isRequired === 1) ? `${this.path}为必填字段` : '';
+      // 从原文本重新判断语法，失焦递归跳过必填；确定时再恢复全部结构约束。
+      // 合法 JSON 的原格式仍留在 text 中，不因校验或行排序而重新序列化。
+      try {
+        const parsed = JSON.parse(this.text);
+        return validateDefaultValue(parsed, this.schema, this.path, true, {skipRequired: this.validationMode === 'type'});
+      } catch (error) {
+        if (error instanceof SyntaxError) return `${this.path}：JSON 格式不正确`;
+      }
+      return this.jsonError;
     }
   },
   watch: {

@@ -55,11 +55,13 @@
         </div>
         <div v-if="!valueSchemaError">
           <ArrayEditor
+            ref="valueEditor"
             :value="currentValue"
             :schema="valueSchema"
             :columnKeys="columnKeys"
             :disabled="disabled || !!pending || !!resolved.error"
             :path="pattern.name"
+            :deferValidation="true"
             @change="changeCurrentValue"
           ></ArrayEditor>
         </div>
@@ -93,7 +95,7 @@ export default {
     initialSteps: { type: Array, default: () => [] }
   },
   data() {
-    return { configDraft: undefined, schemaDraft: null, valueSchema: null, schemaError: '', schemaSteps: [], schemaEditorKey: 0, pending: null, columnKeys: {} };
+    return { configDraft: undefined, schemaDraft: null, valueSchema: null, schemaError: '', schemaSteps: [], schemaEditorKey: 0, pending: null, columnKeys: {}, submitted: false, saving: false, closed: false };
   },
   created() {
     // 复制整个配置，关闭或取消不会改变来源；旧版关闭的草稿仍保持关闭。
@@ -116,6 +118,7 @@ export default {
     },
     changeSchemaDraft(schema, metadata) {
       if (this.disabled || this.pending || this.resolved.error) return;
+      this.submitted = false;
       this.schemaError = '';
       this.schemaDraft = cloneJson(schema);
       try {
@@ -142,6 +145,7 @@ export default {
     },
     changeCurrentValue(value) {
       if (this.disabled || this.pending || this.resolved.error) return;
+      this.submitted = false;
       // 只有实际增删或填写才启用默认值，打开和确认结构不会补造空数组。
       const next = cloneDefaultConfig(this.configDraft);
       next.schema = cloneJson(this.valueSchema);
@@ -150,19 +154,29 @@ export default {
       else next.value = cloneJson(value);
       this.configDraft = next;
     },
-    saveSchema() {
-      if (this.disabled || this.pending || this.resolved.error) return;
-      if (this.$refs.schemaEditor && !this.$refs.schemaEditor.flushColumns()) { this.revealError(); return; }
+    async saveSchema() {
+      if (this.disabled || this.pending || this.resolved.error || this.saving || this.closed) return;
+      this.saving = true;
       try {
+        if (this.$refs.schemaEditor && !this.$refs.schemaEditor.flushColumns()) { this.revealError(); return; }
+        // 列名提交可能同时迁移数据，等新列身份和数据回显后再同步单元格，避免写回旧列名。
+        await this.$nextTick();
+        if (this.closed || this._isDestroyed) return;
+        // 点击确定时输入框可能仍有焦点，先同步原始输入；等父子值回显后再做完整校验。
+        if (this.$refs.valueEditor) this.$refs.valueEditor.flushInputs();
+        await this.$nextTick();
+        if (this.disabled || this.pending || this.resolved.error || this.closed || this._isDestroyed) return;
+        this.submitted = true;
+        const cellsValid = !this.$refs.valueEditor || this.$refs.valueEditor.validateForSubmit();
         const schema = getEffectiveSchema(this.pattern, { schema: this.schemaDraft });
         this.schemaError = validateDefaultSchema(schema, this.pattern.name, true) || '';
-        if (this.schemaError || validateDefaultConfig(this.pattern, this.configDraft)) { this.revealError(); return; }
+        if (!cellsValid || this.schemaError || validateDefaultConfig(this.pattern, this.configDraft)) { this.revealError(); return; }
         const next = cloneDefaultConfig(this.configDraft);
         next.schema = cloneJson(schema);
         // 唯一提交点：完整结构与真实 JSON 数据一起更新外层未保存表单。
         this.$emit('change', next);
         this.$emit('close');
-      } catch (error) { this.schemaError = error.message; this.revealError(); }
+      } catch (error) { this.schemaError = error.message; this.revealError(); } finally { this.saving = false; }
     },
     revealError() {
       this.$nextTick(() => {
@@ -197,6 +211,7 @@ export default {
     },
     closeDialog() {
       // 不向来源回写任何草稿，取消按钮、关闭图标行为一致。
+      this.closed = true;
       this.$emit('close');
     }
   },
@@ -213,7 +228,7 @@ export default {
     currentValue() { return isDefaultEnabled(this.configDraft) && hasOwn(this.configDraft, 'value') ? this.configDraft.value : undefined; },
     rowCount() { return Array.isArray(this.currentValue) ? this.currentValue.length : 0; },
     valueSchemaError() { return this.valueSchema ? validateDefaultSchema(this.valueSchema, this.pattern.name, true) : '请先配置数组元素类型'; },
-    valueError() { return this.valueSchemaError ? '' : validateDefaultConfig(this.pattern, this.configDraft); }
+    valueError() { return !this.submitted || this.valueSchemaError ? null : validateDefaultConfig(this.pattern, this.configDraft); }
   }
 };
 </script>

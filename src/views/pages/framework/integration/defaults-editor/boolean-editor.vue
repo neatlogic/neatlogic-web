@@ -1,10 +1,12 @@
 <template>
   <TsFormInput
+    ref="input"
     :value="displayValue"
     type="text"
     :disabled="disabled"
     :maxlength="null"
     @change="changeText"
+    @on-blur="blurInput"
   ></TsFormInput>
 </template>
 <script>
@@ -14,6 +16,7 @@ export default {
   components: { TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue') },
   extends: ValueBase,
   methods: {
+    flushInput() { if (!this.disabled) this.changeText(this.readInputValue(this.displayValue)); },
     changeText(value) {
       if (typeof value !== 'string') {
         this.updateValue(value);

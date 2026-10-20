@@ -139,10 +139,14 @@ function checkJsonValue(value, path) {
   } else if (isObject(value)) Object.keys(value).forEach(key => checkJsonValue(value[key], `${path}.${key}`));
 }
 
-function checkValue(value, schema, path, nested = false) {
+function checkValue(value, schema, path, nested = false, options = {}) {
   // 仅子字段允许缺省内部结构；主数组仍须先定义元素类型与对象列。
   checkSchema(schema, path, !nested);
   const type = normalizeDefaultType(schema.type);
+  // 失焦只检查已填写值的类型；必填检查统一在完整提交时执行，递归子字段同样适用。
+  const emptyText = ['string', 'enum', 'date'].includes(type) && typeof value === 'string' && !value.trim();
+  if (!options.skipRequired && required(schema) && (value === undefined || emptyText)) fail(path, '必填字段未填写');
+  if (options.skipRequired && value === undefined) return;
   switch (type) {
     case 'string':
     case 'enum':
@@ -163,7 +167,7 @@ function checkValue(value, schema, path, nested = false) {
       if (!schema.items) { checkJsonValue(value, path); break; }
       // 显式遍历索引，空洞或 undefined 元素不能在序列化为 null 后绕过校验。
       for (let index = 0; index < value.length; index++) {
-        checkValue(value[index], schema.items, `${path} 第 ${index + 1} ${normalizeDefaultType(schema.items.type) === 'object' ? '行' : '项'}`, nested);
+        checkValue(value[index], schema.items, `${path} 第 ${index + 1} ${normalizeDefaultType(schema.items.type) === 'object' ? '行' : '项'}`, nested, options);
       }
       break;
     case 'object': {
@@ -172,8 +176,8 @@ function checkValue(value, schema, path, nested = false) {
       const columns = childrenByName(schema.children, path);
       columns.forEach((child, name) => {
         if (!owns(value, name) || value[name] === undefined) {
-          if (required(child)) fail(`${path}.${name}`, '必填字段未填写');
-        } else checkValue(value[name], child, `${path}.${name}`, true);
+          if (!options.skipRequired && required(child)) fail(`${path}.${name}`, '必填字段未填写');
+        } else checkValue(value[name], child, `${path}.${name}`, true, options);
       });
       Object.keys(value).forEach(key => {
         if (!columns.has(key)) fail(`${path}.${key}`, '字段不在已声明的对象列结构中');
@@ -197,8 +201,8 @@ export function validateDefaultSchema(schema, path = '参数', requireStructure 
   return errorMessage(() => checkSchema(schema, path, requireStructure));
 }
 
-export function validateDefaultValue(value, schema, path = '参数', nested = false) {
-  return errorMessage(() => checkValue(value, schema, path, nested));
+export function validateDefaultValue(value, schema, path = '参数', nested = false, options = {}) {
+  return errorMessage(() => checkValue(value, schema, path, nested, options));
 }
 
 export function validateDefaultConfig(pattern, defaultConfig = pattern.defaultConfig) {
