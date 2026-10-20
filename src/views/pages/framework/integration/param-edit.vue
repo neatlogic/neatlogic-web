@@ -379,6 +379,8 @@ export default {
         this.closeSchemaDialog();
         return;
       }
+      // 先保护外层按钮，再销毁内层弹窗，避免双击的后一次点击落到外层取消或保存。
+      this.$emit('default-dialog-confirmed');
       if (target.kind === 'builtin') this.setFixedDefault(target.item, config);
       else this.setCustomDefault(target.item, config);
       // 弹窗提交完整默认值配置，关闭时不产生额外行，也不复制固定参数定义。

@@ -73,7 +73,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    resetTestResult() {
+      // 新一轮测试先移除上一轮诊断内容；解析或请求失败也不能继续展示旧成功结果。
+      this.rawResult = '';
+      this.transformedResult = '';
+      this.transformedParam = '';
+      this.error = '';
+      this.isRunned = false;
+    },
     test: function(callback) {
+      this.resetTestResult();
       if (this.content || this.isMcp) {
         try {
           let param = this.content ? JSON.parse(this.content) : {};

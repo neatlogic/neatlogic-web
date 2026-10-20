@@ -48,6 +48,7 @@
                   :handler-pattern="handlerPattern"
                   :disabled="!canEditIntegration || !handlerPatternReady || isSaving"
                   @setParam="setParam"
+                  @default-dialog-confirmed="protectDefaultDialogActions"
                 ></ParamEdit>
               </TabPane>
               <TabPane
@@ -108,11 +109,12 @@
         </TsForm>
       </template>
       <template v-slot:footer>
-        <Button @click="close()">{{ $t('page.cancel') }}</Button>
+        <Button :disabled="defaultDialogProtected" @click="close()">{{ $t('page.cancel') }}</Button>
         <Button
           type="primary"
           ghost
           :loading="testing"
+          :disabled="defaultDialogProtected"
           @click="testIntegration()"
         >
           <span v-if="!testing">{{ $t('page.test') }}</span>
@@ -121,7 +123,7 @@
         <Button
           type="primary"
           :loading="isSaving"
-          :disabled="!canEditIntegration || !handlerPatternReady"
+          :disabled="defaultDialogProtected || !canEditIntegration || !handlerPatternReady"
           @click="saveIntegration()"
         >{{ $t('page.confirm') }}</Button>
       </template>
@@ -168,6 +170,7 @@ export default {
       isSaving: false,
       isPreparingSave: false,
       testing: false,
+      defaultDialogProtected: false,
       activedTab: 'authentication',
       integrationData: { config: {} },
       handlerInputPattern: [],
@@ -238,9 +241,20 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    clearTimeout(this._defaultDialogProtectionTimer);
+  },
   destroyed() {},
   methods: {
+    protectDefaultDialogActions() {
+      // 内层确定后短暂隔离外层操作；方法入口同步拦截，不依赖按钮下一帧才禁用。
+      this.defaultDialogProtected = true;
+      clearTimeout(this._defaultDialogProtectionTimer);
+      this._defaultDialogProtectionTimer = setTimeout(() => {
+        this.defaultDialogProtected = false;
+        this._defaultDialogProtectionTimer = null;
+      }, 500);
+    },
     getHandlerPatternFormat: function() {
       // 切换规范保留自定义配置；每次请求清理固定定义和权限，旧响应不得覆盖新选择。
       const handler = this.integrationData.handler;
@@ -306,7 +320,7 @@ export default {
       this.integrationData.config.other = othersetting;
     },
     async saveIntegration() {
-      if (this.isSaving || this.isPreparingSave || !this.canEditIntegration || !this.handlerPatternReady) return;
+      if (this.defaultDialogProtected || this.isSaving || this.isPreparingSave || !this.canEditIntegration || !this.handlerPatternReady) return;
       this.isPreparingSave = true;
       try {
         // 点击确认时输入框可能尚未失焦；先收齐最新值，避免校验和保存读到上一次输入。
@@ -434,11 +448,13 @@ export default {
       }
     },
     close: function(needRefresh) {
+      if (this.defaultDialogProtected) return;
       this.$emit('close', needRefresh);
       this.$refs.integrationFor && this.$refs.integrationForm.resetForm();
       this.integrationData = { config: {} };
     },
     testIntegration: function() {
+      if (this.defaultDialogProtected) return;
       this.activedTab = 'test';
       let testComponent = this.$refs['testComponent'];
       this.testing = true;
