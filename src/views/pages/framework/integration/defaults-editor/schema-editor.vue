@@ -47,11 +47,14 @@
     </TsFormItem>
     <ColumnsEditor
       v-if="columnSchema"
+      ref="columnsEditor"
       :columns="columnSchema.children || []"
       :fixedColumns="declaredColumnSchema.children || []"
       :disabled="disabled"
       :readonlyFixed="readonlyFixed"
+      :columnKeys="columnKeys"
       @change="changeColumns"
+      @identities="$emit('identities', $event)"
     ></ColumnsEditor>
   </div>
 </template>
@@ -91,16 +94,20 @@ export default {
     initialSteps: { type: Array, default: () => [] },
     disabled: { type: Boolean, default: false },
     readonlyFixed: { type: Boolean, default: false },
-    path: { type: String, default: '' }
+    path: { type: String, default: '' },
+    columnKeys: { type: Object, default: () => ({}) }
   },
   data() { return { steps: inlineObjectSteps(this.schema, this.initialSteps) }; },
   methods: {
     changeProperty(key, value) {
       if (!this.disabled) this.$emit('change', setAtPath(this.schema, [...this.nodePath, key], value));
     },
-    changeColumns(columns) {
+    flushColumns() {
+      return !this.$refs.columnsEditor || this.$refs.columnsEditor.flushColumns();
+    },
+    changeColumns(columns, metadata) {
       // 只改变字段的实际存储路径，对象数组仍使用 items.children，不复制为顶层字段。
-      if (!this.disabled) this.$emit('change', setAtPath(this.schema, [...this.nodePath, ...this.columnPath, 'children'], columns));
+      if (!this.disabled) this.$emit('change', setAtPath(this.schema, [...this.nodePath, ...this.columnPath, 'children'], columns), { ...metadata, path: [...this.nodePath, ...this.columnPath, 'children'] });
     },
     changeType(type) {
       // 子级结构视图也不能绕过元素类型限制，已有嵌套数组保持只读。

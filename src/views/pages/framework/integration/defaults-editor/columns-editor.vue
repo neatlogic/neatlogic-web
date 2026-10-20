@@ -9,6 +9,7 @@
       :fixedHeader="false"
       :showPager="false"
       :canSelectRow="false"
+      :actionCount="4"
     >
       <template slot="name" slot-scope="{ row }">
         <!-- 字段名称不参与撑宽；固定列名只省略展示，输入仍保留完整内容。 -->
@@ -16,10 +17,13 @@
           <ParamText v-if="readOnlyTable" :value="row.column.name"></ParamText>
           <TsFormInput
             v-else
+            :ref="`column-name-${row.uuid}`"
             :value="row.column.name"
             :disabled="disabled || fixed"
             @change="changeColumn(columnRows.indexOf(row), 'name', $event)"
+            @on-blur="commitColumnName(columnRows.indexOf(row), $event)"
           ></TsFormInput>
+          <div v-if="row.error" class="text-error" data-column-name-error>{{ row.error }}</div>
         </div>
       </template>
       <template slot="type" slot-scope="{ row }">
@@ -51,7 +55,6 @@
         <div class="tstable-action" data-column-actions>
           <ul class="tstable-action-ul">
             <li data-column-add @click.stop="addColumn(columnRows.indexOf(row))">添加</li>
-            <li data-column-copy @click.stop="copyColumn(columnRows.indexOf(row))">复制</li>
             <li data-column-delete @click.stop="deleteColumn(columnRows.indexOf(row))">删除</li>
             <li :class="{ disable: columnRows.indexOf(row) === 0 }" data-column-up @click.stop="moveColumn(columnRows.indexOf(row), -1)">上移</li>
             <li :class="{ disable: columnRows.indexOf(row) === columnRows.length - 1 }" data-column-down @click.stop="moveColumn(columnRows.indexOf(row), 1)">下移</li>
@@ -72,6 +75,8 @@ import { cloneJson } from '../integration-default-utils.js';
 import { defaultTypeList } from './index.js';
 import TsTable from './default-value-table.js';
 import ParamText from './param-text.vue';
+
+let columnSequence = 0;
 export default {
   components: {
     TsTable,
@@ -84,59 +89,107 @@ export default {
     columns: { type: Array, default: () => [] },
     fixedColumns: { type: Array, default: () => [] },
     disabled: { type: Boolean, default: false },
-    readonlyFixed: { type: Boolean, default: false }
+    readonlyFixed: { type: Boolean, default: false },
+    columnKeys: { type: Object, default: () => ({}) }
   },
   data() {
-    return { columnRows: [], nextRowKey: 0 };
+    return { columnRows: [] };
   },
   methods: {
-    createColumnRow(column) {
-      // 页面行键独立于可编辑列名，仅包装于本地，不混入 schema.children。
-      return { uuid: `default-column-${++this.nextRowKey}`, column: cloneJson(column) };
+    createColumnRow(column, committed = true) {
+      // 页面身份独立于列名，新增空字段先留在编辑草稿，不进入下方有效结构。
+      return { uuid: committed && Object.prototype.hasOwnProperty.call(this.columnKeys, column.name) ? this.columnKeys[column.name] : `default-column-${++columnSequence}`, column: cloneJson(column), committedName: committed ? column.name : null, error: '' };
     },
-    emitColumns() {
-      this.$emit('change', this.columnRows.map(row => cloneJson(row.column)));
+    acceptedColumns() {
+      return this.columnRows.filter(row => row.committedName !== null).map(row => ({ ...cloneJson(row.column), name: row.committedName }));
+    },
+    identities() {
+      return this.columnRows.filter(row => row.committedName !== null).map(row => ({ id: row.uuid, name: row.committedName }));
+    },
+    emitColumns(kind, previousNames = {}, removedNames = []) {
+      const fields = this.identities().map(field => ({ ...field, previousName: Object.prototype.hasOwnProperty.call(previousNames, field.id) ? previousNames[field.id] : field.name }));
+      this.$emit('change', this.acceptedColumns(), { kind, fields, removedNames });
+      this.$emit('identities', fields);
+    },
+    nameError(index, useCommitted = false) {
+      const row = this.columnRows[index];
+      const name = row && row.column.name;
+      if (typeof name !== 'string' || !name.trim()) return '列名不能为空';
+      if (this.columnRows.some((other, otherIndex) => otherIndex !== index && (other.column.name === name || (useCommitted && other.committedName === name)))) return '列名不能重复';
+      return '';
+    },
+    commitColumnName(index, value) {
+      if (!this.canModify || !this.columnRows[index]) return true;
+      const row = this.columnRows[index];
+      if (value !== undefined) this.$set(row.column, 'name', value);
+      row.error = this.nameError(index, true);
+      if (row.error) return false;
+      if (row.committedName === row.column.name) return true;
+      const previousNames = { [row.uuid]: row.committedName };
+      row.committedName = row.column.name;
+      this.emitColumns('name', previousNames);
+      return true;
+    },
+    flushColumns() {
+      if (!this.canModify) return true;
+      // 确定时同步检查全部名称，即使当前输入还未触发失焦，也不能静默丢弃空字段。
+      this.columnRows.forEach(row => {
+        const reference = this.$refs[`column-name-${row.uuid}`];
+        const input = Array.isArray(reference) ? reference[0] : reference;
+        // 直接读取当前控件草稿，避免点击确定与最后一次输入/失焦处于同一更新周期。
+        if (input && Object.prototype.hasOwnProperty.call(input, 'currentValue')) {
+          const value = input.currentValue;
+          this.$set(row.column, 'name', typeof value === 'string' ? value.trim() : value);
+        }
+      });
+      this.columnRows.forEach((row, index) => { row.error = this.nameError(index); });
+      if (this.columnRows.some(row => row.error)) return false;
+      const previousNames = {};
+      let changed = false;
+      this.columnRows.forEach(row => {
+        previousNames[row.uuid] = row.committedName;
+        changed = changed || row.committedName !== row.column.name;
+        row.committedName = row.column.name;
+      });
+      if (changed) this.emitColumns('name', previousNames);
+      return true;
     },
     typeName(type) { const option = this.types.find(item => item.value === type); return option ? option.text : type; },
     changeColumn(index, key, value) {
       if (!this.canModify || !this.columnRows[index]) return;
-      this.$set(this.columnRows[index].column, key, value);
-      this.emitColumns();
+      const row = this.columnRows[index];
+      this.$set(row.column, key, value);
+      if (key === 'name') {
+        // 输入时只更新上方草稿，合法名称必须在失焦或确定时才联动。
+        row.error = '';
+      } else if (row.committedName !== null) this.emitColumns('property');
     },
     changeType(index, type) {
       if (!this.canModify || !this.columnRows[index]) return;
-      const previous = this.columnRows[index].column;
-      // 这里只更新结构草稿，是否清空既有默认数据继续由外层确认。
-      this.columnRows[index].column = { name: previous.name, isRequired: previous.isRequired, type };
-      this.emitColumns();
+      const row = this.columnRows[index];
+      const previous = row.column;
+      row.column = { name: previous.name, isRequired: previous.isRequired, type };
+      if (row.committedName !== null) this.emitColumns('type');
     },
     addColumn(index) {
       if (!this.canModify) return;
       const position = Number.isInteger(index) ? index + 1 : this.columnRows.length;
-      this.columnRows.splice(position, 0, this.createColumnRow({ name: '', type: 'string', isRequired: 0 }));
-      this.emitColumns();
-    },
-    copyColumn(index) {
-      if (!this.canModify || !this.columnRows[index]) return;
-      // 深拷贝字段子结构但清空列名，既有数据不会自动复制到新字段。
-      const column = cloneJson(this.columnRows[index].column);
-      column.name = '';
-      this.columnRows.splice(index + 1, 0, this.createColumnRow(column));
-      this.emitColumns();
+      this.columnRows.splice(position, 0, this.createColumnRow({ name: '', type: 'string', isRequired: 0 }, false));
     },
     deleteColumn(index) {
       if (!this.canModify || !this.columnRows[index]) return;
-      this.columnRows.splice(index, 1);
-      this.emitColumns();
+      const [row] = this.columnRows.splice(index, 1);
+      // 删除立即从弹窗有效结构隐藏，关联数据只在独立草稿内移除。
+      if (row.committedName !== null) this.emitColumns('delete', {}, [row.committedName]);
     },
     moveColumn(index, offset) {
       const target = index + offset;
-      // 方法同时校验边界，置灰入口或程序调用都不能把首末行移出数组。
       if (!this.canModify || !this.columnRows[index] || !this.columnRows[target] || ![-1, 1].includes(offset)) return;
       const row = this.columnRows.splice(index, 1)[0];
       this.columnRows.splice(target, 0, row);
-      this.emitColumns();
+      this.emitColumns('move');
     }
+
   },
   computed: {
     types() { return defaultTypeList; },
@@ -155,14 +208,17 @@ export default {
       immediate: true,
       deep: true,
       handler(columns) {
-        // 外层会复制结构草稿；同值回显仍复用临时行键，避免输入控件被重新创建。
+        // 同值确认不覆盖尚未失焦的名称及新增空行；外部恢复仍按已提交名称复用身份。
+        if (JSON.stringify(columns) === JSON.stringify(this.acceptedColumns())) return;
         const remaining = this.columnRows.slice();
         this.columnRows = columns.map(column => {
-          const index = remaining.findIndex(row => JSON.stringify(row.column) === JSON.stringify(column));
+          const index = remaining.findIndex(row => row.committedName === column.name);
           const row = index >= 0 ? remaining.splice(index, 1)[0] : this.createColumnRow(column);
           row.column = cloneJson(column);
+          row.committedName = column.name;
           return row;
         });
+        this.$emit('identities', this.identities());
       }
     }
   }

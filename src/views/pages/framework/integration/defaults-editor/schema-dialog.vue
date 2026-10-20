@@ -27,13 +27,16 @@
         <SchemaEditor
           v-if="schemaDraft"
           :key="schemaEditorKey"
+          ref="schemaEditor"
           :schema="schemaDraft"
           :declared="declared"
           :initialSteps="schemaSteps"
           :disabled="disabled || !!pending || !!resolved.error"
           :path="pattern.name"
           :readonlyFixed="true"
+          :columnKeys="columnKeys"
           @change="changeSchemaDraft"
+          @identities="changeColumnKeys"
         ></SchemaEditor>
         <div v-if="fixedStructure" class="text-tip mt-sm">字段由数据规范提供，默认数据可在下方编辑。</div>
         <div v-if="schemaError" class="text-error mt-sm">{{ schemaError }}</div>
@@ -54,6 +57,7 @@
           <ArrayEditor
             :value="currentValue"
             :schema="valueSchema"
+            :columnKeys="columnKeys"
             :disabled="disabled || !!pending || !!resolved.error"
             :path="pattern.name"
             @change="changeCurrentValue"
@@ -77,7 +81,7 @@
 <script>
 import SchemaEditor from './schema-editor.vue';
 import ArrayEditor from './array-editor.vue';
-import { resolveSchema, reconcileValue, hasOwn } from './editor-utils.js';
+import { resolveSchema, reconcileValue, migrateColumnValue, hasOwn } from './editor-utils.js';
 import { cloneJson, cloneDefaultConfig, getDeclaredSchema, getEffectiveSchema, validateDefaultSchema, validateDefaultConfig, isDefaultEnabled } from '../integration-default-utils.js';
 export default {
   name: 'SchemaDialog',
@@ -89,7 +93,7 @@ export default {
     initialSteps: { type: Array, default: () => [] }
   },
   data() {
-    return { configDraft: undefined, schemaDraft: null, valueSchema: null, schemaError: '', schemaSteps: [], schemaEditorKey: 0, pending: null };
+    return { configDraft: undefined, schemaDraft: null, valueSchema: null, schemaError: '', schemaSteps: [], schemaEditorKey: 0, pending: null, columnKeys: {} };
   },
   created() {
     // 复制整个配置，关闭或取消不会改变来源；旧版关闭的草稿仍保持关闭。
@@ -106,13 +110,25 @@ export default {
     });
   },
   methods: {
-    changeSchemaDraft(schema) {
+    changeColumnKeys(fields) {
+      // 字段身份单独侧传，不进入配置 JSON；重新挂载结构编辑器仍复用旧列身份。
+      this.columnKeys = Object.fromEntries(fields.map(field => [field.name, field.id]));
+    },
+    changeSchemaDraft(schema, metadata) {
       if (this.disabled || this.pending || this.resolved.error) return;
       this.schemaError = '';
       this.schemaDraft = cloneJson(schema);
       try {
         const nextSchema = getEffectiveSchema(this.pattern, { schema });
-        const reconciled = reconcileValue(this.configDraft.value, this.valueSchema, nextSchema);
+        const fieldEdit = metadata && ['name', 'delete', 'move', 'property'].includes(metadata.kind);
+        const reconciled = fieldEdit
+          ? { value: migrateColumnValue(this.configDraft.value, this.valueSchema, metadata.path, metadata.fields, metadata.removedNames), changed: false }
+          : reconcileValue(this.configDraft.value, this.valueSchema, nextSchema);
+        if (fieldEdit) {
+          // 名称与顺序变动不会清空其他字段；删除只清理当前弹窗内对应数据。
+          if (hasOwn(this.configDraft, 'value')) this.$set(this.configDraft, 'value', cloneJson(reconciled.value));
+          this.changeColumnKeys(metadata.fields);
+        }
         if (reconciled.changed) {
           // 取消变更仅恢复此次结构，之前在弹窗录入的数据仍保留。
           this.pending = { schema: nextSchema, value: reconciled.value, message: '结构变更会清空所有行中受影响的值，其他字段保留。取消将保留原结构和数据。' };
@@ -136,6 +152,7 @@ export default {
     },
     saveSchema() {
       if (this.disabled || this.pending || this.resolved.error) return;
+      if (this.$refs.schemaEditor && !this.$refs.schemaEditor.flushColumns()) { this.revealError(); return; }
       try {
         const schema = getEffectiveSchema(this.pattern, { schema: this.schemaDraft });
         this.schemaError = validateDefaultSchema(schema, this.pattern.name, true) || '';
@@ -196,7 +213,7 @@ export default {
     currentValue() { return isDefaultEnabled(this.configDraft) && hasOwn(this.configDraft, 'value') ? this.configDraft.value : undefined; },
     rowCount() { return Array.isArray(this.currentValue) ? this.currentValue.length : 0; },
     valueSchemaError() { return this.valueSchema ? validateDefaultSchema(this.valueSchema, this.pattern.name, true) : '请先配置数组元素类型'; },
-    valueError() { return validateDefaultConfig(this.pattern, this.configDraft); }
+    valueError() { return this.valueSchemaError ? '' : validateDefaultConfig(this.pattern, this.configDraft); }
   }
 };
 </script>

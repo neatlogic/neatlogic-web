@@ -73,3 +73,30 @@ export function reconcileValue(value, previous, next) {
   }
   return { value: cloneJson(value), changed: false };
 }
+
+// 列名和删除操作按页面字段身份迁移真实值，交换名称也必须从同一份旧快照取值。
+export function migrateColumnValue(value, schema, childrenPath, fields, removedNames = []) {
+  if (value === undefined || value === null) return cloneJson(value);
+  const nodePath = childrenPath.slice(0, -1);
+  function migrate(current, currentSchema, path) {
+    if (current === undefined || current === null) return cloneJson(current);
+    if (!path.length) {
+      if (typeof current !== 'object' || Array.isArray(current)) return cloneJson(current);
+      const result = cloneJson(current);
+      [...removedNames, ...fields.map(field => field.previousName).filter(name => name !== null)].forEach(name => { delete result[name]; });
+      fields.forEach(field => {
+        if (field.previousName !== null && hasOwn(current, field.previousName)) {
+          Object.defineProperty(result, field.name, { value: cloneJson(current[field.previousName]), enumerable: true, configurable: true, writable: true });
+        }
+      });
+      return result;
+    }
+    if (path[0] === 'items' && Array.isArray(current)) return current.map(item => migrate(item, currentSchema.items || {}, path.slice(1)));
+    if (path[0] === 'children' && currentSchema.children && path.length >= 2) {
+      const column = currentSchema.children[path[1]];
+      if (column && hasOwn(current, column.name)) return setAtPath(current, [column.name], migrate(current[column.name], column, path.slice(2)));
+    }
+    return cloneJson(current);
+  }
+  return migrate(value, schema, nodePath);
+}

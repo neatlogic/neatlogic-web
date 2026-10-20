@@ -22,7 +22,7 @@
             @click.stop
           >
             <ValueCell
-              :key="`${row.id}:${field.column.name || field.key}:${field.column.type}`"
+              :key="`${row.id}:${field.key}:${field.column.type}`"
               :value="cellValue(row.value, field.column)"
               :schema="field.column"
               :disabled="disabled"
@@ -66,6 +66,7 @@ import { cloneJson, createDefaultValue, normalizeDefaultType } from '../integrat
 export default {
   components: { TsTable, ValueCell },
   extends: ValueBase,
+  props: { columnKeys: { type: Object, default: () => ({}) } },
   data() {
     return { rowList: [], rowSequence: 0, viewportWidth: null };
   },
@@ -109,7 +110,15 @@ export default {
     syncRows(value) {
       const rows = Array.isArray(value) ? value : [];
       // 自身编辑后的同值回显保留行键，真正的外部更新则用新副本同步，避免覆盖来源。
-      if (!isEqual(rows, this.rows)) this.rowList = rows.map(this.createRow);
+      if (!isEqual(rows, this.rows)) {
+        // 结构改名、删除仅替换每行值，不重建单元格，保留 JSON 原文本和非法草稿。
+        this.rowList = rows.map((row, index) => {
+          const previous = this.rowList[index];
+          if (!previous) return this.createRow(row);
+          previous.value = cloneJson(row);
+          return previous;
+        });
+      }
     },
     changeRows(rows) {
       if (this.disabled) return;
@@ -173,13 +182,14 @@ export default {
     columns() { return this.objectItems ? (this.schema.items.children || []) : [this.schema.items]; },
     tableFields() {
       // 内部列键不使用业务字段名，避免 action、selection 等名称占用公共表格插槽。
-      return this.columns.map((column, index) => ({ key: `arrayField${index}`, column, index }));
+      return this.columns.map((column, index) => ({ key: `arrayField${this.objectItems && Object.prototype.hasOwnProperty.call(this.columnKeys, column.name) ? this.columnKeys[column.name] : index}`, column, index }));
     },
     theadList() {
       // 数据列宽由局部表格按九字控件宽度计算，不再受表头长度或可用空间均分影响。
       const actionWidth = this.disabled ? 0 : 24;
       const fields = this.tableFields.map(field => ({
         key: field.key,
+        uuid: field.key,
         title: this.objectItems ? field.column.name : '值',
         isRequired: field.column.isRequired === 1 || field.column.isRequired === true
       }));

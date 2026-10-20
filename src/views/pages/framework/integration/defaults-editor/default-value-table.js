@@ -46,6 +46,7 @@ export default {
     }];
     return node;
   },
+  props: { actionCount: { type: Number, default: 5 } },
   data() {
     return { defaultControlFontSize: 14, defaultCellPadding: 18 };
   },
@@ -117,8 +118,8 @@ export default {
       });
       const action = columns.find(column => column.key === 'actionWidth');
       if (action) {
-        // 少列只补足五项操作栏的最小空间，业务列与 9em 控件不参与拉伸。
-        const minimumWidth = 5 * (2 * this.defaultControlFontSize + 32) + 24;
+        // 少列只补足当前操作栏的最小空间，业务列与 9em 控件不参与拉伸。
+        const minimumWidth = this.actionCount * (2 * this.defaultControlFontSize + 32) + 24;
         const totalWidth = columns.reduce((total, column) => total + column.width, 0);
         action.width += Math.max(0, minimumWidth - totalWidth);
       }
