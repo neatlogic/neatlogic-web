@@ -72,7 +72,8 @@
 </template>
 <script>
 import { cloneJson } from '../integration-default-utils.js';
-import { defaultTypeList } from './index.js';
+import { defaultTypeList, selectableDefaultTypeList } from './index.js';
+import DefaultTypeSelect from './default-type-select.js';
 import TsTable from './default-value-table.js';
 import ParamText from './param-text.vue';
 
@@ -82,7 +83,7 @@ export default {
     TsTable,
     ParamText,
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
+    TsFormSelect: DefaultTypeSelect,
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch.vue')
   },
   props: {
@@ -154,9 +155,11 @@ export default {
       if (changed) this.emitColumns('name', previousNames);
       return true;
     },
-    typeName(type) { const option = this.types.find(item => item.value === type); return option ? option.text : type; },
+    typeName(type) { const option = defaultTypeList.find(item => item.value === type); return option ? option.text : type; },
     changeColumn(index, key, value) {
       if (!this.canModify || !this.columnRows[index]) return;
+      // 通用字段更新也不能绕过类型选择限制，历史值仅可保留或改成允许的类型。
+      if (key === 'type' && !this.types.some(item => item.value === value)) return;
       const row = this.columnRows[index];
       this.$set(row.column, key, value);
       if (key === 'name') {
@@ -165,7 +168,7 @@ export default {
       } else if (row.committedName !== null) this.emitColumns('property');
     },
     changeType(index, type) {
-      if (!this.canModify || !this.columnRows[index]) return;
+      if (!this.canModify || !this.columnRows[index] || !this.types.some(item => item.value === type)) return;
       const row = this.columnRows[index];
       const previous = row.column;
       row.column = { name: previous.name, isRequired: previous.isRequired, type };
@@ -192,7 +195,7 @@ export default {
 
   },
   computed: {
-    types() { return defaultTypeList; },
+    types() { return selectableDefaultTypeList; },
     fixed() { return this.fixedColumns.length > 0; },
     readOnlyTable() { return this.fixed && this.readonlyFixed; },
     canModify() { return !this.disabled && !this.fixed; },

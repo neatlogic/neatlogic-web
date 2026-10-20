@@ -33,3 +33,6 @@ export const defaultTypeList = [
   { text: '对象', value: 'object' },
   { text: '数组', value: 'array' }
 ];
+
+// 仅限制默认值结构的新选择，完整类型表仍用于历史配置回显及原类型数据编辑。
+export const selectableDefaultTypeList = defaultTypeList.filter(item => !['int', 'boolean'].includes(item.value));

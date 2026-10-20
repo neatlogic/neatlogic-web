@@ -29,8 +29,13 @@
     >
       <!-- 历史嵌套数组保持只读回显，不因隐藏类型行而改变已保存的结构和值。 -->
       <div v-if="current.items && current.items.type === 'array'">数组</div>
-      <!-- 选择框与表格控件同为 9em，避免随弹窗剩余空间拉伸；标签仍保持左侧 80px。 -->
-      <div v-else style="width: 9em; min-width: 9em; max-width: 9em" data-array-element-control>
+      <!-- 与表格同用 14px 字号计算 9em，避免公共表单项的 13px 字号使选择框变窄；标签仍为 80px。 -->
+      <div
+        v-else
+        class="fz14"
+        style="width: 9em; min-width: 9em; max-width: 9em"
+        data-array-element-control
+      >
         <TsFormSelect
           :value="current.items && current.items.type"
           :dataList="itemTypes"
@@ -62,7 +67,8 @@
 </template>
 <script>
 import ColumnsEditor from './columns-editor.vue';
-import { defaultTypeList } from './index.js';
+import { selectableDefaultTypeList } from './index.js';
+import DefaultTypeSelect from './default-type-select.js';
 import { getAtPath, setAtPath, hasOwn } from './editor-utils.js';
 
 // 对象元素与所属数组同页显示；兼容旧导航路径时合并元素层，返回不落入多余的对象页面。
@@ -88,7 +94,7 @@ export default {
   components: {
     ColumnsEditor,
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue')
+    TsFormSelect: DefaultTypeSelect
   },
   props: {
     schema: { type: Object, required: true },
@@ -113,7 +119,7 @@ export default {
     },
     changeType(type) {
       // 子级结构视图也不能绕过元素类型限制，已有嵌套数组保持只读。
-      if (this.disabled || this.declaredCurrent.type || this.legacyArrayElement || (this.isArrayElement && type === 'array')) return;
+      if (this.disabled || this.declaredCurrent.type || this.legacyArrayElement || !this.types.some(item => item.value === type)) return;
       const replacement = { type };
       if (hasOwn(this.current, 'name')) replacement.name = this.current.name;
       if (hasOwn(this.current, 'isRequired')) replacement.isRequired = this.current.isRequired;
@@ -132,9 +138,9 @@ export default {
     }
   },
   computed: {
-    // 只限制数组直接包含数组；对象字段和主参数仍使用完整类型列表。
-    itemTypes() { return defaultTypeList.filter(item => item.value !== 'array'); },
-    types() { return this.isArrayElement ? this.itemTypes : defaultTypeList; },
+    // 弹窗不再新选整数、布尔；数组元素继续排除数组，对象字段仍允许数组。
+    itemTypes() { return selectableDefaultTypeList.filter(item => item.value !== 'array'); },
+    types() { return this.isArrayElement ? this.itemTypes : selectableDefaultTypeList; },
     isArrayElement() { return this.nodePath[this.nodePath.length - 1] === 'items'; },
     legacyArrayElement() { return this.isArrayElement && this.current.type === 'array'; },
     nodePath() { return this.steps.reduce((result, step) => result.concat(step.path), []); },
