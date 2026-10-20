@@ -2,7 +2,7 @@ import TsTable from '@/resources/components/TsTable/TsTable.vue';
 import THead from '@/resources/components/TsTable/component/table-thead.vue';
 import ParamText from './param-text.vue';
 
-const reservedKeys = ['selection', 'expander', 'action'];
+const reservedKeys = ['selection', 'expander', 'action', 'defaultSpacer'];
 
 // 仅为集成默认值表格补充表头插槽，正文、行尾悬浮操作和滚动仍复用公共表格。
 export const DefaultValueTableHead = {
@@ -42,13 +42,13 @@ export default {
     const node = TsTable.render.call(this, h);
     node.data = node.data || {};
     node.data.style = [node.data.style, {
-      width: `${this.defaultTableWidth}px`, maxWidth: '100%', minWidth: '0', marginLeft: '0', marginRight: '0'
+      width: '100%', maxWidth: '100%', minWidth: '0', marginLeft: '0', marginRight: '0'
     }];
     return node;
   },
   props: { actionCount: { type: Number, default: 5 } },
   data() {
-    return { defaultControlFontSize: 14, defaultCellPadding: 18 };
+    return { defaultControlFontSize: 14, defaultCellPadding: 18, defaultViewportWidth: 0 };
   },
   mounted() {
     // 继承公共组件编译后的 render 和静态渲染函数，不复制模板或改动公共组件。
@@ -70,6 +70,10 @@ export default {
   methods: {
     measureDefaultColumns() {
       if (!this.$el || this._isDestroyed) return;
+      // 从滚动视口测量可用宽度，不读取宽表内容，避免内容反向撑大弹窗。
+      const main = this.$refs.tablemain;
+      const viewportWidth = main ? main.clientWidth : this.$el.clientWidth;
+      if (viewportWidth !== this.defaultViewportWidth) this.defaultViewportWidth = viewportWidth;
       const control = this.$el.querySelector('[data-default-control-width]');
       const cell = control && control.closest('td');
       if (control) {
@@ -116,12 +120,12 @@ export default {
           : (header.width || Math.ceil(this.defaultControlFontSize * 9 + this.defaultCellPadding + requiredSpace));
         columns.push({ key: `${header.key}Width`, width });
       });
-      const action = columns.find(column => column.key === 'actionWidth');
-      if (action) {
-        // 少列只补足当前操作栏的最小空间，业务列与 9em 控件不参与拉伸。
-        const minimumWidth = this.actionCount * (2 * this.defaultControlFontSize + 32) + 24;
+      const trailing = columns.find(column => column.key === 'actionWidth' || column.key === 'defaultSpacerWidth');
+      if (trailing) {
+        // 仅尾列接收正文剩余宽度；只读表格留白，可编辑表格同时容纳悬浮操作栏。
+        const minimumWidth = trailing.key === 'actionWidth' ? this.actionCount * (2 * this.defaultControlFontSize + 32) + 24 : 0;
         const totalWidth = columns.reduce((total, column) => total + column.width, 0);
-        action.width += Math.max(0, minimumWidth - totalWidth);
+        trailing.width += Math.max(0, this.defaultViewportWidth - totalWidth, minimumWidth - totalWidth);
       }
       return columns;
     },
@@ -129,7 +133,7 @@ export default {
       return Math.max(1, this.colsList.reduce((total, column) => total + column.width, 0));
     },
     setLayout() {
-      // 覆盖公共样式的 min-width:100%，根背景按内容收紧，超宽时仍在表格内部滚动。
+      // 表格至少铺满视口，业务列超宽时按原列宽在自身容器内横向滚动。
       return { tableLayout: 'fixed', width: `${this.defaultTableWidth}px`, minWidth: '0' };
     }
   }

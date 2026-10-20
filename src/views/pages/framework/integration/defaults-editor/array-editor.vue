@@ -36,6 +36,8 @@
             ></ValueCell>
           </div>
         </template>
+        <!-- 只读尾列仅承接剩余宽度，不渲染占位文字或操作入口。 -->
+        <template slot="defaultSpacer"><span></span></template>
         <template v-if="!disabled" slot="action" slot-scope="{row}">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
@@ -210,6 +212,7 @@ export default {
         isRequired: field.column.isRequired === 1 || field.column.isRequired === true
       }));
       if (!this.disabled) fields.push({ key: 'action', width: actionWidth });
+      else fields.push({ key: 'defaultSpacer', title: '', width: 24 });
       return fields;
     }
   },

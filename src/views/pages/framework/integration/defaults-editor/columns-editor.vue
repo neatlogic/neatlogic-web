@@ -51,6 +51,8 @@
           @change="changeColumn(columnRows.indexOf(row), 'isRequired', $event ? 1 : 0)"
         ></TsFormSwitch>
       </template>
+      <!-- 固定结构和只读表格也铺满正文，尾部只留白，不出现操作栏。 -->
+      <template slot="defaultSpacer"><span></span></template>
       <template v-if="canModify" slot="action" slot-scope="{ row }">
         <div class="tstable-action" data-column-actions>
           <ul class="tstable-action-ul">
@@ -203,6 +205,7 @@ export default {
       // 开关与操作栏维持原有紧凑尺寸，文本控件列由局部表格统一计算宽度。
       const headers = [{ key: 'name', title: '列名' }, { key: 'type', title: '类型' }, { key: 'isRequired', title: '必填', width: 72 }];
       if (this.canModify) headers.push({ key: 'action', width: 24 });
+      else headers.push({ key: 'defaultSpacer', title: '', width: 24 });
       return headers;
     }
   },
