@@ -18,7 +18,7 @@
         </div>
       </template>
       <template slot="topRight">
-        <InputSearcher v-model="searchParam.keyword" @change="() => updatePagesize()"></InputSearcher>
+        <CombineSearcher v-model="searchValue" v-bind="searchConfig" @change="changeSearch"></CombineSearcher>
       </template>
       <div slot="content" ref="maintable">
         <TsTable
@@ -92,6 +92,7 @@
                     @on-change="toggleIntegrationActive(row)"
                   ></TsFormSwitch>
                 </li>
+                <li class="tsfont-edit icon" @click.stop="editIntegration(row.uuid)">{{ $t('page.edit') }}</li>
                 <li v-if="row.hasHelp == 1" class="tsfont-question-o" @click="integrationHelpUuid = row.uuid">{{ $t('page.help') }}</li>
                 <li class="tsfont-formstaticlist" @click="integrationAuditUuid = row.uuid">{{ $t('term.process.callrecord') }}</li>
                 <li class="tsfont-user" @click="openIntegrationAuth(row)">{{ $t('page.executeauthority') }}</li>
@@ -141,7 +142,7 @@ export default {
     IntegrationAuthDialog: () => import('./integration-auth-dialog.vue'),
     ReferenceSelect: () => import('@/resources/components/ReferenceSelect/ReferenceSelect.vue'),
     TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    InputSearcher: () => import('@/resources/components/InputSearcher/InputSearcher.vue'),
+    CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     UploadDialog: () => import('@/resources/components/UploadDialog/UploadDialog.vue'),
     AuditConfig: () => import('@/views/components/auditconfig/auditconfig.vue')
   },
@@ -149,12 +150,29 @@ export default {
   props: {},
   data() {
     return {
-      searchTimeout: null,
       integrationHelpUuid: null,
       isIntegrationDialogShow: false,
       integrationUuid: null,
       integrationAuditUuid: null,
-      searchParam: {},
+      // 搜索条件独立于分页，避免组合搜索清理未知字段时丢失页码和每页条数。
+      searchValue: {},
+      searchConfig: {
+        labelPosition: 'left',
+        searchMode: 'auto',
+        searchList: [{
+          type: 'select',
+          name: 'handler',
+          label: this.$t('page.component'),
+          multiple: false,
+          search: true,
+          clearable: true,
+          url: '/api/rest/integration/handler/list',
+          textName: 'name',
+          valueName: 'handler',
+          transfer: true
+        }]
+      },
+      searchParam: { currentPage: 1, pageSize: 20 },
       theadList: [
         {
           key: 'selection',
@@ -259,6 +277,15 @@ export default {
       this.isIntegrationDialogShow = true;
       this.isCopy = false;
     },
+    changeSearch(value) {
+      // 每次替换已提交条件，移除标签或清空后不能继续携带旧组件、旧关键字。
+      const conditions = {};
+      ['keyword', 'handler'].forEach(key => {
+        if (value && typeof value[key] === 'string' && value[key] !== '') conditions[key] = value[key];
+      });
+      this.searchValue = conditions;
+      this.updatePage(1);
+    },
     updatePagesize(pageSize) {
       this.searchParam.currentPage = 1;
       this.searchParam.pageSize = pageSize || 20;
@@ -273,7 +300,9 @@ export default {
       this.searchIntegration();
     },
     searchIntegration() {
-      this.$api.framework.integration.searchIntegration(this.searchParam).then(res => {
+      // 查询仅从事件入口触发，不再通过深度监听重复请求；刷新保留当前筛选和分页。
+      const params = { ...this.searchParam, ...this.searchValue };
+      this.$api.framework.integration.searchIntegration(params).then(res => {
         if (res.Status == 'OK') {
           this.integrationData = res.Return;
         }
@@ -392,21 +421,7 @@ export default {
     }
   },
   filter: {},
-  computed: {},
-  watch: {
-    searchParam: {
-      handler: function(val) {
-        if (this.searchTimeout) {
-          window.clearTimeout(this.searchTimeout);
-          this.searchTimeout = null;
-        }
-        this.searchTimeout = window.setTimeout(() => {
-          this.searchIntegration();
-        }, 300);
-      },
-      deep: true
-    }
-  }
+  computed: {}
 };
 </script>
 <style lang="less">
