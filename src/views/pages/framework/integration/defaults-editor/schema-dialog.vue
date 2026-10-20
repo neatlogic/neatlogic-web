@@ -1,7 +1,7 @@
 <template>
   <TsDialog
     type="modal"
-    width="min(1168px, calc(100vw - 48px))"
+    width="medium"
     :isShow="true"
     :maskClose="false"
     :okBtnDisable="disabled || !!pending || !!resolved.error"

@@ -29,15 +29,17 @@
     >
       <!-- 历史嵌套数组保持只读回显，不因隐藏类型行而改变已保存的结构和值。 -->
       <div v-if="current.items && current.items.type === 'array'">数组</div>
-      <TsFormSelect
-        v-else
-        :value="current.items && current.items.type"
-        :dataList="itemTypes"
-        :disabled="disabled || !!declaredCurrent.items"
-        :clearable="false"
-        :transfer="true"
-        @change="changeItemType"
-      ></TsFormSelect>
+      <!-- 选择框与表格控件同为 9em，避免随弹窗剩余空间拉伸；标签仍保持左侧 80px。 -->
+      <div v-else style="width: 9em; min-width: 9em; max-width: 9em" data-array-element-control>
+        <TsFormSelect
+          :value="current.items && current.items.type"
+          :dataList="itemTypes"
+          :disabled="disabled || !!declaredCurrent.items"
+          :clearable="false"
+          :transfer="true"
+          @change="changeItemType"
+        ></TsFormSelect>
+      </div>
       <span
         v-if="current.items && current.items.type === 'array'"
         class="text-href"
