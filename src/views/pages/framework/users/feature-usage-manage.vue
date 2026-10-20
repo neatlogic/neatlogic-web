@@ -7,7 +7,7 @@
             <AuditConfig auditName="FEATURE-USAGE-AUDIT" :title="$t('term.framework.loginauditretentionperiod')"></AuditConfig>
           </span>
           <span class="action-item tsfont-download" @click="exportFeatureUsageAudit()">{{ $t('page.export') }}</span>
-          <span class="action-item tsfont-chart" @click="openFeatureUsageStatisticsDialog()">{{ $t('page.statistics') }}</span>
+          <span class="action-item tsfont-barlist" @click="openFeatureUsageStatisticsDialog()">{{ $t('page.statistics') }}</span>
         </div>
       </template>
       <template slot="topRight">
