@@ -166,6 +166,7 @@ export default {
     var _this = this;
     return {
       isSaving: false,
+      isPreparingSave: false,
       testing: false,
       activedTab: 'authentication',
       integrationData: { config: {} },
@@ -304,21 +305,32 @@ export default {
     setOtherSetting: function(othersetting) {
       this.integrationData.config.other = othersetting;
     },
-    saveIntegration: function() {
-      let form = this.$refs['integrationForm'];
-      if (this.canEditIntegration && this.handlerPatternReady && form.valid() && this.validParamConfig() && this.validRateLimitConfig()) {
-        this.isSaving = true;
-        this.$api.framework.integration
-          .saveIntegration(this.integrationData)
-          .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.savesuccess'));
-              this.close(true);
-            }
-          })
-          .finally(() => {
-            this.isSaving = false;
-          });
+    async saveIntegration() {
+      if (this.isSaving || this.isPreparingSave || !this.canEditIntegration || !this.handlerPatternReady) return;
+      this.isPreparingSave = true;
+      try {
+        // 点击确认时输入框可能尚未失焦；先收齐最新值，避免校验和保存读到上一次输入。
+        const editor = this.$refs.paramEdit;
+        const integration = this.integrationData;
+        if (editor) await editor.flushDefaultInputs();
+        if (this._isDestroyed || this._isBeingDestroyed || this.integrationData !== integration) return;
+        const form = this.$refs.integrationForm;
+        if (this.canEditIntegration && this.handlerPatternReady && form && form.valid() && this.validParamConfig() && this.validRateLimitConfig()) {
+          this.isSaving = true;
+          return this.$api.framework.integration
+            .saveIntegration(this.integrationData)
+            .then(res => {
+              if (res.Status == 'OK') {
+                this.$Message.success(this.$t('message.savesuccess'));
+                this.close(true);
+              }
+            })
+            .finally(() => {
+              this.isSaving = false;
+            });
+        }
+      } finally {
+        this.isPreparingSave = false;
       }
     },
     validParamConfig() {

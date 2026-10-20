@@ -5,7 +5,7 @@ export default {
     schema: { type: Object, default: () => ({}) },
     disabled: { type: Boolean, default: false },
     path: { type: String, default: '' },
-    // 仅数组默认数据弹窗控制提示时机，其余独立编辑入口仍默认完整显示。
+    // 顶层默认值与数组默认数据按交互阶段控制提示，其余独立入口仍默认完整显示。
     validationMode: { type: String, default: 'all' }
   },
   data() { return { inputTouched: false }; },

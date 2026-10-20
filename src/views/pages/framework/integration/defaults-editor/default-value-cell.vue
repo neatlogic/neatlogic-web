@@ -15,10 +15,13 @@
     <template v-else>
       <component
         :is="editor"
+        ref="editor"
         :value="currentValue"
         :schema="schema"
         :disabled="disabled || !!resolved.error"
+        :validationMode="phase"
         @change="changeValue"
+        @blur="handleBlur"
       ></component>
     </template>
     <div v-if="error" class="text-error">{{ error }}</div>
@@ -40,10 +43,36 @@ export default {
     config: { type: Object, default: undefined },
     disabled: { type: Boolean, default: false }
   },
+  data() { return {phase: 'none', phaseRevision: 0}; },
   methods: {
     openSchema() { if (!this.disabled) this.$emit('open', 'schema'); },
+    flushInput() {
+      if (this.disabled || this.complex || this.resolved.error) return;
+      const editor = this.$refs.editor;
+      if (editor && editor.flushInput) {
+        // 未触碰的控件只同步真正不同的待提交值，不能把旧非法布尔值转型或给空参数补配置。
+        const displayed = 'displayValue' in editor ? editor.displayValue : editor.value;
+        if (!editor.inputTouched && editor.readInputValue && editor.readInputValue(displayed) === displayed) return;
+        editor.flushInput();
+      }
+    },
+    handleBlur() {
+      // 编辑器先提交当前输入，等待回显再校验；迟到的失焦不能覆盖提交或后续输入的状态。
+      const revision = ++this.phaseRevision;
+      this.$nextTick(() => {
+        if (revision === this.phaseRevision && !this.disabled && !this._isDestroyed) this.phase = 'type';
+      });
+    },
+    validateForSubmit() {
+      this.phaseRevision++;
+      this.phase = 'all';
+      return !this.error;
+    },
     changeValue(value) {
       if (this.disabled || this.resolved.error) return;
+      // 输入中途不显示类型错误，开始修改时清除上次失焦或提交产生的提示。
+      this.phaseRevision++;
+      this.phase = 'none';
       const next = cloneDefaultConfig(this.config || {});
       if (!hasOwn(next, 'schema')) next.schema = cloneJson(this.schema);
       // 仅实际录入时启用；文本类（含枚举、日期）的空串和 0、false 均为有效值。
@@ -61,7 +90,16 @@ export default {
     currentValue() { return isDefaultEnabled(this.config) ? this.config.value : undefined; },
     rowCount() { return Array.isArray(this.currentValue) ? this.currentValue.length : 0; },
     editor() { return getDefaultEditor(this.schema.type); },
-    error() { return this.resolved.error || validateDefaultConfig(this.pattern, this.config); }
+    error() {
+      // 结构失效仍需即时告知；数组/对象入口继续沿用原完整检查，不影响弹窗校验时机。
+      if (this.resolved.error) return this.resolved.error;
+      if (!this.complex && this.phase === 'none') return null;
+      return validateDefaultConfig(this.pattern, this.config, {skipRequired: !this.complex && this.phase === 'type'});
+    }
+  },
+  watch: {
+    'schema.type'() { this.phaseRevision++; this.phase = 'none'; },
+    disabled() { this.phaseRevision++; this.phase = 'none'; }
   }
 };
 </script>

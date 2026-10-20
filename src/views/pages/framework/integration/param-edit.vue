@@ -68,6 +68,7 @@
               <td :style="mainCellStyle"><ParamText :value="item.description"></ParamText></td>
               <td :style="mainCellStyle">
                 <DefaultValueCell
+                  :ref="`default-${fixedKey(item)}`"
                   :pattern="item"
                   :config="getFixedDefault(item)"
                   :disabled="disabled"
@@ -174,6 +175,7 @@
             </td>
             <td :style="mainCellStyle">
               <DefaultValueCell
+                :ref="`default-${customKey(item)}`"
                 :pattern="item"
                 :config="item.defaultConfig"
                 :disabled="disabled"
@@ -442,7 +444,19 @@ export default {
     getConfig() {
       return cloneParamConfig(this.config);
     },
+    defaultCells() {
+      // ref 使用原参数稳定键，拖动不串位；仅遍历当前仍存在的行，删除和切换规范不会复用旧提示。
+      const keys = [...this.fixedParamList.map(this.fixedKey), ...this.paramList.map(this.customKey)];
+      return keys.flatMap(key => this.$refs[`default-${key}`] || []);
+    },
+    async flushDefaultInputs() {
+      this.defaultCells().forEach(cell => cell.flushInput());
+      // 单元格配置和父级集成表单各有一层响应式回写，保存前等待两层均完成。
+      await this.$nextTick();
+      await this.$nextTick();
+    },
     valid() {
+      this.defaultCells().forEach(cell => cell.validateForSubmit());
       this.paramError = validateCustomParams(this.config, this.handlerPattern);
       if (this.paramError) this.$Message.warning(this.$t(this.paramError.message, {target: this.$t('page.param')}));
       this.defaultError = validateIntegrationDefaults(this.handlerPattern, this.config, this.integration && this.integration.handler);

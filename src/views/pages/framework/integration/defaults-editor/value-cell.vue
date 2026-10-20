@@ -42,7 +42,7 @@ export default {
     showRemove: { type: Boolean, default: true },
     // 仅控制基础值辅助提示，不改变缺失值语义。
     showValueHints: { type: Boolean, default: true },
-    // 弹窗默认数据延迟显示校验，独立对象与主表仍保留原行为。
+    // 弹窗默认数据延迟显示校验，独立对象仍保留原行为。
     deferValidation: { type: Boolean, default: false }
   },
   data() { return { phase: 'none', phaseRevision: 0 }; },

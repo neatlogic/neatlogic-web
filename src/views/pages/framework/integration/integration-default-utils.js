@@ -205,12 +205,13 @@ export function validateDefaultValue(value, schema, path = '参数', nested = fa
   return errorMessage(() => checkValue(value, schema, path, nested, options));
 }
 
-export function validateDefaultConfig(pattern, defaultConfig = pattern.defaultConfig) {
+export function validateDefaultConfig(pattern, defaultConfig = pattern.defaultConfig, options = {}) {
   if (!isDefaultEnabled(defaultConfig)) return null;
   return errorMessage(() => {
     const path = paramPath(pattern);
     if (!owns(defaultConfig, 'value') || defaultConfig.value === undefined) fail(path, '已启用但未填写默认值');
-    checkValue(defaultConfig.value, getEffectiveSchema(pattern, defaultConfig), path);
+    // 失焦检查可跳过必填，所有保存入口不传选项，继续执行完整检查。
+    checkValue(defaultConfig.value, getEffectiveSchema(pattern, defaultConfig), path, false, options);
   });
 }
 
