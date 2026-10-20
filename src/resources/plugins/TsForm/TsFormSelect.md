@@ -80,6 +80,7 @@ methods:{
 | 参数名      | 类型    | 默认值 | 说明   |
 | -------- | ----- | --- | ---- |
 | dataList | Array | -   | 本地数据 |
+| historyValue | String / Array / Object | null | 提供历史选中值的回显文案，需与实际选中值配合使用 |
 | url                    | String           | ''    | 初始化接口   |
 | params                 | Object           | -     | 接口参数    |
 | ajaxType               | String           | post  | 请求方式    |
@@ -87,6 +88,7 @@ methods:{
 | dealDataByUrl          | Function         | -     | 数据二次处理  |
 | defaultValueIsFirst    | Boolean          | false | 默认选中第一个 |
 | dynamicUrl          | String | ''           | 实时搜索接口 |
+| verifyHistoryValue | Boolean | false | 使用 dynamicUrl 和 historyValue 时，先按选中值查询是否仍可用 |
 | dynamicDefaultValue | Array  | []           | 初始化默认值 |
 | keyword             | String | keyword      | 搜索字段   |
 | idListName          | String | defaultValue | 精确匹配字段 |
@@ -103,6 +105,86 @@ methods:{
 | parentValueName | String  | value    | 父节点 value         |
 | parentTextName  | String  | text     | 父节点 text          |
 | isEqualValue    | Boolean | false    | 是否用 value 渲染 text |
+
+### 历史值回显
+
+`value` 或 `v-model` 提供实际选中值；`historyValue` 只提供回显文案，单独设置它不会产生选中项。字符串历史值以值本身作为文案；需要自定义文案时传 `{ value, text }`，多选时传由这些对象组成的数组。即使选项设置了 `valueName="key"`、`textName="label"`，历史对象仍使用 `value`、`text` 字段。
+
+使用 `dataList` 时，组件优先显示匹配选项的当前文案；选中值不在选项中时，才使用值匹配的 `historyValue` 回显。历史值不会加入下拉选项，也不会自动清空实际选中值。
+
+单选示例：`old-key` 已不在 `dataList` 中，选择框显示“原组件（已不可用）”。
+
+```vue
+<template>
+  <TsFormSelect
+    v-model="selectedKey"
+    :dataList="options"
+    valueName="key"
+    textName="label"
+    :historyValue="{ value: 'old-key', text: '原组件（已不可用）' }"
+  />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      selectedKey: 'old-key',
+      options: [{ key: 'current-key', label: '当前组件' }]
+    };
+  }
+};
+</script>
+```
+
+多选示例：当前选项 `current-key` 使用 `dataList` 中的文案，缺失的 `old-key` 使用历史文案。
+
+```vue
+<template>
+  <TsFormSelect
+    v-model="selectedKeys"
+    multiple
+    :dataList="options"
+    valueName="key"
+    textName="label"
+    :historyValue="[{ value: 'old-key', text: '原组件（已不可用）' }]"
+  />
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      selectedKeys: ['current-key', 'old-key'],
+      options: [{ key: 'current-key', label: '当前组件' }]
+    };
+  }
+};
+</script>
+```
+
+使用 `dynamicUrl` 时，默认由非空 `historyValue` 初始化回显，并跳过该次精确查询。若需要检查实际选中值是否仍可用，设置 `verifyHistoryValue`：组件先按 `idListName` 精确查询，查到的值使用接口返回的当前文案，未查到的值保留匹配的历史文案，并在原有选中项后提示“当前不可用”；悬浮提示可查看实际查询的 value，方便核查。实际选中值不会自动清空，历史文案也不会加入下拉选项。接口失败时只提示“选中值查询失败”，不把原值判为不可用。此功能要求 `dynamicUrl`、实际选中值和 `historyValue` 均非空，且 `isEqualValue=false`；`isEqualValue=true` 会直接把值当文案显示，仍不发起查询。接口须按 `idListName` 完整返回请求值，才能可靠地判断是否可用。
+
+```vue
+<TsFormSelect
+  v-model="selectedKeys"
+  multiple
+  dynamicUrl="/api/rest/example/search"
+  idListName="defaultValue"
+  :historyValue="[{ value: 'old-key', text: '原选项' }]"
+  verifyHistoryValue
+/>
+```
+
+开启 `verifyHistoryValue` 时，还需注意以下参数组合：
+
+| 参数组合 | 实际行为 |
+| --- | --- |
+| `isEqualValue=true` | 优先将 value 作为文案回显，不发起精确查询，因此无法判断值是否可用。 |
+| 同时设置 `url` 和 `dynamicUrl` | 首次加载优先使用 `url`，不会在该次加载中校验历史值；应只使用 `dynamicUrl`。 |
+| `allowCreate=true` | 用户自行创建的值若不在精确查询结果中，也会显示“当前不可用”；允许创建新值的场景不宜开启此校验。 |
+
+推荐使用 `dynamicUrl`、`historyValue` 和 `verifyHistoryValue`，保持 `isEqualValue=false`，并由精确查询接口完整返回请求的可用值。未开启 `verifyHistoryValue` 的页面继续沿用原有回显逻辑。
 
 
 ### 搜索增强
@@ -188,8 +270,10 @@ config:{
   params:{test:"test"},
   defaultValueIsFirst:false,
   dynamicUrl:"/api/rest/matrix/column/data/search/forselect",
+  verifyHistoryValue:false,
   rootName:"tbodyList",
   dataList:[{text:"text",value:"value"}],
+  historyValue:{value:"value",text:"历史选项"},
   valueName:"id",
   textName:"name",
   showName:"html",

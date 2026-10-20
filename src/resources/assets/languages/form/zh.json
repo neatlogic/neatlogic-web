@@ -1,4 +1,10 @@
 {
+  "select": {
+    "unavailableSuffix": "（当前不可用）",
+    "selectedValueLookupFailed": "选中值查询失败",
+    "lookupValue": "查询值：{value}",
+    "unavailableHint": "当前不可用，请重新选择。查询值：{value}"
+  },
   "nestedSelector": {
     "loading": "匹配数据尚未加载完成",
     "loadFailed": "数据加载失败，请重试",
