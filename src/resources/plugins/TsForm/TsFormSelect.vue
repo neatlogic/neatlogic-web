@@ -7,12 +7,14 @@
       :style="{ display: 'inline-block', width: '100%' }"
     >
       <template v-if="selectedList.length > 0">
-        <Tag v-for="(item, index) in selectedList" :key="index">
+        <Tag v-for="(item, index) in selectedList" :key="index" :title="isHistoryValueMissing(item[valueName]) ? $t('form.select.lookupValue', { value: item[valueName] }) : null">
           <span v-if="readonlyTextHighlightClass" :class="readonlyTextHighlightClass">{{ item[textName] }}</span>
           <template v-else>{{ item[textName] }}</template>
+          <span v-if="isHistoryValueMissing(item[valueName])" class="text-error">{{ $t('form.select.unavailableSuffix') }}</span>
         </Tag>
       </template>
       <span v-else class="text-grey">-</span>
+      <span v-if="historyVerifyError" class="text-error">{{ $t('form.select.selectedValueLookupFailed') }}</span>
     </span>
     <div
       v-else
@@ -56,15 +58,15 @@
                 @on-close="deleteSeleted(nindex, selected[valueName])"
               >
                 <Tooltip
-                  v-if="(disabled && disabledHoverTitle) || selected[textName]"
+                  v-if="(disabled && disabledHoverTitle) || selected[textName] || isHistoryValueMissing(selected[valueName])"
                   placement="top-start"
                   max-width="300"
                   transfer
                   theme="light"
                   style="width: 100%"
-                  :content="(disabled ? disabledHoverTitle : '') || selected[textName]"
+                  :content="isHistoryValueMissing(selected[valueName]) ? $t('form.select.unavailableHint', { value: selected[valueName] }) : ((disabled ? disabledHoverTitle : '') || selected[textName])"
                 >
-                  <div class="overflow disabled-title-box">{{ selected[textName] }}</div>
+                  <div class="overflow disabled-title-box">{{ selected[textName] }}<span v-if="isHistoryValueMissing(selected[valueName])" class="text-error">{{ $t('form.select.unavailableSuffix') }}</span></div>
                 </Tooltip>
               </Tag>
               <template v-if="selectedList.length <= 0">
@@ -294,6 +296,7 @@
       </div>
       <div v-if="desc && !descType" class="text-tip tips">{{ desc }}</div>
       <Alert v-else-if="desc && descType" :type="descType">{{ desc }}</Alert>
+      <div v-if="historyVerifyError" class="text-error">{{ $t('form.select.selectedValueLookupFailed') }}</div>
       <transition name="fade">
         <slot name="validMessage">
           <span
@@ -390,6 +393,11 @@ export default {
       //通过url实时获取数据
       type: String,
       default: ''
+    },
+    verifyHistoryValue: {
+      //历史值回显时，先通过dynamicUrl确认选中值是否仍存在
+      type: Boolean,
+      default: false
     },
     dynamicDefaultValue: {
       //通过url实时获取数据的默认值,只用于初始化dynamicInit()
@@ -565,6 +573,9 @@ export default {
       currentValidList: this.filterValid(this.validateList) || [],
       currentSearch: this.search || !!this.dynamicUrl,
       cancelAxios: null, //实时搜索，取消接口调用
+      historyVerifyRequestId: 0,
+      historyVerifyError: false,
+      historyMissingValueList: [],
       liHtml: this.showName ? this.showName : this.textName,
       addItem: null,
       readonlyTitle: null,
@@ -587,6 +598,7 @@ export default {
   mounted() {},
   updated() {},
   beforeDestroy() {
+    this.historyVerifyRequestId++;
     this.cancelAxios && this.cancelAxios.cancel();
     this.cancelAxios1 && this.cancelAxios1.cancel();
     this.cancelAxios = this.cancelAxios1 = null;
@@ -658,9 +670,11 @@ export default {
         this.$refs.input && this.$refs.input.focus();
       });
     },
-    async getDataByAjax(params, url, cancel) {
+    async getDataByAjax(params, url, cancel, preserveIdList = false) {
       //调用接口的统一处理
+      const requestedValues = preserveIdList ? params[this.idListName] : null;
       typeof this.params == 'object' && Object.assign(params, this.params);
+      if (preserveIdList) params[this.idListName] = requestedValues;
       this[cancel] && this[cancel].cancel();
       this[cancel] = this.$https.CancelToken.source();
       let ajaxArr = {};
@@ -693,7 +707,7 @@ export default {
         // 请求被取消后，res为空，没有收到服务器响应
         isCancelToken = true;
       }
-      return { nodeList, isCancelToken };
+      return { nodeList, isCancelToken, isSuccess: !!(res && res.Status == 'OK') };
     },
     setDefaultValue() {
       //默认选中第一个的判断 ,1、defaultValueIsFirst; 2、必填且nodeList长度为1; 3、自动选中第一个值
@@ -743,7 +757,7 @@ export default {
       } else if (this.dynamicUrl) {
         //dynamicUrl
         this.currentSearch = true;
-        if (!this.$utils.isEmpty(this.value)) {
+        if (!this.$utils.isEmpty(this.verifyHistoryValue ? this.currentValue : this.value)) {
           this.dynamicInit();
         } else {
           //情况值，在同一个组件，不同数据之间切换时，初始化数据没有清掉的情况
@@ -800,6 +814,10 @@ export default {
           });
       } else {
         list = selectedList;
+      }
+      if (!this.$utils.isEmpty(this.historyValue)) {
+        const historyList = this.handleHistoryValue(this.historyValue);
+        list = valueList.map(value => list.find(item => item[this.valueName] == value) || historyList.find(item => item[this.valueName] == value)).filter(Boolean);
       }
       this.selectedList = list;
       if (!this.multiple) {
@@ -986,6 +1004,7 @@ export default {
     dynamicInit() {
       //通过dynamicurl初始化数据
       this.hiddenLength = 0;
+      const requestId = ++this.historyVerifyRequestId;
       //不用掉接口初始化text值
       if (this.isEqualValue) {
         this.selectedList = [];
@@ -995,6 +1014,9 @@ export default {
           obj[this.valueName] = obj[this.textName] = item;
           this.selectedList.push(obj);
         });
+        return;
+      } else if (this.verifyHistoryValue && !this.$utils.isEmpty(this.historyValue)) {
+        this.verifyHistorySelectionByUrl(requestId);
         return;
       } else if (!this.$utils.isEmpty(this.historyValue)) {
         //历史值回显
@@ -1059,6 +1081,54 @@ export default {
           this.$emit('searchCallback');
         }
       });
+    },
+    verifyHistorySelectionByUrl(requestId) {
+      const valueList = this.multiple ? [...this.currentValue] : [this.currentValue];
+      const historyList = this.handleHistoryValue(this.historyValue);
+      const findByValue = (list, value) => list.find(item => item && item[this.valueName] == value);
+      const historySelection = () => valueList.map(value => findByValue(historyList, value) || {
+        [this.valueName]: value,
+        [this.textName]: value
+      });
+      //查询期间保留历史文案，接口成功后再以当前选项替换。
+      this.selectedList = historySelection();
+      this.historyVerifyError = false;
+      this.historyMissingValueList = [];
+      const params = { defaultValue: this.dynamicDefaultValue, [this.idListName]: valueList };
+      const isCurrentRequest = () => requestId === this.historyVerifyRequestId && this.$utils.isSame(valueList, this.multiple ? this.currentValue : [this.currentValue]);
+      this.getDataByAjax(params, this.dynamicUrl, 'cancelAxios1', true).then(res => {
+        if (!isCurrentRequest()) return;
+        this.loading = false;
+        if (!res.isSuccess || res.isCancelToken) {
+          this.historyVerifyError = true;
+          return;
+        }
+        let nodeList = res.nodeList || [];
+        if (this.mode == 'group') {
+          nodeList = nodeList.reduce((list, group) => list.concat(group && group[this.childrenName] || []), []);
+        }
+        const missingValueList = [];
+        this.selectedList = valueList.map(value => {
+          const option = findByValue(nodeList, value);
+          if (option) return option;
+          missingValueList.push(value);
+          return findByValue(historyList, value) || { [this.valueName]: value, [this.textName]: value };
+        });
+        this.historyMissingValueList = missingValueList;
+        if (!this.multiple) this.searchKeyWord = '';
+        if (this.needCallback) {
+          this.$emit('update:needCallback', false);
+          this.$emit('searchCallback');
+        }
+      }).catch(() => {
+        if (isCurrentRequest()) {
+          this.loading = false;
+          this.historyVerifyError = true;
+        }
+      });
+    },
+    isHistoryValueMissing(value) {
+      return this.historyMissingValueList.some(item => item == value);
     },
     handleEnterDisplayValue(selectedList = this.selectedList) {
       // 处理回车创建值回显问题
@@ -1186,6 +1256,9 @@ export default {
       return nodeList || [];
     },
     onChangeValue() {
+      if (this.verifyHistoryValue && this.dynamicUrl && !this.isEqualValue && !this.$utils.isEmpty(this.historyValue)) {
+        this.watchChange(true);
+      }
       let isSame = false;
       let selectedList = this.selectedList.map(item => {
         return { value: item[this.valueName], text: item[this.textName] };
@@ -1442,6 +1515,9 @@ export default {
       }
     },
     watchChange(isChange) {
+      this.historyVerifyRequestId++;
+      this.historyVerifyError = false;
+      this.historyMissingValueList = [];
       this.initSettime && clearTimeout(this.initSettime);
       this.initSettime = setTimeout(() => {
         this.initSettime = null;
@@ -1664,7 +1740,25 @@ export default {
       newValue ? this.watchChange(false) : (this.nodeList = this.$utils.deepClone(this.dataList || []));
     },
     dynamicUrl(newValue, oldValue) {
-      newValue ? this.watchChange(false) : (this.nodeList = this.$utils.deepClone(this.dataList || []));
+      if (newValue) {
+        this.watchChange(false);
+      } else {
+        this.historyVerifyRequestId++;
+        this.historyVerifyError = false;
+        this.historyMissingValueList = [];
+        this.nodeList = this.$utils.deepClone(this.dataList || []);
+      }
+    },
+    verifyHistoryValue() {
+      this.watchChange(false);
+    },
+    historyValue: {
+      handler(newValue, oldValue) {
+        if (this.verifyHistoryValue && this.dynamicUrl && !this.$utils.isSame(newValue, oldValue)) {
+          this.watchChange(false);
+        }
+      },
+      deep: true
     },
     params: {
       handler(newValue, oldValue) {

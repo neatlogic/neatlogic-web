@@ -1,4 +1,10 @@
 {
+  "select": {
+    "unavailableSuffix": " (Currently Unavailable)",
+    "selectedValueLookupFailed": "Selected Value Lookup Failed",
+    "lookupValue": "Lookup Value: {value}",
+    "unavailableHint": "This option is currently unavailable. Select another option. Lookup Value: {value}"
+  },
   "nestedSelector": {
     "loading": "Matching data is still loading",
     "loadFailed": "Failed to load data. Please retry.",
