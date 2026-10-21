@@ -43,30 +43,34 @@ export default {
       if (this.formData && this.config && !this.$utils.isEmpty(this.config.expression)) {
         const expression = this.config.expression;
         if (expression.type === 'strExpression') {
-          expression.list.forEach(item => {
+          // 尚未配置拼接项时按空列表处理，避免直接调用 undefined.forEach。
+          (expression.list || []).forEach(item => {
             if (item.mappingMode === 'constant') {
               value += item.value;
             } else if (item.mappingMode === 'formCommonComponent') {
               const uuidList = item.value.split('#');
-              const formItemValue = this.formData[uuidList[0]] || '';
+              // 字段及其选项属性仅在 null/undefined 时补空串；使用 || 会丢失有效的 0、false。
+              const formItemValue = this.formData[uuidList[0]] ?? '';
               if (!this.$utils.isEmpty(formItemValue)) {
                 if (Array.isArray(formItemValue)) {
                   formItemValue.forEach(a => {
-                    if (typeof a === 'object') {
+                    // typeof null 也是 object，需先判空，避免读取 null 的属性。
+                    if (a && typeof a === 'object') {
                       if (uuidList[1]) {
-                        value += a[uuidList[1]] || '';
+                        value += a[uuidList[1]] ?? '';
                       } else {
-                        value += a['value'] || '';
+                        value += a['value'] ?? '';
                       }
                     } else {
-                      value += a;
+                      // 选项数组中的空项不参与拼接，避免结果出现 "null"、"undefined"。
+                      value += a ?? '';
                     }
                   });
                 } else if (typeof formItemValue === 'object') {
                   if (uuidList[1]) {
-                    value += formItemValue[uuidList[1]] || '';
+                    value += formItemValue[uuidList[1]] ?? '';
                   } else {
-                    value += formItemValue['value'] || '';
+                    value += formItemValue['value'] ?? '';
                   }
                 } else {
                   value += formItemValue;
@@ -79,12 +83,13 @@ export default {
           value = this.safeEval(expression.jsValue, data);
         }
       }
-      if (!this.$utils.isSame(value, this.expressionValue)) {
-        this.$nextTick(() => {
+      this.$nextTick(() => {
+        // 立即监听和 created 都会初始化，在回写前比较最新结果，避免同一结果重复触发联动。
+        if (!this.$utils.isSame(value, this.expressionValue)) {
           this.expressionValue = this.$utils.deepClone(value);
           this.setValue(value);
-        });
-      }
+        }
+      });
     },
     safeEval(jsExpression, formData) {
       try {

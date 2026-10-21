@@ -900,6 +900,25 @@ export default {
     }
   },
   watch: {
+    // 不立即执行，保留首次加载时由 init 创建的默认行；后续仅同步外部空值。
+    value: {
+      handler(val) {
+        if (!this.$utils.isEmpty(val)) return;
+        // 外部联动清空时同步内部数据，不重新初始化默认行，避免旧值再次写回。
+      
+        if (this.tbodyList.length) {
+          this.tbodyList = []; // 已为空时不再替换数组，避免 tbodyList 回写空数组后反复触发更新。
+        }
+        // 原有行已移除，分页及勾选状态也需复位，避免新增数据后仍停在旧页码。
+        this.tablePageConfig.currentPage = 1;
+        this.tablePageConfig.rowNum = 0;
+        this.selectedCurrentPageMap = {};
+        this.isSelectAllCurrentPage = false;
+        // 丢弃未显示单元格的旧联动快照，防止后续继续使用已删除行的状态。
+        this.pendingReactionValuesMap = {};
+      },
+      deep: true
+    },
     'config.dataConfig': {
       handler: function(val) {
         this.theadList = [];

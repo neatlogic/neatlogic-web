@@ -1423,9 +1423,16 @@
     "jobcategory": "作业分类",
     "parentjob": "父作业",
     "subjob": "子作业",
-    "ignoreall": "是否忽略所有节点"
+    "ignoreall": "是否忽略所有节点",
+    "mappingconstantdesc": "在服务中预先填写参数值，发起作业时使用该值。",
+    "mappingemptydesc": "将参数值设为空，不使用默认值。",
+    "mappingformdesc": "可以选择某个表单组件，将该组件填写的值作为参数值。",
+    "mappingunsetdesc": "通过服务发起作业时填写参数值。"
   },
   "framework": {
+    "tableimportfiltertitle": "部分导入值不符合联动/过滤条件",
+    "tableimportfiltersummary": "已清除 {count} 个单元格中的无效值，其余数据已导入。请根据当前行的联动/过滤条件重新选择。",
+    "tableimportfilterdetail": "Excel 第 {row} 行【{column}】：值“{value}”不在当前可选范围内，已清除。",
     "integrationdefault": {
       "string": "字符串",
       "boolean": "布尔",

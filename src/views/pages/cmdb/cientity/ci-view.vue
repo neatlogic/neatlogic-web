@@ -74,8 +74,18 @@
             </div>
           </div>
           <div class="mt-nm">
-            <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-              <TabPane :label="$t('term.cmdb.cientitylist')" name="cientity">
+            <Tabs
+              v-model="currentTab"
+              name="cmdb-ci-view"
+              class="block-tabs"
+              :animated="false"
+            >
+              <TabPane
+                :label="$t('term.cmdb.cientitylist')"
+                name="cientity"
+                tab="cmdb-ci-view"
+                :index="1"
+              >
                 <CiEntityList
                   v-if="currentTab === 'cientity'"
                   ref="CiEntityList"
@@ -88,7 +98,13 @@
                   :needExport="true"
                 ></CiEntityList>
               </TabPane>
-              <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['transactionmanage'] || ciData.authData['cimanage'])" :label="$t('term.cmdb.uncommittransaction')" name="transaction">
+              <TabPane
+                v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['transactionmanage'] || ciData.authData['cimanage'])"
+                :label="$t('term.cmdb.uncommittransaction')"
+                name="transaction"
+                tab="cmdb-ci-view"
+                :index="2"
+              >
                 <TransactionList
                   v-if="currentTab === 'transaction'"
                   class="pt-nm pl-nm pr-nm bg-op border8"
@@ -97,7 +113,13 @@
                   :ciId="ciData.id"
                 ></TransactionList>
               </TabPane>
-              <TabPane v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['cientityrecover'] || ciData.authData['cimanage'])" :label="$t('page.deleteaudit')" name="deletecientity">
+              <TabPane
+                v-if="!ciData.isVirtual && ciData.authData && (ciData.authData['cientityrecover'] || ciData.authData['cimanage'])"
+                :label="$t('page.deleteaudit')"
+                name="deletecientity"
+                tab="cmdb-ci-view"
+                :index="3"
+              >
                 <DeleteCiEntityList
                   v-if="currentTab === 'deletecientity'"
                   class="pt-nm pl-nm pr-nm bg-op border8"
@@ -107,7 +129,7 @@
               </TabPane>
               <template v-if="!ciData.isVirtual && illegalList && illegalList.length > 0">
                 <TabPane
-                  v-for="illegal in illegalList"
+                  v-for="(illegal, illegalIndex) in illegalList"
                   :key="illegal.id"
                   :label="
                     h => {
@@ -122,6 +144,8 @@
                     }
                   "
                   :name="'illegal_' + illegal.id"
+                  tab="cmdb-ci-view"
+                  :index="illegalIndex + 4"
                 >
                   <IllegalCiEntityList
                     v-if="currentTab == 'illegal_' + illegal.id"
@@ -131,6 +155,23 @@
                   ></IllegalCiEntityList>
                 </TabPane>
               </template>
+              <TabPane
+                v-if="canViewCmdbEventAudit"
+                :label="$t('term.cmdb.eventaudit.title')"
+                name="eventaudit"
+                tab="cmdb-ci-view"
+                :index="illegalList.length + 4"
+              >
+                <component
+                  :is="cmdbEventAuditPanel"
+                  v-if="currentTab === 'eventaudit'"
+                  :key="ciData.id"
+                  ref="cmdbEventAudit"
+                  class="pt-nm pl-nm pr-nm"
+                  :ciData="ciData"
+                  :ciEntityId="auditCiEntityId"
+                ></component>
+              </TabPane>
             </Tabs>
           </div>
         </div>
@@ -139,6 +180,7 @@
   </div>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: '',
   components: {
@@ -159,11 +201,16 @@ export default {
       ciData: {},
       sessionName: 'civiewbox',
       isLoading: true,
-      illegalList: []
+      illegalList: [],
+      ciLoadEpoch: 0,
+      auditCiEntityId: null,
+      auditRoutePending: this.$route.query.tab === 'eventaudit'
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    this.auditCiEntityId = this.auditRoutePending ? this.parseAuditCiEntityId(this.$route.query.ciEntityId) : null;
+  },
   beforeMount() {},
   mounted() {
     this.init();
@@ -172,7 +219,10 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    // 使模型和校验的迟到响应失效。
+    this.ciLoadEpoch++;
+  },
   destroyed() {},
   methods: {
     getIconClass() {
@@ -188,21 +238,45 @@ export default {
         }
       }
     },
+    // 一次模型加载同时约束详情、校验数量和事件页签的路由意图。
     async init() {
-      this.$addHistoryData('ciId', this.ciId);
-      await this.getCiById();
-      this.getIllegalCiEntityCount();
+      const ciId = this.ciId;
+      const epoch = ++this.ciLoadEpoch;
+      this.currentTab = 'cientity';
+      this.ciData = {};
+      this.illegalList = [];
+      this.isLoading = true;
+      this.$addHistoryData('ciId', ciId);
+      await this.getCiById(ciId, epoch);
+      if (!this.isCurrentCiLoad(ciId, epoch) || !this.ciData.id) return;
+      if (this.auditRoutePending) {
+        this.auditRoutePending = false;
+        if (this.canViewCmdbEventAudit) this.currentTab = 'eventaudit';
+      }
+      this.getIllegalCiEntityCount(ciId, epoch);
     },
-    getIllegalCiEntityCount() {
-      this.$api.cmdb.cientity.getIllegalCiEntityCount(this.ciId).then(res => {
-        this.illegalList = res.Return;
-      });
+    // 配置项范围只接受正整数，非法路由参数不授予受限查询入口。
+    parseAuditCiEntityId(value) {
+      if (Array.isArray(value) || value == null || !/^\d+$/.test(String(value))) return null;
+      const id = Number(value);
+      return Number.isSafeInteger(id) && id > 0 ? id : null;
+    },
+    // 模型切换或组件销毁后禁止旧请求回写。
+    isCurrentCiLoad(ciId, epoch) {
+      return !this._isDestroyed && epoch === this.ciLoadEpoch && String(ciId) === String(this.ciId);
+    },
+    async getIllegalCiEntityCount(ciId, epoch) {
+      const res = await this.$api.cmdb.cientity.getIllegalCiEntityCount(ciId);
+      if (this.isCurrentCiLoad(ciId, epoch)) this.illegalList = res.Return;
     },
     toParentCi(ciId) {
       const ci = { id: ciId };
       this.switchCi(ci);
     },
+    // 手工切模型不重新应用原路由中的事件范围。
     switchCi(ci) {
+      this.auditRoutePending = false;
+      this.auditCiEntityId = null;
       this.currentTab = 'cientity';
       this.ciId = String(ci.id);
       this.init();
@@ -220,26 +294,34 @@ export default {
         }
       }, 500);
     },
-    async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true, needChildren: true }).then(res => {
-        if (res.Status == 'OK') {
-          this.ciData = res.Return;
-          this.isLoading = false;
-        }
-      });
+    async getCiById(ciId, epoch) {
+      try {
+        const res = await this.$api.cmdb.ci.getCiById(ciId, { needAction: true, needChildren: true });
+        if (this.isCurrentCiLoad(ciId, epoch) && res.Status === 'OK') this.ciData = res.Return;
+      } finally {
+        if (this.isCurrentCiLoad(ciId, epoch)) this.isLoading = false;
+      }
     },
     isTslayout() {
       this.isSiderHide = !this.isSiderHide;
     },
+    // 历史恢复只设置首次加载目标，避免 created 和 mounted 重复发起请求。
     restoreHistory(historyData) {
-      if (historyData.ciId && this.ciId != historyData.ciId) {
-        const ci = { id: historyData.ciId };
-        this.switchCi(ci);
-      }
+      if (!this.auditRoutePending && historyData.ciId) this.ciId = String(historyData.ciId);
     }
   },
   filter: {},
   computed: {
+    // 商业能力缺失时基础页面保持正常，不加载商业代码。
+    cmdbEventAuditPanel() {
+      if (typeof COMMERCIAL_MODULES === 'undefined' || !COMMERCIAL_MODULES.includes('cmdb')) return null;
+      return (ComponentManager.getComponent('cmdbEventAudit') || {}).panel || null;
+    },
+    canViewCmdbEventAudit() {
+      if (!this.cmdbEventAuditPanel || !this.$AuthUtils.hasRole('CMDB_EVENT_VIEW')) return false;
+      const auth = this.ciData.authData || {};
+      return !!(auth.cimanage || (auth.cientityquery && this.auditCiEntityId));
+    },
     fromPageName() {
       return this.$route.meta.fromPage && this.$route.meta.fromPage.title ? this.$route.meta.fromPage.title : this.$t('term.cmdb.cilist');
     },
@@ -250,7 +332,19 @@ export default {
       return [];
     }
   },
-  watch: {},
+  watch: {
+    // 仅业务路由上下文变化时重新应用意图，历史标记等查询参数不重置本地范围。
+    $route(to, from) {
+      if (String(to.params.id) === String(from.params.id) && to.query.tab === from.query.tab && to.query.ciEntityId === from.query.ciEntityId) return;
+      this.ciId = to.params.id;
+      this.auditRoutePending = to.query.tab === 'eventaudit';
+      this.auditCiEntityId = this.auditRoutePending ? this.parseAuditCiEntityId(to.query.ciEntityId) : null;
+      this.init();
+    },
+    canViewCmdbEventAudit(value) {
+      if (!value && this.currentTab === 'eventaudit') this.currentTab = 'cientity';
+    }
+  },
   beforeRouteEnter(to, from, next) {
     to.meta.fromPage = { path: from.fullPath, title: from.meta.title };
     next();

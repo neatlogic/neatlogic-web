@@ -465,9 +465,15 @@ export default {
       }
     },
     getReportById() {
-      if (this.id) {
-        this.$api.report.statement.getStatementById(this.id).then(res => {
+      const copyId = this.$route.query.copyId;
+      const id = this.id || copyId;
+      if (id) {
+        this.$api.report.statement.getStatementById(id).then(res => {
           this.reportData = res.Return;
+          if (!this.id && copyId) {
+            this.$delete(this.reportData, 'id');
+            this.reportData.name += '_copy';
+          }
           this.normalizeWidgetZindex();
         });
       }

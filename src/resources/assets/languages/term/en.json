@@ -1425,9 +1425,16 @@
     "jobcategory": "Job Category",
     "parentjob": "Parent Job",
     "subjob": "Child Job",
-    "ignoreall": "Ignore all nodes?"
+    "ignoreall": "Ignore all nodes?",
+    "mappingconstantdesc": "Set the parameter value in the service and use it when creating a job.",
+    "mappingemptydesc": "Set the parameter to an empty value without using a default.",
+    "mappingformdesc": "Select a form component and use the value entered in that component as the parameter value.",
+    "mappingunsetdesc": "Enter the parameter value when creating a job through the service."
   },
   "framework": {
+    "tableimportfiltertitle": "Some imported values do not meet the dependency or filter conditions",
+    "tableimportfiltersummary": "Invalid values were removed from {count} cells. The remaining data was imported. Select replacements using the dependency or filter conditions for each row.",
+    "tableimportfilterdetail": "Excel row {row} [{column}]: Value \"{value}\" is not among the currently available options and was removed.",
     "integrationdefault": {
       "string": "String",
       "boolean": "Boolean",

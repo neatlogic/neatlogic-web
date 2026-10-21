@@ -25,7 +25,9 @@
               </DropdownMenu>
             </Dropdown>
           </span>
-          <span class="action-item"><Button type="info" @click="toCiEntityList()">{{ $t('term.cmdb.viewcientity') }}</Button></span>
+          <span class="action-item">
+            <Button type="info" @click="toCiEntityList()">{{ $t('term.cmdb.viewcientity') }}</Button>
+          </span>
           <span class="ci-del-btn action-item">
             <Button type="error" @click="deleteCi()">{{ $t('page.delete') }}</Button>
           </span>
@@ -66,40 +68,73 @@
             </div>
           </div>
           <div class="mt-nm">
-            <Tabs v-model="currentTab" class="block-tabs" :animated="false">
-              <TabPane name="attr" :label="$t('page.attribute')" class="pt-nm pl-nm pr-nm">
-                <CiDetailAttrList
-                  :ciData="ciData"
-                  :attrData="attrData"
-                  @toParentCi="toParentCi"
-                  @edit="editAttr"
-                  @delete="deleteAttr"
-                ></CiDetailAttrList>
-                <Divider v-if="!ciData.isVirtual && attrList && attrList.length > 0" />
-                <TsForm
-                  v-if="!ciData.isVirtual && attrList && attrList.length > 0 && !isLoading"
-                  ref="formCi"
-                  style="margin-top: 10px"
-                  :item-list="attrFormConfig"
-                  labelPosition="top"
-                ></TsForm>
+            <Tabs
+              v-model="currentTab"
+              name="cmdb-model"
+              class="block-tabs"
+              :animated="false"
+            >
+              <TabPane :index="1" name="attr" :label="$t('page.attribute')">
+                <div style="height: calc(100vh - 220px); overflow: auto" class="pt-nm pl-nm pr-nm">
+                  <CiDetailAttrList
+                    :ciData="ciData"
+                    :attrData="attrData"
+                    @toParentCi="toParentCi"
+                    @edit="editAttr"
+                    @delete="deleteAttr"
+                  ></CiDetailAttrList>
+                  <Divider v-if="!ciData.isVirtual && attrList && attrList.length > 0" />
+                  <TsForm
+                    v-if="!ciData.isVirtual && attrList && attrList.length > 0 && !isLoading"
+                    ref="formCi"
+                    style="margin-top: 10px"
+                    :item-list="attrFormConfig"
+                    labelPosition="top"
+                  ></TsForm>
+                </div>
               </TabPane>
-              <TabPane v-if="!ciData.isVirtual && relData && relData.cardList && relData.cardList.length > 0" name="rel" :label="$t('page.relation')">
-                <CiDetailRelList
-                  class="bg-op"
-                  :ciData="ciData"
-                  :relData="relData"
-                  @edit="editRel"
-                  @delete="deleteRel"
-                ></CiDetailRelList>
+              <TabPane
+                v-if="!ciData.isVirtual && relData && relData.cardList && relData.cardList.length > 0"
+                :index="2"
+                name="rel"
+                :label="$t('page.relation')"
+              >
+                <div style="height: calc(100vh - 220px); overflow: auto" class="pt-nm pl-nm pr-nm">
+                  <CiDetailRelList
+                    class="bg-op"
+                    :ciData="ciData"
+                    :relData="relData"
+                    @edit="editRel"
+                    @delete="deleteRel"
+                  ></CiDetailRelList>
+                </div>
               </TabPane>
               <TabPane
                 v-if="!ciData.isVirtual && globalAttrData && globalAttrData && globalAttrData.length > 0"
+                :index="3"
                 name="global"
-                class="pt-nm pl-nm pr-nm"
                 :label="$t('term.cmdb.globalattr')"
               >
-                <CiDetailGlobalAttrList :attrData="globalAttrData"></CiDetailGlobalAttrList>
+                <div style="height: calc(100vh - 220px); overflow: auto" class="pt-nm pl-nm pr-nm">
+                  <CiDetailGlobalAttrList :attrData="globalAttrData"></CiDetailGlobalAttrList>
+                </div>
+              </TabPane>
+              <!-- v-if 页签按挂载先后加入 Tabs，固定序号保证事件入口始终排在最右侧。 -->
+              <TabPane
+                v-if="cmdbEventComponent && canViewCmdbEvent"
+                :index="4"
+                name="event"
+                :label="$t('page.event') + $t('page.config')"
+              >
+                <div style="height: calc(100vh - 220px); overflow: auto" class="pt-nm pl-nm pr-nm">
+                  <component
+                    :is="cmdbEventComponent"
+                    v-if="isCmdbEventMounted"
+                    :key="ciData.id"
+                    ref="cmdbEventConfig"
+                    :ciData="ciData"
+                  ></component>
+                </div>
               </TabPane>
             </Tabs>
           </div>
@@ -132,6 +167,7 @@
 </template>
 <script>
 import ciTypeList from '../components/ci/ci-type-list.vue';
+import ComponentManager from '@/resources/import/component-manager.js';
 //import menuMinix from '../mixins/index';
 import TsForm from '@/resources/plugins/TsForm/TsForm';
 import download from '@/resources/mixins/download.js';
@@ -161,6 +197,10 @@ export default {
     return {
       attrList: [],
       currentTab: 'attr',
+      isCmdbEventMounted: false,
+      isConfirmingCmdbEventTab: false,
+      ciSwitchEpoch: 0,
+      ciRequestEpoch: 0,
       isSiderHide: false,
       isCiShow: false, //模型编辑窗口是否显示
       isViewShow: false, //显示设置窗口是否显示
@@ -215,9 +255,29 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.ciSwitchEpoch++;
+    this.ciRequestEpoch++;
+  },
   destroyed() {},
+  // 路由组件仅委托商业入口保护草稿，不依赖任何插件实现。
+  async beforeRouteLeave(to, from, next, url) {
+    if (await this.confirmCmdbEventLeave()) {
+      if (url) {
+        this.$utils.gotoHref(url);
+      } else if (next) {
+        next();
+      }
+    } else if (next) {
+      next(false);
+    }
+  },
   methods: {
+    // 商业组件不存在时保持原模型页面行为。
+    async confirmCmdbEventLeave() {
+      const entry = this.$refs.cmdbEventConfig;
+      return !entry || (await entry.confirmLeave());
+    },
     getIconClass() {
       if (this.ciData) {
         if (this.ciData.isVirtual) {
@@ -237,10 +297,15 @@ export default {
       }
     },
     async init() {
+      const epoch = ++this.ciRequestEpoch;
       await this.getCiById();
+      if (epoch !== this.ciRequestEpoch) return;
       await this.getAttrByCiId();
+      if (epoch !== this.ciRequestEpoch) return;
       await this.getRelByCiId();
+      if (epoch !== this.ciRequestEpoch) return;
       await this.getGlobalAttr();
+      if (epoch !== this.ciRequestEpoch) return;
       this.getLeftHeight();
       this.currentTab = 'attr';
     },
@@ -285,15 +350,21 @@ export default {
       }, 500);
     },
     async getCiById() {
-      await this.$api.cmdb.ci.getCiById(this.ciId, { needAction: true }).then(res => {
+      // 模型切换后丢弃迟到响应，防止把旧模型数据传给商业入口。
+      const ciId = this.ciId;
+      const epoch = this.ciRequestEpoch;
+      await this.$api.cmdb.ci.getCiById(ciId, { needAction: true }).then(res => {
+        if (ciId !== this.ciId || epoch !== this.ciRequestEpoch || this._isDestroyed) return;
         this.ciData = Object.assign({}, res.Return);
         this.attrFormConfig.uniqueRule.value = this.ciData.uniqueAttrIdList;
         this.attrFormConfig.nameAttrId.value = this.ciData.nameAttrId;
       });
-      await this.$api.cmdb.sync.checkCiHasSyncCollection(this.ciId).then(res => {
+      if (ciId !== this.ciId || epoch !== this.ciRequestEpoch || this._isDestroyed) return;
+      await this.$api.cmdb.sync.checkCiHasSyncCollection(ciId).then(res => {
+        if (ciId !== this.ciId || epoch !== this.ciRequestEpoch || this._isDestroyed) return;
         this.$set(this.ciData, 'hasCollection', res.Return > 0);
       });
-      this.isLoading = false;
+      if (ciId === this.ciId && epoch === this.ciRequestEpoch) this.isLoading = false;
     },
     deleteCi: function() {
       this.$createDialog({
@@ -313,12 +384,20 @@ export default {
       });
     },
     async getGlobalAttr() {
-      await this.$api.cmdb.ci.getGlobalAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
+      // 模型切换后丢弃迟到响应，防止把旧模型数据传给商业入口。
+      const ciId = this.ciId;
+      const epoch = this.ciRequestEpoch;
+      await this.$api.cmdb.ci.getGlobalAttrByCiId(ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
+        if (ciId !== this.ciId || epoch !== this.ciRequestEpoch || this._isDestroyed) return;
         this.globalAttrData = res.Return;
       });
     },
     async getAttrByCiId() {
-      await this.$api.cmdb.ci.getAttrByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
+      // 模型切换后丢弃迟到响应，防止把旧模型数据传给商业入口。
+      const ciId = this.ciId;
+      const epoch = this.ciRequestEpoch;
+      await this.$api.cmdb.ci.getAttrByCiId(ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
+        if (ciId !== this.ciId || epoch !== this.ciRequestEpoch || this._isDestroyed) return;
         this.$set(this.attrData, 'tbodyList', res.Return);
         this.attrList = res.Return;
         const attrList = res.Return;
@@ -340,7 +419,11 @@ export default {
       });
     },
     async getRelByCiId() {
-      await this.$api.cmdb.ci.getRelByCiId(this.ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
+      // 模型切换后丢弃迟到响应，防止把旧模型数据传给商业入口。
+      const ciId = this.ciId;
+      const epoch = this.ciRequestEpoch;
+      await this.$api.cmdb.ci.getRelByCiId(ciId, { needAlias: 1, mergeAlias: 0 }).then(res => {
+        if (ciId !== this.ciId || epoch !== this.ciRequestEpoch || this._isDestroyed) return;
         const relMap = new Map();
         this.$set(
           this.relData,
@@ -357,7 +440,14 @@ export default {
       const ci = { id: ciId };
       this.switchCi(ci);
     },
-    switchCi(ci) {
+    async switchCi(ci) {
+      if (ci.id === this.ciId) return;
+      const intent = ++this.ciSwitchEpoch;
+      if (!(await this.confirmCmdbEventLeave()) || intent !== this.ciSwitchEpoch || this._isDestroyed) {
+        return;
+      }
+      this.currentTab = 'attr';
+      this.isCmdbEventMounted = false;
       this.isLoading = true;
       this.ciId = ci.id;
       this.init();
@@ -456,8 +546,42 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    // 商业包未安装时注册表为空，基础页面没有商业代码依赖。
+    cmdbEventComponent() {
+      if (typeof COMMERCIAL_MODULES === 'undefined' || !COMMERCIAL_MODULES.includes('cmdb')) {
+        return null;
+      }
+      return (ComponentManager.getComponent('cmdbEventConfig') || {}).model;
+    },
+    canViewCmdbEvent() {
+      return this.$AuthUtils.hasRole('CMDB_EVENT_VIEW') && !!(this.ciData.authData && this.ciData.authData.cimanage);
+    }
+  },
   watch: {
+    // Tabs 不提供异步离开钩子；保留商业实例并在确认期间恢复原页签。
+    async currentTab(value, previous) {
+      if (this.isConfirmingCmdbEventTab) {
+        return;
+      }
+      if (previous === 'event' && value !== 'event' && this.$refs.cmdbEventConfig) {
+        this.isConfirmingCmdbEventTab = true;
+        const ciId = this.ciId;
+        const intent = this.ciSwitchEpoch;
+        await this.$nextTick();
+        this.currentTab = previous;
+        await this.$nextTick();
+        if (await this.confirmCmdbEventLeave()) {
+          if (ciId === this.ciId && intent === this.ciSwitchEpoch && !this._isDestroyed) {
+            this.currentTab = value;
+          }
+        }
+        await this.$nextTick();
+        this.isConfirmingCmdbEventTab = false;
+      } else if (value === 'event') {
+        this.isCmdbEventMounted = true;
+      }
+    },
     ciData: {
       handler: function(val) {
         if (val && val.nameAttrId && this.attrList && this.attrList.find(a => a.id == val.nameAttrId)) {

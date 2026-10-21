@@ -1,6 +1,6 @@
 <template>
   <div class="edit-condition">
-    <div>
+    <div v-if="!readonly">
       <span><a class="tsfont-plus" href="javascript:void(0)" @click="addConditionGroup()">{{ $t('term.cmdb.rulegroup') }}</a></span>
     </div>
     <div v-for="(conditionGroup, groupIndex) in rule.conditionGroupList" :key="groupIndex" class="group-border">
@@ -13,6 +13,7 @@
                   ref="select"
                   :dataList="ciAttrRelList"
                   search
+                  :disabled="readonly"
                   :value="conItem.id"
                   :transfer="true"
                   valueName="id"
@@ -41,6 +42,7 @@
                   ref="select"
                   :value="conItem.expression"
                   :dataList="getExpressionList(conItem)"
+                  :disabled="readonly"
                   :transfer="true"
                   :validateList="[{ name: 'required', message: ' ' }]"
                   @change="
@@ -57,12 +59,14 @@
                 ref="attrHandler"
                 :valueList="conItem.valueList"
                 :attrData="getAttrById(conItem.id)"
+                :disabled="readonly"
                 @setData="setAttrValue(conItem, arguments[0])"
               ></AttrSearcher>
               <TsFormSelect
                 v-else-if="conItem.type === 'relfrom' || conItem.type === 'relto'"
                 v-bind="getRelSelectConfig(conItem.id)"
                 :value="conItem.valueList"
+                :disabled="readonly"
                 :transfer="true"
                 @change="
                   val => {
@@ -73,6 +77,7 @@
               <TsFormSelect
                 v-else-if="conItem.type === 'global' && getGlobalAttrById(conItem.id)"
                 :value="conItem.valueList"
+                :disabled="readonly"
                 dynamicUrl="/api/rest/cmdb/globalattritem/search"
                 :params="{ attrId: getGlobalAttrById(conItem.id).id }"
                 valueName="id"
@@ -87,7 +92,7 @@
                 "
               ></TsFormSelect>
             </Col>
-            <Col span="2">
+            <Col v-if="!readonly" span="2">
               <div class="btn-group text-tip">
                 <span class="tsfont-plus mr-xs" style="cursor:pointer" @click="addCondition(conditionGroup)"></span>
                 <span
@@ -96,6 +101,21 @@
                   class="tsfont-minus"
                   @click="delCondition(conditionGroup, conditionIndex)"
                 ></span>
+              </div>
+            </Col>
+            <Col v-else-if="resultMap" span="2">
+              <div v-if="resultMap[conItem.uuid]" class="text-center pt-xs">
+                <span v-if="resultMap[conItem.uuid].result" class="tsfont-check text-success text-bold"></span>
+                <Tooltip
+                  v-else-if="resultMap[conItem.uuid].errorMsg"
+                  placement="left"
+                  max-width="300"
+                  :transfer="true"
+                  :content="resultMap[conItem.uuid].errorMsg"
+                >
+                  <span class="tsfont-warning-s text-error text-bold"></span>
+                </Tooltip>
+                <span v-else class="tsfont-close text-error text-bold"></span>
               </div>
             </Col>
           </TsRow>
@@ -108,6 +128,7 @@
                     v-model="conditionGroup.conditionRelList[conditionIndex]"
                     :dataList="joinTypeList"
                     :clearable="false"
+                    :disabled="readonly"
                     border="none"
                     size="small"
                     :transfer="true"
@@ -128,6 +149,7 @@
                 v-model="rule.conditionGroupRelList[groupIndex]"
                 :dataList="joinTypeList"
                 :clearable="false"
+                :disabled="readonly"
                 border="none"
                 size="small"
                 :transfer="true"
@@ -137,7 +159,7 @@
           </Col>
         </TsRow>
       </div>
-      <div v-if="rule.conditionGroupList.length > 0" class="delGroup" @click="delConditionGroup(rule, groupIndex)">
+      <div v-if="!readonly && rule.conditionGroupList.length > 0" class="delGroup" @click="delConditionGroup(rule, groupIndex)">
         <i class="tsfont-close-s text-tip"></i>
       </div>
     </div>
@@ -152,7 +174,9 @@ export default {
   },
   props: {
     value: { type: Object },
-    ciId: { type: Number }
+    ciId: { type: Number },
+    readonly: { type: Boolean, default: false },
+    resultMap: { type: Object }
   },
   data() {
     return {
@@ -185,8 +209,10 @@ export default {
   beforeCreate() {},
   async created() {
     await this.getAttrRelList();
-    //去掉匹配不上的条件
-    this.clearRule();
+    // 编辑时去掉已经无法匹配模型元数据的条件；只读历史配置必须原样保留。
+    if (!this.readonly) {
+      this.clearRule();
+    }
   },
   beforeMount() {},
   mounted() {},
@@ -197,7 +223,34 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    /** 空规则合法；非空规则必须完整选择字段、表达式及表达式所需的值。 */
+    valid() {
+      if (this.readonly || !this.rule || !Array.isArray(this.rule.conditionGroupList) || this.rule.conditionGroupList.length === 0) {
+        return true;
+      }
+      for (const conditionGroup of this.rule.conditionGroupList) {
+        if (!Array.isArray(conditionGroup.conditionList) || conditionGroup.conditionList.length === 0) {
+          return false;
+        }
+        for (const condition of conditionGroup.conditionList) {
+          if (!condition.id || !condition.expression) {
+            return false;
+          }
+          if (this.isNeedAttrValue(condition)) {
+            if (!Array.isArray(condition.valueList) || condition.valueList.length === 0 || condition.valueList.every(value => value === null || value === undefined || value === '')) {
+              return false;
+            }
+          }
+        }
+      }
+      const selectList = Array.isArray(this.$refs.select) ? this.$refs.select : (this.$refs.select ? [this.$refs.select] : []);
+      const attrHandlerList = Array.isArray(this.$refs.attrHandler) ? this.$refs.attrHandler : (this.$refs.attrHandler ? [this.$refs.attrHandler] : []);
+      return selectList.every(component => !component.valid || component.valid()) && attrHandlerList.every(component => !component.valid || component.valid());
+    },
     clearRule() {
+      if (this.readonly) {
+        return;
+      }
       if (this.rule && this.rule.conditionGroupList && this.rule.conditionGroupList.length > 0) {
         for (let gindex = this.rule.conditionGroupList.length - 1; gindex >= 0; gindex--) {
           const conditionGroup = this.rule.conditionGroupList[gindex];
@@ -386,8 +439,9 @@ export default {
       this.updateRule();
     },
     updateRule() {
-      //console.log(JSON.stringify(this.rule, null, 2));
-      this.$emit('input', this.rule);
+      if (!this.readonly) {
+        this.$emit('input', this.rule);
+      }
     }
   },
   filter: {},
@@ -434,6 +488,11 @@ export default {
     }
   },
   watch: {
+    value(value) {
+      if (value !== this.rule) {
+        this.rule = value || {};
+      }
+    },
     ciId: {
       handler: function(val) {
         this.getAttrRelList();
