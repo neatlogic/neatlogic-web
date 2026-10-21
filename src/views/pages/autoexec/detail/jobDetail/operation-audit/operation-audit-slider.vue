@@ -8,6 +8,7 @@
           :maxlength="200"
           clearable
           search
+          border="border"
           @on-enter="search"
           @on-search="search"
           @on-clear="search"
