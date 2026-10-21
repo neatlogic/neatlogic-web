@@ -142,7 +142,8 @@ import InputTransform from './input-transform.vue';
 import Test from './integration-test.vue';
 import ParamEdit from './param-edit.vue';
 import {cloneParamConfig, getParamEditPermission, validateCustomParams, withPatternMode} from './integration-param-utils.js';
-import {validateIntegrationDefaults} from './integration-default-utils.js';
+import {cloneJson, validateIntegrationDefaults} from './integration-default-utils.js';
+import {hasIntegrationEditChanges} from './integration-edit-utils.js';
 
 export default {
   components: {
@@ -171,6 +172,9 @@ export default {
       isPreparingSave: false,
       testing: false,
       defaultDialogProtected: false,
+      checkingClose: false,
+      discardDialogOpen: false,
+      closed: false,
       activedTab: 'authentication',
       integrationData: { config: {} },
       handlerInputPattern: [],
@@ -242,6 +246,7 @@ export default {
   activated() {},
   deactivated() {},
   beforeDestroy() {
+    this.closed = true;
     clearTimeout(this._defaultDialogProtectionTimer);
   },
   destroyed() {},
@@ -255,7 +260,7 @@ export default {
         this._defaultDialogProtectionTimer = null;
       }, 500);
     },
-    getHandlerPatternFormat: function() {
+    getHandlerPatternFormat: function(initial = false) {
       // 切换规范保留自定义配置；每次请求清理固定定义和权限，旧响应不得覆盖新选择。
       const handler = this.integrationData.handler;
       const request = ++this.handlerPatternRequest;
@@ -270,6 +275,8 @@ export default {
             handler
           })
           .then(res => {
+            if (this.closed || this._isDestroyed || this._isBeingDestroyed) return;
+            if (initial && res.Status === 'OK') this.prepareInitialComparison(res.Return);
             if (request !== this.handlerPatternRequest || handler !== this.integrationData.handler) return;
             if (res.Status === 'OK') {
               // 非空规范始终展示，编辑开关仅控制自定义行，不控制固定参数可见性。
@@ -282,11 +289,19 @@ export default {
             }
           });
       } else {
+        if (initial) this.prepareInitialComparison({});
         this.allowEditInputParam = 1;
         this.allowEditOutputParam = 1;
         this.handlerPatternReady = true;
         this.setMethodList();
       }
+    },
+    prepareInitialComparison(handler) {
+      if (!this._initialIntegration) return;
+      const methods = handler.methodList && handler.methodList.length ? handler.methodList : ['get', 'post'];
+      // 只修正服务端副本的初始缺省方法，不从实时表单重建基线，加载期间的用户修改不能被吞掉。
+      if (!methods.includes(this._initialIntegration.method)) this._initialIntegration.method = methods[0] || null;
+      this._initialPatterns = withPatternMode(handler.inputPattern, 'input').concat(withPatternMode(handler.outputPattern, 'output'));
     },
     setMethodList: function(methodList) {
       let list = methodList && methodList.length ? methodList : ['get', 'post'];
@@ -336,7 +351,7 @@ export default {
             .then(res => {
               if (res.Status == 'OK') {
                 this.$Message.success(this.$t('message.savesuccess'));
-                this.close(true);
+                this.finishClose(true);
               }
             })
             .finally(() => {
@@ -407,8 +422,10 @@ export default {
     },
     getIntegration: function(uuid) {
       if (uuid) {
-        this.$api.framework.integration.getIntegrationByUuid({ uuid: uuid }).then(res => {
+        return this.$api.framework.integration.getIntegrationByUuid({ uuid: uuid }).then(res => {
+          if (this.closed || this._isDestroyed || this._isBeingDestroyed) return;
           if (res.Status == 'OK') {
+            if (!this.isCopy) this._initialIntegration = cloneJson(res.Return);
             this.integrationData = res.Return;
             this.integrationFormConfig.forEach(element => {
               if (this.isCopy) {
@@ -423,7 +440,7 @@ export default {
                 element.value = this.integrationData[element.name];
               }
             });
-            this.getHandlerPatternFormat();
+            return this.getHandlerPatternFormat(true);
           }
         });
       } else {
@@ -441,16 +458,54 @@ export default {
             input: {}
           }
         };
-        this.getHandlerPatternFormat();
+        this.getHandlerPatternFormat(true);
         this.integrationFormConfig.forEach(element => {
           element.value = this.integrationData[element.name];
         });
       }
     },
-    close: function(needRefresh) {
-      if (this.defaultDialogProtected) return;
+    async close() {
+      if (this.defaultDialogProtected || this.isSaving || this.isPreparingSave || this.checkingClose || this.discardDialogOpen || this.closed) return;
+      // 添加、复制维持直接关闭；仅已有集成需要比较未保存配置。
+      if (!this.uuid || this.isCopy || !this._initialIntegration) { this.finishClose(false); return; }
+      this.checkingClose = true;
+      try {
+        const editor = this.$refs.paramEdit;
+        if (editor) await editor.flushDefaultInputs();
+        await this.$nextTick();
+        await this.$nextTick();
+        if (this.closed || this._isDestroyed || this._isBeingDestroyed || this.defaultDialogProtected || this.isSaving || this.isPreparingSave) return;
+        const patterns = this.integrationData.handler === this._initialIntegration.handler ? this._initialPatterns || [] : this.handlerPattern;
+        if (!hasIntegrationEditChanges(this._initialIntegration, this.integrationData, this._initialPatterns || [], patterns)) {
+          this.finishClose(false);
+          return;
+        }
+        this.discardDialogOpen = true;
+        this.$createDialog({
+          title: this.$t('term.framework.integrationunsavedtitle'),
+          content: this.$t('term.framework.integrationdiscardconfirm'),
+          cancelText: this.$t('term.framework.integrationcontinueedit'),
+          okText: this.$t('term.framework.integrationdiscardchanges'),
+          btnType: 'warning',
+          maskClose: false,
+          'on-ok': vnode => {
+            vnode.isShow = false;
+            this.discardDialogOpen = false;
+            this.finishClose(false);
+          },
+          'on-close': vnode => {
+            vnode.isShow = false;
+            this.discardDialogOpen = false;
+          }
+        });
+      } finally {
+        this.checkingClose = false;
+      }
+    },
+    finishClose(needRefresh) {
+      if (this.closed || this._isDestroyed || this._isBeingDestroyed) return;
+      this.closed = true;
       this.$emit('close', needRefresh);
-      this.$refs.integrationFor && this.$refs.integrationForm.resetForm();
       this.integrationData = { config: {} };
     },
     testIntegration: function() {

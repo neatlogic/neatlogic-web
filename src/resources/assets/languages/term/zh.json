@@ -1426,6 +1426,10 @@
     "ignoreall": "是否忽略所有节点"
   },
   "framework": {
+    "integrationunsavedtitle": "未保存修改",
+    "integrationdiscardconfirm": "当前修改尚未保存，关闭后将丢失，是否放弃修改？",
+    "integrationcontinueedit": "继续编辑",
+    "integrationdiscardchanges": "放弃修改",
     "codeauth": "代码内置授权",
     "codeauthreadonly": "系统默认授权，只读不允许修改。",
     "filterquerylabel": "联动条件有值时查询",

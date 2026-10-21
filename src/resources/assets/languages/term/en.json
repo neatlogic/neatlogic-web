@@ -1428,6 +1428,10 @@
     "ignoreall": "Ignore all nodes?"
   },
   "framework": {
+    "integrationunsavedtitle": "Unsaved Changes",
+    "integrationdiscardconfirm": "Your changes have not been saved and will be lost when you close. Discard the changes?",
+    "integrationcontinueedit": "Continue Editing",
+    "integrationdiscardchanges": "Discard Changes",
     "codeauth": "Code-Defined Permissions",
     "codeauthreadonly": "The system grants read-only access by default; modifications are not permitted.",
     "filterquerylabel": "Query When Linked Fields Have Values",
