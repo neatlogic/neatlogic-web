@@ -114,7 +114,7 @@ export default {
           tbodyList.forEach(item => {
             _this.serverSelectSetting.dataList.push({
               value: item.serverId,
-              text: item.serverId + ' (' + item.host + ')'
+              text: `${item.serverId}${item.host ? ` (${item.host})` : ''}`
             });
           });
           _this.serverSelectSetting.value = res.Return.currentServerId;
