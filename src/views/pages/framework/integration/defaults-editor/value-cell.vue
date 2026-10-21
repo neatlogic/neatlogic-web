@@ -43,7 +43,8 @@ export default {
     // 仅控制基础值辅助提示，不改变缺失值语义。
     showValueHints: { type: Boolean, default: true },
     // 弹窗默认数据延迟显示校验，独立对象仍保留原行为。
-    deferValidation: { type: Boolean, default: false }
+    deferValidation: { type: Boolean, default: false },
+    valuePath: { type: Array, default: () => [] }
   },
   data() { return { phase: 'none', phaseRevision: 0 }; },
   methods: {
@@ -70,6 +71,10 @@ export default {
       this.phase = 'all';
       const editor = this.$refs.editor;
       return !this.error && !(editor && editor.error);
+    },
+    validateType() {
+      this.phaseRevision++;
+      this.phase = 'type';
     }
   },
   computed: {

@@ -408,10 +408,22 @@ export default {
         this.$set(item, 'typeName', option ? option.text : type);
         if (config) {
           // 兼容时同步结构快照并保留启用状态，禁用草稿不能因切换类型被自动启用。
-          this.$set(item, 'defaultConfig', clear ? {enabled: false} : {...config, schema});
+          const next = clear ? {enabled: false} : {...config, schema};
+          if (!clear && Object.prototype.hasOwnProperty.call(config, 'value')) {
+            if (reconciled.value === undefined) {
+              delete next.value;
+              next.enabled = false;
+            } else next.value = cloneJson(reconciled.value);
+          }
+          this.$set(item, 'defaultConfig', next);
         }
         this.closeDefault();
         this.defaultError = null;
+        this.$nextTick(() => {
+          const current = this.$refs[`default-${key}`];
+          const target = Array.isArray(current) ? current[0] : current;
+          if (item.type === type && (reconciled.validatePaths || []).length && target) target.validateType();
+        });
       };
       if (reconciled.changed) {
         // 受控下拉重建回原值，取消确认时类型与默认值保持不变。

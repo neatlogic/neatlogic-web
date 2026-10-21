@@ -20,7 +20,8 @@ export default {
       const input = this.$refs.input;
       if (!input || !Object.prototype.hasOwnProperty.call(input, 'currentValue')) return fallback;
       // 公共文本框会把未设置显示为空串；尚未编辑的空控件不能在确认时被补造成显式空字符串。
-      return !this.inputTouched && fallback === undefined && input.currentValue === '' ? undefined : input.currentValue;
+      // 公共数字框未设置时使用 null，文本框使用空串；二者都不能覆盖禁用草稿中的旧值。
+      return !this.inputTouched && fallback === undefined && (input.currentValue === '' || input.currentValue === null) ? undefined : input.currentValue;
     },
     flushInput() {
       if (this.disabled) return;

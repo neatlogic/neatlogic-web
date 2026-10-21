@@ -118,6 +118,7 @@ export default {
     },
     changeSchemaDraft(schema, metadata) {
       if (this.disabled || this.pending || this.resolved.error) return;
+      this._typeValidationRevision = (this._typeValidationRevision || 0) + 1;
       // 类型变化前收齐原编辑器尚在焦点中的输入，兼容判断必须使用当前草稿而非旧回显。
       if ((!metadata || metadata.kind === 'type') && this.$refs.valueEditor) this.$refs.valueEditor.flushInputs();
       this.submitted = false;
@@ -136,9 +137,26 @@ export default {
         }
         if (reconciled.changed) {
           // 取消变更仅恢复此次结构，之前在弹窗录入的数据仍保留。
-          this.pending = { schema: nextSchema, value: reconciled.value, message: '结构变更会清空不兼容的值，其他值和行顺序保留；数组空行需补填或手动删除后才能保存。取消将保留原结构和数据。' };
-        } else this.applyDraftSchema(nextSchema);
+          this.pending = { schema: nextSchema, value: reconciled.value, validatePaths: reconciled.validatePaths || [], message: '结构变更会清空不兼容的值，其他值和行顺序保留；数组空行需补填或手动删除后才能保存。取消将保留原结构和数据。' };
+        } else {
+          // 转换本身不需要确认，但新值必须随结构写入独立草稿，保留原启用状态。
+          if (!fieldEdit && hasOwn(this.configDraft, 'value')) {
+            if (reconciled.value === undefined) {
+              this.$delete(this.configDraft, 'value');
+              this.$set(this.configDraft, 'enabled', false);
+            } else this.$set(this.configDraft, 'value', cloneJson(reconciled.value));
+          }
+          this.applyDraftSchema(nextSchema);
+          this.validateChangedTypes(reconciled.validatePaths || []);
+        }
       } catch (error) { this.schemaError = error.message; }
+    },
+    validateChangedTypes(paths) {
+      const revision = this._typeValidationRevision;
+      this.$nextTick(() => {
+        // 新编辑器挂载后只校验本次类型变更；取消、关闭或后续结构操作使旧信号失效。
+        if (!this.closed && !this._isDestroyed && revision === this._typeValidationRevision && this.$refs.valueEditor) this.$refs.valueEditor.validateTypes(paths);
+      });
     },
     applyDraftSchema(schema) {
       this.schemaDraft = cloneJson(schema);
@@ -193,6 +211,7 @@ export default {
     },
     confirmPending() {
       if (this.disabled || !this.pending) return;
+      const paths = this.pending.validatePaths || [];
       const next = cloneDefaultConfig(this.configDraft);
       if (this.pending.value === undefined) {
         delete next.value;
@@ -203,9 +222,11 @@ export default {
       this.pending = null;
       this.schemaError = '';
       this.schemaEditorKey++;
+      this.validateChangedTypes(paths);
     },
     cancelPending() {
       if (!this.pending) return;
+      this._typeValidationRevision++;
       this.pending = null;
       this.schemaError = '';
       this.schemaDraft = cloneJson(this.valueSchema);

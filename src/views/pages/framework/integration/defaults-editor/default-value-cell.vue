@@ -68,6 +68,10 @@ export default {
       this.phase = 'all';
       return !this.error;
     },
+    validateType() {
+      this.phaseRevision++;
+      this.phase = 'type';
+    },
     changeValue(value) {
       if (this.disabled || this.resolved.error) return;
       // 输入中途不显示类型错误，开始修改时清除上次失焦或提交产生的提示。
@@ -75,7 +79,7 @@ export default {
       this.phase = 'none';
       const next = cloneDefaultConfig(this.config || {});
       if (!hasOwn(next, 'schema')) next.schema = cloneJson(this.schema);
-      // 仅实际录入时启用；文本类（含枚举、日期）的空串和 0、false 均为有效值。
+      // 仅实际录入时启用；字符串、枚举的显式空串及 0、false 保留，日期空白由编辑器转为未设置。
       next.enabled = value !== undefined;
       if (value === undefined) delete next.value;
       else next.value = cloneJson(value);

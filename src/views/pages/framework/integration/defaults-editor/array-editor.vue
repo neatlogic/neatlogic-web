@@ -31,6 +31,7 @@
               :showValueHints="false"
               :deferValidation="deferValidation"
               :path="cellPath(rowList.indexOf(row), field.column)"
+              :valuePath="objectItems ? [rowList.indexOf(row), field.column.name] : [rowList.indexOf(row)]"
               @change="changeCell(rowList.indexOf(row), field.column, $event)"
               @open="openCell(rowList.indexOf(row), field.column, field.index)"
             ></ValueCell>
@@ -103,6 +104,12 @@ export default {
       return Array.isArray(cells) ? cells : cells ? [cells] : [];
     },
     flushInputs() { this.valueCells().forEach(cell => cell.flushInput()); },
+    validateTypes(paths) {
+      // 嵌套 JSON 的类型变更定位到所属文本框；只在迁移后执行一次，不影响其他单元格。
+      this.valueCells().forEach(cell => {
+        if (paths.some(path => cell.valuePath.every((part, index) => path[index] === part))) cell.validateType();
+      });
+    },
     validateForSubmit() {
       // 不用 every 短路，让全部必填错误都在本次确定后显现。
       const results = this.valueCells().map(cell => cell.validateForSubmit());

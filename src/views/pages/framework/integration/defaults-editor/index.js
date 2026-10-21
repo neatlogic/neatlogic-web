@@ -6,9 +6,9 @@ const editors = {
   number: () => import('./number-editor.vue'),
   int: () => import('./int-editor.vue'),
   boolean: () => import('./boolean-editor.vue'),
-  // 保留参数类型标识，所有层级的枚举、日期默认值统一使用普通文本框。
+  // 保留参数类型标识，所有层级仍使用普通文本框；日期仅增加局部校验及清空语义。
   enum: () => import('./string-editor.vue'),
-  date: () => import('./string-editor.vue'),
+  date: () => import('./date-editor.vue'),
   array: () => import('./array-editor.vue'),
   object: () => import('./object-editor.vue')
 };

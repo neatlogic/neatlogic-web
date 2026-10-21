@@ -1,3 +1,14 @@
+import moment from 'moment';
+
+export const DEFAULT_DATE_ERROR = '日期必须符合 yyyy-MM、yyyy-MM-dd、yyyy-MM-dd HH:mm 或 yyyy-MM-dd HH:mm:ss，且为有效日期时间';
+const DATE_FORMATS = ['YYYY-MM', 'YYYY-MM-DD', 'YYYY-MM-DD HH:mm', 'YYYY-MM-DD HH:mm:ss'];
+
+// 使用 UTC 只检查日历字段，不把无时区文本转换成本地时间；额外拒绝 Moment 接受的 24:00。
+export function isValidDefaultDate(value) {
+  return typeof value === 'string' && /^(?!0000)\d{4}-\d{2}(?:-\d{2}(?: (?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?)?)?$/.test(value) &&
+    moment.utc(value, DATE_FORMATS, true).isValid();
+}
+
 const DEFAULT_TYPES = ['string', 'number', 'int', 'boolean', 'enum', 'date', 'array', 'object'];
 const owns = (value, key) => Object.prototype.hasOwnProperty.call(value, key);
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -151,8 +162,9 @@ function checkValue(value, schema, path, nested = false, options = {}) {
     case 'string':
     case 'enum':
     case 'date':
-      // 枚举和日期统一按普通文本处理，允许空串及任意字符串，但不隐式转换其他 JSON 类型。
+      // 文本保留真实字符串；日期额外检查格式和有效性，不在保存或运行时改写历史值。
       if (typeof value !== 'string') fail(path, '必须为字符串');
+      if (type === 'date' && !isValidDefaultDate(value)) fail(path, DEFAULT_DATE_ERROR);
       break;
     case 'number':
     case 'int':
@@ -251,12 +263,12 @@ export function validateIntegrationDefaults(patterns, paramConfig, handler) {
   return null;
 }
 
-// 仅主动录入或新增元素时使用初值；枚举、日期与字符串使用相同的空串初值。
+// 仅主动录入或新增元素时使用初值；日期空输入保持未设置，数组空行须补填或删除。
 export function createDefaultValue(schema) {
   switch (normalizeDefaultType(schema && schema.type)) {
     case 'string':
-    case 'enum':
-    case 'date': return '';
+    case 'enum': return '';
+    case 'date': return undefined;
     case 'number':
     case 'int': return 0;
     case 'boolean': return false;
