@@ -2,7 +2,7 @@
   <div>
     <!-- 复杂子字段直接编辑 JSON；顶层数组仍由外层面板提供行表格。 -->
     <template>
-      <span v-if="showValueHints && !complex && value === undefined" class="text-tip mr-xs">未设置</span>
+      <span v-if="showValueHints && !complex && value === undefined" class="text-tip mr-xs">{{ $t('term.framework.integrationdefault.unset') }}</span>
       <component
         :is="editor"
         ref="editor"
@@ -19,7 +19,7 @@
         class="text-href"
         :class="{ disable: disabled }"
         @click="updateValue(initialValue)"
-      >设置{{ initialValue === '' ? '空字符串' : String(initialValue) }}</span>
+      >{{ $t('term.framework.integrationdefault.setInitial', { value: initialValue === '' ? $t('term.framework.integrationdefault.emptyString') : String(initialValue) }) }}</span>
     </template>
     <div v-if="error && !complex" class="text-error">{{ error }}</div>
     <span
@@ -27,7 +27,7 @@
       class="text-href tips"
       :class="{ disable: disabled }"
       @click="updateValue(undefined)"
-    >移除</span>
+    >{{ $t('term.process.move') }}</span>
   </div>
 </template>
 <script>
@@ -86,7 +86,7 @@ export default {
     error() {
       // 单元格显示完整路径，未设置的可选字段允许继续保留空缺。
       if (this.validationPhase === 'none') return '';
-      if (this.value === undefined) return this.validationPhase === 'all' && this.required ? `${this.path}为必填字段` : '';
+      if (this.value === undefined) return this.validationPhase === 'all' && this.required ? this.$t('term.framework.integrationdefault.requiredAt', { path: this.path }) : '';
       if (this.validationPhase === 'type' && typeof this.value === 'string' && !this.value.trim()) return '';
       return validateDefaultValue(this.value, this.schema, this.path, true, {skipRequired: this.validationPhase === 'type'});
     }

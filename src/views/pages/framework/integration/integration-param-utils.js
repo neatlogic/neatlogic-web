@@ -1,3 +1,4 @@
+import { defaultTypeName } from './defaults-editor/index.js';
 import {cloneJson, normalizeDefaultType, cloneDefaultConfig, getBuiltinDefault} from './integration-default-utils.js';
 
 // 只处理自定义定义和它的默认值结构，处理器原始规范及业务值保持不变。
@@ -74,6 +75,8 @@ export function withParamRowKeys(params, parentKey = '') {
     return {
       ...item,
       typeName: item.typeName || item.type,
+      // 展示名称与原始 typeName 分离，语言切换不写回配置。
+      typeText: defaultTypeName(item.type, item.typeName || item.type),
       _integrationParamKey: key,
       ...(Array.isArray(item.children) ? {children: withParamRowKeys(item.children, key)} : {})
     };

@@ -41,7 +41,7 @@ export default {
           next.enabled = false;
         } else next.value = reconciled.value;
         if (reconciled.changed) {
-          this.pending = { config: next, message: '结构变更会清空所有行中受影响的值，其他字段保留。取消将保留原结构和数据。' };
+          this.pending = { config: next, messageKey: 'term.framework.integrationdefault.legacyClearWarning' };
         } else this.applySchema(next);
       } catch (error) { this.schemaError = error.message; }
     },
@@ -58,7 +58,7 @@ export default {
     },
     requestReset() {
       if (this.disabled) return;
-      this.pending = { config: { enabled: false, schema: cloneJson(this.declared) }, message: '将移除不兼容的默认值并按当前处理器恢复结构，之后可重新录入。' };
+      this.pending = { config: { enabled: false, schema: cloneJson(this.declared) }, messageKey: 'term.framework.integrationdefault.resetWarning' };
     },
     confirmPending() { if (!this.disabled && this.pending) this.applySchema(this.pending.config); },
     cancelPending() {

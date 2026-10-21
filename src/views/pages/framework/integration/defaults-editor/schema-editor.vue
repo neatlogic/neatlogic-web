@@ -3,11 +3,11 @@
     <!-- 根参数名已在弹窗标题显示；仅进入兼容子级视图时保留路径和返回。 -->
     <div v-if="steps.length" class="flex-between mb-sm">
       <span>{{ location }}</span>
-      <span v-if="steps.length" class="text-href" @click="steps.pop()">返回上一级结构</span>
+      <span v-if="steps.length" class="text-href" @click="steps.pop()">{{ $t('term.framework.integrationdefault.backSchema') }}</span>
     </div>
     <!-- 数组类型已由参数定义确定，不重复显示类型；对象子级仍保留原类型设置。 -->
     <div v-if="current.type !== 'array'" class="mb-sm" data-schema-type>
-      <span>类型</span>
+      <span>{{ $t('page.type') }}</span>
       <TsFormSelect
         :value="current.type"
         :dataList="types"
@@ -20,7 +20,7 @@
     <!-- 使用公共表单项横向排列标签与控件，不改变结构草稿和固定字段权限。 -->
     <TsFormItem
       v-if="current.type === 'array'"
-      label="元素类型"
+      :label="$t('term.framework.integrationdefault.elementType')"
       labelPosition="left"
       :labelWidth="80"
       labelAlign="center"
@@ -28,7 +28,7 @@
       data-array-element-type
     >
       <!-- 历史嵌套数组保持只读回显，不因隐藏类型行而改变已保存的结构和值。 -->
-      <div v-if="current.items && current.items.type === 'array'">数组</div>
+      <div v-if="current.items && current.items.type === 'array'">{{ $t('term.framework.integrationdefault.array') }}</div>
       <!-- 与表格同用 14px 字号计算 9em，避免公共表单项的 13px 字号使选择框变窄；标签仍为 80px。 -->
       <div
         v-else
@@ -49,8 +49,8 @@
         v-if="current.items && current.items.type === 'array'"
         class="text-href"
         :class="{ disable: disabled }"
-        @click="enter(['items'], '数组元素')"
-      >子级设置</span>
+        @click="enter(['items'], null, 'term.framework.integrationdefault.arrayElement')"
+      >{{ $t('term.framework.integrationdefault.childSettings') }}</span>
     </TsFormItem>
     <ColumnsEditor
       v-if="columnSchema"
@@ -67,7 +67,7 @@
 </template>
 <script>
 import ColumnsEditor from './columns-editor.vue';
-import { selectableDefaultTypeList } from './index.js';
+import { selectableDefaultTypeList, translatedDefaultTypes } from './index.js';
 import DefaultTypeSelect from './default-type-select.js';
 import { getAtPath, setAtPath, hasOwn } from './editor-utils.js';
 
@@ -83,7 +83,7 @@ function inlineObjectSteps(schema, steps) {
     if (target[target.length - 1] === 'items' && node && node.type === 'object') {
       prefix = path;
     } else {
-      result.push({ path, label: step.label });
+      result.push({ ...step, path });
       absolute = target;
       prefix = [];
     }
@@ -129,18 +129,18 @@ export default {
       if (this.disabled || this.declaredCurrent.items || (this.current.items && this.current.items.type === 'array') || !this.itemTypes.some(item => item.value === type)) return;
       this.changeProperty('items', { type });
     },
-    enter(path, label) {
-      if (!this.disabled) this.steps.push({ path, label });
+    enter(path, label, labelKey) {
+      if (!this.disabled) this.steps.push({ path, label, labelKey });
     },
     enterColumn(index) {
       // 内联字段一次进入目标层，返回时直接回到所属数组及其字段表格。
-      this.enter([...this.columnPath, 'children', index], this.columnSchema.children[index].name || `第 ${index + 1} 列`);
+      this.enter([...this.columnPath, 'children', index], this.columnSchema.children[index].name || this.$t('term.framework.integrationdefault.columnLabel', { index: index + 1 }));
     }
   },
   computed: {
     // 弹窗不再新选整数、布尔；数组元素继续排除数组，对象字段仍允许数组。
-    itemTypes() { return selectableDefaultTypeList.filter(item => item.value !== 'array'); },
-    types() { return this.isArrayElement ? this.itemTypes : selectableDefaultTypeList; },
+    itemTypes() { return translatedDefaultTypes(selectableDefaultTypeList).filter(item => item.value !== 'array'); },
+    types() { return this.isArrayElement ? this.itemTypes : translatedDefaultTypes(selectableDefaultTypeList); },
     isArrayElement() { return this.nodePath[this.nodePath.length - 1] === 'items'; },
     legacyArrayElement() { return this.isArrayElement && this.current.type === 'array'; },
     nodePath() { return this.steps.reduce((result, step) => result.concat(step.path), []); },
@@ -152,7 +152,7 @@ export default {
       return this.current.type === 'array' && this.current.items && this.current.items.type === 'object' ? this.current.items : null;
     },
     declaredColumnSchema() { return getAtPath(this.declaredCurrent, this.columnPath) || {}; },
-    location() { return [this.path, ...this.steps.map(step => step.label)].filter(Boolean).join(' → '); }
+    location() { return [this.path, ...this.steps.map(step => step.labelKey ? this.$t(step.labelKey, step.labelParams) : step.label)].filter(Boolean).join(' → '); }
   }
 };
 </script>

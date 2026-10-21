@@ -44,6 +44,7 @@
   </div>
 </template>
 <script>
+import { defaultTypeName } from './defaults-editor/index.js';
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
 import {mergeIntegrationParams, withPatternMode} from './integration-param-utils.js';
 import {cloneJson, isDefaultEnabled, validateDefaultConfig} from './integration-default-utils.js';
@@ -138,7 +139,7 @@ export default {
           json[element.name] = this.buildJson(element.children, element.type);
         } else {
           // 历史自定义参数可能没有 typeName，也必须生成对应的测试入口。
-          json[element.name] = element.typeName || element.type;
+          json[element.name] = defaultTypeName(element.type, element.typeName || element.type);
         }
       });
       if (type === 'jsonArray' || type === 'array') {

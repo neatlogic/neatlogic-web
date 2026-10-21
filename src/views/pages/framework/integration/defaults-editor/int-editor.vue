@@ -18,7 +18,7 @@ export default {
   computed: {
     integerError() {
       // 保留用户输入并明确报错，不静默截断小数后保存。
-      return this.validationMode !== 'none' && this.value !== undefined && !Number.isInteger(this.value) ? '必须为整数' : '';
+      return this.validationMode !== 'none' && this.value !== undefined && !Number.isInteger(this.value) ? this.$t('term.framework.integrationdefault.mustInteger') : '';
     }
   }
 };

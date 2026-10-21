@@ -44,7 +44,7 @@ export default {
           this.jsonError = validateDefaultValue(parsed, this.schema, this.path, true) || '';
         } catch (error) {
           // 原文本不能作为合法 JSON 默认值提交，保留它供用户继续修正，不强转 null 或 false。
-          this.jsonError = error instanceof SyntaxError ? `${this.path}：JSON 格式不正确` : error.message;
+          this.jsonError = error instanceof SyntaxError ? this.$t('term.framework.integrationdefault.jsonError', { path: this.path }) : error.message;
           parsed = this.text;
         }
       }
@@ -68,7 +68,7 @@ export default {
         const parsed = JSON.parse(this.text);
         this.jsonError = validateDefaultValue(parsed, this.schema, this.path, true) || '';
       } catch (error) {
-        this.jsonError = error instanceof SyntaxError ? `${this.path}：JSON 格式不正确` : error.message;
+        this.jsonError = error instanceof SyntaxError ? this.$t('term.framework.integrationdefault.jsonError', { path: this.path }) : error.message;
       }
     }
   },
@@ -76,14 +76,14 @@ export default {
     error() {
       if (this.validationMode === 'none') return '';
       if (this.validationMode === 'type' && !this.text.trim()) return '';
-      if (this.value === undefined) return this.validationMode === 'all' && (this.schema.isRequired === true || this.schema.isRequired === 1) ? `${this.path}为必填字段` : '';
+      if (this.value === undefined) return this.validationMode === 'all' && (this.schema.isRequired === true || this.schema.isRequired === 1) ? this.$t('term.framework.integrationdefault.requiredAt', { path: this.path }) : '';
       // 从原文本重新判断语法，失焦递归跳过必填；确定时再恢复全部结构约束。
       // 合法 JSON 的原格式仍留在 text 中，不因校验或行排序而重新序列化。
       try {
         const parsed = JSON.parse(this.text);
         return validateDefaultValue(parsed, this.schema, this.path, true, {skipRequired: this.validationMode === 'type'});
       } catch (error) {
-        if (error instanceof SyntaxError) return `${this.path}：JSON 格式不正确`;
+        if (error instanceof SyntaxError) return this.$t('term.framework.integrationdefault.jsonError', { path: this.path });
       }
       return this.jsonError;
     }

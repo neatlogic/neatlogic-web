@@ -1,3 +1,4 @@
+import { $t } from '@/resources/init.js';
 import isEqual from 'lodash/isEqual';
 import { cloneJson, normalizeDefaultType, getDeclaredSchema, getEffectiveSchema, validateDefaultValue } from '../integration-default-utils.js';
 
@@ -97,7 +98,7 @@ export function reconcileValue(value, previous, next) {
   }
   if (!typeChanged && !['array', 'object'].includes(type)) return {value: cloneJson(value), changed: false};
   // 子字段无内部声明时仅检查容器和 JSON 有效性；顶层缺结构仍由完整提交校验拦截。
-  return validateDefaultValue(value, next, '参数', true, {skipRequired: true})
+  return validateDefaultValue(value, next, $t('page.param'), true, {skipRequired: true})
     ? migrated(undefined, true, paths)
     : migrated(cloneJson(value), false, paths);
 }

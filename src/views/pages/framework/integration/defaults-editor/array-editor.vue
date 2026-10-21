@@ -1,6 +1,6 @@
 <template>
   <div :style="viewportStyle">
-    <div v-if="!schema.items" class="text-tip">请先设置数组元素类型。</div>
+    <div v-if="!schema.items" class="text-tip">{{ $t('term.framework.integrationdefault.selectElement') }}</div>
     <template v-else>
       <!-- 复用用户管理的行尾悬浮栏及横向滚动，行操作不再占用字段左侧空间。 -->
       <TsTable
@@ -42,11 +42,11 @@
         <template v-if="!disabled" slot="action" slot-scope="{row}">
           <div class="tstable-action">
             <ul class="tstable-action-ul">
-              <li data-array-add-row @click.stop="addRow(rowList.indexOf(row))">添加</li>
-              <li data-array-copy-row @click.stop="copyRow(rowList.indexOf(row))">复制</li>
-              <li data-array-delete-row @click.stop="deleteRow(rowList.indexOf(row))">删除</li>
-              <li :class="{ disable: rowList.indexOf(row) === 0 }" data-array-move-up @click.stop="moveRow(rowList.indexOf(row), -1)">上移</li>
-              <li :class="{ disable: rowList.indexOf(row) === rowList.length - 1 }" data-array-move-down @click.stop="moveRow(rowList.indexOf(row), 1)">下移</li>
+              <li data-array-add-row @click.stop="addRow(rowList.indexOf(row))">{{ $t('page.add') }}</li>
+              <li data-array-copy-row @click.stop="copyRow(rowList.indexOf(row))">{{ $t('page.copy') }}</li>
+              <li data-array-delete-row @click.stop="deleteRow(rowList.indexOf(row))">{{ $t('page.delete') }}</li>
+              <li :class="{ disable: rowList.indexOf(row) === 0 }" data-array-move-up @click.stop="moveRow(rowList.indexOf(row), -1)">{{ $t('page.moveup') }}</li>
+              <li :class="{ disable: rowList.indexOf(row) === rowList.length - 1 }" data-array-move-down @click.stop="moveRow(rowList.indexOf(row), 1)">{{ $t('page.movedown') }}</li>
             </ul>
           </div>
         </template>
@@ -57,7 +57,7 @@
         :class="{ disable: disabled }"
         data-array-add-first
         @click="addRow()"
-      >新增行</span>
+      >{{ $t('term.framework.integrationdefault.addRow') }}</span>
     </template>
   </div>
 </template>
@@ -151,7 +151,7 @@ export default {
       this.updateValue(cloneJson(this.rows));
     },
     cellValue(row, column) { return this.objectItems ? (hasOwn(row, column.name) ? row[column.name] : undefined) : row; },
-    cellPath(index, column) { return `${this.path} 第 ${index + 1} 行${this.objectItems ? '的 ' + column.name : '的值'}`; },
+    cellPath(index, column) { return this.$t(this.objectItems ? 'term.framework.integrationdefault.cellPath' : 'term.framework.integrationdefault.valuePath', { path: this.path, index: index + 1, name: column.name }); },
     changeCell(index, column, value) {
       if (this.disabled || !this.rowList[index]) return;
       // 仅替换本地值副本，保留包装对象身份，同一轮多字段输入仍可定位当前行。
@@ -164,7 +164,7 @@ export default {
       this.$emit('navigate', {
         valuePath: this.objectItems ? [index, column.name] : [index],
         schemaPath: this.objectItems ? ['items', 'children', columnIndex] : ['items'],
-        label: `第 ${index + 1} 行${this.objectItems ? ' → ' + column.name : ''}`
+        labelKey: this.objectItems ? 'term.framework.integrationdefault.rowColumnLabel' : 'term.framework.integrationdefault.rowLabel', labelParams: { index: index + 1, name: column.name }
       });
     },
     addRow(index = this.rowList.length - 1) {
@@ -215,7 +215,7 @@ export default {
       const fields = this.tableFields.map(field => ({
         key: field.key,
         uuid: field.key,
-        title: this.objectItems ? field.column.name : '值',
+        title: this.objectItems ? field.column.name : this.$t('page.value'),
         isRequired: field.column.isRequired === 1 || field.column.isRequired === true
       }));
       if (!this.disabled) fields.push({ key: 'action', width: actionWidth });

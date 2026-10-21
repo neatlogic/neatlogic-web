@@ -50,7 +50,7 @@
               <th :style="mainCellStyle">{{ $t('page.require') }}</th>
               <th :style="mainCellStyle">{{ $t('term.cmdb.searchable') }}</th>
               <th :style="mainCellStyle">{{ $t('page.description') }}</th>
-              <th :style="mainCellStyle">默认值</th>
+              <th :style="mainCellStyle">{{ $t('page.defaultvalue') }}</th>
               <th v-if="canAddParam" :style="mainCellStyle">
                 <span class="tsfont-plus-o text-action" data-add-param @click="addParam"></span>
               </th>
@@ -62,7 +62,7 @@
               <td :style="mainCellStyle"></td>
               <td :style="mainCellStyle"><ParamText :value="item.name"></ParamText></td>
               <td :style="mainCellStyle">{{ getModeText(item.mode) }}</td>
-              <td :style="mainCellStyle">{{ item.typeName || item.type }}</td>
+              <td :style="mainCellStyle">{{ defaultTypeName(item.type, item.typeName || item.type) }}</td>
               <td :style="mainCellStyle">{{ $t(item.isRequired == 1 ? 'page.yes' : 'page.no') }}</td>
               <td :style="mainCellStyle">{{ item.mode == 'input' ? $t(item.isSearchAble == 1 ? 'page.yes' : 'page.no') : '' }}</td>
               <td :style="mainCellStyle"><ParamText :value="item.description"></ParamText></td>
@@ -82,13 +82,13 @@
               <td></td>
               <td :colspan="columnCount - 1">
                 <div v-if="isComplex(item) && !isArray(item)" class="flex-start mb-xs">
-                  <span class="mr-sm">默认值：{{ summarizeDefault(getFixedDefault(item)) }}</span>
+                  <span class="mr-sm">{{ $t('term.framework.integrationdefault.defaultSummary', { summary: summarizeDefault(getFixedDefault(item)) }) }}</span>
                   <span
                     v-if="!disabled"
                     class="text-href"
                     data-open-default
                     @click="openDefault(fixedKey(item), 'value')"
-                  >{{ isDefaultEnabled(getFixedDefault(item)) ? '编辑' : '设置' }}</span>
+                  >{{ isDefaultEnabled(getFixedDefault(item)) ? $t('page.edit') : $t('page.setting') }}</span>
                 </div>
                 <DefaultValuePanel
                   v-if="expandedDefaultKey === fixedKey(item)"
@@ -138,16 +138,16 @@
               <span v-else>{{ getModeText(item.mode) }}</span>
             </td>
             <td :style="mainCellStyle">
-              <TsFormSelect
+              <DefaultTypeSelect
                 v-if="canEditParam(item)"
                 :key="typeSelectKeys[customKey(item)] || 0"
                 :value="item.type"
-                :data-list="paramTypeList"
+                :data-list="translatedParamTypes"
                 :validate-list="['required']"
                 transfer
                 @change="changeParamType(item, $event)"
-              ></TsFormSelect>
-              <span v-else>{{ item.typeName || item.type }}</span>
+              ></DefaultTypeSelect>
+              <span v-else>{{ defaultTypeName(item.type, item.typeName || item.type) }}</span>
             </td>
             <td :style="mainCellStyle">
               <TsFormSwitch
@@ -194,13 +194,13 @@
             <td></td>
             <td :colspan="columnCount - 1">
               <div v-if="isComplex(item) && !isArray(item)" class="flex-start mb-xs">
-                <span class="mr-sm">默认值：{{ summarizeDefault(item.defaultConfig) }}</span>
+                <span class="mr-sm">{{ $t('term.framework.integrationdefault.defaultSummary', { summary: summarizeDefault(item.defaultConfig) }) }}</span>
                 <span
                   v-if="!disabled"
                   class="text-href"
                   data-open-default
                   @click="openDefault(customKey(item), 'value')"
-                >{{ isDefaultEnabled(item.defaultConfig) ? '编辑' : '设置' }}</span>
+                >{{ isDefaultEnabled(item.defaultConfig) ? $t('page.edit') : $t('page.setting') }}</span>
               </div>
               <DefaultValuePanel
                 v-if="expandedDefaultKey === customKey(item)"
@@ -238,12 +238,13 @@
     <div v-if="defaultError" class="text-error mt-sm" data-default-error>{{ defaultError.message }}</div>
     <!-- 当前规范已移除的固定参数仍保留历史配置，提供单独清除入口解除保存阻塞。 -->
     <div v-for="entry in orphanDefaults" :key="JSON.stringify([entry.mode, entry.name])" class="text-warning mt-sm">
-      <span class="mr-sm">{{ getModeText(entry.mode) }} {{ entry.name }} 的固定参数已不存在，请移除默认值。</span>
-      <span v-if="!disabled" class="text-href" @click="removeOrphanDefault(entry)">移除默认值</span>
+      <span class="mr-sm">{{ $t('term.framework.integrationdefault.orphan', { mode: getModeText(entry.mode), name: entry.name }) }}</span>
+      <span v-if="!disabled" class="text-href" @click="removeOrphanDefault(entry)">{{ $t('term.framework.integrationdefault.removeDefault') }}</span>
     </div>
   </div>
 </template>
 <script>
+import { defaultTypeName } from './defaults-editor/index.js';
 import TsFormInput from '@/resources/plugins/TsForm/TsFormInput';
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import TsFormSwitch from '@/resources/plugins/TsForm/TsFormSwitch';
@@ -251,13 +252,14 @@ import Draggable from 'vuedraggable';
 import DefaultValueCell from './defaults-editor/default-value-cell.vue';
 import DefaultValuePanel from './defaults-editor/default-value-panel.vue';
 import SchemaDialog from './defaults-editor/schema-dialog.vue';
+import DefaultTypeSelect from './defaults-editor/default-type-select.js';
 import ParamText from './defaults-editor/param-text.vue';
 import {cloneParamConfig, validateCustomParams, withParamRowKeys} from './integration-param-utils.js';
 import {cloneJson, cloneDefaultConfig, getBuiltinDefault, getDeclaredSchema, isDefaultEnabled, normalizeDefaultType, summarizeDefault as summarizeDefaultValue, validateIntegrationDefaults} from './integration-default-utils.js';
 import {reconcileValue, resolveSchema} from './defaults-editor/editor-utils.js';
 
 export default {
-  components: {Draggable, TsFormInput, TsFormSelect, TsFormSwitch, DefaultValueCell, DefaultValuePanel, SchemaDialog, ParamText},
+  components: {DefaultTypeSelect, Draggable, TsFormInput, TsFormSelect, TsFormSwitch, DefaultValueCell, DefaultValuePanel, SchemaDialog, ParamText},
   props: {
     integration: {type: Object},
     allowEditInputParam: {type: Number, default: 0},
@@ -295,6 +297,7 @@ export default {
     this.getParamTypeList();
   },
   methods: {
+    defaultTypeName,
     summarizeDefault(config) {
       return summarizeDefaultValue(config && config.value, config && config.enabled);
     },
@@ -429,8 +432,8 @@ export default {
         // 受控下拉重建回原值，取消确认时类型与默认值保持不变。
         this.$set(this.typeSelectKeys, key, (this.typeSelectKeys[key] || 0) + 1);
         this.$createDialog({
-          title: '修改参数类型',
-          content: '修改类型将清空此参数已有默认值及补充结构，是否继续？',
+          title: this.$t('term.framework.integrationdefault.changeType'),
+          content: this.$t('term.framework.integrationdefault.changeTypeConfirm'),
           'on-ok': dialog => {
             apply(true);
             dialog.isShow = false;
@@ -500,6 +503,7 @@ export default {
     }
   },
   computed: {
+    translatedParamTypes() { return this.paramTypeList.map(item => ({ ...item, text: defaultTypeName(item.value, item.text) })); },
     schemaDialogParam() {
       return this.schemaDialogTarget ? this.findDefaultParam(this.schemaDialogTarget.key) : null;
     },

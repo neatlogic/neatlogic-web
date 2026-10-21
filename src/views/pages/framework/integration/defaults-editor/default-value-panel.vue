@@ -2,12 +2,12 @@
   <div :class="{ 'padding border radius-md bg-block': !isArray }">
     <!-- 数组复用值表格自身容器，去除外层重复背景、边框和留白；非数组沿用原布局。 -->
     <div v-if="!isArray" class="flex-between mb-sm">
-      <strong>{{ activeView === 'schema' ? '结构设置' : '默认值设置' }}：{{ pattern.name }}</strong>
-      <span class="text-href" @click="closePanel">收起</span>
+      <strong>{{ $t(activeView === 'schema' ? 'term.framework.integrationdefault.schemaTitle' : 'term.framework.integrationdefault.settingsTitle', { name: pattern.name }) }}</strong>
+      <span class="text-href" @click="closePanel">{{ $t('page.packup') }}</span>
     </div>
     <div v-if="resolved.error" class="mb-sm">
-      <div class="text-error">{{ resolved.error }}，请重新配置。</div>
-      <span class="text-href" :class="{ disable: disabled }" @click="requestReset">按当前规范重新配置</span>
+      <div class="text-error">{{ $t('term.framework.integrationdefault.reconfigureError', { error: resolved.error }) }}</div>
+      <span class="text-href" :class="{ disable: disabled }" @click="requestReset">{{ $t('term.framework.integrationdefault.resetSchema') }}</span>
     </div>
     <template v-if="activeView === 'schema'">
       <SchemaEditor
@@ -22,20 +22,20 @@
       ></SchemaEditor>
       <div v-if="schemaError" class="text-error mt-sm">{{ schemaError }}</div>
       <div class="action-group mt-sm">
-        <span class="action-item text-href" :class="{ disable: disabled || !!pending }" @click="saveSchema">确定结构</span>
-        <span class="action-item text-href" @click="cancelSchema">取消</span>
+        <span class="action-item text-href" :class="{ disable: disabled || !!pending }" @click="saveSchema">{{ $t('term.framework.integrationdefault.confirmSchema') }}</span>
+        <span class="action-item text-href" @click="cancelSchema">{{ $t('page.cancel') }}</span>
       </div>
     </template>
     <template v-else>
       <div v-if="!isArray" class="flex-between mb-sm">
         <span class="text-tip">{{ summary }}</span>
         <div v-if="isComplex(currentSchema)" class="action-group">
-          <span class="action-item text-href" :class="{ disable: disabled }" @click="beginSchema">结构设置</span>
+          <span class="action-item text-href" :class="{ disable: disabled }" @click="beginSchema">{{ $t('term.framework.integrationdefault.schemaSettings') }}</span>
         </div>
       </div>
       <div v-if="!isArray || steps.length" class="flex-between mb-sm">
         <span>{{ currentPath }}</span>
-        <span v-if="steps.length" class="text-href" @click="steps.pop()">返回上一级</span>
+        <span v-if="steps.length" class="text-href" @click="steps.pop()">{{ $t('term.framework.integrationdefault.back') }}</span>
       </div>
       <component
         :is="editor"
@@ -50,10 +50,10 @@
       <div v-if="valueError" class="text-error mt-sm">{{ valueError }}</div>
     </template>
     <div v-if="pending" class="border-warning padding mt-sm">
-      <div class="text-warning">{{ pending.message }}</div>
+      <div class="text-warning">{{ $t(pending.messageKey, pending.messageParams) }}</div>
       <div class="action-group mt-xs">
-        <span class="action-item text-href" :class="{ disable: disabled }" @click="confirmPending">清空受影响的值并应用</span>
-        <span class="action-item text-href" @click="cancelPending">取消变更</span>
+        <span class="action-item text-href" :class="{ disable: disabled }" @click="confirmPending">{{ $t('term.framework.integrationdefault.clearApply') }}</span>
+        <span class="action-item text-href" @click="cancelPending">{{ $t('term.framework.integrationdefault.cancelChange') }}</span>
       </div>
     </div>
   </div>
@@ -96,7 +96,7 @@ export default {
     },
     beginSchema() {
       if (this.disabled) return;
-      const steps = this.steps.map(step => ({ path: step.schemaPath, label: step.label }));
+      const steps = this.steps.map(step => ({ path: step.schemaPath, label: step.label, labelKey: step.labelKey, labelParams: step.labelParams }));
       // 数组及其子级统一交给外层弹窗，保留默认值区域的当前导航位置。
       if (this.declared.type === 'array') {
         this.$emit('open-schema', steps);
@@ -127,12 +127,12 @@ export default {
   computed: {
     isArray() { return this.declared.type === 'array'; },
     enabled() { return isDefaultEnabled(this.config); },
-    summary() { return this.enabled ? summarizeDefault(this.config.value, true) : '未设置'; },
+    summary() { return this.enabled ? summarizeDefault(this.config.value, true) : this.$t('term.framework.integrationdefault.unset'); },
     currentValuePath() { return this.steps.reduce((path, step) => path.concat(step.valuePath), []); },
     currentSchemaPath() { return this.steps.reduce((path, step) => path.concat(step.schemaPath), []); },
     currentValue() { return getAtPath(this.enabled ? this.config.value : undefined, this.currentValuePath); },
     currentSchema() { return getAtPath(this.resolved.schema, this.currentSchemaPath) || {}; },
-    currentPath() { return [this.pattern.name, ...this.steps.map(step => step.label)].join(' → '); },
+    currentPath() { return [this.pattern.name, ...this.steps.map(step => step.labelKey ? this.$t(step.labelKey, step.labelParams) : step.label)].join(' → '); },
     editor() { return getDefaultEditor(this.currentSchema.type); },
     valueError() { return validateDefaultConfig(this.pattern, this.config); }
   },

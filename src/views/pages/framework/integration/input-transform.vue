@@ -45,7 +45,7 @@ export default {
       content: '',
       columns: [
         { title: this.$t('page.name'), key: 'name', tree: true },
-        { title: this.$t('page.type'), key: 'typeName' }
+        { title: this.$t('page.type'), key: 'typeText' }
       ]
     };
   },

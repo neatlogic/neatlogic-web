@@ -1,7 +1,7 @@
 <template>
   <div class="tstable-container border radius-md">
     <table class="tstable-body">
-      <thead><tr><th>字段</th><th>默认值</th></tr></thead>
+      <thead><tr><th>{{ $t('page.field') }}</th><th>{{ $t('page.defaultvalue') }}</th></tr></thead>
       <tbody class="tbody-main">
         <tr v-for="(column, index) in schema.children || []" :key="index">
           <td :class="{ 'require-label': column.isRequired === 1 || column.isRequired === true }">{{ column.name }}</td>

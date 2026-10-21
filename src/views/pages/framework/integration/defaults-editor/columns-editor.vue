@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="fixedColumns.length && !readonlyFixed" class="text-tip mb-sm">字段名称、类型及必填要求由处理器提供，只能补充未声明的子级结构。</div>
+    <div v-if="fixedColumns.length && !readonlyFixed" class="text-tip mb-sm">{{ $t('term.framework.integrationdefault.fixedHelp') }}</div>
     <!-- 复用用户管理的表格悬浮操作，字段行只保留实际配置内容。 -->
     <TsTable
       :theadList="theadList"
@@ -23,7 +23,7 @@
             @change="changeColumn(columnRows.indexOf(row), 'name', $event)"
             @on-blur="commitColumnName(columnRows.indexOf(row), $event)"
           ></TsFormInput>
-          <div v-if="row.error" class="text-error" data-column-name-error>{{ row.error }}</div>
+          <div v-if="row.error" class="text-error" data-column-name-error>{{ $t(row.error) }}</div>
         </div>
       </template>
       <template slot="type" slot-scope="{ row }">
@@ -41,7 +41,7 @@
         </div>
       </template>
       <template slot="isRequired" slot-scope="{ row }">
-        <span v-if="readOnlyTable">{{ row.column.isRequired === 1 || row.column.isRequired === true ? '是' : '否' }}</span>
+        <span v-if="readOnlyTable">{{ row.column.isRequired === 1 || row.column.isRequired === true ? $t('page.yes') : $t('page.no') }}</span>
         <TsFormSwitch
           v-else
           :value="row.column.isRequired === 1 || row.column.isRequired === true"
@@ -56,10 +56,10 @@
       <template v-if="canModify" slot="action" slot-scope="{ row }">
         <div class="tstable-action" data-column-actions>
           <ul class="tstable-action-ul">
-            <li data-column-add @click.stop="addColumn(columnRows.indexOf(row))">添加</li>
-            <li data-column-delete @click.stop="deleteColumn(columnRows.indexOf(row))">删除</li>
-            <li :class="{ disable: columnRows.indexOf(row) === 0 }" data-column-up @click.stop="moveColumn(columnRows.indexOf(row), -1)">上移</li>
-            <li :class="{ disable: columnRows.indexOf(row) === columnRows.length - 1 }" data-column-down @click.stop="moveColumn(columnRows.indexOf(row), 1)">下移</li>
+            <li data-column-add @click.stop="addColumn(columnRows.indexOf(row))">{{ $t('page.add') }}</li>
+            <li data-column-delete @click.stop="deleteColumn(columnRows.indexOf(row))">{{ $t('page.delete') }}</li>
+            <li :class="{ disable: columnRows.indexOf(row) === 0 }" data-column-up @click.stop="moveColumn(columnRows.indexOf(row), -1)">{{ $t('page.moveup') }}</li>
+            <li :class="{ disable: columnRows.indexOf(row) === columnRows.length - 1 }" data-column-down @click.stop="moveColumn(columnRows.indexOf(row), 1)">{{ $t('page.movedown') }}</li>
           </ul>
         </div>
       </template>
@@ -69,12 +69,12 @@
       class="text-href tsfont-plus"
       data-column-add-first
       @click="addColumn()"
-    >新增列</span>
+    >{{ $t('term.framework.integrationdefault.addColumn') }}</span>
   </div>
 </template>
 <script>
 import { cloneJson } from '../integration-default-utils.js';
-import { defaultTypeList, selectableDefaultTypeList } from './index.js';
+import { defaultTypeName, selectableDefaultTypeList, translatedDefaultTypes } from './index.js';
 import DefaultTypeSelect from './default-type-select.js';
 import TsTable from './default-value-table.js';
 import ParamText from './param-text.vue';
@@ -117,8 +117,8 @@ export default {
     nameError(index, useCommitted = false) {
       const row = this.columnRows[index];
       const name = row && row.column.name;
-      if (typeof name !== 'string' || !name.trim()) return '列名不能为空';
-      if (this.columnRows.some((other, otherIndex) => otherIndex !== index && (other.column.name === name || (useCommitted && other.committedName === name)))) return '列名不能重复';
+      if (typeof name !== 'string' || !name.trim()) return 'term.framework.integrationdefault.nameEmpty';
+      if (this.columnRows.some((other, otherIndex) => otherIndex !== index && (other.column.name === name || (useCommitted && other.committedName === name)))) return 'term.framework.integrationdefault.nameDuplicate';
       return '';
     },
     commitColumnName(index, value) {
@@ -157,7 +157,7 @@ export default {
       if (changed) this.emitColumns('name', previousNames);
       return true;
     },
-    typeName(type) { const option = defaultTypeList.find(item => item.value === type); return option ? option.text : type; },
+    typeName(type) { return defaultTypeName(type); },
     changeColumn(index, key, value) {
       if (!this.canModify || !this.columnRows[index]) return;
       // 通用字段更新也不能绕过类型选择限制，历史值仅可保留或改成允许的类型。
@@ -197,13 +197,13 @@ export default {
 
   },
   computed: {
-    types() { return selectableDefaultTypeList; },
+    types() { return translatedDefaultTypes(selectableDefaultTypeList); },
     fixed() { return this.fixedColumns.length > 0; },
     readOnlyTable() { return this.fixed && this.readonlyFixed; },
     canModify() { return !this.disabled && !this.fixed; },
     theadList() {
       // 开关与操作栏维持原有紧凑尺寸，文本控件列由局部表格统一计算宽度。
-      const headers = [{ key: 'name', title: '列名' }, { key: 'type', title: '类型' }, { key: 'isRequired', title: '必填', width: 72 }];
+      const headers = [{ key: 'name', title: this.$t('page.fieldname') }, { key: 'type', title: this.$t('page.type') }, { key: 'isRequired', title: this.$t('page.require'), width: 72 }];
       if (this.canModify) headers.push({ key: 'action', width: 24 });
       else headers.push({ key: 'defaultSpacer', title: '', width: 24 });
       return headers;

@@ -8,9 +8,9 @@
         :class="{ disable: disabled }"
         data-open-schema
         @click="openSchema"
-      >{{ schema.type === 'array' ? '设置默认值' : '结构设置' }}</span>
+      >{{ schema.type === 'array' ? $t('term.framework.integrationdefault.setDefault') : $t('term.framework.integrationdefault.schemaSettings') }}</span>
       <!-- 数组统一在弹窗录入默认数据；主表仅展示入口及有效顶层行数，避免与参数定义混淆。 -->
-      <span v-if="schema.type === 'array' && rowCount" class="text-tip ml-xs" data-default-row-count>{{ rowCount }}行</span>
+      <span v-if="schema.type === 'array' && rowCount" class="text-tip ml-xs" data-default-row-count>{{ $t('term.framework.integrationdefault.rowCount', { count: rowCount }) }}</span>
     </div>
     <template v-else>
       <component
@@ -30,7 +30,7 @@
       class="text-href"
       :class="{ disable: disabled }"
       @click="openSchema"
-    >重新配置</span>
+    >{{ $t('term.framework.integrationdefault.reconfigure') }}</span>
   </div>
 </template>
 <script>

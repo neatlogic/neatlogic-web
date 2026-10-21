@@ -43,7 +43,7 @@ export default {
       helpTheadList: [
         { title: this.$t('page.name'), key: 'name', tree: true },
         { title: this.$t('term.framework.paramtype'), slot: 'mode' },
-        { title: this.$t('term.report.datatype.name'), key: 'typeName' },
+        { title: this.$t('term.report.datatype.name'), key: 'typeText' },
         { title: this.$t('page.require'), slot: 'isRequired' }
       ],
       dialogConfig: {

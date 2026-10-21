@@ -8,7 +8,7 @@
     @on-ok="saveSchema"
     @on-close="closeDialog"
   >
-    <template v-slot:header><strong style="font-size: 20px">默认值设置：{{ pattern.name }}</strong></template>
+    <template v-slot:header><strong style="font-size: 20px">{{ $t('term.framework.integrationdefault.settingsTitle', { name: pattern.name }) }}</strong></template>
     <template v-slot>
       <div ref="editorContent" class="fz14" data-default-dialog-content>
         <!-- 公共弹窗表头高度固定，副标题放入正文独立留白，避免压住生效说明。 -->
@@ -17,12 +17,12 @@
         <!-- 公共 Alert 的 desc 模式会增加空标题间距；保留紧凑单行，仅把说明恢复为正文粗细。 -->
         <Alert show-icon class="mb-nm"><span style="font-weight: normal">{{ usageDescription }}</span></Alert>
         <div v-if="resolved.error" class="mb-sm">
-          <div class="text-error">{{ resolved.error }}，请重新配置。</div>
-          <span class="text-href" :class="{ disable: disabled }" @click="requestReset">按当前规范重新配置</span>
+          <div class="text-error">{{ $t('term.framework.integrationdefault.reconfigureError', { error: resolved.error }) }}</div>
+          <span class="text-href" :class="{ disable: disabled }" @click="requestReset">{{ $t('term.framework.integrationdefault.resetSchema') }}</span>
         </div>
         <div class="flex-between mb-sm">
-          <strong class="fz16">元素类型与字段</strong>
-          <span v-if="fixedStructure" class="text-tip">固定结构，只读</span>
+          <strong class="fz16">{{ $t('term.framework.integrationdefault.elementsFields') }}</strong>
+          <span v-if="fixedStructure" class="text-tip">{{ $t('term.framework.integrationdefault.fixedReadonly') }}</span>
         </div>
         <SchemaEditor
           v-if="schemaDraft"
@@ -38,20 +38,20 @@
           @change="changeSchemaDraft"
           @identities="changeColumnKeys"
         ></SchemaEditor>
-        <div v-if="fixedStructure" class="text-tip mt-sm">字段由数据规范提供，默认数据可在下方编辑。</div>
+        <div v-if="fixedStructure" class="text-tip mt-sm">{{ $t('term.framework.integrationdefault.fixedDataHelp') }}</div>
         <div v-if="schemaError" class="text-error mt-sm">{{ schemaError }}</div>
         <!-- 结构和值只在本弹窗内变化；确认清理也不提交外层集成表单。 -->
         <div v-if="pending" class="border-warning padding mt-sm" data-default-schema-confirm>
-          <div class="text-warning">{{ pending.message }}</div>
+          <div class="text-warning">{{ $t(pending.messageKey, pending.messageParams) }}</div>
           <div class="action-group mt-xs">
-            <span class="action-item text-href" :class="{ disable: disabled }" @click="confirmPending">清空受影响的值并应用</span>
-            <span class="action-item text-href" @click="cancelPending">取消变更</span>
+            <span class="action-item text-href" :class="{ disable: disabled }" @click="confirmPending">{{ $t('term.framework.integrationdefault.clearApply') }}</span>
+            <span class="action-item text-href" @click="cancelPending">{{ $t('term.framework.integrationdefault.cancelChange') }}</span>
           </div>
         </div>
         <Divider></Divider>
         <div class="mb-sm">
-          <strong class="fz16">默认数据（{{ rowCount }}行）</strong>
-          <div class="text-tip mt-xs">每一行代表一条默认数据。</div>
+          <strong class="fz16">{{ $t('term.framework.integrationdefault.dataTitle', { count: rowCount }) }}</strong>
+          <div class="text-tip mt-xs">{{ $t('term.framework.integrationdefault.rowHelp') }}</div>
         </div>
         <div v-if="!valueSchemaError">
           <ArrayEditor
@@ -65,16 +65,16 @@
             @change="changeCurrentValue"
           ></ArrayEditor>
         </div>
-        <div v-else class="text-tip padding bg-grey radius-md">请先在上方选择元素类型，并完成对象字段配置，再录入默认数据。</div>
+        <div v-else class="text-tip padding bg-grey radius-md">{{ $t('term.framework.integrationdefault.dataGuide') }}</div>
         <div v-if="valueError" class="text-error mt-sm">{{ valueError }}</div>
       </div>
     </template>
     <template v-slot:footer>
       <div class="flex-between">
-        <span class="text-tip">确定后，还需在集成页面点击“确认”保存。</span>
+        <span class="text-tip">{{ $t('term.framework.integrationdefault.saveHelp') }}</span>
         <div>
-          <Button @click="closeDialog">取消</Button>
-          <Button type="primary" :disabled="disabled || !!pending || !!resolved.error" @click="saveSchema">确定</Button>
+          <Button @click="closeDialog">{{ $t('page.cancel') }}</Button>
+          <Button type="primary" :disabled="disabled || !!pending || !!resolved.error" @click="saveSchema">{{ $t('term.framework.integrationdefault.confirm') }}</Button>
         </div>
       </div>
     </template>
@@ -137,7 +137,7 @@ export default {
         }
         if (reconciled.changed) {
           // 取消变更仅恢复此次结构，之前在弹窗录入的数据仍保留。
-          this.pending = { schema: nextSchema, value: reconciled.value, validatePaths: reconciled.validatePaths || [], message: '结构变更会清空不兼容的值，其他值和行顺序保留；数组空行需补填或手动删除后才能保存。取消将保留原结构和数据。' };
+          this.pending = { schema: nextSchema, value: reconciled.value, validatePaths: reconciled.validatePaths || [], messageKey: 'term.framework.integrationdefault.clearWarning' };
         } else {
           // 转换本身不需要确认，但新值必须随结构写入独立草稿，保留原启用状态。
           if (!fieldEdit && hasOwn(this.configDraft, 'value')) {
@@ -207,7 +207,7 @@ export default {
     },
     requestReset() {
       if (this.disabled) return;
-      this.pending = { reset: true, schema: cloneJson(this.declared), value: undefined, message: '将移除不兼容的默认值并按当前处理器恢复结构，之后可重新录入。' };
+      this.pending = { reset: true, schema: cloneJson(this.declared), value: undefined, messageKey: 'term.framework.integrationdefault.resetWarning' };
     },
     confirmPending() {
       if (this.disabled || !this.pending) return;
@@ -242,15 +242,15 @@ export default {
     resolved() { return resolveSchema(this.pattern, this.configDraft); },
     declared() { return getDeclaredSchema(this.pattern); },
     fixedStructure() { return !!this.declared.items; },
-    subtitle() { return [this.pattern.mode === 'output' ? '输出参数' : '输入参数', this.pattern.description, '数组'].filter(Boolean).join(' · '); },
+    subtitle() { return [this.pattern.mode === 'output' ? this.$t('page.outputparam') : this.$t('page.inputparam'), this.pattern.description, this.$t('term.framework.integrationdefault.array')].filter(Boolean).join(' · '); },
     usageDescription() {
       return this.pattern.mode === 'output'
-        ? `当输出转换后的 JSON 对象结果中没有 ${this.pattern.name} 时，自动使用下方默认数据；已有值不会被覆盖，非对象结果不补齐。`
-        : `当输入参数中没有 ${this.pattern.name} 时，自动使用下方默认数据；已有值不会被覆盖。`;
+        ? this.$t('term.framework.integrationdefault.outputUsage', { name: this.pattern.name })
+        : this.$t('term.framework.integrationdefault.inputUsage', { name: this.pattern.name });
     },
     currentValue() { return isDefaultEnabled(this.configDraft) && hasOwn(this.configDraft, 'value') ? this.configDraft.value : undefined; },
     rowCount() { return Array.isArray(this.currentValue) ? this.currentValue.length : 0; },
-    valueSchemaError() { return this.valueSchema ? validateDefaultSchema(this.valueSchema, this.pattern.name, true) : '请先配置数组元素类型'; },
+    valueSchemaError() { return this.valueSchema ? validateDefaultSchema(this.valueSchema, this.pattern.name, true) : this.$t('term.framework.integrationdefault.configureElement'); },
     valueError() { return !this.submitted || this.valueSchemaError ? null : validateDefaultConfig(this.pattern, this.configDraft); }
   }
 };
