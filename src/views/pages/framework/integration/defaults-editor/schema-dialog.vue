@@ -118,6 +118,8 @@ export default {
     },
     changeSchemaDraft(schema, metadata) {
       if (this.disabled || this.pending || this.resolved.error) return;
+      // 类型变化前收齐原编辑器尚在焦点中的输入，兼容判断必须使用当前草稿而非旧回显。
+      if ((!metadata || metadata.kind === 'type') && this.$refs.valueEditor) this.$refs.valueEditor.flushInputs();
       this.submitted = false;
       this.schemaError = '';
       this.schemaDraft = cloneJson(schema);
@@ -134,7 +136,7 @@ export default {
         }
         if (reconciled.changed) {
           // 取消变更仅恢复此次结构，之前在弹窗录入的数据仍保留。
-          this.pending = { schema: nextSchema, value: reconciled.value, message: '结构变更会清空所有行中受影响的值，其他字段保留。取消将保留原结构和数据。' };
+          this.pending = { schema: nextSchema, value: reconciled.value, message: '结构变更会清空不兼容的值，其他值和行顺序保留；数组空行需补填或手动删除后才能保存。取消将保留原结构和数据。' };
         } else this.applyDraftSchema(nextSchema);
       } catch (error) { this.schemaError = error.message; }
     },

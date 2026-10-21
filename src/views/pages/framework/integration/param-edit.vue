@@ -253,7 +253,8 @@ import DefaultValuePanel from './defaults-editor/default-value-panel.vue';
 import SchemaDialog from './defaults-editor/schema-dialog.vue';
 import ParamText from './defaults-editor/param-text.vue';
 import {cloneParamConfig, validateCustomParams, withParamRowKeys} from './integration-param-utils.js';
-import {cloneJson, getBuiltinDefault, isDefaultEnabled, normalizeDefaultType, summarizeDefault as summarizeDefaultValue, validateIntegrationDefaults} from './integration-default-utils.js';
+import {cloneJson, cloneDefaultConfig, getBuiltinDefault, getDeclaredSchema, isDefaultEnabled, normalizeDefaultType, summarizeDefault as summarizeDefaultValue, validateIntegrationDefaults} from './integration-default-utils.js';
+import {reconcileValue, resolveSchema} from './defaults-editor/editor-utils.js';
 
 export default {
   components: {Draggable, TsFormInput, TsFormSelect, TsFormSwitch, DefaultValueCell, DefaultValuePanel, SchemaDialog, ParamText},
@@ -388,24 +389,38 @@ export default {
     },
     changeParamType(item, type) {
       if (!this.canEditParam(item) || item.type === type) return;
-      const apply = () => {
-        // 顶层类型变化不做隐式转换，清除旧值和不兼容结构后按新类型设置。
+      const key = this.customKey(item);
+      const refs = this.$refs[`default-${key}`];
+      const cell = Array.isArray(refs) ? refs[0] : refs;
+      if (cell) cell.flushInput();
+      const config = item.defaultConfig && cloneDefaultConfig(item.defaultConfig);
+      const previous = resolveSchema(item, config).schema;
+      // 别名切换保留原有内部定义；真正改为另一类型时只采用新类型声明，不推断结构。
+      const schema = normalizeDefaultType(item.type) === normalizeDefaultType(type)
+        ? {...cloneJson(previous), type: normalizeDefaultType(type)}
+        : getDeclaredSchema({name: item.name, isRequired: item.isRequired, type});
+      const reconciled = config && Object.prototype.hasOwnProperty.call(config, 'value')
+        ? reconcileValue(config.value, previous, schema)
+        : {changed: false};
+      const apply = (clear = false) => {
         this.$set(item, 'type', type);
         const option = this.paramTypeList.find(entry => entry.value === type);
         this.$set(item, 'typeName', option ? option.text : type);
-        if (item.defaultConfig) this.$set(item, 'defaultConfig', {enabled: false});
+        if (config) {
+          // 兼容时同步结构快照并保留启用状态，禁用草稿不能因切换类型被自动启用。
+          this.$set(item, 'defaultConfig', clear ? {enabled: false} : {...config, schema});
+        }
         this.closeDefault();
         this.defaultError = null;
       };
-      if (item.defaultConfig && Object.prototype.hasOwnProperty.call(item.defaultConfig, 'value')) {
+      if (reconciled.changed) {
         // 受控下拉重建回原值，取消确认时类型与默认值保持不变。
-        const key = this.customKey(item);
         this.$set(this.typeSelectKeys, key, (this.typeSelectKeys[key] || 0) + 1);
         this.$createDialog({
           title: '修改参数类型',
           content: '修改类型将清空此参数已有默认值及补充结构，是否继续？',
           'on-ok': dialog => {
-            apply();
+            apply(true);
             dialog.isShow = false;
           }
         });

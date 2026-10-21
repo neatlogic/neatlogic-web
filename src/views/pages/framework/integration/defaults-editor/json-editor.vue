@@ -23,7 +23,13 @@ export default {
   extends: ValueBase,
   data() { return { text: '', jsonError: '', emittedValue: undefined, hasEmitted: false }; },
   methods: {
-    flushInput() { if (!this.disabled) this.changeText(this.readInputValue(this.text)); },
+    flushInput() {
+      if (this.disabled) return;
+      const text = this.readInputValue(this.text);
+      // 结构清理产生的 undefined 只能留在草稿；未编辑的 JSON 回显不能重解析成 null。
+      if (!this.hasEmitted && text === this.text) return;
+      this.changeText(text);
+    },
     changeText(value) {
       if (this.disabled) return;
       this.text = value == null ? '' : String(value);
