@@ -28,7 +28,6 @@
           <div v-if="isAutoRefreshing" class="action-item">
             <span class="countdown-clock" :style="countdownClockStyle" :title="countdownText"></span>
           </div>
-          <span v-if="isRunMode" class="action-item tsfont-refresh text-action" @click="getRun">{{ $t('page.refresh') }}</span>
         </div>
       </template>
       <template v-slot:content>
@@ -219,7 +218,7 @@ export default {
         }
       }
     },
-    /** 轮询只更新后端运行快照；手动刷新或切页后忽略旧响应。 */
+    /** 轮询只更新后端运行快照；并发请求或切页后忽略旧响应。 */
     async getRun() {
       clearTimeout(this.pollTimer);
       this.clearRefreshCountdown();
@@ -251,7 +250,7 @@ export default {
           }
         }
       } catch (error) {
-        // 公共 API 层显示错误，保留已有快照供手动刷新重试。
+        // 公共 API 层显示错误，保留已有快照，不覆盖当前结果。
       } finally {
         if (pageVersion === this.pageVersion && requestId === this.runRequestId) {
           this.loading = false;

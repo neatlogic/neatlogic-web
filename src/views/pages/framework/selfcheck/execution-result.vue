@@ -65,7 +65,13 @@
           :modelUri="modelUri('request')"
         ></TsMonacoEditor>
       </TabPane>
-      <TabPane :label="$t('term.framework.selfcheck.response')" name="response">
+      <TabPane :label="$t('term.framework.selfcheck.responseverdict')" name="response">
+        <div class="mb-md text-word-break">
+          <span class="text-grey mr-xs">{{ $t('term.framework.selfcheck.scriptresult') }}</span>
+          <span v-if="scriptReturnNotice" class="text-grey">{{ $t(scriptReturnNotice) }}</span>
+          <code v-else>{{ formatJson(result.scriptResult) }}</code>
+        </div>
+        <div class="text-grey mb-xs">context.response</div>
         <TsMonacoEditor
           v-if="!stepMode || currentTab === 'response'"
           :value="formatJson(result.responseSnapshot)"
@@ -74,17 +80,6 @@
           :isReadOnly="true"
           :isCopy="true"
           :modelUri="modelUri('response')"
-        ></TsMonacoEditor>
-      </TabPane>
-      <TabPane :label="$t('term.framework.selfcheck.scriptresult')" name="scriptResult">
-        <TsMonacoEditor
-          v-if="!stepMode || currentTab === 'scriptResult'"
-          :value="formatJson(result.scriptResult)"
-          codeMode="json"
-          height="260px"
-          :isReadOnly="true"
-          :isCopy="true"
-          :modelUri="modelUri('script-result')"
         ></TsMonacoEditor>
       </TabPane>
       <TabPane :label="$t('term.framework.selfcheck.console')" name="console">
@@ -141,7 +136,8 @@ export default {
   },
   data() {
     return {
-      currentTab: (this.result.diagnosticList || []).length ? 'script' : 'request',
+      // 诊断优先定位脚本，断言失败优先对照判定依据，其余结果从请求开始查看。
+      currentTab: (this.result.diagnosticList || []).length ? 'script' : (this.result.status === 'ASSERT_FAILED' ? 'response' : 'request'),
       pendingDiagnostic: null,
       phaseTheadList: [
         { key: 'phase', title: this.$t('term.framework.selfcheck.phase') },
@@ -218,6 +214,39 @@ export default {
     }
   },
   computed: {
+    /** 只使用真实阶段记录判断脚本是否执行，不从总状态补造阶段。 */
+    scriptExecutionPhase() {
+      return this.phaseList.find(phase => phase.phase === 'SCRIPT_EXECUTE');
+    },
+    /** 返回 false、0 或历史对象均为已有快照，不能按真假值判断是否存在。 */
+    hasScriptReturnValue() {
+      return this.result.scriptResult != null && this.result.scriptResult !== '';
+    },
+    /** 异常时后端保存的 false 并非真实 return，需结合阶段状态展示缺失原因。 */
+    scriptReturnNotice() {
+      if (this.scriptExecutionPhase) {
+        const returnStatusList = ['SUCCEED', 'SUCCESS', 'ASSERT_FAILED'];
+        if (returnStatusList.includes(this.scriptExecutionPhase.status) && this.hasScriptReturnValue) {
+          return '';
+        }
+        return 'term.framework.selfcheck.scriptnoreturn';
+      }
+      if (this.phaseList.length) {
+        return 'term.framework.selfcheck.scriptnotexecuted';
+      }
+      // 历史记录即使缺少阶段，也不能把明确的脚本异常标记显示为真实返回值。
+      if (['SCRIPT_RUNTIME_ERROR', 'SCRIPT_RESULT_ERROR', 'SCRIPT_TIMEOUT'].includes(this.result.status)) {
+        return 'term.framework.selfcheck.scriptnoreturn';
+      }
+      if (['SCRIPT_SYNTAX_ERROR', 'TARGET_ERROR', 'TARGET_TIMEOUT'].includes(this.result.status)) {
+        return 'term.framework.selfcheck.scriptnotexecuted';
+      }
+      // 旧记录缺少阶段列表时保留原始结果，不推断脚本一定未执行。
+      if (this.hasScriptReturnValue) {
+        return '';
+      }
+      return 'term.framework.selfcheck.scriptnoreturn';
+    },
     phaseList() {
       return this.result.phaseList || [];
     },
