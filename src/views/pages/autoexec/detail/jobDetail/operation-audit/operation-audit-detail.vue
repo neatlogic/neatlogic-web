@@ -20,6 +20,7 @@
         <span v-else>-</span>
       </template>
     </TsTable>
+    <NoData v-else></NoData>
   </div>
 </template>
 <script>
