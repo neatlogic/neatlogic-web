@@ -178,7 +178,7 @@ export default {
       if (!this.draft.templateId) {
         return [];
       }
-      return [{id: this.draft.templateId, name: this.draft.templateName || String(this.draft.templateId)}];
+      return [{value: this.draft.templateId, text: this.draft.templateName || String(this.draft.templateId)}];
     }
   },
   watch: {
