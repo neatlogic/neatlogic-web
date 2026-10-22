@@ -8,26 +8,17 @@
       </template>
     </Alert>
     <TsRow>
-      <Col :span="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0) > 0 ? 13 : 24">
+      <Col :span="paramList.length ? 13 : 24">
         <TsCodemirror :value.sync="content" height="300px"></TsCodemirror>
         <TransformTest :content="content"></TransformTest>
       </Col>
-      <Col v-if="(allowEditParam == 0 && handlerPattern && handlerPattern.length > 0) || (allowEditParam == 1 && paramList && paramList.length > 0)" :span="1">
+      <Col v-if="paramList.length" :span="1">
         <i class="tsfont-double-arrow-right"></i>
       </Col>
-      <Col v-if="allowEditParam == 0 && handlerPattern && handlerPattern.length > 0" :span="10">
+      <Col v-if="paramList.length" :span="10">
         <Table
           size="small"
-          row-key="name"
-          :columns="columns"
-          :data="handlerPattern"
-          border
-        ></Table>
-      </Col>
-      <Col v-if="allowEditParam == 1 && paramList && paramList.length > 0" :span="10">
-        <Table
-          size="small"
-          row-key="name"
+          row-key="_integrationParamKey"
           :columns="columns"
           :data="paramList"
           border
@@ -37,6 +28,8 @@
   </div>
 </template>
 <script>
+import {mergeIntegrationParams, withParamRowKeys, withPatternMode} from './integration-param-utils.js';
+
 export default {
   components: {
     TransformTest: () => import('./transform-test.vue'),
@@ -49,11 +42,10 @@ export default {
   },
   data() {
     return {
-      paramList: [],
       content: '',
       columns: [
         { title: this.$t('page.name'), key: 'name', tree: true },
-        { title: this.$t('page.type'), key: 'typeName' }
+        { title: this.$t('page.type'), key: 'typeText' }
       ]
     };
   },
@@ -70,31 +62,26 @@ export default {
   methods: {
   },
   filter: {},
-  computed: {},
-  watch: {
-    integration: {
-      handler: function(val) {
-        if (val.config.output) {
-          this.content = val.config.output.content;
-        } else {
-          this.content = '';
-        }
-        this.paramList = [];
-        if (val.config.param && val.config.param.paramList) {
-          val.config.param.paramList.forEach(element => {
-            if (element.name && element.type && element.mode == 'output') {
-              this.paramList.push(element);
-            }
-          });
-        }
-      },
-      deep: true
+  computed: {
+    // 输出转换使用同一合并规则，同时保留固定和自定义输出定义。
+    paramList() {
+      // 按当前处理器关联固定默认值，保留输入输出隔离和完整子字段结构。
+      return withParamRowKeys(mergeIntegrationParams(withPatternMode(this.handlerPattern, 'output'), this.integration && this.integration.config && this.integration.config.param, 'output', this.integration && this.integration.handler));
     },
-    content: {
-      handler: function(val) {
-        this.$emit('setOutput', { content: val });
+    savedContent() {
+      return (this.integration && this.integration.config && this.integration.config.output && this.integration.config.output.content) || '';
+    }
+  },
+  watch: {
+    // 仅观察输出脚本，初始化回显不触发配置重写，避免父子组件循环更新。
+    savedContent: {
+      handler(val) {
+        if (val !== this.content) this.content = val;
       },
-      deep: true
+      immediate: true
+    },
+    content(val) {
+      if (val !== this.savedContent) this.$emit('setOutput', {content: val});
     }
   }
 };

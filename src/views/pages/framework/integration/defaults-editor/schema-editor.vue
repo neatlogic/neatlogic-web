@@ -1,0 +1,158 @@
+<template>
+  <div>
+    <!-- 根参数名已在弹窗标题显示；仅进入兼容子级视图时保留路径和返回。 -->
+    <div v-if="steps.length" class="flex-between mb-sm">
+      <span>{{ location }}</span>
+      <span v-if="steps.length" class="text-href" @click="steps.pop()">{{ $t('term.framework.integrationdefault.backSchema') }}</span>
+    </div>
+    <!-- 数组类型已由参数定义确定，不重复显示类型；对象子级仍保留原类型设置。 -->
+    <div v-if="current.type !== 'array'" class="mb-sm" data-schema-type>
+      <span>{{ $t('page.type') }}</span>
+      <TsFormSelect
+        :value="current.type"
+        :dataList="types"
+        :disabled="disabled || !!declaredCurrent.type"
+        :clearable="false"
+        :transfer="true"
+        @change="changeType"
+      ></TsFormSelect>
+    </div>
+    <!-- 使用公共表单项横向排列标签与控件，不改变结构草稿和固定字段权限。 -->
+    <TsFormItem
+      v-if="current.type === 'array'"
+      :label="$t('term.framework.integrationdefault.elementType')"
+      labelPosition="left"
+      :labelWidth="80"
+      labelAlign="center"
+      class="mb-sm"
+      data-array-element-type
+    >
+      <!-- 历史嵌套数组保持只读回显，不因隐藏类型行而改变已保存的结构和值。 -->
+      <div v-if="current.items && current.items.type === 'array'">{{ $t('term.framework.integrationdefault.array') }}</div>
+      <!-- 与表格同用 14px 字号计算 9em，避免公共表单项的 13px 字号使选择框变窄；标签仍为 80px。 -->
+      <div
+        v-else
+        class="fz14"
+        style="width: 9em; min-width: 9em; max-width: 9em"
+        data-array-element-control
+      >
+        <TsFormSelect
+          :value="current.items && current.items.type"
+          :dataList="itemTypes"
+          :disabled="disabled || !!declaredCurrent.items"
+          :clearable="false"
+          :transfer="true"
+          @change="changeItemType"
+        ></TsFormSelect>
+      </div>
+      <span
+        v-if="current.items && current.items.type === 'array'"
+        class="text-href"
+        :class="{ disable: disabled }"
+        @click="enter(['items'], null, 'term.framework.integrationdefault.arrayElement')"
+      >{{ $t('term.framework.integrationdefault.childSettings') }}</span>
+    </TsFormItem>
+    <ColumnsEditor
+      v-if="columnSchema"
+      ref="columnsEditor"
+      :columns="columnSchema.children || []"
+      :fixedColumns="declaredColumnSchema.children || []"
+      :disabled="disabled"
+      :readonlyFixed="readonlyFixed"
+      :columnKeys="columnKeys"
+      @change="changeColumns"
+      @identities="$emit('identities', $event)"
+    ></ColumnsEditor>
+  </div>
+</template>
+<script>
+import ColumnsEditor from './columns-editor.vue';
+import { selectableDefaultTypeList, translatedDefaultTypes } from './index.js';
+import DefaultTypeSelect from './default-type-select.js';
+import { getAtPath, setAtPath, hasOwn } from './editor-utils.js';
+
+// 对象元素与所属数组同页显示；兼容旧导航路径时合并元素层，返回不落入多余的对象页面。
+function inlineObjectSteps(schema, steps) {
+  const result = [];
+  let prefix = [];
+  let absolute = [];
+  steps.forEach(step => {
+    const path = [...prefix, ...step.path];
+    const target = [...absolute, ...path];
+    const node = getAtPath(schema, target);
+    if (target[target.length - 1] === 'items' && node && node.type === 'object') {
+      prefix = path;
+    } else {
+      result.push({ ...step, path });
+      absolute = target;
+      prefix = [];
+    }
+  });
+  return result;
+}
+export default {
+  components: {
+    ColumnsEditor,
+    TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem.vue'),
+    TsFormSelect: DefaultTypeSelect
+  },
+  props: {
+    schema: { type: Object, required: true },
+    declared: { type: Object, default: () => ({}) },
+    initialSteps: { type: Array, default: () => [] },
+    disabled: { type: Boolean, default: false },
+    readonlyFixed: { type: Boolean, default: false },
+    path: { type: String, default: '' },
+    columnKeys: { type: Object, default: () => ({}) }
+  },
+  data() { return { steps: inlineObjectSteps(this.schema, this.initialSteps) }; },
+  methods: {
+    changeProperty(key, value) {
+      if (!this.disabled) this.$emit('change', setAtPath(this.schema, [...this.nodePath, key], value));
+    },
+    flushColumns() {
+      return !this.$refs.columnsEditor || this.$refs.columnsEditor.flushColumns();
+    },
+    changeColumns(columns, metadata) {
+      // 只改变字段的实际存储路径，对象数组仍使用 items.children，不复制为顶层字段。
+      if (!this.disabled) this.$emit('change', setAtPath(this.schema, [...this.nodePath, ...this.columnPath, 'children'], columns), { ...metadata, path: [...this.nodePath, ...this.columnPath, 'children'] });
+    },
+    changeType(type) {
+      // 子级结构视图也不能绕过元素类型限制，已有嵌套数组保持只读。
+      if (this.disabled || this.declaredCurrent.type || this.legacyArrayElement || !this.types.some(item => item.value === type)) return;
+      const replacement = { type };
+      if (hasOwn(this.current, 'name')) replacement.name = this.current.name;
+      if (hasOwn(this.current, 'isRequired')) replacement.isRequired = this.current.isRequired;
+      this.$emit('change', setAtPath(this.schema, this.nodePath, replacement));
+    },
+    changeItemType(type) {
+      if (this.disabled || this.declaredCurrent.items || (this.current.items && this.current.items.type === 'array') || !this.itemTypes.some(item => item.value === type)) return;
+      this.changeProperty('items', { type });
+    },
+    enter(path, label, labelKey) {
+      if (!this.disabled) this.steps.push({ path, label, labelKey });
+    },
+    enterColumn(index) {
+      // 内联字段一次进入目标层，返回时直接回到所属数组及其字段表格。
+      this.enter([...this.columnPath, 'children', index], this.columnSchema.children[index].name || this.$t('term.framework.integrationdefault.columnLabel', { index: index + 1 }));
+    }
+  },
+  computed: {
+    // 弹窗不再新选整数、布尔；数组元素继续排除数组，对象字段仍允许数组。
+    itemTypes() { return translatedDefaultTypes(selectableDefaultTypeList).filter(item => item.value !== 'array'); },
+    types() { return this.isArrayElement ? this.itemTypes : translatedDefaultTypes(selectableDefaultTypeList); },
+    isArrayElement() { return this.nodePath[this.nodePath.length - 1] === 'items'; },
+    legacyArrayElement() { return this.isArrayElement && this.current.type === 'array'; },
+    nodePath() { return this.steps.reduce((result, step) => result.concat(step.path), []); },
+    current() { return getAtPath(this.schema, this.nodePath) || {}; },
+    declaredCurrent() { return getAtPath(this.declared, this.nodePath) || {}; },
+    columnPath() { return this.current.type === 'array' ? ['items'] : []; },
+    columnSchema() {
+      if (this.current.type === 'object') return this.current;
+      return this.current.type === 'array' && this.current.items && this.current.items.type === 'object' ? this.current.items : null;
+    },
+    declaredColumnSchema() { return getAtPath(this.declaredCurrent, this.columnPath) || {}; },
+    location() { return [this.path, ...this.steps.map(step => step.labelKey ? this.$t(step.labelKey, step.labelParams) : step.label)].filter(Boolean).join(' → '); }
+  }
+};
+</script>
