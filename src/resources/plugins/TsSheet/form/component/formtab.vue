@@ -223,6 +223,7 @@ export default {
             const result = this.executeReaction(reaction, newVal, oldVal);
             if (action === 'hide') {
               if (result) {
+                this.clearHiddenTabTableValues(item, newVal, oldVal);
                 this.hideFormItem(item);
               } else {
                 this.showFormItem(item);
@@ -231,6 +232,7 @@ export default {
               if (result) {
                 this.showFormItem(item);
               } else {
+                this.clearHiddenTabTableValues(item, newVal, oldVal);
                 this.hideFormItem(item);
               }
             } else if (action === 'readonly') {
@@ -250,6 +252,45 @@ export default {
           }
         }
       });
+    },
+    // 选项卡隐藏时会卸载子组件，其清空监听可能来不及执行，需在隐藏前补执行表格的清空规则。
+    clearHiddenTabTableValues(tab, newVal, oldVal) {
+      // 首次加载只回显已有数据，避免初始隐藏的选项卡丢失已保存的值。
+      if (this.isFirst) return;
+      const previousReaction = this.tabReaction;
+      const visit = component => {
+        const clearValue = component.reaction && component.reaction.clearValue;
+        // 只处理已配置清空规则且当前有值的表格，不因隐藏而直接删除其他字段的数据。
+        if (component.handler === 'formtableinputer' && !this.$utils.isEmpty(clearValue) && !this.$utils.isEmpty(this.formData[component.uuid])) {
+          const rules = Array.isArray(clearValue) ? clearValue : [clearValue];
+          const shouldClear = rules.some(rule => {
+            const conditions = (rule.conditionGroupList || []).flatMap(group => group.conditionList || []);
+            // 无关字段变化时不重复清空；带 # 的字段标识取其所属组件的值进行比较。
+            const changed = conditions.some(condition => {
+              const uuid = condition.formItemUuid.split('#')[0];
+              return !this.$utils.isSame((newVal || {})[uuid], (oldVal || {})[uuid]);
+            });
+            if (!changed) return false;
+            // conditionData 从 tabReaction 中读取条件，临时切换到当前表格的清空规则。
+            this.tabReaction = rule;
+            return this.executeReaction(rule, newVal, oldVal);
+          });
+          if (shouldClear) {
+            this.$set(this.formData, component.uuid, null);
+          }
+        }
+        // 表格可能放在折叠面板、嵌套选项卡等容器内，继续检查容器中的组件。
+        (component.component || []).forEach(visit);
+      };
+      try {
+        // 只遍历当前要隐藏的选项卡，保留其他选项卡的数据。
+        (this.formItem.component || []).forEach(component => {
+          if ((tab.component || []).includes(component.uuid)) visit(component);
+        });
+      } finally {
+        // 恢复选项卡自身的联动上下文，避免影响后续隐藏、只读等规则的判断。
+        this.tabReaction = previousReaction;
+      }
     },
     hideFormItem(item) {
       this.$set(item, 'isHide', true);

@@ -220,7 +220,7 @@ let routerList = [
     meta: {
       title: $t('router.framework.featureusagemanage'),
       ismenu: true,
-      icon: 'tsfont-chart',
+      icon: 'tsfont-history',
       authority: 'USER_MODIFY',
       type: 'user',
       isBack: false

@@ -38,6 +38,10 @@
                   ></TsFormSwitch>
                 </li>
                 <li
+                  class="tsfont-copy"
+                  @click="copyReport(row)"
+                >{{ $t('page.copy') }}</li>
+                <li
                   class="tsfont-edit"
                   @click="editReport(row)"
                 >{{ $t('page.edit') }}</li>
@@ -149,6 +153,9 @@ export default {
     },
     editReport(row) {
       this.$router.push({path: '/statement-edit/' + row.id});
+    },
+    copyReport(row) {
+      this.$router.push({path: '/statement-edit', query: {copyId: row.id}});
     },
     deleteReport(row) {
       this.$createDialog({

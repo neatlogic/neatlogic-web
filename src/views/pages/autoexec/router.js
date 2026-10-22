@@ -34,9 +34,9 @@ const publishingJobExecute = () => import('@/views/pages/deploy/job/job-add.vue'
 const customTemplateManage = () => import('./manage/customtemplate/customtemplate-manage.vue');//自定义模板管理
 
 // 快捷服务
-const serviceCatalogManage = () => import('./quick-service/service-catalog/service-catalog-manage.vue');
-const catalogManage = () => import('./quick-service/catalog/catalog-manage.vue');
-const addJob = () => import('./quick-service/service-catalog/add-job.vue'); // 创建作业
+const serviceCatalogManage = () => import('./quickservice/servicecatalog/service-catalog-manage.vue');
+const catalogManage = () => import('./quickservice/catalog/catalog-manage.vue');
+const createJob = () => import('./quickservice/servicecatalog/create-job.vue'); // 创建作业
 
 import {$t} from '@/resources/init.js';
 export default [
@@ -446,9 +446,9 @@ export default [
     }
   },
   {
-    path: '/add-job',
-    name: 'add-job',
-    component: addJob,
+    path: '/create-job',
+    name: 'create-job',
+    component: createJob,
     meta: {
       title: $t('router.autoexec.addjob'),
       ismenu: false,

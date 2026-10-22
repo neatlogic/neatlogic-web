@@ -44,14 +44,17 @@
   </div>
 </template>
 <script>
+import { defaultTypeName } from './defaults-editor/index.js';
 import TsCodemirror from '@/resources/plugins/TsCodemirror/TsCodemirror.vue';
+import {mergeIntegrationParams, withPatternMode} from './integration-param-utils.js';
+import {cloneJson, isDefaultEnabled, validateDefaultConfig} from './integration-default-utils.js';
 
 export default {
   components: { TsCodemirror },
   props: { integration: { type: Object }, handlerPattern: { type: Array } },
   data() {
     return {
-      paramList: [],
+      lastGeneratedContent: '',
       rawResult: '',
       content: '',
       isRunned: false,
@@ -71,7 +74,16 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    resetTestResult() {
+      // 新一轮测试先移除上一轮诊断内容；解析或请求失败也不能继续展示旧成功结果。
+      this.rawResult = '';
+      this.transformedResult = '';
+      this.transformedParam = '';
+      this.error = '';
+      this.isRunned = false;
+    },
     test: function(callback) {
+      this.resetTestResult();
       if (this.content || this.isMcp) {
         try {
           let param = this.content ? JSON.parse(this.content) : {};
@@ -120,13 +132,17 @@ export default {
     buildJson: function(elements, type) {
       let json = {};
       elements.forEach(element => {
-        if (element.children) {
+        // 示例优先使用当前有效的输入默认值，深拷贝防止手工测试污染配置。
+        if (isDefaultEnabled(element.defaultConfig) && !validateDefaultConfig(element, element.defaultConfig)) {
+          json[element.name] = cloneJson(element.defaultConfig.value);
+        } else if (element.children && element.children.length) {
           json[element.name] = this.buildJson(element.children, element.type);
         } else {
-          json[element.name] = element.typeName;
+          // 历史自定义参数可能没有 typeName，也必须生成对应的测试入口。
+          json[element.name] = defaultTypeName(element.type, element.typeName || element.type);
         }
       });
-      if (type == 'jsonArray') {
+      if (type === 'jsonArray' || type === 'array') {
         return [json];
       } else {
         return json;
@@ -139,28 +155,21 @@ export default {
       return this.integration && this.integration.method === 'mcp';
     },
     computedContent: function() {
-      if (this.handlerPattern) {
-        return JSON.stringify(this.buildJson(this.handlerPattern), null, 2);
-      } else {
-        return '';
-      }
+      return JSON.stringify(this.buildJson(this.paramList), null, 2);
+    },
+    // 测试请求只合并输入，输出定义不得混入生成的请求参数。
+    paramList() {
+      return mergeIntegrationParams(withPatternMode(this.handlerPattern, 'input'), this.integration && this.integration.config && this.integration.config.param, 'input', this.integration && this.integration.handler);
     }
   },
   watch: {
-    integration: {
-      handler: function(val) {
-        if (val.config.input) {
-          this.paramList = val.config.input.paramList;
-        }
-      },
-      deep: true
-      // immediate: true
-    },
     computedContent: {
       handler: function(val) {
-        this.content = val;
+        // 仅更新未经手动修改的示例；异步规范回显和参数变更不得清空用户测试数据。
+        if (this.content === this.lastGeneratedContent) this.content = val;
+        this.lastGeneratedContent = val;
       },
-      deep: true
+      immediate: true
     }
   }
 };
