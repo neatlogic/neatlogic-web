@@ -13,6 +13,7 @@
           <VueCropper
             ref="cropper"
             :img="picUrl"
+            outputType="jpeg"
             :autoCrop="true"
             centerBox
             fixed
@@ -50,7 +51,7 @@
         <Upload v-bind="uploadConfig">
           <Button>{{ $t('term.framework.uploadagain') }}</Button>
         </Upload>
-        <Button type="primary" class="save-button" @click="save">{{ $t('page.save') }}</Button>
+        <Button type="primary" class="save-button" @click="save">{{ $t('page.confirm') }}</Button>
       </div>
     </TsDialog>
   </div>
@@ -73,7 +74,7 @@ export default {
       previewSmall: {},
       previewBig: {},
       uploadConfig: {
-        action: BASEURLPREFIX + '/api/binary/user/avatar/upload',
+        action: BASEURLPREFIX + '/api/binary/image/upload',
         accept: '.jpg,.jpeg,.png',
         format: ['jpg', 'jpeg', 'png'],
         showUploadList: false,
@@ -112,17 +113,17 @@ export default {
         zoom: 100 / preview.w
       };
     },
+    // 裁剪图片仅上传为候选头像，由基本信息页确认后统一保存用户信息。
     save() {
       this.$refs.cropper.getCropBlob(picFile => {
         const formData = new FormData();
-        formData.append('upload', picFile);
+        formData.append('upload', picFile, 'avatar.jpg');
 
         this.$api.framework.user
-          .uploadAvatar(formData)
+          .uploadAvatarPreview(formData)
           .then(res => {
             if (res.uploaded === true) {
-              this.$Message.success(this.$t('message.updatesuccess'));
-              this.$store.dispatch('getUserInfo');
+              this.$emit('change', res.url);
             } else throw res;
           })
           .catch(res => {

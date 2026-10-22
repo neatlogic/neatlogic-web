@@ -230,7 +230,7 @@ export default {
         language: this.currentLanguage
       });
     },
-    /** 注册只服务于当前模型的业务补全与悬浮扩展。 */
+    /** 注册只服务于当前模型的业务补全、悬浮和可选模型生命周期扩展。 */
     registerLanguageExtension() {
       this.disposeLanguageExtension();
       const extension = this.languageExtension;
@@ -283,6 +283,16 @@ export default {
             }) || [];
           }
         }));
+      }
+      if (typeof extension.setup === 'function') {
+        const disposable = extension.setup({
+          monaco: this.monaco,
+          model: this.modelInstance,
+          editor: this.editor
+        });
+        if (disposable && typeof disposable.dispose === 'function') {
+          this.languageDisposableList.push(disposable);
+        }
       }
     },
     disposeLanguageExtension() {
@@ -365,7 +375,7 @@ export default {
       if (!this.editor || !position) {
         return;
       }
-      const lineNumber = Math.max(1, Number(position.line || position.lineNumber || 1));
+      const lineNumber = Math.max(1, Number(position.line || position.lineNumber || position.startLine || position.startLineNumber || 1));
       const column = Math.max(1, Number(position.column || position.startColumn || 1));
       this.editor.setPosition({ lineNumber, column });
       this.editor.revealPositionInCenter({ lineNumber, column });
@@ -380,7 +390,7 @@ export default {
         return;
       }
       const markerList = (this.markerList || []).map(marker => {
-        const startLineNumber = Math.max(1, Number(marker.line || marker.lineNumber || marker.startLineNumber || 1));
+        const startLineNumber = Math.max(1, Number(marker.line || marker.lineNumber || marker.startLine || marker.startLineNumber || 1));
         const startColumn = Math.max(1, Number(marker.column || marker.startColumn || 1));
         return {
           severity: this.getMarkerSeverity(marker),

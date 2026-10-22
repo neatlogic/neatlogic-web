@@ -681,7 +681,7 @@ export default {
         if (returnData && returnData.pageCount > 0) {
           this.reachPage = nodeList.length == 0 ? returnData.pageCount : returnData.currentPage;
           this.pageCount = returnData.pageCount;
-          if (returnData.pageCount > 1 && !this.$utils.isEmpty(nodeList) && nodeList.length > 0) {
+          if (this.mode !== 'group' && returnData.pageCount > 1 && !this.$utils.isEmpty(nodeList) && nodeList.length > 0) {
             // nodeList为空，后端接口pageCount大于1，表格输入组件，/*  */会默认选中第一个更多请搜索的选项
             nodeList.push(this.moreSearchTip);
           }
@@ -1126,19 +1126,26 @@ export default {
           let isCancelToken = res.isCancelToken || false;
           if (this.isReachBottomSearch && this.currentPage > 1 && !this.$utils.isSame(this.nodeList, nodeList)) {
             if (nodeList && nodeList.length > 0) {
-              for (let i = 0; i < nodeList.length; i++) {
-                this.nodeList.push(nodeList[i]);
+              if (this.mode === 'group') {
+                this.mergeGroupNodeList(nodeList);
+              } else {
+                for (let i = 0; i < nodeList.length; i++) {
+                  this.nodeList.push(nodeList[i]);
+                }
               }
               this.delMoreSearchTip();
-              if (this.pageCount > 1) {
+              if (this.mode !== 'group' && this.pageCount > 1) {
                 this.nodeList.push(this.moreSearchTip);
               }
             }
-            this.nodeList = this.$utils.uniqueByField(this.nodeList, this.valueName); // 去重
+            if (this.mode !== 'group') {
+              this.nodeList = this.$utils.uniqueByField(this.nodeList, this.valueName); // 去重
+            }
           } else {
             this.nodeList = [];
             this.nodeList = nodeList; // 有传递的时候，拿到所有的值
           }
+          this.syncGroupExpandMap(true);
           this.creatNewItem(query);
           this.nodeList.splice(0, {});
           this.updatePosition();
@@ -1162,6 +1169,27 @@ export default {
         .catch(() => {
           this.loading = false;
         });
+    },
+    mergeGroupNodeList(nodeList) {
+      // 分组分页需要合并同一父分组，并按实际选项值去重子项。
+      nodeList.forEach(parentNode => {
+        const parentValue = parentNode[this.parentValueName];
+        const currentParent = this.nodeList.find(item => item[this.parentValueName] === parentValue);
+        if (!currentParent) {
+          this.nodeList.push(parentNode);
+          return;
+        }
+        const currentChildren = Array.isArray(currentParent[this.childrenName]) ? currentParent[this.childrenName] : [];
+        const appendChildren = Array.isArray(parentNode[this.childrenName]) ? parentNode[this.childrenName] : [];
+        const valueSet = new Set(currentChildren.map(item => item[this.valueName]));
+        appendChildren.forEach(item => {
+          if (!valueSet.has(item[this.valueName])) {
+            currentChildren.push(item);
+            valueSet.add(item[this.valueName]);
+          }
+        });
+        this.$set(currentParent, this.childrenName, currentChildren);
+      });
     },
     delMoreSearchTip() {
       for (let key = 0; key < this.nodeList.length; key++) {

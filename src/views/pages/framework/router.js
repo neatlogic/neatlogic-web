@@ -49,6 +49,10 @@ const runnerManage = () => import('./runner/runner-manage.vue'); // runner管理
 const threadpool = () => import('@/views/pages/framework/healthcheck/threadpool.vue');
 const sqldump = () => import('./healthcheck/sqldump.vue');
 const databaseFragment = () => import('./healthcheck/database-fragment.vue');
+const selfCheckScenarioManage = () => import('./selfcheck/scenario-manage.vue');
+const selfCheckScenarioEdit = () => import('./selfcheck/scenario-edit.vue');
+const selfCheckScenarioRun = () => import('./selfcheck/scenario-run.vue');
+const selfCheckRunManage = () => import('./selfcheck/run-manage.vue');
 
 const dataWarehouseManage = () => import('./datawarehouse/datawarehouse-manage.vue');
 const fileManage = () => import('./file/file-manage.vue');
@@ -727,6 +731,51 @@ let routerList = [
       ismenu: true,
       icon: 'tsfont-plugin',
       authority: 'ADMIN',
+      type: 'healthcheck'
+    }
+  },
+  {
+    path: '/scenario-manage',
+    name: 'scenario-manage',
+    component: selfCheckScenarioManage,
+    meta: {
+      title: $t('router.framework.selfcheck'),
+      ismenu: true,
+      icon: 'tsfont-check-s',
+      authority: 'SELF_CHECK_VIEW',
+      type: 'healthcheck'
+    }
+  },
+  {
+    path: '/scenario-edit',
+    name: 'scenario-edit',
+    component: selfCheckScenarioEdit,
+    meta: {
+      title: $t('router.framework.selfcheckedit'),
+      ismenu: false,
+      authority: 'SELF_CHECK_MODIFY',
+      type: 'healthcheck'
+    }
+  },
+  {
+    path: '/scenario-run',
+    name: 'scenario-run',
+    component: selfCheckScenarioRun,
+    meta: {
+      title: $t('router.framework.selfcheckexecute'),
+      ismenu: false,
+      authority: ['SELF_CHECK_VIEW', 'SELF_CHECK_EXECUTE'],
+      type: 'healthcheck'
+    }
+  },
+  {
+    path: '/run-manage',
+    name: 'run-manage',
+    component: selfCheckRunManage,
+    meta: {
+      title: $t('router.framework.selfcheckrun'),
+      ismenu: false,
+      authority: 'SELF_CHECK_VIEW',
       type: 'healthcheck'
     }
   },

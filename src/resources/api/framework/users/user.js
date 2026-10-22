@@ -46,6 +46,14 @@ export default {
     //   headers: { 'Content-Type': 'multipart/form-data' }
     // });
   },
+  // 仅保存待选头像图片，用户信息在基本信息页确认保存后再更新。
+  uploadAvatarPreview(formData) {
+    return fetch(BASEURLPREFIX + '/api/binary/image/upload', {
+      method: 'post',
+      credentials: 'same-origin',
+      body: formData
+    }).then(res => res.json());
+  },
   //修改密码
   updatePwd(data) {
     return axios.post('/api/rest/user/password/update', data);

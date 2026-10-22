@@ -11,9 +11,10 @@
             <TabPane :label="$t('page.basicinfo')" name="usersetting" :tab="userSettingTabsName">
               <TsForm ref="usersetting" v-model="formValue" :itemList="formSetting">
                 <template v-slot:avatar>
-                  <AvatarSetting class="avatar-upload">
+                  <AvatarSetting class="avatar-upload" @change="changeAvatar">
                     <TsAvatar
                       v-bind="userInfo"
+                      :avatar="formValue.avatar"
                       size="72"
                       class="avatar"
                       :data-content="$t('term.framework.changeavatar')"
@@ -335,6 +336,7 @@ export default {
           const {teamRoleList = []} = res.Return || {};
           this.teamRoleList = teamRoleList;
           this.userInfo = res.Return || {};
+          this.$set(this.formValue, 'avatar', this.userInfo.avatar || '');
           this.formSetting.forEach(item => {
             if (item && item.type != 'slot') {
               this.$set(this.formValue, item.name, this.userInfo[item.name] || '');
@@ -342,6 +344,10 @@ export default {
           });
         }
       });
+    },
+    // 只更新表单内的候选头像，保存成功前不修改全局用户信息。
+    changeAvatar(avatar) {
+      this.$set(this.formValue, 'avatar', avatar);
     },
     getCurrentUserToken() {
       this.$api.common.getCurrentUserToken().then(res => {
@@ -427,8 +433,19 @@ export default {
           data.roleUuidList = '';
         }
         data.roleUuidList = _this.userInfo.roleUuidList;
+        const avatar = this.formValue.avatar || '';
+        const hasAvatarChange = avatar && avatar !== (this.userInfo.avatar || '');
+        if (hasAvatarChange) {
+          // 合并原有扩展信息，避免保存头像时覆盖用户的其他设置。
+          data.userInfo = JSON.stringify({ ...JSON.parse(this.userInfo.userInfo || '{}'), avatar });
+        }
         this.$api.framework.user.saveCurrentUser(data).then(res => {
           if (res.Status == 'OK') {
+            if (hasAvatarChange) {
+              // 使用本次实际提交的头像，避免异步保存期间的新候选头像被误认为已保存。
+              this.$set(this.userInfo, 'avatar', avatar);
+              this.$set(this.userInfo, 'userInfo', data.userInfo);
+            }
             this.$store.dispatch('getUserInfo');
             this.$Message.success(this.$t('message.savesuccess'));
           }
