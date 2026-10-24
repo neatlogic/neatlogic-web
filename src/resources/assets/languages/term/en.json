@@ -1098,7 +1098,7 @@
     "customtoollibrary": "Custom Tool Library",
     "toollibrary": "Tool Library",
     "hasauthinfo": "Users with permission can add custom tools or tool library tools in this category to combination tools.",
-    "hasauthtip": "Users with permission can review versions in this category in the custom tool library and are also authorized to use this category.",
+    "hasauthtip": "Users with permissions can review versions under this classification in the combined tool library, and also have authorization to use custom tools or library tools under this classification.",
     "auditauthorization": "Audit Authorization",
     "libraryusageinstructions": "Tool Library Usage Instructions",
     "alltemplates": "All Templates",
