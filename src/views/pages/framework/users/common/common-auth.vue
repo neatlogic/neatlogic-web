@@ -32,7 +32,7 @@
                   <Checkbox :label="citem.name" :disabled="isDisabled(citem, item.name) || isReadOnly()">
                     <span class="auth-checkbox-name">{{ citem.displayName }}</span>
                   </Checkbox>
-                  <!-- 来源作为文本逐行展示，名称中的 HTML 字符不会被执行。 -->
+                  <!-- 仅展示优先来源，国际化文案采用文本插值，名称中的 HTML 字符不会被执行。 -->
                   <div slot="content">
                     <div v-for="(tip, tipIndex) in getReadonlyAuthTips(citem, item.name)" :key="tipIndex">{{ tip }}</div>
                   </div>
@@ -116,14 +116,23 @@ export default {
   beforeMount() {},
   mounted() {},
   methods: {
-    //代码授权保持原提示；继承权限按权限组和编码查找全部路径，无路径时兼容旧接口。
+    //代码授权保持原提示；仅用后端排序后的首个来源，通过完整句式翻译拼装文案。
     getReadonlyAuthTips(row, groupName) {
       if (this.isCodeAuth(row, groupName)) {
         return [this.$t('term.framework.codeauthreadonly')];
       }
-      const message = this.$t('term.framework.notcancelauth');
-      const paths = (this.roleAuthSourcePathMap[groupName] || {})[row.name] || [];
-      return paths.length ? paths.map(path => `${message}，${this.$t('page.path')}：${path}`) : [message];
+      const source = (this.roleAuthSourcePathMap[groupName] || {})[row.name];
+      if (!source || !source.roleName) {
+        return [this.$t('term.framework.notcancelauth')];
+      }
+      //分组与角色名称是原始业务数据，只有提示句式由语言包翻译。
+      if (source.teamUuid) {
+        const names = source.teamPathNameList || [];
+        return names.length
+          ? [this.$t('term.framework.teamroleauthsource', {roleName: source.roleName, teamPath: names.join('/')})]
+          : [this.$t('term.framework.notcancelauth')];
+      }
+      return [this.$t('term.framework.roleauthsource', {roleName: source.roleName})];
     },
     //角色继承和代码授权均不可取消；传入权限组，避免跨组误匹配。
     isDisabled(row, groupName) {
@@ -200,12 +209,14 @@ export default {
     }
   },
   computed: {
-    //嵌套索引避免跨权限组误匹配，合并重复路径且保留后端的来源顺序。
+    //嵌套索引避免跨权限组误匹配；只保留每项权限排序后的首个来源，不按显示文字重新排序。
     roleAuthSourcePathMap() {
       const result = Object.create(null);
       this.authRoleAuthSourcePathList.forEach(source => {
         const group = result[source.authGroup] || (result[source.authGroup] = Object.create(null));
-        group[source.auth] = [...new Set([...(group[source.auth] || []), ...(source.sourcePathList || [])])];
+        if (!group[source.auth] && source.sourcePathList && source.sourcePathList.length) {
+          group[source.auth] = source.sourcePathList[0];
+        }
       });
       return result;
     },

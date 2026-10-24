@@ -2125,6 +2125,8 @@
     "unselectedchild": "No Child Nodes Selected",
     "selectedtarget": "Select Target",
     "notcancelauth": "Inherit Role Permissions And Prevent Authorization Revocation",
+    "roleauthsource": "Inherited role permission; authorization cannot be revoked. Source: role \"{roleName}\"",
+    "teamroleauthsource": "Inherited role permission; authorization cannot be revoked. Source: role \"{roleName}\" from group \"{teamPath}\"",
     "filterbypermission": "Filter By Permission",
     "filterbyrole": "Filter By Role",
     "importfromuserlist": "Import From User List",
