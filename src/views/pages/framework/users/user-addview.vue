@@ -147,6 +147,7 @@
                   :authList="authList"
                   :authUserSelectList="authUserSelectList"
                   :authRoleSelectList="authRoleSelectList"
+                  :authRoleAuthSourcePathList="authRoleAuthSourcePathList"
                   :readOnly="readonly"
                 ></CommonAuth>
                 <Button
@@ -372,6 +373,7 @@ export default {
       userDetail: null, //用户详情
       tabsName: null, //tabs标签
       authRoleSelectList: {}, //角色授权选中回显列表
+      authRoleAuthSourcePathList: [], //已保存的角色来源路径，仅用于只读权限提示。
       authUserSelectList: {}, //用户授权选中回显列表
       formShow: false,
       path: '', //跳转路径
@@ -612,6 +614,12 @@ export default {
               this.$Message.success(this.$t('message.savesuccess'));
               this.defaultUserDataTab = this.$refs.userForm ? this.$refs.userForm.getFormValue() : null;
               this.userData = this.getData();
+              //基本信息保存后重新读取分组和角色的真实继承路径。
+              return this.getAuthSelect(this.uuid).then(() => this.$nextTick()).then(() => {
+                //刷新后同步已保存快照，避免新角色覆盖直接授权时误报授权未保存。
+                this.userTabsAuthList = this.$refs.commonAuth ? this.$utils.deepClone(this.$refs.commonAuth.authSelectList) : null;
+                this.userData = this.getData();
+              });
             }
           })
           .finally(() => { this.isLoading = false; });
@@ -679,13 +687,16 @@ export default {
       let data = {
         userUuid: uuid
       };
-      this.$api.common.getUserAuth(data).then(res => {
+      //返回请求，保证基本信息保存的加载状态覆盖来源刷新过程。
+      return this.$api.common.getUserAuth(data).then(res => {
         if (res.Status == 'OK') {
           let userAuthList = this.$utils.deepClone(res.Return.userAuthObj);
           this.authUserSelectList = userAuthList;
           this.defaultAuthUserSelectList = userAuthList; // 修复切换到基本信息，选择不保存，再次切换到授权tab时，没有恢复为原始数据
           let userRoleAuthList = this.$utils.deepClone(res.Return.userRoleAuthObj);
           this.authRoleSelectList = userRoleAuthList;
+          //旧接口未返回来源时回退统一提示，避免保留上一次用户的数据。
+          this.authRoleAuthSourcePathList = res.Return.userRoleAuthSourcePathList || [];
         }
       });
     },
@@ -782,6 +793,8 @@ export default {
     },
     //角色下拉框修改
     roleChange(val) {
+      //未保存的角色选择不能复用已保存角色的来源路径。
+      this.authRoleAuthSourcePathList = [];
       const list = val.map(item => {
         var index = item.lastIndexOf('#');
         return item.substring(index + 1, item.length);

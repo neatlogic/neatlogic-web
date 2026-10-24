@@ -27,12 +27,15 @@
                   theme="light"
                   max-width="300"
                   :disabled="!isDisabled(citem, item.name)"
-                  :content="isCodeAuth(citem, item.name) ? $t('term.framework.codeauthreadonly') : $t('term.framework.notcancelauth')"
                   transfer
                 >
                   <Checkbox :label="citem.name" :disabled="isDisabled(citem, item.name) || isReadOnly()">
                     <span class="auth-checkbox-name">{{ citem.displayName }}</span>
                   </Checkbox>
+                  <!-- 来源作为文本逐行展示，名称中的 HTML 字符不会被执行。 -->
+                  <div slot="content">
+                    <div v-for="(tip, tipIndex) in getReadonlyAuthTips(citem, item.name)" :key="tipIndex">{{ tip }}</div>
+                  </div>
                 </Tooltip>
                 <Tooltip
                   class="auth-name-tooltip"
@@ -87,6 +90,11 @@ export default {
         return [];
       }
     },
+    //来源仅影响提示，不参与权限勾选、禁用和保存；旧调用方可不传。
+    authRoleAuthSourcePathList: {
+      type: Array,
+      default: () => []
+    },
     //后端展开的代码权限只用于勾选和禁用，默认不影响普通用户授权入口。
     authCodeSelectList: {
       type: Object,
@@ -108,6 +116,15 @@ export default {
   beforeMount() {},
   mounted() {},
   methods: {
+    //代码授权保持原提示；继承权限按权限组和编码查找全部路径，无路径时兼容旧接口。
+    getReadonlyAuthTips(row, groupName) {
+      if (this.isCodeAuth(row, groupName)) {
+        return [this.$t('term.framework.codeauthreadonly')];
+      }
+      const message = this.$t('term.framework.notcancelauth');
+      const paths = (this.roleAuthSourcePathMap[groupName] || {})[row.name] || [];
+      return paths.length ? paths.map(path => `${message}，${this.$t('page.path')}：${path}`) : [message];
+    },
     //角色继承和代码授权均不可取消；传入权限组，避免跨组误匹配。
     isDisabled(row, groupName) {
       const groups = groupName ? [groupName] : Object.keys(this.authRoleSelectList);
@@ -183,6 +200,15 @@ export default {
     }
   },
   computed: {
+    //嵌套索引避免跨权限组误匹配，合并重复路径且保留后端的来源顺序。
+    roleAuthSourcePathMap() {
+      const result = Object.create(null);
+      this.authRoleAuthSourcePathList.forEach(source => {
+        const group = result[source.authGroup] || (result[source.authGroup] = Object.create(null));
+        group[source.auth] = [...new Set([...(group[source.auth] || []), ...(source.sourcePathList || [])])];
+      });
+      return result;
+    },
     //生成独立的勾选并集，CheckboxGroup 的交互不会修改父组件传入的授权数据。
     displayAuthSelectList() {
       const groups = new Set([...Object.keys(this.authSelectList), ...Object.keys(this.authRoleSelectList), ...Object.keys(this.authCodeSelectList)]);
