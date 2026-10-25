@@ -169,6 +169,7 @@
     "targetattrscanotdel": "The {target} attribute has been referenced by the form and cannot be deleted",
     "dataspftdesc": "Data specifications define input and output parameters. If the data returned by the API does not meet the data specification requirements, it must be converted according to the specification. Otherwise, normal use will be affected.",
     "tokentip": "Bearer Token authentication supports methods such as OAuth. Enter the token obtained from the authentication server into the input box below.",
+    "hmactip": "Current user uses the identity of the user executing the integration. A specified user always uses that user’s identity for Hmac authentication.",
     "apitip": "Internal authentication is mainly used to convert internal APIs, and the system automatically transmits the current user authentication information. If the user login information cannot be obtained, access fails.",
     "noauthtip": "The current request does not require any authentication",
     "jshelp": "Write JavaScript to convert the original request parameter format into the data format required by the target address. If the original request parameter is not in JSON format or no conversion rule is defined, the original request parameter is transmitted directly. Only ES5 syntax is supported.",
