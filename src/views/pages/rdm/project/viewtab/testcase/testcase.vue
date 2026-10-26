@@ -9,7 +9,7 @@
           <span class="action-item tsfont-os" @click="editDisplayAttr()">
             {{ $t('term.rdm.attrsetting') }}
           </span>
-          <span class="action-item tsfont-upload" @click="importTestcase()">{{ $t('term.rdm.importtestcase') }}</span>
+          <!-- <span class="action-item tsfont-upload" @click="importTestcase()">{{ $t('term.rdm.importtestcase') }}</span> -->
           <span class="action-item" @click="addIssue()">
             <Button type="success">
               <span class="tsfont-plus">{{ $t('term.rdm.testcase') }}</span>

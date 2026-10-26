@@ -62,14 +62,14 @@
         <CatalogList :appId="appId" :projectId="projectId" @changeCatalog="changeCatalog"></CatalogList>
       </template>
       <template v-slot:content>
-        <StoryOverview
+        <!-- <StoryOverview
           v-if="isReady && appData"
           ref="storyOverview"
           :projectId="projectId"
           :app="appData"
           :catalog="currentCatalog"
           @filter-change="changeOverviewFilter"
-        ></StoryOverview>
+        ></StoryOverview> -->
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
@@ -105,7 +105,7 @@ export default {
     AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
     EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
     IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
-    StoryOverview: () => import('@/views/pages/rdm/project/viewtab/story/story-overview.vue'),
+    // StoryOverview: () => import('@/views/pages/rdm/project/viewtab/story/story-overview.vue'),
     CatalogList: () => import('@/views/pages/rdm/project/viewtab/components/catalog-list.vue'),
     AttrSettingDialog: () => import('@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue'),
     EditViewDialog: () => import('@/views/pages/rdm/project/viewtab/components/edit-view-dialog.vue')

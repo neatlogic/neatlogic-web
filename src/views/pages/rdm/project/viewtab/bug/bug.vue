@@ -30,13 +30,13 @@
         </div>
       </template>
       <template v-slot:content>
-        <BugOverview
+        <!-- <BugOverview
           v-if="isReady && appData"
           ref="bugOverview"
           :projectId="projectId"
           :app="appData"
           @filter-change="changeOverviewFilter"
-        ></BugOverview>
+        ></BugOverview> -->
         <IssueList
           v-if="isReady && appData"
           ref="issueList"
@@ -69,7 +69,7 @@ export default {
     AppTab: () => import('@/views/pages/rdm/project/viewtab/components/app-tab.vue'),
     EditIssue: () => import('@/views/pages/rdm/project/viewtab/components/edit-issue-dialog.vue'),
     IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue'),
-    BugOverview: () => import('@/views/pages/rdm/project/viewtab/bug/bug-overview.vue'),
+    // BugOverview: () => import('@/views/pages/rdm/project/viewtab/bug/bug-overview.vue'),
     AttrSettingDialog: () => import('@/views/pages/rdm/project/viewtab/components/attr-setting-dialog.vue')
   },
   mixins: [mixins],

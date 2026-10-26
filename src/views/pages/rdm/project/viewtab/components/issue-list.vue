@@ -15,9 +15,11 @@
           >{{ $t('dialog.title.linktarget', { target: getAppByType(relAppType).name }) }}</a>
         </span>
         <span v-if="canBatch" class="action-item tsfont-mark-all" @click="batchExecute()">{{ $t('term.rdm.batchprocess') }}</span>
+        <!--
         <span v-if="app && app.id" v-download="exportDownloadConfig" class="action-item tsfont-download">{{ $t('page.export') }}</span>
         <span v-if="app && app.id" v-download="templateDownloadConfig" class="action-item tsfont-download">{{ $t('term.rdm.downloadimporttemplate') }}</span>
         <span v-if="app && app.id" class="action-item tsfont-upload" @click="importIssue">{{ $t('page.import') }}</span>
+        -->
       </div>
       <div>
         <!--由于每次搜索都会更新isSearchReady，导致AttrHandler处于不可用状态，为了让某些AttrHandler可以连续输入，例如文本框，搜索绑定在点击确认和删除条件的时候触发-->
