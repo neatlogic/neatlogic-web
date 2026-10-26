@@ -122,6 +122,10 @@ export default {
         return [this.$t('term.framework.codeauthreadonly')];
       }
       const source = (this.roleAuthSourcePathMap[groupName] || {})[row.name];
+      //包含来源可以直接来自用户授权，无需角色信息；名称从当前语言的权限目录解析。
+      if (source && Array.isArray(source.includeAuthPathList) && source.includeAuthPathList.length > 1) {
+        return this.getIncludedAuthTips(source);
+      }
       if (!source || !source.roleName) {
         return [this.$t('term.framework.notcancelauth')];
       }
@@ -133,6 +137,24 @@ export default {
           : [this.$t('term.framework.notcancelauth')];
       }
       return [this.$t('term.framework.roleauthsource', {roleName: source.roleName})];
+    },
+    //按完整句式区分用户、角色和分组的包含来源，不把展示文案写入授权数据。
+    getIncludedAuthTips(source) {
+      const names = source.includeAuthPathList.map(auth => (this.authDisplayNameMap[auth.authGroup] || {})[auth.auth] || auth.auth);
+      const params = {
+        sourceAuthName: names[0],
+        authName: names[names.length - 1],
+        authPath: names.join(' → '),
+        roleName: source.roleName,
+        teamPath: (source.teamPathNameList || []).join('/')
+      };
+      if (source.teamUuid && source.roleName && params.teamPath) {
+        return [this.$t('term.framework.teamroleincludeauthsource', params)];
+      }
+      if (source.roleName) {
+        return [this.$t('term.framework.roleincludeauthsource', params)];
+      }
+      return [this.$t('term.framework.includeauthsource', params)];
     },
     //角色继承和代码授权均不可取消；传入权限组，避免跨组误匹配。
     isDisabled(row, groupName) {
@@ -209,6 +231,17 @@ export default {
     }
   },
   computed: {
+    //权限名称按组和编码查找，避免跨组串名；目录未加载或缺少定义时由提示回退编码。
+    authDisplayNameMap() {
+      const result = Object.create(null);
+      (this.authList || []).forEach(group => {
+        const names = result[group.name] || (result[group.name] = Object.create(null));
+        (group.authVoList || []).forEach(auth => {
+          names[auth.name] = auth.displayName;
+        });
+      });
+      return result;
+    },
     //嵌套索引避免跨权限组误匹配；只保留每项权限排序后的首个来源，不按显示文字重新排序。
     roleAuthSourcePathMap() {
       const result = Object.create(null);
