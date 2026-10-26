@@ -185,6 +185,9 @@ instance.interceptors.response.use(
       if (error.response.config && error.response.config.headers.unConsole) {
         //请求时多携带{unConsole: 1}默认为异常不需要用通用类的异常抛出
         //console.log(error.response.data.Message || error.response.data);
+      } else if (error.response.status === 520 && error.response.config?.localBusinessError === true) {
+        // 调用方仅接管业务异常，登录、权限及其他系统异常仍使用原全局处理。
+        return Promise.reject(error);
       } else if (error.response.data instanceof Blob) {
         const reader = new FileReader();
         reader.onload = () => {
