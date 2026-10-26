@@ -27,12 +27,15 @@
                   theme="light"
                   max-width="300"
                   :disabled="!isDisabled(citem, item.name)"
-                  :content="isCodeAuth(citem, item.name) ? $t('term.framework.codeauthreadonly') : $t('term.framework.notcancelauth')"
                   transfer
                 >
                   <Checkbox :label="citem.name" :disabled="isDisabled(citem, item.name) || isReadOnly()">
                     <span class="auth-checkbox-name">{{ citem.displayName }}</span>
                   </Checkbox>
+                  <!-- 仅展示优先来源，国际化文案采用文本插值，名称中的 HTML 字符不会被执行。 -->
+                  <div slot="content">
+                    <div v-for="(tip, tipIndex) in getReadonlyAuthTips(citem, item.name)" :key="tipIndex">{{ tip }}</div>
+                  </div>
                 </Tooltip>
                 <Tooltip
                   class="auth-name-tooltip"
@@ -87,6 +90,11 @@ export default {
         return [];
       }
     },
+    //来源仅影响提示，不参与权限勾选、禁用和保存；旧调用方可不传。
+    authRoleAuthSourcePathList: {
+      type: Array,
+      default: () => []
+    },
     //后端展开的代码权限只用于勾选和禁用，默认不影响普通用户授权入口。
     authCodeSelectList: {
       type: Object,
@@ -108,6 +116,24 @@ export default {
   beforeMount() {},
   mounted() {},
   methods: {
+    //代码授权保持原提示；仅用后端排序后的首个来源，通过完整句式翻译拼装文案。
+    getReadonlyAuthTips(row, groupName) {
+      if (this.isCodeAuth(row, groupName)) {
+        return [this.$t('term.framework.codeauthreadonly')];
+      }
+      const source = (this.roleAuthSourcePathMap[groupName] || {})[row.name];
+      if (!source || !source.roleName) {
+        return [this.$t('term.framework.notcancelauth')];
+      }
+      //分组与角色名称是原始业务数据，只有提示句式由语言包翻译。
+      if (source.teamUuid) {
+        const names = source.teamPathNameList || [];
+        return names.length
+          ? [this.$t('term.framework.teamroleauthsource', {roleName: source.roleName, teamPath: names.join('/')})]
+          : [this.$t('term.framework.notcancelauth')];
+      }
+      return [this.$t('term.framework.roleauthsource', {roleName: source.roleName})];
+    },
     //角色继承和代码授权均不可取消；传入权限组，避免跨组误匹配。
     isDisabled(row, groupName) {
       const groups = groupName ? [groupName] : Object.keys(this.authRoleSelectList);
@@ -183,6 +209,17 @@ export default {
     }
   },
   computed: {
+    //嵌套索引避免跨权限组误匹配；只保留每项权限排序后的首个来源，不按显示文字重新排序。
+    roleAuthSourcePathMap() {
+      const result = Object.create(null);
+      this.authRoleAuthSourcePathList.forEach(source => {
+        const group = result[source.authGroup] || (result[source.authGroup] = Object.create(null));
+        if (!group[source.auth] && source.sourcePathList && source.sourcePathList.length) {
+          group[source.auth] = source.sourcePathList[0];
+        }
+      });
+      return result;
+    },
     //生成独立的勾选并集，CheckboxGroup 的交互不会修改父组件传入的授权数据。
     displayAuthSelectList() {
       const groups = new Set([...Object.keys(this.authSelectList), ...Object.keys(this.authRoleSelectList), ...Object.keys(this.authCodeSelectList)]);

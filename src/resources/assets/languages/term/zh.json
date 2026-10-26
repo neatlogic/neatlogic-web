@@ -2123,6 +2123,8 @@
     "unselectedchild": "未选中子节点",
     "selectedtarget": "选中目标",
     "notcancelauth": "继承角色权限，不允许取消授权",
+    "roleauthsource": "继承角色权限，不允许取消授权，路径：【{roleName}】角色",
+    "teamroleauthsource": "继承角色权限，不允许取消授权，路径：【{teamPath}】分组的【{roleName}】角色",
     "filterbypermission": "按权限过滤",
     "filterbyrole": "按角色过滤",
     "importfromuserlist": "从用户列表导入",
