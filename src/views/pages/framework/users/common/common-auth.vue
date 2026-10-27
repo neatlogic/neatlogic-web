@@ -22,10 +22,11 @@
                 :key="cindex"
                 class="auth-option"
               >
+                <!-- 来源提示最大宽度扩大至600px，减少多来源摘要及包含关系的换行。 -->
                 <Tooltip
                   class="auth-checkbox-tooltip"
                   theme="light"
-                  max-width="300"
+                  max-width="600"
                   :disabled="!isDisabled(citem, item.name)"
                   transfer
                 >
