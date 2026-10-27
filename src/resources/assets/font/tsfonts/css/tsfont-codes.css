@@ -617,3 +617,5 @@
 .tsfont-cardview:before { content: '\ea6b'; } /* '' */
 .tsfont-document-directory:before { content: '\ea6c'; } /* '' */
 .tsfont-moveto:before { content: '\ea6d'; } /* '' */
+.tsfont-collapse-panel:before { content: '\ea6e'; } /* '' */
+.tsfont-expand-panel:before { content: '\ea6f'; } /* '' */
