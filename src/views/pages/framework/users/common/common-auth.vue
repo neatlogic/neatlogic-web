@@ -32,9 +32,13 @@
                   <Checkbox :label="citem.name" :disabled="isDisabled(citem, item.name) || isReadOnly()">
                     <span class="auth-checkbox-name">{{ citem.displayName }}</span>
                   </Checkbox>
-                  <!-- 仅展示优先来源，国际化文案采用文本插值，名称中的 HTML 字符不会被执行。 -->
+                  <!-- 同一份来源数据生成摘要和编号详情，全部文案使用文本插值，包含关系单独换行。 -->
                   <div slot="content">
-                    <div v-for="(tip, tipIndex) in getReadonlyAuthTips(citem, item.name)" :key="tipIndex">{{ tip }}</div>
+                    <div :class="getReadonlyAuthTips(citem, item.name).details.length ? 'mb-md' : ''">{{ getReadonlyAuthTips(citem, item.name).summary }}</div>
+                    <div v-for="(tip, tipIndex) in getReadonlyAuthTips(citem, item.name).details" :key="tipIndex" class="mb-md">
+                      <div>{{ $t('term.framework.authsourcenumber', {index: tipIndex + 1, description: tip.description}) }}</div>
+                      <div v-if="tip.includePath" class="pl-md">{{ tip.includePath }}</div>
+                    </div>
                   </div>
                 </Tooltip>
                 <Tooltip
@@ -116,45 +120,48 @@ export default {
   beforeMount() {},
   mounted() {},
   methods: {
-    //代码授权保持原提示；仅用后端排序后的首个来源，通过完整句式翻译拼装文案。
+    //代码授权和空来源沿用原提示；其余来源按接口顺序生成摘要和详情，不合并同名来源。
     getReadonlyAuthTips(row, groupName) {
       if (this.isCodeAuth(row, groupName)) {
-        return [this.$t('term.framework.codeauthreadonly')];
+        return {summary: this.$t('term.framework.codeauthreadonly'), details: []};
       }
-      const source = (this.roleAuthSourcePathMap[groupName] || {})[row.name];
-      //包含来源可以直接来自用户授权，无需角色信息；名称从当前语言的权限目录解析。
-      if (source && Array.isArray(source.includeAuthPathList) && source.includeAuthPathList.length > 1) {
-        return this.getIncludedAuthTips(source);
+      const sources = (this.roleAuthSourcePathMap[groupName] || {})[row.name] || [];
+      if (!sources.length) {
+        return {summary: this.$t('term.framework.notcancelauth'), details: []};
       }
-      if (!source || !source.roleName) {
-        return [this.$t('term.framework.notcancelauth')];
-      }
-      //分组与角色名称是原始业务数据，只有提示句式由语言包翻译。
-      if (source.teamUuid) {
-        const names = source.teamPathNameList || [];
-        return names.length
-          ? [this.$t('term.framework.teamroleauthsource', {roleName: source.roleName, teamPath: names.join('/')})]
-          : [this.$t('term.framework.notcancelauth')];
-      }
-      return [this.$t('term.framework.roleauthsource', {roleName: source.roleName})];
+      const details = sources.map(source => this.getReadonlyAuthSource(source));
+      return {
+        summary: this.$t('term.framework.authsourcesummary', {
+          count: details.length,
+          sources: details.map(detail => detail.label).join(this.$t('term.framework.authsourceseparator'))
+        }),
+        details
+      };
     },
-    //按完整句式区分用户、角色和分组的包含来源，不把展示文案写入授权数据。
-    getIncludedAuthTips(source) {
-      const names = source.includeAuthPathList.map(auth => (this.authDisplayNameMap[auth.authGroup] || {})[auth.auth] || auth.auth);
+    //每个来源独立生成标签和说明；缺失资料保留该条回退提示，避免摘要数量与详情不一致。
+    getReadonlyAuthSource(source) {
+      const info = source || {};
+      const path = Array.isArray(info.includeAuthPathList) ? info.includeAuthPathList : [];
+      const isIncluded = path.length > 1;
+      const names = path.map(auth => (this.authDisplayNameMap[auth.authGroup] || {})[auth.auth] || auth.auth);
       const params = {
         sourceAuthName: names[0],
-        authName: names[names.length - 1],
         authPath: names.join(' → '),
-        roleName: source.roleName,
-        teamPath: (source.teamPathNameList || []).join('/')
+        roleName: info.roleName,
+        teamPath: (info.teamPathNameList || []).join('/')
       };
-      if (source.teamUuid && source.roleName && params.teamPath) {
-        return [this.$t('term.framework.teamroleincludeauthsource', params)];
+      if ((!isIncluded && !info.roleName) || (info.teamUuid && (!info.roleName || !params.teamPath))) {
+        return {label: this.$t('term.framework.authsourceunknown'), description: this.$t('term.framework.notcancelauth'), includePath: ''};
       }
-      if (source.roleName) {
-        return [this.$t('term.framework.roleincludeauthsource', params)];
-      }
-      return [this.$t('term.framework.includeauthsource', params)];
+      //摘要标签和详情句式分别翻译，角色、分组及权限名称保持原始值。
+      const type = info.teamUuid ? 'teamrole' : info.roleName ? 'role' : '';
+      const labelKey = type ? `authsource${type}label` : 'authsourcepermissionlabel';
+      const detailKey = `authsourcedetail${type}${isIncluded ? 'include' : ''}`;
+      return {
+        label: this.$t(`term.framework.${labelKey}`, params),
+        description: this.$t(`term.framework.${detailKey}`, params),
+        includePath: isIncluded ? this.$t('term.framework.authsourceincludepath', params) : ''
+      };
     },
     //角色继承和代码授权均不可取消；传入权限组，避免跨组误匹配。
     isDisabled(row, groupName) {
@@ -242,14 +249,12 @@ export default {
       });
       return result;
     },
-    //嵌套索引避免跨权限组误匹配；只保留每项权限排序后的首个来源，不按显示文字重新排序。
+    //按组和编码保存全部来源，同权限的多条外层记录顺序合并，不排序或去重。
     roleAuthSourcePathMap() {
       const result = Object.create(null);
       this.authRoleAuthSourcePathList.forEach(source => {
         const group = result[source.authGroup] || (result[source.authGroup] = Object.create(null));
-        if (!group[source.auth] && source.sourcePathList && source.sourcePathList.length) {
-          group[source.auth] = source.sourcePathList[0];
-        }
+        group[source.auth] = [...(group[source.auth] || []), ...(Array.isArray(source.sourcePathList) ? source.sourcePathList : [])];
       });
       return result;
     },
