@@ -5,6 +5,8 @@ import { $t } from '@/resources/init.js';
 import { assignValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/assign-valid.js';
 import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
+import { store } from '@/views/pages/process/flow/flowedit/floweditState.js';
+import { getTimerFormItemList } from '@/views/pages/process/flow/flowedit/components/timer-form-reference.js';
 
 export default {
   name: $t('term.process.timernode'),
@@ -59,15 +61,11 @@ export default {
     if (!nodeData.attributeUuid) {
       validObj.msg = $t('form.validate.required', { target: $t('term.process.circulationtime') });
       validList.push(validObj);
-    } else if (nodeData.attributeUuid) {
+    } else {
       validObj.msg = $t('term.process.formupdateselecttimevalid');
-      if (view.allFormitemList && view.allFormitemList.length > 0) {
-        let attributeUuid = view.allFormitemList.find(f => f.uuid == nodeData.attributeUuid);
-        !attributeUuid && (nodeData.attributeUuid = '') && validList.push(validObj);
-      } else {
-        nodeData.attributeUuid = '';
-        validList.push(validObj);
-      }
+      const items = getTimerFormItemList(store.currentFormConfig, view.allFormitemList, nodeData.formSceneUuid);
+      const matches = items.filter(item => item.key === nodeData.attributeKey);
+      if (!nodeData.attributeKey || matches.length !== 1 || matches[0].uuid !== nodeData.attributeUuid) validList.push(validObj);
     }
     
     return validList;

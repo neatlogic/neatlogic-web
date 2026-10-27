@@ -15,13 +15,16 @@
     <div class="permission-list">
       <TsFormSelect
         ref="timerAttributeUuid"
-        v-model="timerConfig.attributeUuid"
+        :value="timerConfig.attributeKey"
         :dataList="formDataList"
+        :historyValue="timerConfig.attributeKey ? {value: timerConfig.attributeKey, text: timerConfig.attributeKey} : null"
         :validateList="validateList"
         border="border"
         textName="label"
-        valueName="uuid"
+        valueName="key"
         :firstSelect="false"
+        :isChangeWrite="false"
+        @on-change="changeTimerAttribute"
       ></TsFormSelect>
       <div class="fz10 tsfont-info-o text-tip tip-time">{{ $t('term.process.circulationtimetip') }}</div>
     </div>
@@ -42,6 +45,7 @@
 import AssignSetting from './nodesetting/assign-setting';
 import nodemixin from './nodemixin.js';
 import {store} from '../floweditState.js';
+import {getTimerFormItemList} from './timer-form-reference.js';
 
 export default {
   name: 'Timer',
@@ -63,7 +67,8 @@ export default {
       timerConfig: {
         type: 'form', //选择类型（暂时只有表单类型）
         value: '', //自定义的默认值
-        attributeUuid: '' //表单组件的uuid
+        attributeUuid: '', //表单组件 UUID
+        attributeKey: '' //用于回显和选择的组件 key
       },
       validateList: ['required'],
       formDataList: [],
@@ -119,49 +124,14 @@ export default {
       });
     },
     getFormTimeList() {
-      let formItemList = [];
       const formConfig = this.currentFormConfig;
-      if (this.$utils.isEmpty(formConfig)) {
-        this.formDataList = [];
-        this.timerConfig.attributeUuid = '';
-        return;
-      }
-
-      const currentSceneUuid = this.configData?.stepConfig?.formSceneUuid || formConfig.defaultSceneUuid || formConfig.uuid;
-
-      //如果场景不是默认场景，需要遍历场景下的所有组件
-      if (currentSceneUuid && currentSceneUuid != formConfig.uuid) {
-        let sceneConfig = formConfig.sceneList.find(item => item.uuid === currentSceneUuid);
-        if (sceneConfig) {
-          sceneConfig.tableList.forEach(item => {
-            if (item.component) {
-              if (item.component.inherit) {
-                let component = this.allFormitemList.find(c => c.uuid === item.component.uuid);
-                if (component) {
-                  this.$set(item, 'component', component);
-                }
-              }
-            
-              if (item.component.hasValue) {
-                formItemList.push(item.component);
-              } else if (item.component.component && Array.isArray(item.component.component)) {
-                if (!this.$utils.isEmpty(item.component.component)) {
-                  formItemList.push(...item.component.component);
-                }
-              }
-            }
-          });
-        }
-      } 
-      if (!formItemList.length && this.allFormitemList.length) {
-        formItemList = this.allFormitemList;
-      }
-     
-      this.formDataList = formItemList.filter(item => item.handler == 'formdate' && item.config.isRequired);
-      if (this.timerConfig.attributeUuid) {
-        let attributeUuid = this.formDataList.find(f => f.uuid == this.timerConfig.attributeUuid);
-        !attributeUuid && (this.timerConfig.attributeUuid = '');
-      }
+      this.formDataList = getTimerFormItemList(formConfig, this.allFormitemList, this.configData.stepConfig.formSceneUuid);
+    },
+    changeTimerAttribute(key) {
+      const items = this.formDataList.filter(item => item.key === key && item.uuid);
+      if (key === this.timerConfig.attributeKey && items.length !== 1) return;
+      this.$set(this.timerConfig, 'attributeKey', key || '');
+      this.$set(this.timerConfig, 'attributeUuid', items.length === 1 ? items[0].uuid : '');
     },
     changeFormScene(sceneConfig) {
       this.$set(this.configData.stepConfig, 'formSceneUuid', sceneConfig.value);
@@ -178,11 +148,8 @@ export default {
   },
   watch: {
     currentFormConfig: {
-      handler(val) {
+      handler() {
         if (!this.isFirst) {
-          if (this.$utils.isEmpty(val)) {
-            this.$set(this.configData.stepConfig, 'formSceneUuid', '');
-          }
           this.getFormTimeList();
         }
       },

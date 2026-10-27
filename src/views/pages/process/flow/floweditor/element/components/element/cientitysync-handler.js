@@ -6,6 +6,7 @@ import { assignValid } from '@/views/pages/process/flow/floweditor/element/compo
 import { isolationValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/isolation-valid.js';
 import { nameValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/name-valid.js';
 import { notifyValid } from '@/views/pages/process/flow/floweditor/element/components/element/base/notify-valid.js';
+import { validReferences } from '@/views/pages/cmdb/flow/node/cientitysync-form-reference.js';
 export default {
   name: $t('term.process.cientitysync'),
   handler: 'cientitysync',
@@ -58,25 +59,12 @@ export default {
     const nodeConfig = node.getData();
     const nodeData = nodeConfig.stepConfig || {};
     //校验配置项同步的关联表单组件
-    if (!nodeData || !nodeData.handlerList || nodeData.handlerList.length == 0) {
+    if (!validReferences(nodeData.handlerList, nodeData.handlerKeyList, view.allFormitemList)) {
       validList.push({
         type: 'error',
         msg: $t('term.process.selectformitemvalid'),
         href: '#handlerList'
       });
-    } else if (nodeData && nodeData.handlerList && nodeData.handlerList.length > 0) {
-      for (let i = 0; i < nodeData.handlerList.length; i++) {
-        let findFormitem = view.allFormitemList.find(f => f.uuid === nodeData.handlerList[i]);
-        if (!findFormitem) {
-          nodeData.handlerList = [];
-          validList.push({
-            type: 'error',
-            msg: $t('term.process.selectformitemvalid'),
-            href: '#handlerList'
-          });
-          break;
-        }
-      }
     }
 
     return validList;

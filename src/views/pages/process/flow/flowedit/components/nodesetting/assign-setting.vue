@@ -172,15 +172,18 @@
                       <div class="text input-border custom-select">
                         <TsFormSelect
                           ref="dealValue"
-                          v-model="policyListAttributeUuidList"
+                          :value="policyListAttributeKeyList"
                           :dataList="formItemList"
+                          :historyValue="policyListAttributeKeyList.map(key => ({value: key, text: key}))"
                           textName="text"
                           valueName="value"
                           border="border"
                           :validateList="validateSelectList"
                           :firstSelect="false"
+                          :isChangeWrite="false"
                           multiple
                           transfer
+                          @on-change="changeFormAttribute"
                         ></TsFormSelect>
                       </div>
                     </div>
@@ -321,6 +324,7 @@ export default {
       processStepAssignList: [], //指派步骤
       policyListFormList: [], //表单值列表
       policyListAttributeUuidList: [], //表单值默认值
+      policyListAttributeKeyList: [], //表单组件 key
       validateSelectList: ['required'],
       executeModeList: [
         {
@@ -442,7 +446,8 @@ export default {
               this.processCopyStepUuidList = item.config.processStepUuid;
             }
             if (item.type == 'form') {
-              this.policyListAttributeUuidList = item.config.attributeUuidList;
+              this.policyListAttributeUuidList = item.config.attributeUuidList || [];
+              this.policyListAttributeKeyList = item.config.attributeKeyList || [];
             }
           });
         }
@@ -459,6 +464,7 @@ export default {
         this.processCopyStepUuidList = null;
       } else if (item.type == 'form') {
         this.policyListAttributeUuidList = [];
+        this.policyListAttributeKeyList = [];
       } else if (item.type == 'automatic') {
         item.config.handler = null;
         item.config.handlerConfig = {};
@@ -474,9 +480,9 @@ export default {
       if (plugin && plugin.length > 0) {
         plugin.forEach(plugins => {
           //只能选择用户选择器、下拉框
-          if (plugins.handler == 'formuserselect' || plugins.handler == 'formselect' || plugins.handler == 'formtext') {
+          if ((plugins.handler == 'formuserselect' || plugins.handler == 'formselect' || plugins.handler == 'formtext') && plugins.key && plugins.uuid) {
             let conf = {
-              value: plugins.uuid,
+              value: plugins.key,
               text: plugins.label
             };
             formitem.push(conf);
@@ -484,15 +490,13 @@ export default {
         });
       }
       this.$set(this, 'formItemList', formitem);
-      if (this.policyListAttributeUuidList && this.policyListAttributeUuidList.length > 0) {
-        let newPolicyListAttributeUuid = [];
-        this.policyListAttributeUuidList.forEach(item => {
-          let formItem = this.allFormitemList.find(f => f.uuid == item);
-          formItem && newPolicyListAttributeUuid.push(item);
-        });
-        newPolicyListAttributeUuid.length == 0 && (this.policyListAttributeUuidList = []);
-        newPolicyListAttributeUuid.length > 0 && (this.policyListAttributeUuidList = newPolicyListAttributeUuid);
-      }
+    },
+    changeFormAttribute(keyList) {
+      this.policyListAttributeKeyList = keyList || [];
+      this.policyListAttributeUuidList = this.policyListAttributeKeyList.map(key => {
+        const matches = (this.allFormitemList || []).filter(item => item.key === key && item.uuid && ['formuserselect', 'formselect', 'formtext'].includes(item.handler));
+        return matches.length === 1 ? matches[0].uuid : '';
+      });
     },
     saveAssignData() {
       let data = {
@@ -508,6 +512,9 @@ export default {
         }
         if (item.type == 'form') {
           item.config.attributeUuidList = this.policyListAttributeUuidList;
+          if (Object.prototype.hasOwnProperty.call(item.config, 'attributeKeyList') || this.policyListAttributeKeyList.length) {
+            item.config.attributeKeyList = this.policyListAttributeKeyList;
+          }
         }
         if (item.type == 'automatic') {
           item.config.handlerConfig = this.$refs.dispatcherForm && this.$refs.dispatcherForm[0] && this.$refs.dispatcherForm[0].saveData() || {};

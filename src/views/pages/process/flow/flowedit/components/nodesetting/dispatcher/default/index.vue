@@ -14,13 +14,16 @@
           :key="index"
           ref="item"
           v-bind="item"
-          v-model="formData[item.name]"
-          :dataList="allFormitemList"
+          :value="formData[getFormKeyName(item.name)]"
+          :dataList="formComponentList"
+          :historyValue="formData[getFormKeyName(item.name)] ? {value: formData[getFormKeyName(item.name)], text: formData[getFormKeyName(item.name)]} : null"
           :firstSelect="false"
           textName="label"
-          valueName="uuid"
+          valueName="key"
+          :isChangeWrite="false"
           border="border"
           transfer
+          @on-change="key => changeFormItem(item.name, key)"
         ></TsFormSelect>
       </template>
     </TsForm>
@@ -76,6 +79,14 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    getFormKeyName(name) {
+      return name.endsWith('Uuid') ? `${name.slice(0, -4)}Key` : `${name}Key`;
+    },
+    changeFormItem(name, key) {
+      const matches = this.formComponentList.filter(item => item.key === key);
+      this.$set(this.formData, this.getFormKeyName(name), key || '');
+      this.$set(this.formData, name, matches.length === 1 ? matches[0].uuid : '');
+    },
     init() {
       this.formData = {};
       this.initItem();
@@ -115,6 +126,13 @@ export default {
           }
         });
       }
+      if (this.currentFormitemList.some(item => {
+        const uuid = this.formData[item.name];
+        const key = this.formData[this.getFormKeyName(item.name)];
+        if (!uuid && !key) return false;
+        const matches = this.formComponentList.filter(component => component.key === key);
+        return matches.length !== 1 || matches[0].uuid !== uuid;
+      })) isValid = false;
       return isValid;
     },
     saveData() {
@@ -139,7 +157,11 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    formComponentList() {
+      return this.allFormitemList.filter(item => item && item.key && item.uuid);
+    }
+  },
   watch: {
     formConfig: {
       handler(list) {

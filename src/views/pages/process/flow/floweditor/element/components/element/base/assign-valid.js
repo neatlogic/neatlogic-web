@@ -40,19 +40,19 @@ const assignValid = {
               let type = policyList[i].type;
               if (keyConfig[type]) {
                 let value = keyConfig[type].value;
-                if (type == 'form' && policyList[i].config.attributeUuidList) {
-                  if (view.allFormitemList && view.allFormitemList.length > 0) {
-                    if (Array.isArray(policyList[i].config.attributeUuidList) && policyList[i].config.attributeUuidList.length > 0) {
-                      let newPolicyListAttributeUuid = [];
-                      policyList[i].config.attributeUuidList.forEach(item => {
-                        let formItem = view.allFormitemList.find(f => f.uuid == item);
-                        formItem && newPolicyListAttributeUuid.push(item);
-                      });
-                      newPolicyListAttributeUuid.length == 0 && (policyList[i].config.attributeUuidList = []);
-                    }
-                  } else {
-                    policyList[i].config.attributeUuidList = [];
+                if (type === 'form') {
+                  const {attributeUuidList, attributeKeyList} = policyList[i].config;
+                  const formItems = view.allFormitemList || [];
+                  const invalid = !Array.isArray(attributeKeyList) || !Array.isArray(attributeUuidList) || !attributeKeyList.length || attributeKeyList.length !== attributeUuidList.length || attributeKeyList.some((key, index) => {
+                    const matches = formItems.filter(item => item.key === key && ['formuserselect', 'formselect', 'formtext'].includes(item.handler));
+                    return matches.length !== 1 || matches[0].uuid !== attributeUuidList[index];
+                  });
+                  if (invalid) {
+                    isChecked = 0;
+                    errorText = keyConfig[type].text;
+                    break;
                   }
+                  continue;
                 }
                 if (type === 'prestepassign' && !utils.isEmpty(policyList[i].config[value])) {
                   for (let p = 0; p < policyList[i].config[value].length; p++) {
@@ -90,13 +90,19 @@ const assignValid = {
                 if (policyList[i].config.handler && policyList[i].config.handler != '') {
                   if (policyList[i].config.handlerConfig != {}) {
                     let newObj = view.automaticList.find(d => d.handler === policyList[i].config.handler);
-                    if (newObj && newObj.isHasForm && newObj.config) {
+                    if (newObj && Array.isArray(newObj.config)) {
                       let automaticDeal = newObj.config;
                       automaticDeal.forEach(item => {
-                        if (item.type == 'formselect' && policyList[i].config.handlerConfig[item.name]) {
-                          let findFormitem = view.allFormitemList.find(f => f.uuid == policyList[i].config.handlerConfig[item.name]);
-                          if (!findFormitem) {
-                            policyList[i].config.handlerConfig[item.name] = null;
+                        if (item.type === 'formselect') {
+                          const keyName = item.name.endsWith('Uuid') ? `${item.name.slice(0, -4)}Key` : `${item.name}Key`;
+                          const uuid = policyList[i].config.handlerConfig[item.name];
+                          const key = policyList[i].config.handlerConfig[keyName];
+                          if (uuid || key) {
+                            const matches = (view.allFormitemList || []).filter(formItem => formItem.key === key);
+                            if (matches.length !== 1 || matches[0].uuid !== uuid) {
+                              isChecked = 0;
+                              errorText = $t('term.process.assignconfigvalid');
+                            }
                           }
                         }
                         if (!view.$utils.validParamValue(policyList[i].config.handlerConfig[item.name], item.validateList)) {

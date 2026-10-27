@@ -35,9 +35,12 @@
         <div>
           <TsFormSelect
             ref="handlerList"
-            v-model="handlerList"
+            :value="selectedHandlerValues"
             :dataList="getHandlerlist(previewFormContent,cientityDisabledlist)"
+            :historyValue="selectedHandlerValues.map(value => ({value, text: value}))"
+            :isChangeWrite="false"
             v-bind="handlerConfig"
+            @on-change="changeHandler"
           ></TsFormSelect>
         </div>
       </div>
@@ -62,6 +65,7 @@
 import TsFormSelect from '@/resources/plugins/TsForm/TsFormSelect';
 import nodemixin from '@/views/pages/process/flow/flowedit/components/nodemixin.js';
 import itemmixin from '@/views/pages/process/flow/flowedit/components/itemmixin.js';
+import {selectedValues, selectedReferences} from './cientitysync-form-reference.js';
 export default {
   name: '',
   components: {
@@ -81,7 +85,7 @@ export default {
     return {
       configData: {stepConfig: {}}, //当前节点数据
       handlerConfig: {
-        valueName: 'uuid',
+        valueName: 'key',
         textName: 'label',
         clearable: false,
         multiple: true,
@@ -90,6 +94,7 @@ export default {
         border: 'border'
       },
       handlerList: [],
+      handlerKeyList: undefined,
       previewFormContent: null,
       formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
       activeSetting: {
@@ -129,6 +134,11 @@ export default {
       let config = this.configData = this.$utils.deepClone(this.nodeConfig);
       this.initNodeData(config, this.keyList);//初始化数据
     },
+    changeHandler(values) {
+      const references = selectedReferences(values, this.getHandlerlist(this.previewFormContent, this.cientityDisabledlist), this.handlerList, this.handlerKeyList);
+      this.handlerList = references.uuidList;
+      this.handlerKeyList = references.keyList;
+    },
     saveNodeData() {
       //保存数据
       let stepConfig = Object.assign({}, this.configData.stepConfig);
@@ -141,6 +151,7 @@ export default {
       Object.assign(stepConfig, {
         handlerList: this.handlerList || []
       });
+      if (this.handlerKeyList !== undefined) stepConfig.handlerKeyList = this.handlerKeyList;
 
       if (this.activeSetting.informSetting == 1) {
         //通知
@@ -195,8 +206,11 @@ export default {
           }
         }
 
-        return list;
+        return list.filter(item => item.uuid && item.key);
       };
+    },
+    selectedHandlerValues() {
+      return selectedValues(this.handlerList, this.handlerKeyList);
     }
   },
   watch: {
@@ -204,6 +218,7 @@ export default {
       handler: function(val) {
         if (val && val.handlerList) {
           this.handlerList = val.handlerList || [];
+          this.handlerKeyList = val.handlerKeyList;
         }
       },
       immediate: true,

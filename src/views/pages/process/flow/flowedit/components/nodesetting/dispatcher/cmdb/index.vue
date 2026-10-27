@@ -36,18 +36,20 @@
           <span class="tsfont-arrow-right" style="padding: 0 4px"></span>
           <TsFormSelect
             ref="formAttribute"
-            v-model="item.formAttributeUuid"
+            :value="item.formAttributeKey"
             :dataList="item.formAttributeDataList"
+            :historyValue="item.formAttributeKey ? {value: item.formAttributeKey, text: item.formAttributeKey} : null"
             textName="label"
-            valueName="uuid"
+            valueName="key"
             width="84px"
             transfer
             border="border"
             :validateList="[{name: 'required', message: ''}]"
             :isNowrap="true"
+            :isChangeWrite="false"
             :readonly="readonly"
             @on-focus="handleFormAttributeDataListDisabled()"
-            @change="handleFormAttributeDataListDisabled()"
+            @on-change="key => changeFormAttribute(item, key)"
           ></TsFormSelect>
           <span
             v-if="index != 0"
@@ -85,6 +87,7 @@
 </template>
 <script>
 import VueDraggable from 'vuedraggable';
+import { CmdbDispatcherValid } from './valid.js';
 export default {
   name: '',
   components: {
@@ -230,7 +233,7 @@ export default {
       }
       this.filterList.splice(index, 1);
     },
-    addFilter(key = '', formAttributeUuid = '', dataSource = '') {
+    addFilter(key = '', formAttributeUuid = '', dataSource = '', formAttributeKey) {
       let keyConfig;
       let id = dataSource || this.formData.dataSource;
       if (this.formData.type == 'ci') {
@@ -251,13 +254,21 @@ export default {
           params: { id: id}
         };
       }
-      this.filterList.push({
+      const filter = {
         key,
         keyConfig,
         formAttributeUuid,
-        formAttributeDataList: this.$utils.deepClone(this.allFormitemList),
+        formAttributeDataList: this.$utils.deepClone(this.allFormitemList.filter(item => item && item.key && item.uuid)),
         uuid: this.$utils.setUuid()
-      });
+      };
+      if (formAttributeKey !== undefined) filter.formAttributeKey = formAttributeKey;
+      this.filterList.push(filter);
+    },
+    changeFormAttribute(filter, key) {
+      const matches = (this.allFormitemList || []).filter(item => item.key === key && item.uuid);
+      this.$set(filter, 'formAttributeKey', key || '');
+      this.$set(filter, 'formAttributeUuid', matches.length === 1 ? matches[0].uuid : '');
+      this.handleFormAttributeDataListDisabled();
     },
     async handleInitData() {
       // 处理回显初始值
@@ -305,8 +316,8 @@ export default {
       this.handleDataSourceByType(type);
       filterList.forEach(item => {
         // 处理映射关系回显
-        if (item && item.key && item.formAttributeUuid) {
-          this.addFilter(item.key, item.formAttributeUuid, ciId || customViewId);
+        if (item) {
+          this.addFilter(item.key, item.formAttributeUuid, ciId || customViewId, item.formAttributeKey);
         }
       });
       // 根据优先级idList拿到对应的text，然后根据优先级排序，设置用户拖拽前的数据
@@ -380,14 +391,11 @@ export default {
     },
     handleFormAttributeDataListDisabled() {
       // 已选择的表单属性，禁用
-      let uuidList = [];
+      const keyList = this.filterList.map(item => item.formAttributeKey).filter(Boolean);
       this.filterList.forEach(item => {
-        if (item && item.formAttributeUuid) {
-          uuidList.push(item.formAttributeUuid);
-        }
         item.formAttributeDataList.forEach((v, vIndex) => {
           const updatedV = { ...v, _disabled: false };
-          if (v && v.uuid && uuidList.includes(v.uuid)) {
+          if (v && v.key && v.key !== item.formAttributeKey && keyList.includes(v.key)) {
             updatedV._disabled = true;
           }
           this.$set(item.formAttributeDataList, vIndex, updatedV);
@@ -396,13 +404,16 @@ export default {
     },
     saveData() {
       // 提供给外部使用
-      // 注意:filterList字段,flow-valid.js文件里面有一个数据校验方法,主要用于校验[{"formAttributeUuid": "ca04365ff49c4c80b39cf802e857eeaa","key": 441733552807936},{key: '441733846409216', formAttributeUuid: ''}]
-      // key或者formAttributeUuid字段为空情况
+      // 表单组件引用与 CMDB 属性映射由分派器校验统一检查。
       let saveData = {
         ...this.formData,
         ciId: this.formData.type === 'ci' ? this.formData.dataSource : '',
         customViewId: this.formData.type === 'customView' ? this.formData.dataSource : '',
-        filterList: this.filterList.map(({ key, formAttributeUuid }) => ({ key, formAttributeUuid })),
+        filterList: this.filterList.map(item => {
+          const filter = {key: item.key, formAttributeUuid: item.formAttributeUuid};
+          if (Object.prototype.hasOwnProperty.call(item, 'formAttributeKey')) filter.formAttributeKey = item.formAttributeKey;
+          return filter;
+        }),
         priorityList: this.priorityList.filter(item => !this.$utils.isEmpty(item.value)).map(item => item.value)
       };
 
@@ -427,12 +438,20 @@ export default {
       if (this.$refs.form && !this.$refs.form.valid()) {
         isValid = false;
       }
+      if (CmdbDispatcherValid(this, '', 'filterList', this.filterList)) isValid = false;
       return isValid;
     }
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    allFormitemList(list) {
+      this.filterList.forEach(filter => {
+        this.$set(filter, 'formAttributeDataList', this.$utils.deepClone((list || []).filter(item => item && item.key && item.uuid)));
+      });
+      this.handleFormAttributeDataListDisabled();
+    }
+  }
 };
 </script>
 <style lang="less"></style>
