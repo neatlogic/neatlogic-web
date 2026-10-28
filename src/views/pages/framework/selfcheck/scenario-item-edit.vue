@@ -1,5 +1,5 @@
 <template>
-  <TsDialog v-bind="dialogConfig" @on-close="close">
+  <TsDialog v-bind="dialogConfig" @on-close="close()">
     <template v-slot>
       <TsFormItem :label="$t('page.name')" :required="true">
         <TsFormInput
@@ -125,23 +125,22 @@
           <template v-slot:append>{{ $t('page.second') }}</template>
         </TsFormInput>
       </TsFormItem>
+      <div v-if="testResult" class="mt-lg bg-block padding-md radius-lg">
+        <div ref="testResultTitle" class="text-bold mb-md">{{ $t('term.framework.selfcheck.testresult') }}</div>
+        <div v-if="testResultOutdated" class="text-warning mb-md">{{ $t('term.framework.selfcheck.testresultoutdated') }}</div>
+        <SelfCheckExecutionResult
+          :key="testRequestId"
+          :result="testResult"
+          initialTab="response"
+          @ready.once="scrollToTestResult(testRequestId)"
+        ></SelfCheckExecutionResult>
+      </div>
     </template>
     <template v-slot:footer>
-      <Button @click="close">{{ $t('page.cancel') }}</Button>
-      <Button :loading="testing" @click="testItem">{{ $t('term.framework.selfcheck.testitem') }}</Button>
+      <Button @click="close()">{{ $t('page.cancel') }}</Button>
+      <Button :loading="testing" @click="testItem">{{ $t('page.test') }}</Button>
       <Button type="primary" :loading="validating" @click="confirm">{{ $t('page.confirm') }}</Button>
     </template>
-    <TsDialog
-      v-if="testResult"
-      :isShow="true"
-      type="slider"
-      width="large"
-      :title="$t('term.framework.selfcheck.testresult')"
-      :hasFooter="false"
-      @on-close="testResult = null"
-    >
-      <SelfCheckExecutionResult :result="testResult"></SelfCheckExecutionResult>
-    </TsDialog>
   </TsDialog>
 </template>
 <script>
@@ -198,6 +197,9 @@ export default {
       validating: false,
       testing: false,
       testResult: null,
+      testRequestId: 0,
+      lastTestSignature: '',
+      isClosed: false,
       validationRequestId: 0,
       dialogConfig: {
         title: this.$t('term.framework.selfcheck.itemconfig'),
@@ -224,7 +226,7 @@ export default {
     this.loadCurrentTarget();
   },
   beforeDestroy() {
-    clearTimeout(this.validateTimer);
+    this.invalidatePendingRequests();
   },
   methods: {
     modelUri(type) {
@@ -239,7 +241,7 @@ export default {
         pageSize: 1,
         defaultValue: [this.itemData.apiToken]
       }).then(res => {
-        if (res.Status === 'OK') {
+        if (!this.isClosed && res.Status === 'OK') {
           this.currentTarget = this.findTarget(res.Return && res.Return.tbodyList, this.itemData.apiToken);
           if (this.currentTarget && this.currentTarget.defaultScript) {
             this.isAutoScript = this.itemData.verifyScript === this.currentTarget.defaultScript;
@@ -297,12 +299,18 @@ export default {
         this.applyingDefaultScript = true;
         this.itemData.verifyScript = (target && target.defaultScript) || createDefaultScript();
         this.$nextTick(() => {
+          if (this.isClosed) {
+            return;
+          }
           this.applyingDefaultScript = false;
           this.scheduleValidate();
         });
       }
     },
     scheduleValidate() {
+      if (this.isClosed) {
+        return;
+      }
       if (!this.applyingDefaultScript) {
         const defaultScriptList = [createDefaultScript()];
         if (this.currentTarget && this.currentTarget.defaultScript) {
@@ -316,6 +324,9 @@ export default {
       this.validateTimer = setTimeout(() => this.validateScript(), 800);
     },
     async validateScript() {
+      if (this.isClosed) {
+        return false;
+      }
       clearTimeout(this.validateTimer);
       if (!this.itemData.verifyScript) {
         this.scriptValidated = true;
@@ -328,7 +339,7 @@ export default {
       this.validating = true;
       try {
         const res = await this.$api.framework.selfcheck.validateScript({ script });
-        if (requestId !== this.validationRequestId || script !== this.itemData.verifyScript) {
+        if (this.isClosed || requestId !== this.validationRequestId || script !== this.itemData.verifyScript) {
           return false;
         }
         if (res.Status === 'OK') {
@@ -391,7 +402,7 @@ export default {
       };
     },
     async confirm() {
-      if (!this.validBasic()) {
+      if (this.isClosed || !this.validBasic()) {
         return;
       }
       const requestParam = this.parseRequestParam();
@@ -399,33 +410,53 @@ export default {
         return;
       }
       await this.validateScript();
-      this.$emit('close', this.buildItemData(requestParam));
+      if (!this.isClosed) {
+        this.close(this.buildItemData(requestParam));
+      }
     },
+    /** 固化本次提交参数，校验及执行完成后只展示仍属于当前窗口的结果。 */
     async testItem() {
-      if (!this.validBasic()) {
+      if (this.isClosed || this.testing || !this.validBasic()) {
         return;
       }
       const requestParam = this.parseRequestParam();
       if (requestParam == null) {
         return;
       }
-      const valid = await this.validateScript();
-      if (!valid) {
-        this.$Message.warning(this.$t('term.framework.selfcheck.fixscriptbeforetest'));
-        return;
-      }
       this.testing = true;
+      this.testResult = null;
+      this.lastTestSignature = '';
+      const requestId = ++this.testRequestId;
+      const params = this.buildSubmitData(this.buildItemData(requestParam));
       try {
-        const params = this.buildSubmitData(this.buildItemData(requestParam));
+        const valid = await this.validateScript();
+        if (this.isClosed || requestId !== this.testRequestId) {
+          return;
+        }
+        if (!valid) {
+          this.$Message.warning(this.$t('term.framework.selfcheck.fixscriptbeforetest'));
+          return;
+        }
         const res = await this.$api.framework.selfcheck.testItem(params);
-        if (res.Status === 'OK') {
+        if (!this.isClosed && requestId === this.testRequestId && res.Status === 'OK' && res.Return) {
           const result = res.Return || {};
           result.verifyScript = result.verifyScript || params.verifyScript;
           this.testResult = result;
+          this.lastTestSignature = JSON.stringify(params);
         }
       } finally {
-        this.testing = false;
+        if (requestId === this.testRequestId) {
+          this.testing = false;
+        }
       }
+    },
+    /** 等待异步结果编辑器布局完成后再定位，避免首屏高度不足导致提前滚动。 */
+    scrollToTestResult(requestId) {
+      this.$nextTick(() => {
+        if (!this.isClosed && this.testResult && requestId === this.testRequestId && this.$refs.testResultTitle) {
+          this.$refs.testResultTitle.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        }
+      });
     },
     getDiagnosticText(diagnostic) {
       const line = diagnostic.startLine || diagnostic.line || 1;
@@ -437,8 +468,20 @@ export default {
         this.$refs.scriptEditor.revealMarker(diagnostic);
       }
     },
-    close() {
-      this.$emit('close');
+    /** 关闭与销毁共用失效逻辑，避免迟到响应更新已离开的窗口。 */
+    invalidatePendingRequests() {
+      this.isClosed = true;
+      clearTimeout(this.validateTimer);
+      this.validationRequestId++;
+      this.testRequestId++;
+      this.testing = false;
+      this.validating = false;
+      this.testResult = null;
+    },
+    /** 取消或确认均先终止窗口异步更新，再将结果交回父组件。 */
+    close(result) {
+      this.invalidatePendingRequests();
+      this.$emit('close', result);
     },
     formatSchemaField(field) {
       const ruleList = [];
@@ -464,6 +507,21 @@ export default {
     }
   },
   computed: {
+    /** 仅比较实际提交字段；无效 JSON 只标记过期，不在计算属性中触发表单提示。 */
+    testResultOutdated() {
+      if (!this.testResult) {
+        return false;
+      }
+      try {
+        const requestParam = JSON.parse(this.requestParamText || '{}');
+        if (!requestParam || Array.isArray(requestParam) || typeof requestParam !== 'object') {
+          return true;
+        }
+        return JSON.stringify(this.buildSubmitData(this.buildItemData(requestParam))) !== this.lastTestSignature;
+      } catch {
+        return true;
+      }
+    },
     inputParamList() {
       return createSelfCheckSchemaFieldList(this.currentTarget && this.currentTarget.inputSchema).map(field => this.formatSchemaField(field));
     },

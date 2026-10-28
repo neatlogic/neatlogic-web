@@ -41,6 +41,7 @@
       :theadList="phaseTheadList"
       :tbodyList="phaseList"
       :hideAction="true"
+      :fixedHeader="false"
       class="mb-md"
     >
       <template v-slot:status="{ row }">
@@ -63,6 +64,7 @@
           :isReadOnly="true"
           :isCopy="true"
           :modelUri="modelUri('request')"
+          @ready="handleEditorReady('request')"
         ></TsMonacoEditor>
       </TabPane>
       <TabPane :label="$t('term.framework.selfcheck.responseverdict')" name="response">
@@ -80,6 +82,7 @@
           :isReadOnly="true"
           :isCopy="true"
           :modelUri="modelUri('response')"
+          @ready="handleEditorReady('response')"
         ></TsMonacoEditor>
       </TabPane>
       <TabPane :label="$t('term.framework.selfcheck.console')" name="console">
@@ -102,7 +105,7 @@
           :languageExtension="scriptLanguageExtension"
           :markerList="diagnosticList"
           markerOwner="selfcheck-result"
-          @ready="revealPendingDiagnostic"
+          @ready="handleEditorReady('script')"
         ></TsMonacoEditor>
         <ul v-if="diagnosticList.length" class="mt-md">
           <li
@@ -132,12 +135,13 @@ export default {
   },
   props: {
     result: { type: Object, default: () => ({}) },
+    initialTab: { type: String, default: '', validator: value => ['', 'request', 'response', 'console', 'script'].includes(value) },
     stepMode: { type: Boolean, default: false }
   },
   data() {
     return {
-      // 诊断优先定位脚本，断言失败优先对照判定依据，其余结果从请求开始查看。
-      currentTab: (this.result.diagnosticList || []).length ? 'script' : (this.result.status === 'ASSERT_FAILED' ? 'response' : 'request'),
+      // 诊断优先定位脚本；调用方可指定初始标签，未指定时保持原有查看顺序。
+      currentTab: (this.result.diagnosticList || []).length ? 'script' : (this.initialTab || (this.result.status === 'ASSERT_FAILED' ? 'response' : 'request')),
       pendingDiagnostic: null,
       phaseTheadList: [
         { key: 'phase', title: this.$t('term.framework.selfcheck.phase') },
@@ -154,6 +158,15 @@ export default {
     };
   },
   methods: {
+    /** 当前标签的编辑器完成布局后通知调用方，同时保留脚本诊断定位。 */
+    handleEditorReady(tab) {
+      if (tab === 'script') {
+        this.revealPendingDiagnostic();
+      }
+      if (this.currentTab === tab) {
+        this.$emit('ready');
+      }
+    },
     /** 使用已知阶段的翻译，未知阶段保留后端标识，避免丢失执行信息。 */
     getPhaseText(phase) {
       const knownPhaseList = ['SCRIPT_COMPILE', 'TARGET_EXECUTE', 'SCRIPT_EXECUTE', 'CLEANUP', 'ORCHESTRATE'];
