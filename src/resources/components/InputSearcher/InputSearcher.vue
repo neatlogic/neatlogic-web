@@ -110,6 +110,10 @@ export default {
   ::v-deep .ivu-input {
     padding: 0 26px 0 var(--input-searcher-prefix-width, 26px) !important;
   }
+  ::v-deep .ivu-input-icon-clear {
+    top: 50%;
+    transform: translateY(-50%);
+  }
   ::v-deep .ivu-input-prefix {
     left: 8px;
     i {
