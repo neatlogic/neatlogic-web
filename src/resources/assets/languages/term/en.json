@@ -22,6 +22,9 @@
     "exclude": "exclude"
   },
   "cmdb": {
+    "saveconditionpreset": "Save as preset",
+    "syncconditionloadfailed": "Failed to load filter conditions. Retry before executing.",
+    "syncconditioninvalid": "Complete valid filter conditions, or clear them before continuing.",
     "relfilterconfigured": "Configured",
     "relfilterinvalid": "A filter reference is unavailable or its operator is no longer supported. Correct it or clear the filters and configure them again.",
     "relfilterloadfailed": "Failed to load filter metadata. Close this dialog and try again.",

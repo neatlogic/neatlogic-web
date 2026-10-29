@@ -22,6 +22,9 @@
     "exclude": "不包括"
   },
   "cmdb": {
+    "saveconditionpreset": "保存为预设",
+    "syncconditionloadfailed": "加载过滤条件失败，请重试后再执行",
+    "syncconditioninvalid": "请补全有效的过滤条件，或清空后再操作",
     "relfilterconfigured": "已配置",
     "relfilterinvalid": "过滤条件引用已失效或操作符不再支持，请修正或清空后重新配置",
     "relfilterloadfailed": "过滤条件元数据加载失败，请关闭后重试",

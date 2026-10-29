@@ -43,6 +43,10 @@ const sync = {
   testCondition(params) {
     return axios.post('/api/rest/cmdb/sync/policy/condition/test', params);
   },
+  // 保存同步映射的共享过滤预设，空数组清除预设。
+  saveSyncCiCollectionCondition(params) {
+    return axios.post('/api/rest/cmdb/sync/cicollection/condition/save', params);
+  },
   launchSyncCiCollection(params) {
     return axios.post('/api/rest/cmdb/sync/cicollection/launch', params);
   },
