@@ -15,7 +15,7 @@
                   <div>
                     <Poptip
                       word-wrap
-                      width="400"
+                      width="600"
                       trigger="hover"
                       placement="right"
                       :transfer="true"
@@ -32,6 +32,13 @@
                           <Tag>TsFormDatePicker</Tag>
                           <Tag>TsTable</Tag>
                         </div>
+                        <div class="props-help">
+                          <div>{{ $t('message.framework.customitempropsusage') }}</div>
+                          <div v-for="prop in viewPropList" :key="prop.name" class="mt-xs">
+                            <code>{{ prop.name }}</code> ({{ prop.type }}): {{ $t('message.framework.customitemprop' + prop.name.toLowerCase()) }}
+                          </div>
+                          <div class="mt-xs">{{ $t('message.framework.customitemvalueusage') }}</div>
+                        </div>
                       </div>
                     </Poptip>
                   </div>
@@ -47,7 +54,7 @@
                     <Poptip
                       trigger="hover"
                       word-wrap
-                      width="400"
+                      width="600"
                       placement="right"
                       :transfer="true"
                       @on-popper-show="isReady = true"
@@ -58,9 +65,16 @@
                         <TsCodemirror
                           v-if="isReady"
                           :isReadOnly="true"
-                          :value="configSample"
+                          :value="viewConfigSample"
                           codeMode="json"
                         ></TsCodemirror>
+                        <div class="props-help">
+                          <div>{{ $t('message.framework.customitempropsusage') }}</div>
+                          <div v-for="prop in viewPropList" :key="prop.name" class="mt-xs">
+                            <code>{{ prop.name }}</code> ({{ prop.type }}): {{ $t('message.framework.customitemprop' + prop.name.toLowerCase()) }}
+                          </div>
+                          <div class="mt-xs">{{ $t('message.framework.customitemvalueusage') }}</div>
+                        </div>
                       </div>
                     </Poptip>
                   </div>
@@ -86,7 +100,7 @@
                   <div>
                     <Poptip
                       word-wrap
-                      width="400"
+                      width="600"
                       trigger="hover"
                       placement="right"
                       :transfer="true"
@@ -104,6 +118,13 @@
                           <Tag>TsFormDatePicker</Tag>
                           <Tag>TsTable</Tag>
                         </div>
+                        <div class="props-help">
+                          <div>{{ $t('message.framework.customitempropsusage') }}</div>
+                          <div v-for="prop in configPropList" :key="prop.name" class="mt-xs">
+                            <code>{{ prop.name }}</code> ({{ prop.type }}): {{ $t('message.framework.customitemprop' + prop.name.toLowerCase()) }}
+                          </div>
+                          <div class="mt-xs">{{ $t('message.framework.customitemconfigusage') }}</div>
+                        </div>
                       </div>
                     </Poptip>
                   </div>
@@ -119,7 +140,7 @@
                     <Poptip
                       trigger="hover"
                       word-wrap
-                      width="400"
+                      width="600"
                       placement="right"
                       :transfer="true"
                       @on-popper-show="isReady = true"
@@ -133,6 +154,13 @@
                           :value="configSample"
                           codeMode="json"
                         ></TsCodemirror>
+                        <div class="props-help">
+                          <div>{{ $t('message.framework.customitempropsusage') }}</div>
+                          <div v-for="prop in configPropList" :key="prop.name" class="mt-xs">
+                            <code>{{ prop.name }}</code> ({{ prop.type }}): {{ $t('message.framework.customitemprop' + prop.name.toLowerCase()) }}
+                          </div>
+                          <div class="mt-xs">{{ $t('message.framework.customitemconfigusage') }}</div>
+                        </div>
                       </div>
                     </Poptip>
                   </div>
@@ -335,7 +363,24 @@ export default {
     return {
       isReady: false,
       isIconDialogShow: false,
-      configSample: '{\n\tmethods:{\n\t\tchangeName(newName){\n\t\t\tthis.name = newName;\/\/name is data attribute\n\t\t}\n\t}\n}',
+      viewPropList: [
+        { name: 'formData', type: 'Object' },
+        { name: 'formItem', type: 'Object' },
+        { name: 'formItemList', type: 'Array' },
+        { name: 'value', type: 'Object / Array / String / Number' },
+        { name: 'mode', type: 'String' },
+        { name: 'filter', type: 'Array' },
+        { name: 'readonly', type: 'Boolean' },
+        { name: 'disabled', type: 'Boolean' }
+      ],
+      configPropList: [
+        { name: 'formItem', type: 'Object' },
+        { name: 'formItemList', type: 'Array' },
+        { name: 'error', type: 'Array' },
+        { name: 'disabled', type: 'Boolean' }
+      ],
+      viewConfigSample: '{\n  methods: {\n    changeValue: function(newValue) {\n      this.setValue(newValue);\n    },\n    getFieldValue: function(uuid) {\n      return this.formData && this.formData[uuid];\n    }\n  }\n}',
+      configSample: '{\n  methods: {\n    changePlaceholder: function(text) {\n      this.setConfig("placeholder", text);\n    }\n  }\n}',
       dialogConfig: {
         title: this.id ? this.$t('dialog.title.edittarget', {'target': this.$t('term.framework.customitem')}) : this.$t('dialog.title.addtarget', {'target': this.$t('term.framework.customitem')}),
         type: 'slider',
@@ -483,6 +528,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.props-help {
+  margin-top: 12px;
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: normal;
+}
 .logo {
   cursor: pointer;
   width: 40px;

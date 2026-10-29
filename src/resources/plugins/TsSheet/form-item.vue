@@ -140,6 +140,7 @@
         :readonlyTextIsHighlight="readonlyTextIsHighlight"
         :isClearSpecifiedAttr="isClearSpecifiedAttr"
         :externalData="externalData"
+        :formData="formData"
         @setValue="setValue"
         @resize="$emit('resize')"
         @select="selectFormItem"
