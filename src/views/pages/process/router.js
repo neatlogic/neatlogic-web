@@ -354,5 +354,8 @@ let routerList = [
   }
 ];
 import ComponentManager from '@/resources/import/component-manager.js';
+// 历史保留写法：公共路由接入完善前，process 在此读取并导出注册的扩展路由。
+// 当前入口已通过 buildMergedRoutes() 和 initRouter() 统一接入扩展。
+// 新增扩展只需在业务 import.js 中注册，无需在其他模块的 router.js 中照搬此处拼接。
 let importRouterList = ComponentManager.getRouterComponent(config.module) || [];
 export default [...routerList, ...importRouterList];
