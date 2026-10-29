@@ -35,6 +35,10 @@ export const WidgetBase = {
       data: [],
       tableData: {},
       timer: null,
+      // 只保留请求失效、销毁和首次绘制所需状态。
+      dataRequestId: 0,
+      isWidgetDestroyed: false,
+      isPlotInitialized: false,
       oldConfig: null,
       oldChartConfig: null,
       chartConfig: {}
@@ -68,11 +72,13 @@ export const WidgetBase = {
       }
     },
     async getData(isFirstGetData) {
-      if (!this.widget.datasourceId) {
-        if (this.timer) {
-          clearTimeout(this.timer);
-          this.timer = null;
-        }
+      // 新请求替代旧请求，绑定未就绪或组件已销毁时不再取数。
+      const requestId = ++this.dataRequestId;
+      if (this.timer) {
+        clearTimeout(this.timer);
+        this.timer = null;
+      }
+      if (this.isWidgetDestroyed || !this.isDynamicDataReady(this.widget)) {
         return false;
       }
       const data = [];
@@ -84,8 +90,15 @@ export const WidgetBase = {
         sortList: this.widget.sortList,
         limit: this.widget.limit || 0 //必须要要给个0，否则会用pagesize分页
       };
+      const fields = this.$utils.deepClone(this.widget.fields);
+      // 同时核对实时来源和绑定，覆盖 Vue watcher 尚未执行的微任务窗口。
+      const isCurrent = () => !this.isWidgetDestroyed && requestId === this.dataRequestId && this.isDynamicDataReady(this.widget) &&
+        this.widget.datasourceId === params.dataSourceId && getDatasourceType(this.widget.datasourceType) === params.datasourceType && this.$utils.isSame(this.widget.fields, fields);
       // 编辑预览、展示页及定时刷新共用报表数据源入口。
-      await this.$api.report.statement.searchDatasourceData(params).then(res => {
+      return this.$api.report.statement.searchDatasourceData(params).then(res => {
+        if (!isCurrent()) {
+          return false;
+        }
         this.tableData = res.Return;
         if (res.Return.tbodyList && res.Return.tbodyList.length > 0) {
           res.Return.tbodyList.forEach(element => {
@@ -112,17 +125,32 @@ export const WidgetBase = {
         this.data = data.sort((a, b) => this.changeString(a.xField) - this.changeString(b.xField));
         if (!isFirstGetData) {
           //第一次加载由于组件还没加载完毕，所以不需要调用changeData
-          this.changeData();
+          if (this.isPlotInitialized) {
+            this.changeData();
+          } else {
+            // 原首请求失效时，最新请求仍负责完成首次绘制。
+            this.$nextTick(() => {
+              if (isCurrent() && !this.isPlotInitialized) {
+                this.createPlot();
+                this.isPlotInitialized = true;
+              }
+            });
+          }
         }
-        if (this.widget.dataInterval > 0) {
+        if (isCurrent() && this.widget.dataInterval > 0) {
           if (this.timer) {
             clearTimeout(this.timer);
             this.timer = null;
           }
           this.timer = setTimeout(() => {
-            this.getData();
+            // 已进入任务队列的旧定时器也不能查询新来源或失效绑定。
+            if (isCurrent()) {
+              this.timer = null;
+              this.getData();
+            }
           }, this.widget.dataInterval * 1000);
         }
+        return true;
       });
     },
     changeString(a) { //字符串转时间戳
@@ -158,6 +186,9 @@ export const WidgetBase = {
     }
   },
   beforeDestroy() {
+    // 先失效在途回调，避免销毁后重新绘制或启动刷新。
+    this.isWidgetDestroyed = true;
+    this.dataRequestId += 1;
     if (this.plot) {
       this.plot.destroy();
       this.plot = null;
@@ -192,7 +223,7 @@ export const WidgetBase = {
     widget: {
       handler: async function(val, oldVal) {
         const widget = val;
-        if (widget) {
+        if (widget && !this.isWidgetDestroyed) {
           //合并图形配置
           // 深度合并图形配置，避免旧报表的局部配置覆盖掉组件默认嵌套配置。
           this.chartConfig = mergeWidgetConfig(this.chartConfig, widget.config || {});
@@ -203,23 +234,7 @@ export const WidgetBase = {
           if (!this.oldChartConfig) {
             //旧配置为空代表是首次加载
             this.oldChartConfig = this.$utils.deepClone(this.chartConfig);
-            if (widget.dataType === 'static' && widget.fields && widget.fields.length > 0) {
-              this.data = [];
-              widget.fields.forEach(element => {
-                const d = {};
-                d[element.name] = element.value;
-                this.data.push(d);
-              });
-            } else if (this.isDynamicDataReady(widget)) {
-              await this.getData(true);
-            } else {
-              await this.createRandomData();
-            }
-            this.$nextTick(() => {
-              //等待容器加载完毕再异步重绘
-              this.createPlot();
-            });
-            //保存数据相关配置，必须要复制一个对象
+            // 首次配置在 await 前保存，旧请求恢复执行时不能覆盖最新配置。
             const config = {};
             config['fields'] = widget.fields;
             config['datasourceId'] = widget.datasourceId;
@@ -231,6 +246,37 @@ export const WidgetBase = {
             config['dataInterval'] = widget.dataInterval;
             config['dataType'] = widget.dataType;
             this.oldConfig = this.$utils.deepClone(config);
+            const initialConfig = this.oldConfig;
+            let requestId = this.dataRequestId;
+            // 首次 await 与 nextTick 都检查快照，避免旧 watcher 继续绘制或进入末尾分支。
+            const isCurrent = () => !this.isWidgetDestroyed && requestId === this.dataRequestId && this.widget && this.$utils.isSame(this.oldConfig, initialConfig) &&
+              this.widget.dataType === initialConfig.dataType && this.widget.datasourceId === initialConfig.datasourceId && getDatasourceType(this.widget.datasourceType) === initialConfig.datasourceType && this.$utils.isSame(this.widget.fields, initialConfig.fields);
+            if (widget.dataType === 'static' && widget.fields && widget.fields.length > 0) {
+              this.data = [];
+              widget.fields.forEach(element => {
+                const d = {};
+                d[element.name] = element.value;
+                this.data.push(d);
+              });
+            } else if (this.isDynamicDataReady(widget)) {
+              const dataRequest = this.getData(true);
+              requestId = this.dataRequestId;
+              if (await dataRequest === false) {
+                return;
+              }
+            } else {
+              await this.createRandomData();
+            }
+            if (!isCurrent()) {
+              return;
+            }
+            this.$nextTick(() => {
+              //等待容器加载完毕再异步重绘
+              if (isCurrent()) {
+                this.createPlot();
+                this.isPlotInitialized = true;
+              }
+            });
           } else if (!this.$utils.isSame(this.oldChartConfig, this.chartConfig)) {
             //如果不是首次加载，则可以同步重绘
             this.createPlot();
@@ -249,6 +295,23 @@ export const WidgetBase = {
           config['dataInterval'] = widget.dataInterval;
           config['dataType'] = widget.dataType;
           if (!this.$utils.isSame(this.oldConfig, config)) {
+            const previousConfig = this.oldConfig;
+            const dataConfig = this.$utils.deepClone(config);
+            this.oldConfig = dataConfig;
+            // 数据配置变化立即失效旧请求并停止刷新，后续请求仍使用原分支。
+            const requestId = ++this.dataRequestId;
+            if (this.timer) {
+              clearTimeout(this.timer);
+              this.timer = null;
+            }
+            const sourceChanged = previousConfig && (previousConfig.datasourceType !== config.datasourceType || previousConfig.datasourceId !== config.datasourceId);
+            if (previousConfig && previousConfig.dataType === 'dynamic' && (sourceChanged || !this.isDynamicDataReady(widget))) {
+              this.data = [];
+              this.tableData = {};
+              if (this.isPlotInitialized) {
+                this.changeData();
+              }
+            }
             if (widget.dataType === 'static' && widget.fields && widget.fields.length > 0) {
               this.data = [];
               widget.fields.forEach(element => {
@@ -256,14 +319,27 @@ export const WidgetBase = {
                 d[element.name] = element.value;
                 this.data.push(d);
               });
-              this.changeData();
+              if (this.isPlotInitialized) {
+                this.changeData();
+              }
             } else if (this.isDynamicDataReady(widget)) {
               this.getData();
             } else {
               this.createRandomData();
-              this.changeData();
+              if (this.isPlotInitialized) {
+                this.changeData();
+              }
             }
-            this.oldConfig = this.$utils.deepClone(config);
+            if (!this.isDynamicDataReady(widget) && !this.isPlotInitialized) {
+              // 初始取数失效后若切到静态/样例，也需由当前配置补齐首次绘制。
+              this.$nextTick(() => {
+                if (!this.isWidgetDestroyed && requestId === this.dataRequestId && this.widget && this.widget.dataType === dataConfig.dataType &&
+                  this.widget.datasourceId === dataConfig.datasourceId && getDatasourceType(this.widget.datasourceType) === dataConfig.datasourceType && this.$utils.isSame(this.widget.fields, dataConfig.fields)) {
+                  this.createPlot();
+                  this.isPlotInitialized = true;
+                }
+              });
+            }
           }
         }
       },
