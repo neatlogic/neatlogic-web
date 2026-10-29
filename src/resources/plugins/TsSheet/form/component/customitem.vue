@@ -3,6 +3,7 @@
     <CustomItem
       v-if="isReady"
       ref="customItem"
+      :formData="formData"
       :formItem="formItem"
       :formItemList="formItemList"
       :value="value"
@@ -36,6 +37,7 @@ import validmixin from './common/validate-mixin.js';
 export default {
   name: '',
   components: {},
+  extends: base,
   props: {
     mode: { type: String, default: 'edit' }, //表单的模式edit或read或condition,edut模式才会显示异常、联动等辅助图标
     value: { type: [Object, Array, String, Number] }, //当前表单组件的值
