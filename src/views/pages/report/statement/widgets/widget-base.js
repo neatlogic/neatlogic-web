@@ -1,4 +1,5 @@
 import * as themes from '../widgetthemes/index.js';
+import { getDatasourceType } from '@/resources/api/report/statement/datasource';
 
 function mergeWidgetConfig(defaultConfig, currentConfig) {
   const result = Array.isArray(defaultConfig) ? [...defaultConfig] : { ...(defaultConfig || {}) };
@@ -77,11 +78,14 @@ export const WidgetBase = {
       const data = [];
       const params = {
         dataSourceId: this.widget.datasourceId,
+        // 展示页直接兼容旧配置，不依赖编辑页先补齐并保存来源类型。
+        datasourceType: getDatasourceType(this.widget.datasourceType),
         conditionList: this.widget.conditionList,
         sortList: this.widget.sortList,
         limit: this.widget.limit || 0 //必须要要给个0，否则会用pagesize分页
       };
-      await this.$api.framework.datawarehouse.searchData(params).then(res => {
+      // 编辑预览、展示页及定时刷新共用报表数据源入口。
+      await this.$api.report.statement.searchDatasourceData(params).then(res => {
         this.tableData = res.Return;
         if (res.Return.tbodyList && res.Return.tbodyList.length > 0) {
           res.Return.tbodyList.forEach(element => {
@@ -219,6 +223,8 @@ export const WidgetBase = {
             const config = {};
             config['fields'] = widget.fields;
             config['datasourceId'] = widget.datasourceId;
+            // 来源类型属于取数配置，同 ID 切换来源也应触发刷新。
+            config['datasourceType'] = getDatasourceType(widget.datasourceType);
             config['conditionList'] = widget.conditionList;
             config['sortList'] = widget.sortList;
             config['limit'] = widget.limit;
@@ -235,6 +241,8 @@ export const WidgetBase = {
           const config = {};
           config['fields'] = widget.fields;
           config['datasourceId'] = widget.datasourceId;
+          // 与首次加载快照使用相同缺省规则，避免旧配置产生额外请求。
+          config['datasourceType'] = getDatasourceType(widget.datasourceType);
           config['conditionList'] = widget.conditionList;
           config['sortList'] = widget.sortList;
           config['limit'] = widget.limit;
