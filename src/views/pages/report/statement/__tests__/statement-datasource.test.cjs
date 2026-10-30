@@ -749,7 +749,7 @@ test('单选切换立即失效详情请求，同步返回与重新选中相同 I
   } finally { panel.$destroy(); }
 });
 
-// 集成分支只使用可控网络响应验证前端分发与竞争处理，不代表后端已实现集成取数。
+// 集成分支使用可控网络响应验证前端分发与竞争处理，实际集成调用由后端测试覆盖。
 function queuedDataRequests() {
   const pending = [];
   const api = createApi(url => url.endsWith('/datasource/get') ? { Return: minimalDatasourceDetail() } : new Promise(resolve => pending.push(resolve)));
@@ -891,4 +891,103 @@ test('组件销毁时首次在途响应不能创建图表或重新注册刷新',
   assert.deepEqual(plain(mounted.vm.data), []);
   assert.deepEqual(plain(mounted.vm.tableData), {});
   assert.equal(mounted.timers.size, 0);
+});
+
+// 集成 UUID 和输出 key 都作为字符串贯穿请求、详情及字段绑定，详情仍遵循最小六属性契约。
+const integrationUuid = '91f50f88-cc4a-42f3-8538-bcb57be0302c';
+function integrationDatasourceDetail() {
+  return { fieldList: [
+    { id: 'duration_ms', label: '耗时', type: 'number', isCondition: 0, inputType: null, config: null },
+    { id: 'phase_name', label: '阶段', type: 'text', isCondition: 0, inputType: null, config: null }
+  ] };
+}
+
+test('集成 UUID 经真实数据源下拉回显、搜索及详情请求保持字符串', async() => {
+  const api = createApi(() => ({ Return: integrationDatasourceDetail() }));
+  const network = queuedListRequests();
+  const widget = { uuid: 'integration-select', dataType: 'dynamic', datasourceType: 'integration', datasourceId: integrationUuid };
+  const panel = mountPanel(widget, api, { fields: [], dataTypes: [] }, realDatasourceControls(api, network.https));
+  try {
+    await settle();
+    const selector = find(panel, child => child.$options.name === 'TsFormSelect' && child.dynamicUrl);
+    const echo = network.requests.at(-1);
+    assert.deepEqual(echo.config.data, { defaultValue: [integrationUuid], datasourceType: 'integration' });
+    echo.resolve([{ id: integrationUuid, label: '作业耗时集成' }]);
+    await settle();
+    assert.equal(selector.selectedList[0].id, integrationUuid);
+    assert.equal(selector.selectedList[0].label, '作业耗时集成');
+    assert.deepEqual(api.calls[0], { url: '/api/rest/dashboard/datasource/get', params: { id: integrationUuid, datasourceType: 'integration' } });
+    assert.deepEqual(panel.datasourceFieldList.map(field => field.id), ['duration_ms', 'phase_name']);
+    selector.dynamicSearch('作业', true);
+    await settle();
+    const listing = network.requests.at(-1);
+    assert.equal(listing.config.url, '/api/rest/dashboard/datasource/list');
+    assert.deepEqual(listing.config.data, { currentPage: 1, pageSize: selector.pageSize, keyword: '作业', datasourceType: 'integration' });
+    const secondUuid = '3b628b40-8287-4a1b-a03f-35a687fb7944';
+    listing.resolve([{ id: secondUuid, label: '另一集成配置' }]);
+    await settle();
+    assert.equal(selector.nodeList[0].id, secondUuid);
+    selector.$emit('change', secondUuid);
+    await settle();
+    assert.equal(widget.datasourceId, secondUuid);
+    assert.deepEqual(api.calls.at(-1).params, { id: secondUuid, datasourceType: 'integration' });
+  } finally { panel.$destroy(); }
+});
+
+test('集成字符串输出 key 可绑定饼图、排序并在定时取数中保留 UUID', async() => {
+  const response = { theadList: [
+    { key: 'field_duration_ms', name: 'duration_ms', title: '耗时' },
+    { key: 'field_phase_name', name: 'phase_name', title: '阶段' }
+  ], tbodyList: [{ field_duration_ms: 12.5, field_phase_name: '切换验证' }] };
+  const api = createApi(url => ({ Return: url.endsWith('/datasource/get') ? integrationDatasourceDetail() : response }));
+  const widget = { uuid: 'integration-pie', dataType: 'dynamic', datasourceType: 'integration', datasourceId: integrationUuid,
+    fields: [], conditionList: [], sortList: [], dataInterval: 10, limit: 5 };
+  const pie = load(path.join(page, 'widgets/define/pie.js')).default;
+  const panel = mountPanel(widget, api, pie);
+  const mounted = mountWidget(widget, pie, api, true);
+  try {
+    await settle();
+    assert.equal(api.calls.filter(call => call.url.endsWith('/datasource/data/search')).length, 0);
+    const bindings = findAll(panel, child => child.$options.name === 'TsFormSelect' && Array.isArray(child.dataList));
+    assert.deepEqual(bindings.map(binding => binding.dataList.map(field => field.id)), [['duration_ms'], ['phase_name']]);
+    bindings[0].$emit('change', 'duration_ms');
+    bindings[1].$emit('change', 'phase_name');
+    await settle();
+    assert.deepEqual(plain(widget.fields), [{ name: 'angleField', datasourceField: 'duration_ms' }, { name: 'colorField', datasourceField: 'phase_name' }]);
+    assert.deepEqual(plain(mounted.vm.data), [{ angleField: 12.5, colorField: '切换验证' }]);
+    // 排序来自真实模板点击；字段 key 不得被转换为数值或丢失前缀对应关系。
+    panel.$el.querySelector('.tssort').dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+    await settle();
+    assert.deepEqual(api.calls.at(-1), { url: '/api/rest/dashboard/datasource/data/search', params: {
+      dataSourceId: integrationUuid, datasourceType: 'integration', conditionList: [], sortList: [{ fieldId: 'duration_ms', type: 'ASC' }], limit: 5
+    } });
+    const [timerId, timer] = [...mounted.timers.entries()][0];
+    mounted.timers.delete(timerId);
+    timer.callback();
+    await settle();
+    assert.equal(api.calls.at(-1).params.dataSourceId, integrationUuid);
+    assert.equal(api.calls.at(-1).params.datasourceType, 'integration');
+    assert.deepEqual(plain(mounted.vm.data), [{ angleField: 12.5, colorField: '切换验证' }]);
+  } finally { panel.$destroy(); mounted.vm.$destroy(); }
+});
+
+test('集成自定义组件按 theadList.name 还原字符串 key，不依赖详情 name 或数值字段 ID', async() => {
+  const definition = load(path.join(page, 'widgets/define/custom.js')).default;
+  const response = { theadList: [
+    { key: 'field_duration_ms', name: 'duration_ms', title: '耗时' },
+    { key: 'field_phase_name', name: 'phase_name', title: '阶段' },
+    { key: 'insertTime', title: '插入时间' }
+  ], tbodyList: [{ field_duration_ms: 12.5, field_phase_name: '切换验证', insertTime: 100 }] };
+  const api = createApi(url => ({ Return: url.endsWith('/datasource/get') ? integrationDatasourceDetail() : response }));
+  const widget = { uuid: 'integration-custom', dataType: 'dynamic', datasourceType: 'integration', datasourceId: integrationUuid };
+  const panel = mountPanel(widget, api, definition);
+  const mounted = mountWidget(widget, definition, api);
+  try {
+    await settle();
+    assert.equal(panel.datasourceFieldList.some(field => Object.hasOwn(field, 'name')), false);
+    assert.deepEqual(plain(mounted.vm.data), [{ duration_ms: 12.5, phase_name: '切换验证' }]);
+    assert.deepEqual(plain(mounted.vm.tableData), plain(response));
+    assert.deepEqual(api.calls.find(call => call.url.endsWith('/datasource/data/search')).params,
+      { dataSourceId: integrationUuid, datasourceType: 'integration', limit: 0 });
+  } finally { panel.$destroy(); mounted.vm.$destroy(); }
 });
