@@ -95,7 +95,7 @@ export const WidgetBase = {
       const isCurrent = () => !this.isWidgetDestroyed && requestId === this.dataRequestId && this.isDynamicDataReady(this.widget) &&
         this.widget.datasourceId === params.dataSourceId && getDatasourceType(this.widget.datasourceType) === params.datasourceType && this.$utils.isSame(this.widget.fields, fields);
       // 编辑预览、展示页及定时刷新共用公共数据源入口。
-      return this.$api.common.searchDatasourceData(params).then(res => {
+      return this.$api.common.searchDashboardDatasourceData(params).then(res => {
         if (!isCurrent()) {
           return false;
         }

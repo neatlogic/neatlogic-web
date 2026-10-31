@@ -220,11 +220,18 @@ function queuedListRequests() {
 
 test('三个公共数据源 API 原样传递参数对象，报表 API 不再保留旧方法', async() => {
   const { common, statement, rawCalls } = createApi();
-  const methods = ['listDatasource', 'getDatasource', 'searchDatasourceData'];
+  const methods = ['listDashboardDatasource', 'getDashboardDatasource', 'searchDashboardDatasourceData'];
   for (const name of methods) {
     assert.equal(typeof common[name], 'function');
     assert.equal(Object.hasOwn(statement, name), false);
     assert.equal(statement[name], undefined);
+  }
+  // 公共入口重命名后不保留旧别名，报表模块也不能重新暴露旧方法。
+  for (const name of ['listDatasource', 'getDatasource', 'searchDatasourceData']) {
+    for (const api of [common, statement]) {
+      assert.equal(Object.hasOwn(api, name), false);
+      assert.equal(api[name], undefined);
+    }
   }
   for (const value of [undefined, null, '', ' \t ', 'datawarehouse', 'integration', ' custom ']) {
     const params = { datasourceType: value, keyword: '耗时', defaultValue: ['101'], currentPage: 2, pageSize: 10, id: 101, dataSourceId: 101, sortList: [{ fieldId: 7, type: 'DESC' }] };
@@ -250,12 +257,12 @@ test('三个公共数据源 API 原样传递参数对象，报表 API 不再保�
     assert.equal(Object.hasOwn(rawCalls.at(-1).params, 'datasourceType'), false);
   }
   assert.deepEqual(untyped, { id: 101, dataSourceId: 101 });
-  await common.listDatasource();
+  await common.listDashboardDatasource();
   assert.deepEqual(rawCalls.at(-1), { url: '/api/rest/dashboard/datasource/list', params: {} });
-  await common.searchDatasourceData({ dataSourceId: 101 });
+  await common.searchDashboardDatasourceData({ dataSourceId: 101 });
   assert.equal(Object.hasOwn(rawCalls.at(-1).params, 'limit'), false);
   for (const limit of [0, 5]) {
-    await common.searchDatasourceData({ dataSourceId: 101, limit });
+    await common.searchDashboardDatasourceData({ dataSourceId: 101, limit });
     assert.equal(rawCalls.at(-1).params.limit, limit);
   }
   assert.equal(datasource.getDatasourceType('integration'), 'integration');

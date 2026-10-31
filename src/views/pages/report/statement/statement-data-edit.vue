@@ -306,7 +306,7 @@ export default {
       this.datasourceConditionList = [];
       if (val) {
         // 字段详情通过公共数据源入口查询，类型仍由当前调用方处理。
-        return this.$api.common.getDatasource({ id: val, datasourceType: getDatasourceType(datasourceType) }).then(res => {
+        return this.$api.common.getDashboardDatasource({ id: val, datasourceType: getDatasourceType(datasourceType) }).then(res => {
           if (requestId !== this.datasourceRequestId) {
             return;
           }
