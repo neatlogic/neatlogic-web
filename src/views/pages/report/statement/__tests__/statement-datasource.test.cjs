@@ -474,6 +474,67 @@ test('旧饼图无需重存即可取数，行映射、条件排序及返回行�
   } finally { mounted.vm.$destroy(); }
 });
 
+// 通过真实挂载、请求和公共映射链验证字段兼容，不直接调用或复写取值表达式。
+test('动态字段优先读取自有直接键，缺失时回退前缀键，并兼容字符串及数字字段 ID', async() => {
+  const pie = load(path.join(page, 'widgets/define/pie.js')).default;
+  for (const fieldId of ['duration', 101]) {
+    const rows = [
+      { [fieldId]: 12, [`field_${fieldId}`]: 99, category: '直接键', field_category: '旧分类' },
+      { [`field_${fieldId}`]: 8, field_category: '前缀键' }
+    ];
+    const api = createApi(() => ({ Return: { theadList: [], tbodyList: rows } }));
+    const widget = { dataType: 'dynamic', datasourceId: 101, fields: [
+      { name: 'angleField', datasourceField: fieldId }, { name: 'colorField', datasourceField: 'category' }
+    ] };
+    const mounted = mountWidget(widget, pie, api);
+    try {
+      await settle();
+      assert.equal(api.calls.length, 1);
+      assert.deepEqual(plain(mounted.vm.data), [
+        { angleField: 12, colorField: '直接键' }, { angleField: 8, colorField: '前缀键' }
+      ]);
+      assert.equal(mounted.plots(), 1);
+    } finally { mounted.vm.$destroy(); }
+  }
+});
+
+test('直接字段的 null、0、false、空字符串及显式 undefined 均原样保留，不回退前缀值', async() => {
+  const values = [null, 0, false, '', undefined];
+  const rows = values.map(value => ({ metric: value, field_metric: '不应回退' }));
+  const api = createApi(() => ({ Return: { theadList: [], tbodyList: rows } }));
+  const widget = { dataType: 'dynamic', datasourceId: 101, fields: [{ name: 'valueField', datasourceField: 'metric' }] };
+  const mounted = mountWidget(widget, { fields: [{ name: 'valueField' }] }, api);
+  try {
+    await settle();
+    assert.equal(mounted.vm.data.length, values.length);
+    values.forEach((value, index) => {
+      // 直接检查响应和映射结果，避免 JSON 序列化删除显式 undefined 后掩盖错误。
+      assert.equal(Object.hasOwn(mounted.vm.tableData.tbodyList[index], 'metric'), true);
+      assert.equal(Object.hasOwn(mounted.vm.data[index], 'valueField'), true);
+      assert.equal(mounted.vm.data[index].valueField, value);
+    });
+  } finally { mounted.vm.$destroy(); }
+});
+
+test('原型上的直接字段不算自有键，两种自有键均缺失时映射结果保持 undefined', async() => {
+  const inheritedWithFallback = Object.assign(Object.create({ metric: '原型值' }), { field_metric: '前缀值' });
+  const inheritedWithoutFallback = Object.create({ metric: '原型值' });
+  const rows = [inheritedWithFallback, inheritedWithoutFallback, {}];
+  const api = createApi(() => ({ Return: { theadList: [], tbodyList: rows } }));
+  const widget = { dataType: 'dynamic', datasourceId: 101, fields: [{ name: 'valueField', datasourceField: 'metric' }] };
+  const mounted = mountWidget(widget, { fields: [{ name: 'valueField' }] }, api);
+  try {
+    await settle();
+    assert.equal(Object.hasOwn(mounted.vm.tableData.tbodyList[0], 'metric'), false);
+    assert.equal(mounted.vm.tableData.tbodyList[0].metric, '原型值');
+    assert.equal(mounted.vm.data[0].valueField, '前缀值');
+    for (const index of [1, 2]) {
+      assert.equal(Object.hasOwn(mounted.vm.data[index], 'valueField'), true);
+      assert.equal(mounted.vm.data[index].valueField, undefined);
+    }
+  } finally { mounted.vm.$destroy(); }
+});
+
 test('详情不提供字段 name 时，流程图绑定及自定义组件 theadList.name 映射保持不变', async() => {
   const autoexec = load(path.join(page, 'widgets/define/autoexec.js')).default;
   const definitions = [autoexec, { fields: [] }];

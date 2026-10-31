@@ -108,7 +108,10 @@ export const WidgetBase = {
               this.widgetComponent.fields.forEach(field => {
                 const f = widgetFields.find(d => d.name === field.name);
                 if (f) {
-                  d[field.name] = element['field_' + f.datasourceField];
+                  // 优先使用字段 ID 对应的数据；行中不存在该字段时，兼容数据仓库的 field_ 前缀格式。
+                  d[field.name] = Object.prototype.hasOwnProperty.call(element, f.datasourceField)
+                    ? element[f.datasourceField]
+                    : element['field_' + f.datasourceField];
                 }
               });
             } else {
