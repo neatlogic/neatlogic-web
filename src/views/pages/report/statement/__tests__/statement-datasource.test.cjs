@@ -74,12 +74,16 @@ const productionUtils = load(path.join(src, 'resources/assets/js/util.js'), { vu
 
 function createApi(response = () => ({ Return: {} })) {
   const calls = [];
+  // 同时保留原引用和既有请求快照，直接验证公共封装不复制参数、不吞掉 undefined。
+  const rawCalls = [];
   const axios = { post: async(url, params) => {
+    rawCalls.push({ url, params });
     calls.push({ url, params: plain(params) });
     return response(url, params);
   } };
   const statement = load(path.join(apiPath, 'statement.js'), { '../../http': { __esModule: true, default: axios } }).default;
-  return { statement, calls };
+  const common = load(path.join(src, 'resources/api/common/index.js'), { '../http': { __esModule: true, default: axios } }).default;
+  return { statement, common, calls, rawCalls };
 }
 
 async function settle() {
@@ -90,8 +94,8 @@ async function settle() {
   assert.deepEqual(errors.splice(0), []);
 }
 
-function inject(vm, statement) {
-  vm.$api = { report: { statement } };
+function inject(vm, api) {
+  vm.$api = { common: api.common, report: { statement: api.statement } };
   vm.$t = key => key;
   vm.$utils = utils;
   vm.$store = { getters: { themeType: 'light' } };
@@ -152,7 +156,7 @@ function mountPanel(widget, api, definition = { dataTypes: [], fields: [{ name: 
   return new Vue({
     ...component,
     propsData: { currentWidget: widget, currentWidgetComponent: definition },
-    beforeCreate() { inject(this, api.statement); }
+    beforeCreate() { inject(this, api); }
   }).$mount();
 }
 
@@ -161,7 +165,7 @@ function realDatasourceControls(api, https) {
   const formMixins = load(path.join(src, 'resources/mixins/formMixins.js')).default;
   const dependencies = { '@/resources/mixins/formMixins.js': { __esModule: true, default: formMixins } };
   const radio = load(path.join(src, 'resources/plugins/TsForm/TsFormRadio.vue'), dependencies).default;
-  radio.beforeCreate = function() { inject(this, api.statement); };
+  radio.beforeCreate = function() { inject(this, api); };
   radio.render = function(h) {
     return h('div', this.nodeList.map(item => h('input', {
       attrs: { type: 'radio', value: item[this.valueName] },
@@ -178,7 +182,7 @@ function realDatasourceControls(api, https) {
       __esModule: true, default: load(path.join(src, 'resources/mixins/formScrollMixins.js')).default
     };
     const selector = load(path.join(src, 'resources/plugins/TsForm/TsFormSelect.vue'), dependencies).default;
-    selector.beforeCreate = function() { inject(this, api.statement); this.$https = https; };
+    selector.beforeCreate = function() { inject(this, api); this.$https = https; };
     selector.render = function(h) { return h('div', this.nodeList.map(item => h('span', String(item[this.textName])))); };
     result['@/resources/plugins/TsForm/TsFormSelect'] = { __esModule: true, default: selector };
   }
@@ -214,29 +218,70 @@ function queuedListRequests() {
   return { https, requests };
 }
 
-test('三个 dashboard 数据源 API 保留原参数并显式提供类型，空值兼容，未知类型不会被替换', async() => {
-  const { statement, calls } = createApi();
+test('三个公共数据源 API 原样传递参数对象，报表 API 不再保留旧方法', async() => {
+  const { common, statement, rawCalls } = createApi();
+  const methods = ['listDatasource', 'getDatasource', 'searchDatasourceData'];
+  for (const name of methods) {
+    assert.equal(typeof common[name], 'function');
+    assert.equal(Object.hasOwn(statement, name), false);
+    assert.equal(statement[name], undefined);
+  }
   for (const value of [undefined, null, '', ' \t ', 'datawarehouse', 'integration', ' custom ']) {
-    const type = datasource.getDatasourceType(value);
     const params = { datasourceType: value, keyword: '耗时', defaultValue: ['101'], currentPage: 2, pageSize: 10, id: 101, dataSourceId: 101, sortList: [{ fieldId: 7, type: 'DESC' }] };
-    await statement.listDatasource(params);
-    await statement.getDatasource(params);
-    await statement.searchDatasourceData(params);
-    assert.deepEqual(calls.slice(-3).map(call => call.url), [
+    const before = { ...params, defaultValue: ['101'], sortList: [{ fieldId: 7, type: 'DESC' }] };
+    for (const name of methods) await common[name](params);
+    assert.deepEqual(rawCalls.slice(-3).map(call => call.url), [
       '/api/rest/dashboard/datasource/list',
       '/api/rest/dashboard/datasource/get',
       '/api/rest/dashboard/datasource/data/search'
     ]);
-    calls.slice(-3).forEach(call => assert.deepEqual(call.params, { ...plain(params), datasourceType: type }));
+    rawCalls.slice(-3).forEach(call => {
+      assert.equal(call.params, params);
+      assert.equal(Object.hasOwn(call.params, 'datasourceType'), true);
+      assert.equal(call.params.datasourceType, value);
+    });
+    assert.deepEqual(params, before);
   }
-  await statement.searchDatasourceData({ dataSourceId: 101 });
-  assert.equal(Object.hasOwn(calls.at(-1).params, 'limit'), false);
+  // 未提供类型的对象仍原样传递，列表方法自身的缺省参数只生成空对象。
+  const untyped = { id: 101, dataSourceId: 101 };
+  for (const name of methods) {
+    await common[name](untyped);
+    assert.equal(rawCalls.at(-1).params, untyped);
+    assert.equal(Object.hasOwn(rawCalls.at(-1).params, 'datasourceType'), false);
+  }
+  assert.deepEqual(untyped, { id: 101, dataSourceId: 101 });
+  await common.listDatasource();
+  assert.deepEqual(rawCalls.at(-1), { url: '/api/rest/dashboard/datasource/list', params: {} });
+  await common.searchDatasourceData({ dataSourceId: 101 });
+  assert.equal(Object.hasOwn(rawCalls.at(-1).params, 'limit'), false);
   for (const limit of [0, 5]) {
-    await statement.searchDatasourceData({ dataSourceId: 101, limit });
-    assert.equal(calls.at(-1).params.limit, limit);
+    await common.searchDatasourceData({ dataSourceId: 101, limit });
+    assert.equal(rawCalls.at(-1).params.limit, limit);
   }
   assert.equal(datasource.getDatasourceType('integration'), 'integration');
   assert.equal(datasource.getDatasourceType(' custom '), ' custom ');
+});
+
+test('数据面板及组件调用公共 API 前仍处理空类型，未知非空类型保持原值', async() => {
+  for (const value of [undefined, null, '', ' \t ', 'datawarehouse', 'integration', ' custom ']) {
+    const type = datasource.getDatasourceType(value);
+    const api = createApi(url => ({ Return: url.endsWith('/datasource/get') ? { fieldList: [] } : { theadList: [], tbodyList: [] } }));
+    const widget = { dataType: 'dynamic', datasourceId: 101, datasourceType: value, fields: [] };
+    const panel = mountPanel(widget, api, { dataTypes: [], fields: [] });
+    const mounted = mountWidget(widget, { fields: [] }, api);
+    try {
+      await settle();
+      assert.equal(api.rawCalls.length, 2);
+      assert.deepEqual(api.rawCalls.map(call => call.url).sort(), [
+        '/api/rest/dashboard/datasource/data/search', '/api/rest/dashboard/datasource/get'
+      ]);
+      api.rawCalls.forEach(call => assert.equal(call.params.datasourceType, type));
+      const selector = find(panel, child => child.$options.name === 'TsFormSelect' && child.dynamicUrl);
+      assert.equal(selector.dynamicUrl, '/api/rest/dashboard/datasource/list');
+      assert.equal(selector.params.datasourceType, type);
+      assert.equal(widget.datasourceType, value);
+    } finally { panel.$destroy(); mounted.vm.$destroy(); }
+  }
 });
 
 test('实际数据面板下拉框传类型，类型和 ID 任一变化会重新获取字段', async() => {
@@ -372,7 +417,7 @@ test('最小详情的原始枚举和用户配置经过真实条件组件回显�
     editor = new Vue({
       data() { return { reportData: { id: 99, name: '最小详情契约', widgetList: [widget] } }; },
       beforeCreate() {
-        inject(this, api.statement);
+        inject(this, api);
         this.$Message = { warning() {}, success() {} };
       },
       methods: { ...component.methods, addHistory() {} }
@@ -444,7 +489,7 @@ function mountWidget(widget, definition, api, allowRandomData = false) {
   const vm = new Vue({
     extends: WidgetBase,
     propsData: { widget, widgetComponent: definition, canvas: { config: {} } },
-    beforeCreate() { inject(this, api.statement); },
+    beforeCreate() { inject(this, api); },
     methods: {
       createPlot() { plots++; },
       changeData() { changes++; },
@@ -605,7 +650,7 @@ test('编辑页加载旧组件、新建组件和保存都补齐类型，未知�
   const vm = new Vue({
     data() { return { id: 99, reportData: { widgetList: [] } }; },
     beforeCreate() {
-      inject(this, api.statement);
+      inject(this, api);
       this.$route = { query: {} };
       this.$Message = { warning() {}, success() {} };
     },
@@ -695,7 +740,7 @@ test('切换后的类型和清空绑定经真实保存、重新打开保持一�
   const component = load(path.join(page, 'statement-edit.vue')).default;
   const editor = new Vue({
     data() { return { reportData: { id: 99, name: '来源切换', widgetList: [widget] } }; },
-    beforeCreate() { inject(this, api.statement); this.$Message = { warning() {}, success() {} }; },
+    beforeCreate() { inject(this, api); this.$Message = { warning() {}, success() {} }; },
     methods: { ...component.methods, addHistory() {} }
   });
   editor.$refs.name = { valid: () => true };

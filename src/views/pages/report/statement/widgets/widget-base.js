@@ -94,8 +94,8 @@ export const WidgetBase = {
       // 同时核对实时来源和绑定，覆盖 Vue watcher 尚未执行的微任务窗口。
       const isCurrent = () => !this.isWidgetDestroyed && requestId === this.dataRequestId && this.isDynamicDataReady(this.widget) &&
         this.widget.datasourceId === params.dataSourceId && getDatasourceType(this.widget.datasourceType) === params.datasourceType && this.$utils.isSame(this.widget.fields, fields);
-      // 编辑预览、展示页及定时刷新共用报表数据源入口。
-      return this.$api.report.statement.searchDatasourceData(params).then(res => {
+      // 编辑预览、展示页及定时刷新共用公共数据源入口。
+      return this.$api.common.searchDatasourceData(params).then(res => {
         if (!isCurrent()) {
           return false;
         }
