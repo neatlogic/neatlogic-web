@@ -11,7 +11,7 @@
       </template>
       <template v-slot:config>
         <div>
-          <!-- 仅动态数据展示来源类型，受控变更避免初始化或重复选择清空已有绑定。 -->
+          <!-- 动态数据类型由后端返回，受控变更避免选项加载或重复选择清空已有绑定。 -->
           <TsFormItem
             v-if="currentWidget && currentWidget.dataType === 'dynamic'"
             :label="$t('page.datasourcetype')"
@@ -19,7 +19,10 @@
           >
             <TsFormRadio
               :value="datasourceParams.datasourceType"
-              :dataList="datasourceTypeList"
+              url="/api/rest/dashboard/datasource/type/list"
+              rootName="tbodyList"
+              valueName="value"
+              textName="text"
               @change="changeDatasourceType"
             ></TsFormRadio>
           </TsFormItem>
@@ -184,11 +187,6 @@ export default {
     return {
       datasourceConditionList: [],
       datasourceRequestId: 0, // 切换来源时忽略已过期的字段详情响应。
-      // 类型值与统一数据源接口保持一致，集成来源由后端 Handler 决定是否支持。
-      datasourceTypeList: [
-        { value: 'datawarehouse', text: this.$t('router.framework.datawarehousemanage') },
-        { value: 'integration', text: this.$t('page.integration') }
-      ],
       filterTypeList: ['text', 'number', 'date', 'time', 'datetime'], //允许排序的字段类型
       dataFormConfig: {
         dataType: {
@@ -279,9 +277,9 @@ export default {
         this.currentWidget.sortList.push({fieldId: field.id, type: 'ASC'});
       }
     },
-    changeDatasourceType(value) {
-      // 仅用户选择不同的有效类型才清理绑定，旧配置缺省类型和重复选择均保留原值。
-      if (!this.currentWidget || !this.datasourceTypeList.some(item => item.value === value) || value === getDatasourceType(this.currentWidget.datasourceType)) {
+    changeDatasourceType(value, selectedItem) {
+      // 仅接受控件选项与值匹配的实际切换，加载、无有效选项和重复选择均保留已有配置。
+      if (!this.currentWidget || !selectedItem || selectedItem.value !== value || value === getDatasourceType(this.currentWidget.datasourceType)) {
         return;
       }
       // 同步使在途详情失效，避免 watcher 执行前旧来源响应回写候选字段。

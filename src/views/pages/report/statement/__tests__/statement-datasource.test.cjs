@@ -19,6 +19,7 @@ Vue.config.errorHandler = error => errors.push(error);
 const src = path.resolve(__dirname, '../../../../..');
 const page = path.join(src, 'views/pages/report/statement');
 const apiPath = path.join(src, 'resources/api/report/statement');
+const datasourceTypeUrl = '/api/rest/dashboard/datasource/type/list';
 const plain = value => value == null ? value : JSON.parse(JSON.stringify(value));
 const utils = {
   deepClone: plain,
@@ -165,7 +166,9 @@ function realDatasourceControls(api, https) {
   const formMixins = load(path.join(src, 'resources/mixins/formMixins.js')).default;
   const dependencies = { '@/resources/mixins/formMixins.js': { __esModule: true, default: formMixins } };
   const radio = load(path.join(src, 'resources/plugins/TsForm/TsFormRadio.vue'), dependencies).default;
-  radio.beforeCreate = function() { inject(this, api); };
+  // 类型候选只由模拟 HTTP 响应提供，真实控件不再接收写死的 dataList。
+  const radioHttps = https || queuedListRequests().https;
+  radio.beforeCreate = function() { inject(this, api); this.$https = radioHttps; };
   radio.render = function(h) {
     return h('div', this.nodeList.map(item => h('input', {
       attrs: { type: 'radio', value: item[this.valueName] },
@@ -190,7 +193,7 @@ function realDatasourceControls(api, https) {
 }
 
 function datasourceRadio(panel) {
-  return find(panel, child => child.$options.name === 'TsFormRadio' && child.dataList.some(item => item.value === 'integration'));
+  return find(panel, child => child.$options.name === 'TsFormRadio' && child.url === datasourceTypeUrl);
 }
 
 // 原生 change 经过 TsFormRadio.onChangeValue 发出生产 change 事件，再进入面板处理方法。
@@ -203,19 +206,29 @@ async function selectDatasourceType(panel, type) {
   await settle();
 }
 
-function queuedListRequests() {
+// 按接口区分类型列表与具体数据源列表；默认类型仅是服务端响应夹具，空/失败响应不提供兜底。
+function queuedListRequests({ deferTypes = false, typeRows = [
+  { value: 'datawarehouse', text: '数据仓库' }, { value: 'integration', text: '集成' }
+] } = {}) {
   const requests = [];
-  const https = config => new Promise(resolve => requests.push({
-    config: { ...config, data: plain(config.data) },
-    resolve(rows = [], currentPage = 1, pageCount = 1) {
-      resolve({ Status: 'OK', Return: { tbodyList: rows, currentPage, pageCount } });
-    }
-  }));
+  const typeRequests = [];
+  const https = config => new Promise(resolve => {
+    const isType = config.url === datasourceTypeUrl;
+    assert.ok(isType || config.url === '/api/rest/dashboard/datasource/list', '只允许模拟已声明的列表接口');
+    const request = {
+      config: { ...config, data: plain(config.data) },
+      resolve(rows = isType ? typeRows : [], currentPage = 1, pageCount = 1, status = 'OK') {
+        resolve({ Status: status, Return: isType ? { tbodyList: rows } : { tbodyList: rows, currentPage, pageCount } });
+      }
+    };
+    (isType ? typeRequests : requests).push(request);
+    if (isType && !deferTypes) request.resolve();
+  });
   https.CancelToken = { source: () => {
     const token = { cancelled: false };
     return { token, cancel() { token.cancelled = true; } };
   } };
-  return { https, requests };
+  return { https, requests, typeRequests };
 }
 
 test('三个公共数据源 API 原样传递参数对象，报表 API 不再保留旧方法', async() => {
@@ -690,9 +703,10 @@ test('文本、饼图、流程图和自定义组件动态模式显示来源单�
     const panel = mountPanel(widget, api, definition, realDatasourceControls(api));
     try {
       await settle();
-      assert.deepEqual(plain(datasourceRadio(panel).dataList), [
-        { value: 'datawarehouse', text: 'router.framework.datawarehousemanage' },
-        { value: 'integration', text: 'page.integration' }
+      assert.equal(datasourceRadio(panel).dataList, undefined);
+      assert.deepEqual(plain(datasourceRadio(panel).nodeList), [
+        { value: 'datawarehouse', text: '数据仓库' },
+        { value: 'integration', text: '集成' }
       ]);
       assert.equal(datasourceRadio(panel).value, 'datawarehouse');
       assert.equal(api.calls.length, 0, '尚未选择数据源时不能请求详情');
@@ -704,6 +718,132 @@ test('文本、饼图、流程图和自定义组件动态模式显示来源单�
       assert.equal(datasourceRadio(panel).value, 'datawarehouse');
     } finally { panel.$destroy(); }
   }
+});
+
+test('类型接口按 Return.tbodyList 加载第三种来源，真实单选事件只清理来源绑定', async() => {
+  const rows = [{ value: 'datawarehouse', text: '服务端数据仓库' }, { value: 'integration', text: '服务端集成' }, { value: 'external', text: '第三种来源' }];
+  const network = queuedListRequests({ deferTypes: true, typeRows: rows });
+  const api = createApi(() => ({ Return: minimalDatasourceDetail() }));
+  const widget = { uuid: 'third-type', dataType: 'dynamic', datasourceType: 'datawarehouse', datasourceId: 101,
+    name: '保留名称', value: '保留静态内容', dataInterval: 20, limit: 8, config: { title: '保留标题' },
+    fields: [{ name: 'angleField', value: '静态值', datasourceField: 1 }, { name: 'colorField', datasourceField: 2 }],
+    sortList: [{ fieldId: 1, type: 'DESC' }], conditionList: [{ id: 3, value: ['running'] }] };
+  const before = plain(widget);
+  const panel = mountPanel(widget, api, undefined, realDatasourceControls(api, network.https));
+  try {
+    await settle();
+    const radio = datasourceRadio(panel);
+    assert.equal(radio.url, datasourceTypeUrl);
+    assert.equal(radio.rootName, 'tbodyList');
+    assert.equal(radio.valueName, 'value');
+    assert.equal(radio.textName, 'text');
+    assert.equal(radio.dataList, undefined);
+    assert.deepEqual(plain(radio.nodeList), []);
+    assert.deepEqual(plain(widget), before);
+    assert.equal(network.typeRequests.length, 1);
+    assert.equal(network.typeRequests[0].config.method, 'post');
+    assert.equal(network.typeRequests[0].config.url, datasourceTypeUrl);
+    network.typeRequests[0].resolve();
+    await settle();
+    assert.deepEqual(plain(radio.nodeList), rows);
+    assert.equal(radio.$el.querySelector('input[value="datawarehouse"]').checked, true);
+    assert.deepEqual(plain(widget), before, '加载选项不得清空保存的来源绑定');
+    await selectDatasourceType(panel, 'datawarehouse');
+    assert.deepEqual(plain(widget), before);
+    radio.$emit('change', 'external', { value: 'integration', text: '不匹配选项' });
+    await settle();
+    assert.deepEqual(plain(widget), before, '选项和值不匹配时不得清理');
+    await selectDatasourceType(panel, 'external');
+    assert.deepEqual(plain(widget), { ...before, datasourceType: 'external', datasourceId: null, sortList: [], conditionList: [],
+      fields: before.fields.map(({ datasourceField, ...field }) => field) });
+    assert.deepEqual(plain(panel.datasourceFieldList), []);
+    assert.deepEqual(plain(panel.datasourceConditionList), []);
+    assert.equal(api.calls.length, 1, '清空来源后不能使用旧 ID 请求第三种类型');
+  } finally { panel.$destroy(); }
+});
+
+test('空或错误类型响应不回退固定选项，也不修改已保存但未注册的类型和绑定', async() => {
+  for (const response of [{ rows: [], status: 'OK' }, { rows: [{ value: 'integration', text: '错误响应不得显示' }], status: 'ERROR' }]) {
+    const network = queuedListRequests({ deferTypes: true });
+    const api = createApi(() => ({ Return: minimalDatasourceDetail() }));
+    const widget = { uuid: 'unknown-type', dataType: 'dynamic', datasourceType: 'unregistered', datasourceId: 101,
+      fields: [{ name: 'angleField', datasourceField: 1 }], sortList: [{ fieldId: 1, type: 'ASC' }], conditionList: [{ id: 3, value: 'running' }] };
+    const before = plain(widget);
+    const panel = mountPanel(widget, api, undefined, realDatasourceControls(api, network.https));
+    try {
+      await settle();
+      const radio = datasourceRadio(panel);
+      assert.equal(radio.currentValue, 'unregistered');
+      network.typeRequests[0].resolve(response.rows, 1, 1, response.status);
+      await settle();
+      assert.deepEqual(plain(radio.nodeList), []);
+      assert.equal(radio.$el.querySelectorAll('input').length, 0);
+      assert.equal(radio.currentValue, 'unregistered');
+      assert.deepEqual(plain(widget), before);
+      // 通过真实事件生成逻辑模拟无选项值，selectedItem 为 null，页面不得误清理。
+      radio.currentValue = 'integration';
+      radio.onChangeValue();
+      await settle();
+      assert.deepEqual(plain(widget), before);
+    } finally { panel.$destroy(); }
+  }
+});
+
+test('重新加载类型列表会取消旧请求，迟到结果不得覆盖当前候选或触发绑定清理', async() => {
+  const network = queuedListRequests({ deferTypes: true });
+  const api = createApi(() => ({ Return: minimalDatasourceDetail() }));
+  const widget = { uuid: 'refresh-types', dataType: 'dynamic', datasourceType: 'integration', datasourceId: 101,
+    fields: [{ name: 'angleField', datasourceField: 1 }] };
+  const before = plain(widget);
+  const panel = mountPanel(widget, api, undefined, realDatasourceControls(api, network.https));
+  try {
+    await settle();
+    const radio = datasourceRadio(panel);
+    const oldRequest = network.typeRequests[0];
+    radio.initDataListByUrl();
+    assert.equal(oldRequest.config.cancelToken.cancelled, true);
+    assert.equal(network.typeRequests.length, 2);
+    const latestRows = [{ value: 'integration', text: '最新名称' }, { value: 'external', text: '扩展类型' }];
+    network.typeRequests[1].resolve(latestRows);
+    await settle();
+    oldRequest.resolve([{ value: 'legacy', text: '迟到旧类型' }]);
+    await settle();
+    assert.deepEqual(plain(radio.nodeList), latestRows);
+    assert.equal(radio.currentValue, 'integration');
+    assert.deepEqual(plain(widget), before);
+  } finally { panel.$destroy(); }
+});
+
+test('面板销毁后延迟类型响应不能写入旧单选或新面板，新请求独立回显已保存未知类型', async() => {
+  const network = queuedListRequests({ deferTypes: true });
+  const api = createApi(() => ({ Return: minimalDatasourceDetail() }));
+  const widget = { uuid: 'destroy-types', dataType: 'dynamic', datasourceType: 'unregistered', datasourceId: 101,
+    fields: [{ name: 'angleField', datasourceField: 1 }], config: { title: '保持不变' } };
+  const before = plain(widget);
+  const oldPanel = mountPanel(widget, api, undefined, realDatasourceControls(api, network.https));
+  let reopened;
+  try {
+    await settle();
+    const oldRadio = datasourceRadio(oldPanel);
+    const delayed = network.typeRequests[0];
+    oldPanel.$destroy();
+    assert.equal(oldRadio._isDestroyed, true);
+    assert.equal(delayed.config.cancelToken.cancelled, true);
+    reopened = mountPanel(widget, api, undefined, realDatasourceControls(api, network.https));
+    await settle();
+    const radio = datasourceRadio(reopened);
+    assert.notEqual(radio, oldRadio);
+    const latestRows = [{ value: 'datawarehouse', text: '数据仓库' }, { value: 'external', text: '新面板来源' }];
+    network.typeRequests[1].resolve(latestRows);
+    await settle();
+    delayed.resolve([{ value: 'unregistered', text: '不应注入的新名称' }]);
+    await settle();
+    assert.deepEqual(plain(oldRadio.nodeList), []);
+    assert.deepEqual(plain(radio.nodeList), latestRows);
+    assert.equal(radio.currentValue, 'unregistered');
+    assert.equal(radio.$el.querySelectorAll('input:checked').length, 0);
+    assert.deepEqual(plain(widget), before);
+  } finally { oldPanel.$destroy(); if (reopened) reopened.$destroy(); }
 });
 
 test('缺省和空白类型正常回显，相同类型不清配置，实际单选切换只清来源绑定', async() => {
