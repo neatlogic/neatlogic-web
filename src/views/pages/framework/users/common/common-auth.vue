@@ -40,7 +40,7 @@
                       <span>{{ $t('term.framework.authsourcenumber', {index: tipIndex + 1, description: tip.description}) }}</span>
                       <span v-for="(node, nodeIndex) in tip.nodes" :key="nodeIndex">
                         <span v-if="nodeIndex"> → </span>
-                        <span class="text-action" :class="{'tsfont-team-s': node.type === 'team', 'tsfont-role': node.type === 'role', 'tsfont-security': node.type === 'permission'}">{{ node.name }}</span>
+                        <span :class="{'tsfont-team-s': node.type === 'team', 'tsfont-role': node.type === 'role', 'tsfont-security': node.type === 'permission'}">{{ node.name }}</span>
                       </span>
                     </div>
                   </div>
