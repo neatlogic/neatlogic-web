@@ -2126,6 +2126,7 @@
     "unselectedchild": "No Child Nodes Selected",
     "selectedtarget": "Select Target",
     "notcancelauth": "Inherit Role Permissions And Prevent Authorization Revocation",
+    "authsourcepathintro": "Authorization cannot be revoked. This permission is provided by the following sources:",
     "authsourcesummary": "Authorization cannot be revoked. This permission is provided by the following {count} sources: {sources}.",
     "authsourceseparator": ", ",
     "authsourcerolelabel": "role \"{roleName}\"",

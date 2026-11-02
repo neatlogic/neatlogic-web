@@ -2124,6 +2124,7 @@
     "unselectedchild": "未选中子节点",
     "selectedtarget": "选中目标",
     "notcancelauth": "继承角色权限，不允许取消授权",
+    "authsourcepathintro": "不允许取消授权，该权限由以下来源提供：",
     "authsourcesummary": "不允许取消授权，该权限由以下 {count} 个来源提供：{sources}。",
     "authsourceseparator": "、",
     "authsourcerolelabel": "角色【{roleName}】",
