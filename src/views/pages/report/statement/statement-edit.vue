@@ -227,6 +227,7 @@
 import { WIDGETS } from './widgets/widget-list.js';
 import { WIDGET_TYPES } from './widgets/widget-list.js';
 import screenfull from '@/resources/assets/js/screenfull.js';
+import { getDatasourceType } from '@/resources/api/report/statement/datasource';
 
 export default {
   name: '',
@@ -470,6 +471,8 @@ export default {
       if (id) {
         this.$api.report.statement.getStatementById(id).then(res => {
           this.reportData = res.Return;
+          // 旧大屏及复制大屏在编辑时补齐类型，保存后沿用统一数据源配置。
+          this.normalizeWidgetDatasourceType();
           if (!this.id && copyId) {
             this.$delete(this.reportData, 'id');
             this.reportData.name += '_copy';
@@ -479,6 +482,12 @@ export default {
       }
     },
 
+    // 只补齐空类型，保留非空类型供对应数据源分支处理。
+    normalizeWidgetDatasourceType() {
+      (this.reportData.widgetList || []).forEach(widget => {
+        this.$set(widget, 'datasourceType', getDatasourceType(widget.datasourceType));
+      });
+    },
     getWidgetComponentByType(widget) {
       return WIDGETS.find(d => d.type === widget.type);
     },
@@ -637,6 +646,8 @@ export default {
     addWidget(widget, x, y) {
       const newWidget = {
         type: widget.type,
+        // 新组件显式保存来源类型，后续新增来源时可以继续复用同一入口。
+        datasourceType: getDatasourceType(widget.datasourceType),
         width: widget.width,
         height: widget.height,
         padding: widget.padding,
@@ -675,6 +686,8 @@ export default {
           this.$Message.warning(this.$t('message.report.addreportwidget'));
           return;
         }
+        // 保存前再兼容未补齐类型的组件，类型与字段绑定一起进入 widgetList。
+        this.normalizeWidgetDatasourceType();
         this.normalizeWidgetZindex();
         //_开头的属性都是编辑器的控制属性，不需要保存
         this.reportData.widgetList.forEach(widget => {

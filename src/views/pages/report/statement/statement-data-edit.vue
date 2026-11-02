@@ -11,6 +11,21 @@
       </template>
       <template v-slot:config>
         <div>
+          <!-- 动态数据类型由后端返回，受控变更避免选项加载或重复选择清空已有绑定。 -->
+          <TsFormItem
+            v-if="currentWidget && currentWidget.dataType === 'dynamic'"
+            :label="$t('page.datasourcetype')"
+            labelPosition="top"
+          >
+            <TsFormRadio
+              :value="datasourceParams.datasourceType"
+              url="/api/rest/dashboard/datasource/type/list"
+              rootName="tbodyList"
+              valueName="value"
+              textName="text"
+              @change="changeDatasourceType"
+            ></TsFormRadio>
+          </TsFormItem>
           <div v-if="currentWidget && currentWidget.dataType && currentWidget.dataType === 'dynamic'" class="ivu-form-item tsform-item ivu-form-label-top">
             <label class="ivu-form-item-label overflow">{{ $t('term.report.refreshrate') }}</label>
             <div class="ivu-form-item-content">
@@ -32,8 +47,11 @@
           <div v-if="currentWidget && currentWidget.dataType && currentWidget.dataType === 'dynamic'" class="ivu-form-item tsform-item ivu-form-label-top">
             <label class="ivu-form-item-label overflow">{{ $t('page.datasource') }}</label>
             <div class="ivu-form-item-content">
+              <!-- 保留现有下拉控件及回显参数，通过 dashboard 统一数据源入口传递来源类型。 -->
               <TsFormSelect
-                dynamicUrl="/api/rest/datawarehouse/datasource/search"
+                :key="datasourceSelectKey"
+                dynamicUrl="/api/rest/dashboard/datasource/list"
+                :params="datasourceParams"
                 valueName="id"
                 textName="label"
                 rootName="tbodyList"
@@ -149,6 +167,8 @@
   </div>
 </template>
 <script>
+import { getDatasourceType } from '@/resources/api/report/statement/datasource';
+
 export default {
   name: '',
   components: {
@@ -166,6 +186,7 @@ export default {
   data() {
     return {
       datasourceConditionList: [],
+      datasourceRequestId: 0, // 切换来源时忽略已过期的字段详情响应。
       filterTypeList: ['text', 'number', 'date', 'time', 'datetime'], //允许排序的字段类型
       dataFormConfig: {
         dataType: {
@@ -188,7 +209,10 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    // 销毁后不再接收尚未完成的字段详情请求。
+    this.datasourceRequestId += 1;
+  },
   destroyed() {},
   methods: {
     getConditionValue(fieldId) {
@@ -253,21 +277,44 @@ export default {
         this.currentWidget.sortList.push({fieldId: field.id, type: 'ASC'});
       }
     },
-    changeDatasourceId(val) {
-      if (val) {
-        this.$api.framework.datawarehouse.getDatasourceById(val).then(res => {
-          if (res.Return.fieldList && res.Return.fieldList.length > 0) {
-            this.datasourceFieldList = res.Return.fieldList;
-            this.datasourceConditionList = [];
-            this.datasourceFieldList.forEach(field => {
-              if (field.isCondition) {
-                this.datasourceConditionList.push(this.$utils.deepClone(field));
-              }
-            });
-          }
+    changeDatasourceType(value, selectedItem) {
+      // 仅接受控件选项与值匹配的实际切换，加载、无有效选项和重复选择均保留已有配置。
+      if (!this.currentWidget || !selectedItem || selectedItem.value !== value || value === getDatasourceType(this.currentWidget.datasourceType)) {
+        return;
+      }
+      // 同步使在途详情失效，避免 watcher 执行前旧来源响应回写候选字段。
+      this.datasourceRequestId += 1;
+      this.datasourceFieldList = [];
+      this.datasourceConditionList = [];
+      this.$set(this.currentWidget, 'datasourceType', value);
+      this.$set(this.currentWidget, 'datasourceId', null);
+      this.$set(this.currentWidget, 'sortList', []);
+      this.$set(this.currentWidget, 'conditionList', []);
+      // 字段标识属于具体来源，只移除动态绑定，保留字段名称、静态值及其他组件配置。
+      if (this.currentWidget.fields) {
+        this.currentWidget.fields.forEach(field => {
+          this.$delete(field, 'datasourceField');
         });
-      } else {
-        this.datasourceFieldList = [];
+      }
+    },
+    changeDatasourceId(val, datasourceType) {
+      // 来源由类型和 ID 共同确定，清空候选项并阻止旧请求回写新配置。
+      const requestId = ++this.datasourceRequestId;
+      this.datasourceFieldList = [];
+      this.datasourceConditionList = [];
+      if (val) {
+        // 字段详情通过公共数据源入口查询，类型仍由当前调用方处理。
+        return this.$api.common.getDashboardDatasource({ id: val, datasourceType: getDatasourceType(datasourceType) }).then(res => {
+          if (requestId !== this.datasourceRequestId) {
+            return;
+          }
+          this.datasourceFieldList = (res.Return && res.Return.fieldList) || [];
+          this.datasourceFieldList.forEach(field => {
+            if (field.isCondition) {
+              this.datasourceConditionList.push(this.$utils.deepClone(field));
+            }
+          });
+        });
       }
     },
     getDatasourceFieldList(field) {
@@ -300,6 +347,18 @@ export default {
   },
   filter: {},
   computed: {
+    // TsFormSelect 会将此参数合并到关键词、分页及 defaultValue 回显请求中。
+    datasourceParams() {
+      return { datasourceType: getDatasourceType(this.currentWidget && this.currentWidget.datasourceType) };
+    },
+    // 切换组件或来源类型时重建下拉，隔离选中项回显与搜索候选缓存。
+    datasourceSelectKey() {
+      return `${(this.currentWidget && this.currentWidget.uuid) || ''}:${this.datasourceParams.datasourceType}`;
+    },
+    // 同一个 ID 在不同来源中可能重复，类型改变也必须重新加载字段。
+    datasourceIdentity() {
+      return { id: this.currentWidget && this.currentWidget.datasourceId, ...this.datasourceParams };
+    },
     datasourceSortList() {
       if (this.datasourceFieldList && this.datasourceFieldList.length) {
         return this.datasourceFieldList.filter(d => this.filterTypeList.includes(d.type));
@@ -308,9 +367,9 @@ export default {
     }
   },
   watch: {
-    'currentWidget.datasourceId': {
+    datasourceIdentity: {
       handler: function(val) {
-        this.changeDatasourceId(val);
+        this.changeDatasourceId(val.id, val.datasourceType);
       },
       deep: true,
       immediate: true
