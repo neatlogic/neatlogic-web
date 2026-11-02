@@ -20,6 +20,10 @@ const applicationManage = {
     // 获取资源中心，应用列表
     return axios.post('api/rest/resourcecenter/appsystem/list/fortree', params);
   },
+  // 按当前模块可见范围核对应用，支持通过默认值读取指定应用。
+  getVisibleAppsystemList(params) {
+    return axios.post('api/rest/resourcecenter/appsystem/list/forselect', params);
+  },
   getAppmoduleListTree(params) {
     // 获取资源中心，应用模块列表
     return axios.post('api/rest/resourcecenter/appmodule/list/fortree', params);

@@ -465,7 +465,8 @@ export default {
           }
          */
         if (!this.$utils.isEmpty(currentData) && currentData.hasOwnProperty(this.keywordName)) {
-          this.totalText[this.keywordName] = currentData[this.keywordName];
+          // 回显初始关键词时也需响应式写入，确保返回页面后标签及清空入口同步显示。
+          this.$set(this.totalText, this.keywordName, currentData[this.keywordName]);
         }
         // 清除searchList和关键字（keywordName）中没有定义的属性值，避免回显错误的选项 
         if (this.totalText) {

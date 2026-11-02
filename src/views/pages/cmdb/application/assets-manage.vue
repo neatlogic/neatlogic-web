@@ -6,12 +6,12 @@
         <Col
           v-for="item in envList"
           :key="item.id"
-          :xs="12"
+          :xs="compact ? 8 : 12"
           :sm="8"
-          :md="6"
-          :lg="4"
-          :xl="3"
-          :xxl="2"
+          :md="compact ? 8 : 6"
+          :lg="compact ? 8 : 4"
+          :xl="compact ? 8 : 3"
+          :xxl="compact ? 8 : 2"
         >
           <div
             v-if="item.name"
@@ -189,6 +189,8 @@ export default {
   },
   filters: {},
   props: {
+    // 窄侧栏使用固定三列环境按钮，避免按视口断点挤压文字。
+    compact: { type: Boolean, default: false },
     appSystemId: {
       type: Number,
       default: null

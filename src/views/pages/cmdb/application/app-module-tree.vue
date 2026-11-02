@@ -11,13 +11,15 @@
     <div ref="scroll">
       <Loading v-if="isLoading" :loadingShow="true" type="fix"></Loading>
       <Scroll
+        ref="appScroll"
         :on-reach-bottom="pageRange[1] < pageCount ? handleReachBottom : null"
         :on-reach-top="pageRange[0] > 1 ? handleReachTop : null"
         :loading-text="loadingTip"
         :height="scrollHeight"
         :distance-to-edge="10"
       >
-        <div v-for="app in appSystemList" :key="app.id">
+        <div v-for="app in visibleAppSystemList" :key="app.id">
+          <div v-if="app === selectionContextApp" class="text-grey fz12 pt-sm pb-xs">{{ $t('term.cmdb.applicationmatrix.currentselection') }}</div>
           <div class="app-item pl-xs pb-xs pt-xs cursor radius-sm overflow" :class="{ 'item-selected': !!app.isSelected }" @click="selectApp(app)">
             <span v-if="(level === 'module' || level === 'env') && app.isHasModule">
               <span v-if="!app.isLoading" :class="{ 'tsfont-drop-right': !app.isExpand, 'tsfont-drop-down': !!app.isExpand }" @click.stop="showModule(app)"></span>
@@ -108,7 +110,7 @@ export default {
   },
   data() {
     return {
-      returnValue: this.value || {},
+      returnValue: { ...this.value },
       searchParam: { keyword: '', pageSize: 50, ...this.filter }, //pagesize生成50，防止浏览器高度太大数据量太少不出现滚动条导致无法触发翻页
       pageCount: 0,
       selectedNode: null,
@@ -116,6 +118,8 @@ export default {
       scrollHeight: 0,
       loadingTip: this.$t('page.loadingtip'),
       selectedApp: null,
+      selectionContextApp: null,
+      hasExternalSelectionContext: false,
       selectedModule: null,
       selectedEnv: null,
       isShowAppEdit: false,
@@ -151,10 +155,14 @@ export default {
         const appId = this.returnValue.appId;
         const moduleId = this.returnValue.moduleId;
         const envId = this.returnValue.envId;
+        // 另一视图可选中当前分页之外的应用，保留选择而不强制回到第一页。
+        if (this.hasExternalSelectionContext && appId && !this.visibleAppSystemList.some(app => app.id === appId)) {
+          return;
+        }
 
         if (appId && !moduleId && !envId) {
           //选中应用
-          const appNode = this.appSystemList.find(d => d.id === appId);
+          const appNode = this.visibleAppSystemList.find(d => d.id === appId);
           if (appNode) {
             if (!appNode.isSelected) {
               this.selectApp(appNode, disableEmit);
@@ -163,7 +171,7 @@ export default {
           }
         } else if (appId && moduleId && !envId) {
           //选中模块
-          const appNode = this.appSystemList.find(d => d.id === appId);
+          const appNode = this.visibleAppSystemList.find(d => d.id === appId);
           if (appNode && !appNode.isExpand) {
             await this.showModule(appNode);
           }
@@ -178,7 +186,7 @@ export default {
           }
         } else if (appId && moduleId && envId) {
           //选中环境
-          const appNode = this.appSystemList.find(d => d.id === appId);
+          const appNode = this.visibleAppSystemList.find(d => d.id === appId);
           if (appNode && !appNode.isExpand) {
             await this.showModule(appNode);
           }
@@ -212,12 +220,52 @@ export default {
         }
       }
     },
+    // 可选真实上下文仅供应用清单跨视图定位，不改变分页及搜索结果。
+    async restoreSelection(value, context) {
+      const selection = { ...value };
+      if (context) {
+        this.hasExternalSelectionContext = true;
+      }
+      this.clearSelectedItem();
+      this.returnValue = selection;
+      if (context && context.app && context.app.id === selection.appId && !this.appSystemList.some(app => app.id === selection.appId)) {
+        this.selectionContextApp = {
+          ...context.app,
+          isSelected: false,
+          isExpand: !!context.module,
+          isHasModule: context.module ? 1 : context.app.isHasModule,
+          appModuleList: context.module ? [{ ...context.module, isSelected: false }] : []
+        };
+      } else if (!selection.appId || this.appSystemList.some(app => app.id === selection.appId) || (this.selectionContextApp && this.selectionContextApp.id !== selection.appId)) {
+        this.selectionContextApp = null;
+      }
+      // 应用清单切回列表且尚无选择时，沿用禁止反选场景默认选中首项的规则。
+      if (selection.appId || (context && !this.allowInverse)) {
+        await this.reSelectNode(true);
+      }
+      if (context) {
+        await this.$nextTick();
+        const selected = this.$el.querySelector('.item-selected');
+        const scroll = this.$refs.appScroll && this.$refs.appScroll.$el.querySelector('.ivu-scroll-container');
+        if (selected && scroll) {
+          scroll.scrollTop = Math.max(0, scroll.scrollTop + selected.getBoundingClientRect().top - scroll.getBoundingClientRect().top - 24);
+        }
+      }
+    },
+    // 管理操作刷新当前已加载页范围，不重置关键词或滚动分页范围。
+    async refreshCurrent() {
+      this.searchParam.pageRange = [...this.pageRange];
+      await this.searchAppSystem();
+    },
     calcScrollHeight() {
+      if (!this.$refs.scroll || !this.$el.offsetParent) {
+        return;
+      }
       this.scrollHeight = document.body.clientHeight - this.$refs['scroll'].getBoundingClientRect().top - this.offsetBottom;
     },
     emit() {
       this.$addHistoryData('appModuleEnvData', this.returnValue);
-      this.$emit('input', this.returnValue);
+      this.$emit('input', { ...this.returnValue });
       this.$emit('getSelectedApp', this.selectedApp);
       this.$emit('getSelectedModule', this.selectedModule);
       this.$emit('getSelectedEnv', this.selectedEnv);
@@ -262,7 +310,6 @@ export default {
         this.selectedApp = app;
         this.$set(app, 'isSelected', true);
         this.$set(this.returnValue, 'appId', app.id);
-        this.emit(); // 详情页返回，缺少分发方法
       }
       if (!disableEmit) {
         this.emit();
@@ -280,7 +327,6 @@ export default {
         this.$set(module, 'isSelected', true);
         this.$set(this.returnValue, 'appId', app.id);
         this.$set(this.returnValue, 'moduleId', module.id);
-        this.emit(); // 详情页返回，缺少分发的方法
       }
       if (!disableEmit) {
         this.emit();
@@ -361,7 +407,6 @@ export default {
         this.$set(this.returnValue, 'appId', app.id);
         this.$set(this.returnValue, 'moduleId', module.id);
         this.$set(this.returnValue, 'envId', env.id);
-        this.emit(); // 详情页返回，缺少分发方法
       }
       if (!disableEmit) {
         this.emit();
@@ -435,7 +480,7 @@ export default {
             if (res && res.Status == 'OK') {
               const dataList = res.Return.tbodyList || [];
               this.pageCount = res.Return.pageCount;
-              const currentPage = Math.min(this.pageCount, this.searchParam.currentPage);
+              const currentPage = Math.max(1, Math.min(this.pageCount, this.searchParam.currentPage));
               if (dataList && dataList.length > 0) {
                 if (this.level === 'module' || this.level === 'env') {
                   dataList.forEach(element => {
@@ -484,9 +529,13 @@ export default {
                   this.pageRange = [currentPage, currentPage];
                 }
               }
+              if (this.selectionContextApp && this.appSystemList.some(app => app.id === this.selectionContextApp.id)) {
+                this.selectionContextApp = null;
+              }
               this.$emit('getAppSystemIdList', this.appSystemList);
               //重新选中节点，禁用emit，防止触发二次搜索
               await this.reSelectNode(true);
+              this.emit();
             }
           })
           .finally(() => {
@@ -511,7 +560,15 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    // 当前选择独立置顶，不计入搜索结果、总数或分页范围。
+    visibleAppSystemList() {
+      if (this.selectionContextApp && this.returnValue.appId === this.selectionContextApp.id && !this.appSystemList.some(app => app.id === this.selectionContextApp.id)) {
+        return [this.selectionContextApp, ...this.appSystemList];
+      }
+      return this.appSystemList;
+    }
+  },
   watch: {
     height: {
       handler(val) {
@@ -521,8 +578,11 @@ export default {
     },
     value: {
       async handler(val) {
-        this.returnValue = val || {};
-        await this.reSelectNode();
+        const nextValue = val || {};
+        if (this.returnValue.appId === nextValue.appId && this.returnValue.moduleId === nextValue.moduleId && this.returnValue.envId === nextValue.envId) {
+          return;
+        }
+        await this.restoreSelection(nextValue);
       },
       deep: true
     }

@@ -21,6 +21,7 @@ const customViewManage = () => import('./customview/customview-manage.vue');
 const assetManage = () => import('./asset/asset-manage.vue');
 const accountManage = () => import('./account/account-manage.vue');
 const applicationManage = () => import('./application/application-manage.vue');
+const applicationOverview = () => import('@/views/pages/cmdb/application/application-overview.vue');
 const tagManage = () => import('./Tag/tag-manage.vue');
 const syncCiCollectionManage = () => import('./sync/sync-manage.vue');
 //const syncWizard = () => import('./sync/sync-wizard.vue');
@@ -130,6 +131,16 @@ let routerArr = [
       type: 'cientitymanage',
       icon: 'tsfont-eoa',
       authority: 'TRANSACTION_MANAGE'
+    }
+  },
+  {
+    path: '/application-overview',
+    name: 'application-overview',
+    component: applicationOverview,
+    meta: {
+      title: $t('term.cmdb.applicationoverview.title'),
+      activeMenuPath: '/application-manage',
+      authority: 'RESOURCECENTER_APP_VIEW'
     }
   },
   {
