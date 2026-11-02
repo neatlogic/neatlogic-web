@@ -82,6 +82,7 @@
       </div>
     </TsContain>
     <SystemUserListDialog v-if="showSystemUserDialog" @close="showSystemUserDialog = false"></SystemUserListDialog>
+    <!-- 历史授权弹窗已无打开入口，保留原实现；当前授权通过用户编辑页完成。
     <TsDialog
       v-if="showAuth"
       type="modal"
@@ -112,6 +113,7 @@
         </div>
       </template>
     </TsDialog>
+    -->
   </div>
 </template>
 
@@ -122,7 +124,8 @@ export default {
     CombineSearcher: () => import('@/resources/components/CombineSearcher/CombineSearcher.vue'),
     TsTable: () => import('@/resources/components/TsTable/TsTable'),
     UserCard: () => import('@/resources/components/UserCard/UserCard.vue'),
-    CommonAuth: () => import('./common/common-auth.vue'),
+    // 历史授权弹窗已无打开入口，停用其专用组件注册。
+    // CommonAuth: () => import('./common/common-auth.vue'),
     SystemUserListDialog: () => import('./system-user-list-dialog.vue')
   },
   props: [],
@@ -168,32 +171,42 @@ export default {
         currentPage: 1,
         pageSize: 20
       },
-      loadingShow: true,
-      user: {}, //当前用户信息
-      keyword: null,
+      // 当前模板和组件参数均未读取的状态。
+      // loadingShow: true,
+      // user: {}, //当前用户信息
+      // 旧筛选专用状态，当前筛选由 searchValue 承载。
+      // keyword: null,
       tabledata: null, //table的正文数据
       select: null, //选中哪些
-      vipLevel: null, //VIP等级
-      isOnline: null, //是否在线
-      formSetting: [], //弹窗表单对应的数组
-      isImmediately: true, //立即授权
-      isBatch: false, //是否批量授权
-      userKey: false, //判断是否有相同的userId
-      allUserList: [], //所有用户
-      authorizationTitle: this.$t('dialog.title.edittarget', {target: this.$t('term.framework.userpermission')}), //授权标题
-      showAuth: false, //授权窗口
+      // 旧筛选专用状态，当前筛选由 searchValue 承载。
+      // vipLevel: null, //VIP等级
+      // isOnline: null, //是否在线
+      // 旧弹窗表单已无入口，停用遗留状态。
+      // formSetting: [], //弹窗表单对应的数组
+      // 历史授权弹窗已无打开入口，停用配套状态。
+      // isImmediately: true, //立即授权
+      // isBatch: false, //是否批量授权
+      // 旧弹窗表单已无入口，停用遗留状态。
+      // userKey: false, //判断是否有相同的userId
+      // 旧用户列表加载方法已无调用入口。
+      // allUserList: [], //所有用户
+      // 历史授权弹窗已无打开入口，停用配套状态。
+      // authorizationTitle: this.$t('dialog.title.edittarget', {target: this.$t('term.framework.userpermission')}), //授权标题
+      // showAuth: false, //授权窗口
       showSystemUserDialog: false, //系统内置用户授权窗口
-      authList: [], //权限列表
-      authUserList: [], //授权用户列表
-      authSelectList: [], //授权选中列表
-      authRoleSelectList: [], //角色授权选中回显列表
-      authUserSelectList: [], //用户授权选中回显列表
-      filter: {
-        //过滤用户
-        authGroup: '',
-        auth: '',
-        roleName: ''
-      },
+      // 历史授权弹窗已无打开入口，停用配套状态。
+      // authList: [], //权限列表
+      // authUserList: [], //授权用户列表
+      // authSelectList: [], //授权选中列表
+      // authRoleSelectList: [], //角色授权选中回显列表
+      // authUserSelectList: [], //用户授权选中回显列表
+      // 旧筛选专用状态，当前筛选由 searchValue 承载。
+      // filter: {
+      //   //过滤用户
+      //   authGroup: '',
+      //   auth: '',
+      //   roleName: ''
+      // },
       searchConfig: {
         search: true,
         labelPosition: 'left',
@@ -252,19 +265,22 @@ export default {
       this.searchParams.pageSize = pageSize;
       this.getTable();
     },
-    changeVipLevel() {
-      this.vipLevel = this.vipLevel ? null : 1;
-      this.getTable();
-    },
-    changeIsOnline() {
-      this.isOnline = this.isOnline ? null : 1;
-      this.getTable();
-    },
+    // 旧筛选无调用入口，当前由 CombineSearcher 更新 searchValue。
+    // changeVipLevel() {
+    //   this.vipLevel = this.vipLevel ? null : 1;
+    //   this.getTable();
+    // },
+    // changeIsOnline() {
+    //   this.isOnline = this.isOnline ? null : 1;
+    //   this.getTable();
+    // },
     getTable() {
-      this.loadingShow = true;
+      // loadingShow 未被页面读取，停用无效赋值。
+      // this.loadingShow = true;
       const param = { ...this.searchParams, ...this.searchValue };
       this.$addHistoryData('searchValue', this.searchValue);
-      this.$addHistoryData('searchParam', this.searchParam);
+      // 实际查询使用 searchParams，旧 searchParam 未声明且不参与请求。
+      // this.$addHistoryData('searchParam', this.searchParam);
 
       this.$api.framework.user
         .searchUser(param)
@@ -272,14 +288,16 @@ export default {
           if (res.Status == 'OK') {
             this.tabledata = res.Return;
             this.tabledata.theadList = this.theadList;
-            this.loadingShow = false;
+            // loadingShow 未被页面读取，停用无效赋值。
+            // this.loadingShow = false;
           }
         });
     },
     restoreHistory(historyData) {
-      if (historyData['searchParam']) {
-        this.searchParam = historyData['searchParam'];
-      }
+      // 保留全局历史插件调用的方法，仅停用未参与查询的旧 searchParam 恢复分支。
+      // if (historyData['searchParam']) {
+      //   this.searchParam = historyData['searchParam'];
+      // }
       if (historyData['searchValue']) {
         this.searchValue = historyData['searchValue'];
       }
@@ -311,28 +329,29 @@ export default {
         });
     },
     //批量启用禁用
-    batchEnaDisable: function(val) {
-      let newList = [];
-      this.select.forEach(item => {
-        newList.push(item.uuid);
-      });
-      let data = {
-        userUuidList: newList,
-        isActive: val
-      };
-      this.$api.framework.user
-        .updateActive(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.$Message.success(this.$t('message.executesuccess'));
-            this.$refs.userTable.selectAll(false);
-            this.initTable();
-          }
-        })
-        .catch(error => {
-          this.$Notice.error({ title: error.data.Message });
-        });
-    },
+    // 旧批量启停无操作入口，且依赖已不存在的 userTable 和 initTable。
+    // batchEnaDisable: function(val) {
+    //   let newList = [];
+    //   this.select.forEach(item => {
+    //     newList.push(item.uuid);
+    //   });
+    //   let data = {
+    //     userUuidList: newList,
+    //     isActive: val
+    //   };
+    //   this.$api.framework.user
+    //     .updateActive(data)
+    //     .then(res => {
+    //       if (res.Status == 'OK') {
+    //         this.$Message.success(this.$t('message.executesuccess'));
+    //         this.$refs.userTable.selectAll(false);
+    //         this.initTable();
+    //       }
+    //     })
+    //     .catch(error => {
+    //       this.$Notice.error({ title: error.data.Message });
+    //     });
+    // },
     //删除
     deleteData(row) {
       let key = row instanceof Array;
@@ -401,159 +420,170 @@ export default {
       });
     },
     //获取用户组下拉列表
-    getUserList: function() {
-      let data = {
-        needPage: false,
-        keyword: ''
-      };
-      this.$api.framework.team.getTeamList(data).then(res => {
-        if (res.Status == 'OK') {
-          let list = res.Return.teamList;
-          let newObj = this.formData.find(d => d.name == 'teamUuidList');
-          newObj.dataList = list;
-        }
-      });
-    },
+    // 旧表单下拉加载无调用入口，且依赖已不存在的 formData。
+    // getUserList: function() {
+    //   let data = {
+    //     needPage: false,
+    //     keyword: ''
+    //   };
+    //   this.$api.framework.team.getTeamList(data).then(res => {
+    //     if (res.Status == 'OK') {
+    //       let list = res.Return.teamList;
+    //       let newObj = this.formData.find(d => d.name == 'teamUuidList');
+    //       newObj.dataList = list;
+    //     }
+    //   });
+    // },
     //获取角色列表
-    getRoleList: function() {
-      let data = {
-        needPage: false
-      };
-      this.$api.framework.role.roleList(data).then(res => {
-        if (res.Status == 'OK') {
-          let list = res.Return.tbodyList;
-          let newObj = this.formData.find(d => d.name == 'roleUuidList');
-          newObj.dataList = list;
-        }
-      });
-    },
+    // 旧表单下拉加载无调用入口，且依赖已不存在的 formData。
+    // getRoleList: function() {
+    //   let data = {
+    //     needPage: false
+    //   };
+    //   this.$api.framework.role.roleList(data).then(res => {
+    //     if (res.Status == 'OK') {
+    //       let list = res.Return.tbodyList;
+    //       let newObj = this.formData.find(d => d.name == 'roleUuidList');
+    //       newObj.dataList = list;
+    //     }
+    //   });
+    // },
     //获取所有用户
-    getAllUser: function() {
-      let data = {
-        needPage: false,
-        keyword: ''
-      };
-      this.$api.framework.user
-        .searchUser(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.allUserList = res.Return.tbodyList;
-          }
-        })
-        .catch(error => {
-          this.$Notice.error({ title: error.data.Message });
-        });
-    },
+    // 旧用户列表加载无调用入口。
+    // getAllUser: function() {
+    //   let data = {
+    //     needPage: false,
+    //     keyword: ''
+    //   };
+    //   this.$api.framework.user
+    //     .searchUser(data)
+    //     .then(res => {
+    //       if (res.Status == 'OK') {
+    //         this.allUserList = res.Return.tbodyList;
+    //       }
+    //     })
+    //     .catch(error => {
+    //       this.$Notice.error({ title: error.data.Message });
+    //     });
+    // },
     //获取所有权限列表
-    getAuthList: function() {
-      let data = {};
-      this.$api.common
-        .getAuthlist(data)
-        .then(res => {
-          if (res.Status == 'OK') {
-            this.authList = res.Return.authGroupList;
-          }
-        })
-        .catch(error => {
-          this.$Notice.error({ title: error.data.Message });
-        });
-    },
+    // 历史授权弹窗已无打开入口，停用配套方法；用户授权通过 editUser 跳转。
+    // getAuthList: function() {
+    //   let data = {};
+    //   this.$api.common
+    //     .getAuthlist(data)
+    //     .then(res => {
+    //       if (res.Status == 'OK') {
+    //         this.authList = res.Return.authGroupList;
+    //       }
+    //     })
+    //     .catch(error => {
+    //       this.$Notice.error({ title: error.data.Message });
+    //     });
+    // },
     //获取用户授权列表
-    getAuthSelect: function(val) {
-      let userUuid = val.userUuid;
-      let data = {
-        userUuid: userUuid
-      };
-      this.$api.common.getUserAuth(data).then(res => {
-        if (res.Status == 'OK') {
-          let userAuthList = JSON.parse(JSON.stringify(res.Return.userAuthObj));
-          this.authUserSelectList = userAuthList;
-          let userRoleAuthList = JSON.parse(JSON.stringify(res.Return.userRoleAuthObj));
-          this.authRoleSelectList = userRoleAuthList;
-        }
-      });
-    },
+    // 历史授权弹窗已无打开入口，停用配套方法；用户授权通过 editUser 跳转。
+    // getAuthSelect: function(val) {
+    //   let userUuid = val.userUuid;
+    //   let data = {
+    //     userUuid: userUuid
+    //   };
+    //   this.$api.common.getUserAuth(data).then(res => {
+    //     if (res.Status == 'OK') {
+    //       let userAuthList = JSON.parse(JSON.stringify(res.Return.userAuthObj));
+    //       this.authUserSelectList = userAuthList;
+    //       let userRoleAuthList = JSON.parse(JSON.stringify(res.Return.userRoleAuthObj));
+    //       this.authRoleSelectList = userRoleAuthList;
+    //     }
+    //   });
+    // },
     //用户授权
-    authDialog: function(row) {
-      this.showAuth = true;
-      this.isBatch = false;
-      if (row && row.userId != undefined) {
-        this.authUserList = row;
-      }
-    },
+    // 历史授权弹窗已无打开入口，停用配套方法；用户授权通过 editUser 跳转。
+    // authDialog: function(row) {
+    //   this.showAuth = true;
+    //   this.isBatch = false;
+    //   if (row && row.userId != undefined) {
+    //     this.authUserList = row;
+    //   }
+    // },
     //授权框关闭
-    showAuthClose: function() {
-      this.authSelectList = [];
-    },
+    // 历史授权弹窗已无打开入口，停用配套方法；用户授权通过 editUser 跳转。
+    // showAuthClose: function() {
+    //   this.authSelectList = [];
+    // },
     //用户过滤
-    filterUser: function(val) {
-      let data = val;
-      let index = data.lastIndexOf('#');
-      this.filter.authGroup = data.substring(0, index);
-      this.filter.auth = data.substring(index + 1, data.length);
-      let param = {
-        authGroup: this.filter.authGroup,
-        auth: this.filter.auth,
-        roleName: this.filter.roleName,
-        keyword: this.keyword || ''
-      };
-      this.getTable(param);
-    },
-    filterRole: function(val) {
-      this.filter.roleName = val;
-      let param = {
-        authGroup: this.filter.authGroup,
-        auth: this.filter.auth,
-        roleName: this.filter.roleName,
-        keyword: this.keyword || ''
-      };
-      this.getTable(param);
-    },
+    // 旧筛选无调用入口，当前查询不再接收此方法传入的参数。
+    // filterUser: function(val) {
+    //   let data = val;
+    //   let index = data.lastIndexOf('#');
+    //   this.filter.authGroup = data.substring(0, index);
+    //   this.filter.auth = data.substring(index + 1, data.length);
+    //   let param = {
+    //     authGroup: this.filter.authGroup,
+    //     auth: this.filter.auth,
+    //     roleName: this.filter.roleName,
+    //     keyword: this.keyword || ''
+    //   };
+    //   this.getTable(param);
+    // },
+    // filterRole: function(val) {
+    //   this.filter.roleName = val;
+    //   let param = {
+    //     authGroup: this.filter.authGroup,
+    //     auth: this.filter.auth,
+    //     roleName: this.filter.roleName,
+    //     keyword: this.keyword || ''
+    //   };
+    //   this.getTable(param);
+    // },
     //批量授权
-    batchAuth: function() {
-      this.isBatch = true;
-      this.showAuth = true;
-      this.authorizationTitle = this.$t('term.framework.batchauth');
-    },
+    // 历史授权弹窗已无打开入口，停用配套方法；用户授权通过 editUser 跳转。
+    // batchAuth: function() {
+    //   this.isBatch = true;
+    //   this.showAuth = true;
+    //   this.authorizationTitle = this.$t('term.framework.batchauth');
+    // },
     //保存授权
-    saveAuth: function(val) {
-      let action = val;
-      let authList = this.$refs.commonAuth.authSelectList;
-      let newList = JSON.stringify(this.authRoleSelectList);
-      if (this.$refs.commonAuth.valid()) {
-        let userUuidList = this.$refs.commonAuth.userUuidList;
-        let data = {
-          action: action,
-          userAuthList: authList,
-          userUuidList: userUuidList
-        };
-        this.$api.common
-          .saveAuth(data)
-          .then(res => {
-            if (res.Status == 'OK') {
-              this.$Message.success(this.$t('message.executesuccess'));
-              this.showAuth = false;
-              this.initTable();
-            }
-          })
-          .catch(error => {
-            this.$Notice.error({ title: error.data.Message });
-          });
-      }
-    },
+    // 历史授权弹窗已无打开入口，停用配套方法；用户授权通过 editUser 跳转。
+    // saveAuth: function(val) {
+    //   let action = val;
+    //   let authList = this.$refs.commonAuth.authSelectList;
+    //   let newList = JSON.stringify(this.authRoleSelectList);
+    //   if (this.$refs.commonAuth.valid()) {
+    //     let userUuidList = this.$refs.commonAuth.userUuidList;
+    //     let data = {
+    //       action: action,
+    //       userAuthList: authList,
+    //       userUuidList: userUuidList
+    //     };
+    //     this.$api.common
+    //       .saveAuth(data)
+    //       .then(res => {
+    //         if (res.Status == 'OK') {
+    //           this.$Message.success(this.$t('message.executesuccess'));
+    //           this.showAuth = false;
+    //           this.initTable();
+    //         }
+    //       })
+    //       .catch(error => {
+    //         this.$Notice.error({ title: error.data.Message });
+    //       });
+    //   }
+    // },
     //table中角色、用户回显
-    showTableText(val) {
-      let textList = '';
-      let list = val;
-      if (list == undefined) {
-        textList = '';
-      } else if (list.length > 0 && list.length < 3) {
-        textList = list.join('、');
-      } else if (list.length >= 3) {
-        textList = list.slice(0, 3).join('、');
-      }
-      return textList;
-    },
+    // 旧文本回显无调用入口，当前模板使用 showTableList 和 showRestText。
+    // showTableText(val) {
+    //   let textList = '';
+    //   let list = val;
+    //   if (list == undefined) {
+    //     textList = '';
+    //   } else if (list.length > 0 && list.length < 3) {
+    //     textList = list.join('、');
+    //   } else if (list.length >= 3) {
+    //     textList = list.slice(0, 3).join('、');
+    //   }
+    //   return textList;
+    // },
     showTableList(val) {
       let list = [];
       if (val && val.length > 0) {
@@ -584,10 +614,11 @@ export default {
         path: `user-addview`,
         query: { userId: userId, key: key, uuid: uuid }
       });
-    },
-    getVipIconByLevel(vipLevel) {
-      return this.$store.getters.getVipIconByLevel(vipLevel, true);
     }
+    // 当前用户列表没有 VIP 图标绑定，此方法无调用入口。
+    // getVipIconByLevel(vipLevel) {
+    //   return this.$store.getters.getVipIconByLevel(vipLevel, true);
+    // }
   },
   computed: {},
   watch: {}

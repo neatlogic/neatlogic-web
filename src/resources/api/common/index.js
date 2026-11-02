@@ -1,6 +1,18 @@
 import axios from '../http';
 
 const common = {
+  // 查询大屏数据源列表，数据源类型由调用方处理。
+  listDashboardDatasource(params = {}) {
+    return axios.post('/api/rest/dashboard/datasource/list', params);
+  },
+  // 查询大屏数据源字段详情，保留调用方传入的 id 和数据源类型。
+  getDashboardDatasource(params) {
+    return axios.post('/api/rest/dashboard/datasource/get', params);
+  },
+  // 查询大屏组件数据，原样传递过滤、排序及行数限制等参数。
+  searchDashboardDatasourceData(params) {
+    return axios.post('/api/rest/dashboard/datasource/data/search', params);
+  },
   getModule(data) {
     return axios.post('/api/rest/module/list', data);
   },

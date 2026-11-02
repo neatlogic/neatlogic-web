@@ -636,9 +636,12 @@ export default {
           .then(res => {
             if (res.Status == 'OK') {
               this.$Message.success(this.$t('message.executesuccess'));
-              this.userTabsAuthList = this.$refs.commonAuth ? this.$utils.deepClone(this.$refs.commonAuth.authSelectList) : null;
-              this.userData = this.getData();
-              this.defaultAuthUserSelectList = this.$utils.deepClone(authList); // 修复切换到基本信息，选择不保存，再次切换到授权tab时，没有恢复为原始数据
+              //保存后从服务端刷新包含权限，未保存的勾选不在本地展开。
+              return this.getAuthSelect(this.uuid).then(() => this.$nextTick()).then(() => {
+                //等待直接授权和只读集合回显完成，再同步已保存快照，避免误报未保存。
+                this.userTabsAuthList = this.$refs.commonAuth ? this.$utils.deepClone(this.$refs.commonAuth.authSelectList) : null;
+                this.userData = this.getData();
+              });
             }
           })
           .finally(() => { this.isLoading = false; });

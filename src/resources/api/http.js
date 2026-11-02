@@ -192,9 +192,22 @@ instance.interceptors.response.use(
       } else if (error.response.data instanceof Blob) {
         const reader = new FileReader();
         reader.onload = () => {
-          const data = JSON.parse(reader.result);
+          let data;
+          try {
+            data = JSON.parse(reader.result);
+          } catch (parseError) {
+            if (error.response.status !== 413) throw parseError;
+            // 网关可能返回 HTML 或空内容，413 仍须显示请求体超限提示。
+            console.error('Failed to parse 413 response', parseError);
+          }
           errorHandle({ ...error.response, data });
         };
+        if (error.response.status === 413) {
+          reader.onerror = () => {
+            console.error('Failed to read 413 response', reader.error);
+            errorHandle({ ...error.response, data: null });
+          };
+        }
         reader.readAsText(error.response.data, 'utf-8');
       } else {
         errorHandle(error.response);
@@ -214,9 +227,9 @@ instance.interceptors.response.use(
  */
 const errorHandle = res => {
   let status = res.status;
-  let other = preLang(res.data.Message, res.data.Param);
+  let other = preLang(res.data?.Message, res.data?.Param);
   let rejectSource = '';
-  if (res.data.Return) {
+  if (res.data?.Return) {
     if (res.data.Return.rejectSource == 'tenant') {
       rejectSource = $t('message.tenantratelimit', { rate: res.data.Return.tenantRate });
     } else if (res.data.Return.rejectSource == 'api') {
@@ -239,6 +252,15 @@ const errorHandle = res => {
       break;
     case 404:
       console.log($t('message.urlnotfound', { target: res.config.url }));
+      break;
+    case 413:
+      // 保留原始 AxiosError 供页面结束等待状态，超限不会触发登录跳转。
+      tip({
+        desc: typeof other === 'string' && other.trim() ? other : $t('message.requestbodytoolarge'),
+        name: res.config.url,
+        title: $t('page.tip'),
+        type: 'info'
+      });
       break;
     case 429:
       // 接口设置访问次数限制
