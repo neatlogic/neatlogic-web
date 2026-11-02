@@ -64,6 +64,17 @@
                 ></IssueAuditList>
               </div>
             </TabPane>
+            <TabPane v-if="eventAuditComponent" :label="$t('term.rdm.eventaudit')" name="eventaudit">
+              <div v-if="currentTab === 'eventaudit'" class="pl-nm pr-nm">
+                <component
+                  :is="eventAuditComponent"
+                  :key="eventAuditScopeKey"
+                  :projectId="projectId"
+                  :appId="appId"
+                  :issueId="id"
+                ></component>
+              </div>
+            </TabPane>
           </Tabs>
           <div class="padding">
             <Divider />
@@ -131,6 +142,7 @@ export default {
     IssueList: () => import('@/views/pages/rdm/project/viewtab/components/issue-list.vue')
   },
   extends: IssueDetailBase,
+  eventAuditEnabled: true,
   props: {},
   data() {
     return {

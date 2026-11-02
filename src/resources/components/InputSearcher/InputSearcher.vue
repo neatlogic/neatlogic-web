@@ -1,5 +1,5 @@
 <template>
-  <div class="input-searcher-box form-li" :class="borderClass">
+  <div class="input-searcher-box form-li" :class="[borderClass, { 'has-prefix': hasPrefix }]">
     <Input
       v-model="currentValue"
       :placeholder="placeholder"
@@ -12,7 +12,11 @@
       @on-change="changeValue"
     >
       <template #prefix>
-        <Icon type="ios-search" @click="onSearchValue" />
+        <span v-if="hasPrefix" ref="searchPrefix" class="search-prefix">
+          <Icon type="ios-search" @click="onSearchValue" />
+          <slot name="prefix"></slot>
+        </span>
+        <Icon v-else type="ios-search" @click="onSearchValue" />
       </template>
     </Input>
   </div>
@@ -43,11 +47,26 @@ export default {
   },
   data() {
     return {
-      currentValue: this.$utils.isEmpty(this.value) ? '' : this.value
+      currentValue: this.$utils.isEmpty(this.value) ? '' : this.value,
+      prefixWidth: 26
     };
   },
-  mounted() {},
+  mounted() {
+    if (this.$refs.searchPrefix) {
+      this.prefixObserver = new ResizeObserver(() => {
+        const prefix = this.$refs.searchPrefix;
+        if (prefix) this.prefixWidth = Math.ceil(prefix.getBoundingClientRect().width) + 16;
+      });
+      this.prefixObserver.observe(this.$refs.searchPrefix);
+    }
+  },
+  beforeDestroy() {
+    this.prefixObserver?.disconnect();
+  },
   methods: {
+    focus() {
+      this.$el.querySelector('input')?.focus();
+    },
     onSearchValue() {
       this.$emit('change', this.currentValue);
     },
@@ -56,6 +75,9 @@ export default {
     }
   },
   computed: {
+    hasPrefix() {
+      return !!(this.$scopedSlots.prefix || this.$slots.prefix);
+    },
     borderClass() {
       let resultJson = {};
       if (this.border) {
@@ -67,6 +89,7 @@ export default {
     },
     getStyle() {
       let styleObj = {};
+      if (this.hasPrefix) styleObj['--input-searcher-prefix-width'] = this.prefixWidth + 'px';
       if (typeof this.width == 'number') {
         styleObj.width = this.width + 'px';
       } else if (typeof this.width == 'string') {
@@ -85,13 +108,24 @@ export default {
 <style lang="less" scoped>
 .input-searcher-box {
   ::v-deep .ivu-input {
-    padding: 0 26px 0 26px !important;
+    padding: 0 26px 0 var(--input-searcher-prefix-width, 26px) !important;
   }
   ::v-deep .ivu-input-prefix {
     left: 8px;
     i {
       font-size: 14px !important;
     }
+  }
+  &.has-prefix ::v-deep .ivu-input-prefix {
+    width: calc(var(--input-searcher-prefix-width, 26px) - 16px);
+  }
+  .search-prefix {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+    height: 100%;
+    white-space: nowrap;
   }
 }
 </style>

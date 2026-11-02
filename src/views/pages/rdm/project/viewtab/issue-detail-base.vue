@@ -1,4 +1,7 @@
 <script>
+import ComponentManager from '@/resources/import/component-manager';
+import { subscribeEventRequestFailure } from '@/views/pages/rdm/project/edittab/event-capability';
+
 export default {
   name: '',
   components: {
@@ -18,11 +21,14 @@ export default {
       appList: [],
       projectUserRangeList: [],
       isReady: false,
-      isLoading: false
+      isLoading: false,
+      eventAuditComponent: null,
+      eventAuditCapabilitySeq: 0
     };
   },
   beforeCreate() {},
   async created() {
+    this.unsubscribeEventAuditFailure = subscribeEventRequestFailure(this.refreshEventAuditCapability);
     this.projectId = this.pId || Math.floor(this.$route.params['projectId']);
     this.appId = this.aId || Math.floor(this.$route.params['appId']);
     this.id = this.iId || Math.floor(this.$route.params['id']);
@@ -37,9 +43,28 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.eventAuditCapabilitySeq++;
+    this.unsubscribeEventAuditFailure();
+  },
   destroyed() {},
   methods: {
+    // 商业标识、可选组件和后端能力三者同时满足才显示执行记录页签。
+    async refreshEventAuditCapability() {
+      const seq = ++this.eventAuditCapabilitySeq;
+      const scope = this.eventAuditScopeKey;
+      const component = (ComponentManager.getComponent('rdmEventAudit') || {}).list;
+      if (!this.$options.eventAuditEnabled || !this.projectId || !this.appId || !this.id || !COMMERCIAL_MODULES.includes('rdm') || !component) {
+        this.eventAuditComponent = null;
+        return;
+      }
+      try {
+        const response = await this.$api.rdm.eventCapability.getCapability();
+        if (seq === this.eventAuditCapabilitySeq && scope === this.eventAuditScopeKey) this.eventAuditComponent = response.Return && response.Return.available === true ? component : null;
+      } catch (error) {
+        if (seq === this.eventAuditCapabilitySeq && scope === this.eventAuditScopeKey) this.eventAuditComponent = null;
+      }
+    },
     editContent() {
       this.contentMode = 'edit';
     },
@@ -253,6 +278,7 @@ export default {
   },
   filter: {},
   computed: {
+    eventAuditScopeKey() { return this.projectId + '/' + this.appId + '/' + this.id; },
     getApp() {
       return type => {
         return this.appList.find(d => d.type === type);
@@ -279,7 +305,11 @@ export default {
       };
     }
   },
-  watch: {}
+  watch: {
+    // 详情切换时先销毁旧需求的执行记录，再按新范围确认能力。
+    eventAuditScopeKey() { this.eventAuditComponent = null; if (this.currentTab === 'eventaudit') this.currentTab = 'main'; this.refreshEventAuditCapability(); },
+    eventAuditComponent(value) { if (!value && this.currentTab === 'eventaudit') this.currentTab = 'main'; }
+  }
 };
 </script>
 <style lang="less" scoped>

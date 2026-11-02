@@ -60,4 +60,8 @@
     "size": 100
   }
   </select>
+  <!-- Integrated configuration example -->
+  <!-- Since the specific integration configuration has already been selected in the database type dropdown box, the content of the select tag below can be left blank -->
+  <select>
+  </select>
 </datasource>

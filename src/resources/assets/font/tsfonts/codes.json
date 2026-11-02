@@ -3694,5 +3694,17 @@
     "css": "tsfont-moveto",
     "hexCodepoint": "0xea6d",
     "codepoint": 60013
+  },
+  {
+    "name": "collapse-panel",
+    "css": "tsfont-collapse-panel",
+    "hexCodepoint": "0xea6e",
+    "codepoint": 60014
+  },
+  {
+    "name": "expand-panel",
+    "css": "tsfont-expand-panel",
+    "hexCodepoint": "0xea6f",
+    "codepoint": 60015
   }
 ]

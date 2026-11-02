@@ -213,10 +213,11 @@
               :distance-to-edge="10"
               :height="hasLoadMore ? ($slots['first-ul'] || firstLi ? 150 : 190) : 'auto'"
             >
+              <!-- 分组标题和选项会渲染为同级节点，使用不同标识并保留选项所属分组，避免同值时 key 冲突。 -->
               <template v-for="parentNode in nodeList">
                 <li
                   v-if="parentNode[childrenName] && parentNode[childrenName].length > 0"
-                  :key="parentNode[parentValueName]"
+                  :key="JSON.stringify(['group', parentNode[parentValueName]])"
                   class="text-grey fz10 padding-xs overflow"
                   :class="{ 'group-title-collapsible': groupCollapsible }"
                   @click.stop="toggleGroupExpand(parentNode)"
@@ -232,7 +233,7 @@
                   <template v-for="(node, index) in parentNode[childrenName]">
                     <li
                       v-show="!node._isHidden"
-                      :key="node[valueName]"
+                      :key="JSON.stringify(['option', parentNode[parentValueName], node[valueName]])"
                       :class="setLiClass(node, index)"
                       :value="node[valueName]"
                       @click.stop="toggleSelect(node)"
