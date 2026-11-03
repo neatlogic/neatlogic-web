@@ -18,7 +18,7 @@
         <span v-else></span>
       </template>
       <template slot="name" slot-scope="{ row }">
-        <a v-if="!row.isExtended && ciData.authData['cimanage']" href="javascript:void(0)" @click="editAttr(row)">{{ row.name }}</a>
+        <a v-if="!ciData.isVirtual && !row.isExtended && ciData.authData['cimanage']" href="javascript:void(0)" @click="editAttr(row)">{{ row.name }}</a>
         <span v-else>{{ row.name }}</span>
         <Poptip
           v-if="row.description"
@@ -57,7 +57,7 @@
         {{ row.typeText }}
       </template>
       <template slot="action" slot-scope="{ row }">
-        <div v-if="ciData.authData['cimanage']" class="tstable-action">
+        <div v-if="!ciData.isVirtual && ciData.authData['cimanage']" class="tstable-action">
           <ul v-if="!row.isExtended" class="tstable-action-ul">
             <li v-if="!row.isPrivate" class="tsfont-trash-o" @click="deleteAttr(row)">{{ $t('page.delete') }}</li>
           </ul>

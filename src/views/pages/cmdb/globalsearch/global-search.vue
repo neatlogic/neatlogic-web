@@ -46,7 +46,7 @@
                 :needExport="true"
                 :needAction="false"
                 :needCondition="false"
-                :condition="{ keywordList: wordList }"
+                :condition="{ keyword, keywordList: wordList }"
                 :ciId="currentCiId"
               ></CiEntityList>
             </div>

@@ -453,14 +453,26 @@ export default {
       this.init();
     },
     addAttr: function() {
+      // 虚拟模型字段由视图生成，不允许单独维护。
+      if (this.ciData.isVirtual) {
+        return;
+      }
       this.currentAttrId = null;
       this.isAttrShow = true;
     },
     editAttr: function(attr) {
+      // 虚拟模型字段由视图生成，不允许单独维护。
+      if (this.ciData.isVirtual) {
+        return;
+      }
       this.currentAttrId = attr.id;
       this.isAttrShow = true;
     },
     deleteAttr: function(attr) {
+      // 虚拟模型字段由视图生成，不允许单独维护。
+      if (this.ciData.isVirtual) {
+        return;
+      }
       this.$createDialog({
         title: this.$t('dialog.title.deleteconfirm'),
         content: this.$t('dialog.content.deleteattributeconfirm', { target: attr.label + '（' + attr.name + '）' }),
@@ -555,7 +567,8 @@ export default {
       return (ComponentManager.getComponent('cmdbEventConfig') || {}).model;
     },
     canViewCmdbEvent() {
-      return this.$AuthUtils.hasRole('CMDB_EVENT_VIEW') && !!(this.ciData.authData && this.ciData.authData.cimanage);
+      // 虚拟模型是视图映射，不提供事件配置和执行能力。
+      return !!this.ciData.id && !this.ciData.isVirtual && this.$AuthUtils.hasRole('CMDB_EVENT_VIEW') && !!(this.ciData.authData && this.ciData.authData.cimanage);
     }
   },
   watch: {
