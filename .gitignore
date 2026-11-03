@@ -27,3 +27,7 @@ tests
 
 # 本地回归测试脚本不提交到仓库
 /scripts/test-*
+
+# 本地 AI Agent 指令和技能文档
+AGENTS.md
+/skills/**/*.md
