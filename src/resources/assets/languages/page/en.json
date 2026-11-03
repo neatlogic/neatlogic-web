@@ -88,6 +88,11 @@
   "enable": "Enable",
   "message": "Message",
   "export": "Export",
+  "logexport": {
+    "groupanddeduplicate": "Group and Deduplicate",
+    "originaldata": "Original File",
+    "alltimedesc": "Leave the start time empty to group and deduplicate the entire file."
+  },
   "exportmanage": "Export Management",
   "exception": "Exception",
   "exceptioncounttarget": "{target} Exceptions",
