@@ -23,7 +23,12 @@
               @change="changeViewMode"
             >
               <template v-slot:label="{ node }">
-                <Tooltip :content="node.tooltip" placement="bottom" transfer>
+                <Tooltip
+                  :content="node.tooltip"
+                  :max-width="300"
+                  placement="bottom"
+                  transfer
+                >
                   <i :class="node.icon" :aria-label="node.text"></i>
                 </Tooltip>
               </template>

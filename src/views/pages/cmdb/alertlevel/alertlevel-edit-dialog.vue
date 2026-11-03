@@ -72,10 +72,8 @@ export default {
           type: 'radio',
           label: this.$t('page.type'),
           //readonly: !!this.id,
-          dataList: [
-            { value: 'inspect', text: this.$t('page.inspectstatus') },
-            { value: 'monitor', text: this.$t('term.cmdb.monitorstatus') }
-          ],
+          url: '/api/rest/universal/enum/get',
+          params: { enumClass: 'neatlogic.framework.cmdb.enums.alertlevel.AlertLevelType' },
           validateList: ['required'],
           desc: this.$t('term.cmdb.typeuniquekeytip')
         },
