@@ -6,7 +6,13 @@
       <template v-if="interactData.opType == 'button'">
         <div v-if="interactData.options && interactData.options.length > 0" class="action-group">
           <span v-for="btn in interactData.options" :key="btn" class="action-item">
-            <Button size="small" :type="parmaryBtn.includes(btn) ? 'error' : 'info'" @click="doAction(btn)">{{ btn }}</Button>
+            <Button
+              size="small"
+              :type="parmaryBtn.includes(btn) ? 'error' : 'info'"
+              :loading="isSubmitting && pendingAction === btn"
+              :disabled="isSubmitting"
+              @click="doAction(btn)"
+            >{{ btn }}</Button>
           </span>
         </div>
       </template>
@@ -22,7 +28,12 @@
             ></TsFormInput>
           </div>
           <div style="text-align:left">
-            <Button type="primary" @click="doAction()">{{ $t('page.continueexecute') }}</Button>
+            <Button
+              type="primary"
+              :loading="isSubmitting"
+              :disabled="isSubmitting"
+              @click="doAction()"
+            >{{ $t('page.continueexecute') }}</Button>
           </div>
         </div>
       </template>
@@ -39,7 +50,12 @@
             ></TsFormSelect>
           </div>
           <div style="text-align:left">
-            <Button type="primary" @click="doAction()">{{ $t('page.continueexecute') }}</Button>
+            <Button
+              type="primary"
+              :loading="isSubmitting"
+              :disabled="isSubmitting"
+              @click="doAction()"
+            >{{ $t('page.continueexecute') }}</Button>
           </div>
         </div>
       </template>
@@ -66,6 +82,7 @@ export default {
   data() {
     return {
       value: null,
+      pendingAction: null,
       parmaryBtn: ['commit'],
       validateList: ['required']
     };
@@ -81,13 +98,17 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    doAction(action) {
-      const controller = this.$refs['controller'];
-      let isValid = true;
-      if (controller && controller.valid) {
-        isValid = controller.valid();
+    // 同一次交互只允许一个提交，记录点击项以显示对应按钮的加载状态。
+    async doAction(action = '') {
+      if (this.isSubmitting) {
+        return;
       }
-      if (isValid) {
+      const controller = this.$refs['controller'];
+      if (controller && controller.valid && !controller.valid()) {
+        return;
+      }
+      this.pendingAction = action;
+      try {
         const param = {
           option: action || this.value,
           jobId: this.jobData.id,
@@ -96,15 +117,20 @@ export default {
           resourceId: this.nodeData.resourceId || null,
           sqlName: this.nodeData.sqlFile || null
         };
-        this.$api.autoexec.job.exectWaitInput(param).then(res => {
-          if (res.Status == 'OK') {
-            this.$emit('action');
-          }
-        });
+        const res = await this.$api.autoexec.job.exectWaitInput(param);
+        if (res.Status == 'OK') {
+          this.$emit('action');
+        }
+      } finally {
+        this.pendingAction = null;
       }
     }
   },
   computed: {
+    // 表单提交没有按钮选项，空字符串也表示请求正在进行。
+    isSubmitting() {
+      return this.pendingAction !== null;
+    },
     getDataList() {
       let ary = [];
       if (this.interactData.opType == 'select' || this.interactData.opType == 'mselect') {
