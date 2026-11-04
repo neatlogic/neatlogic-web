@@ -52,17 +52,18 @@
       </div>
     </TsContain>
     <LogLevelEdit v-if="searchParam.serverId != null && isEditShow" :serverId="searchParam.serverId" @close="closeEditDialog"></LogLevelEdit>
+    <!-- 使用点击时的节点和文件快照，导出选项不写入日志查询参数。 -->
+    <LogExportDialog v-if="exportTarget" v-bind="exportTarget" @close="exportTarget = null"></LogExportDialog>
   </div>
 </template>
 <script>
-import download from '@/resources/mixins/download.js';
 export default {
   name: '',
   components: {
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect.vue'),
-    LogLevelEdit: () => import('./loglevel-edit.vue')
+    LogLevelEdit: () => import('./loglevel-edit.vue'),
+    LogExportDialog: () => import('./log-export-dialog.vue')
   },
-  mixins: [download],
   props: {},
   data() {
     return {
@@ -87,7 +88,9 @@ export default {
       },
       logLines: [],
       level: null,
-      isEditShow: false
+      isEditShow: false,
+      // 关闭时销毁弹窗，每次打开重新使用默认类型和空开始时间。
+      exportTarget: null
     };
   },
   beforeCreate() {},
@@ -193,11 +196,13 @@ export default {
       this.getLogContent(true);
     },
     exportLog() {
-      let param = {
-        url: 'api/binary/log/file/export',
-        params: this.searchParam
-      };
-      this.download(param);
+      // 点击仅打开配置弹窗，确认后由弹窗发起下载。
+      if (this.searchParam.serverId != null && this.searchParam.fileName != null) {
+        this.exportTarget = {
+          serverId: this.searchParam.serverId,
+          fileName: this.searchParam.fileName
+        };
+      }
     },
     editLogLevel() {
       this.isEditShow = true;
