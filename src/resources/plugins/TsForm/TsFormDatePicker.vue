@@ -26,10 +26,10 @@
         :split-panels="splitPanels"
         :transfer="transfer"
         :editable="false"
-        :options="getDateOptions()"
+        :options="dateOptions"
         :confirm="confirm"
         :open="open"
-        :time-picker-options="getTimeDisabledList(value)"
+        :time-picker-options="getTimeOptions()"
         @on-change="onChangeValue"
         @on-ok="onOk"
         @on-clear="onClear"
@@ -80,8 +80,27 @@
   </div>
 </template>
 <script>
+import { parseDate } from 'neatlogic-ui/iview/components/date-picker/util';
 import formMixins from '@/resources/mixins/formMixins.js';
 import formScrollMixins from '@/resources/mixins/formScrollMixins.js';
+
+// MySQL TIMESTAMP(3) 使用 UTC 边界，面板仍按浏览器本地时间显示。
+const timestampMin = Date.UTC(1970, 0, 1, 0, 0, 1);
+const timestampMax = Date.UTC(2038, 0, 19, 3, 14, 7, 499);
+
+// 两个闭区间有交集时，允许继续选择其中的日期或时刻。
+function overlapsRange(start, end, [min, max]) {
+  return min <= max && start <= max && end >= min;
+}
+
+// 日期、年月按其代表的本地起点判断；日期时间保留原始毫秒。
+function selectionTime(date, type) {
+  if (type === 'datetime' || type === 'datetimerange') return date.getTime();
+  const start = new Date(date);
+  if (type === 'year') start.setMonth(0, 1);
+  if (type === 'month') start.setDate(1);
+  return start.setHours(0, 0, 0, 0);
+}
 
 export default {
   name: 'TsFormDatePicker',
@@ -184,16 +203,20 @@ export default {
   beforeDestroy() {},
   methods: {
     getCurrentValue: function() {
+      // 编辑时保留原始毫秒；只读和纯时间控件沿用原来的字符串展示。
+      const editableDate = !this.readonly && this.type !== 'time' && this.type !== 'timerange';
       let _this = this;
       let format = formatSeting(_this.type, _this.format);
       let valueType = this.valueType;
       let value = null;
       let multiple = _this.multiple;
       if (typeof _this.value == 'number') {
-        value = _this.changeDateFormat(new Date(_this.value), format, true, valueType);
+        const date = new Date(_this.value);
+        value = editableDate ? date : _this.changeDateFormat(date, format, true, valueType);
       } else if (_this.value instanceof Array) {
         let arry = [];
         arry = _this.value.map(function(item) {
+          if (editableDate && (typeof item === 'number' || item instanceof Date)) return new Date(item);
           if (typeof item == 'number') {
             return _this.changeDateFormat(new Date(item), format, true, valueType);
           } else if (format.indexOf('yyyy') >= 0 && !_this.readonly) {
@@ -211,7 +234,72 @@ export default {
       }
       return {value: value, multiple: multiple};
     },
+    // 0 表示调用方未限制该端；动态业务范围在使用时重新计算。
+    getDateRange() {
+      const [min, max] = this.selectableRange ? this.selectableRange() : [];
+      return [Math.max(timestampMin, min || timestampMin), Math.min(timestampMax, max || timestampMax)];
+    },
+    // 校验原始候选，保留快捷选项、多选和范围端点的精度。
+    isDateSelectionAllowed(value) {
+      if (this.type === 'time' || this.type === 'timerange') return true;
+      const dates = Array.isArray(value) ? value : [value];
+      const filled = dates.filter(item => item != null && item !== '');
+      if (!filled.length) return true;
+      if (this.type?.endsWith('range') && filled.length !== 2) return false;
+      const range = this.getDateRange();
+      return filled.every(item => {
+        const date = typeof item === 'string' ? parseDate(item, this.getFormat) : new Date(item);
+        if (!date) return false;
+        const time = selectionTime(date, this.type);
+        if (!overlapsRange(time, time, range) || !overlapsRange(+date, +date, range)) return false;
+        if (this.options?.disabledDate?.(new Date(date))) return false;
+        if (this.type === 'datetime' || this.type === 'datetimerange') {
+          const options = this.timePickerOptions || {};
+          return !options.disabledHours?.includes(date.getHours()) &&
+            !options.disabledMinutes?.includes(date.getMinutes()) && !options.disabledSeconds?.includes(date.getSeconds());
+        }
+        return true;
+      });
+    },
+    // 底层面板可暂存边界日上的未完成选择；业务事件只发布有效值。
+    checkDateSelection() {
+      if (this.isDateSelectionAllowed(this.currentValue)) return true;
+      this.validMesage = this.dateRangeMessage;
+      this.isValidPass = false;
+      return false;
+    },
+    // 单值面板可根据当前日期分别限制时、分、秒；范围面板两端共用配置，只传业务禁用项。
+    getTimeOptions() {
+      const options = { ...this.timePickerOptions };
+      const date = this.currentValue;
+      const range = this.getDateRange();
+      const boundaryDay = this.type === 'datetime' && date instanceof Date &&
+        (new Date(date).setHours(0, 0, 0, 0) < range[0] || new Date(date).setHours(24, 0, 0, 0) - 1 > range[1]);
+      const units = [
+        ['disabledHours', 24, 'setHours', 3600000],
+        ['disabledMinutes', 60, 'setMinutes', 60000],
+        ['disabledSeconds', 60, 'setSeconds', 1000]
+      ];
+      for (const [key, count, setter, duration] of units) {
+        // 底层滚轮会追加禁用项，因此每次传入独立数组。
+        const disabled = new Set(options[key]);
+        if (boundaryDay) {
+          for (let index = 0; index < count; index++) {
+            const slot = new Date(date);
+            const start = slot[setter](index, 0, 0, 0);
+            if (!overlapsRange(start, start + duration - 1, range)) disabled.add(index);
+          }
+        }
+        options[key] = [...disabled];
+      }
+      return options;
+    },
     onChangeValue() {
+      if (!this.checkDateSelection()) return;
+      if (!this.isValidPass && this.validMesage === this.dateRangeMessage) {
+        this.validMesage = '';
+        this.isValidPass = true;
+      }
       let _this = this;
       let time = _this.getFormatValue();
 
@@ -225,7 +313,7 @@ export default {
 
       if (!isSame) {
         typeof _this.onChange == 'function' && _this.onChange(time);
-        this.myValid(time);
+        if (_this.type === 'time' || _this.type === 'timerange') _this.myValid(time);
         if (_this.currentValidList.length > 0) {
           _this.valid(time);
         }
@@ -256,7 +344,14 @@ export default {
       }
     },
     onOk() {
-      this.$emit('on-ok');
+      if (this.type === 'time' || this.type === 'timerange') {
+        this.$emit('on-ok');
+        return;
+      }
+      // 底层通过 input 同步 v-model；确认前先等同一轮的候选值更新。
+      this.$nextTick(() => {
+        if (this.checkDateSelection()) this.$emit('on-ok');
+      });
     },
     onClickoutside() {
       //点击外部关闭下拉菜单时触发
@@ -364,10 +459,16 @@ export default {
     },
     myValid(value) { //当前组件特殊校验
       let isValid = true;
-      if (value && this.selectableRange && typeof this.selectableRange == 'function') {
+      if (this.type !== 'time' && this.type !== 'timerange') {
+        // valid() 可能收到格式化后的月份字符串；按面板原值校验才能保留年份。
+        if (!this.readonly && !this.disabled && !this.isDateSelectionAllowed(this.currentValue)) {
+          this.currentValidMesage = this.dateRangeMessage;
+          isValid = false;
+        }
+      } else if (value && this.selectableRange) {
         let timeList = this.selectableRange();
         if ((timeList[0] && timeList[0] > value) || (timeList[1] && timeList[1] < value)) {
-          this.currentValidMesage = this.desc || this.$t('form.placeholder.pleaseselect', {target: this.$t('term.plugin.correcttime')});
+          this.currentValidMesage = this.dateRangeMessage;
           isValid = false;
         }
       }
@@ -440,65 +541,26 @@ export default {
       }
       return classNameList;
     },
-    getDateOptions() {
-      return () => {
-        let options = this.options || {};
-        if (this.selectableRange && typeof this.selectableRange == 'function') {
-          let dateTimeList = this.selectableRange();
-          options.disabledDate = function(date) {
-            return date && (dateTimeList[0] && date.valueOf() < dateTimeList[0] - 86400000) || (dateTimeList[1] && date.valueOf() > dateTimeList[1]);
-          };
-        }
-        return options;
-      };
+    dateRangeMessage() {
+      return this.desc || this.$t('form.placeholder.pleaseselect', {target: this.$t('term.plugin.correcttime')});
     },
-    getTimeDisabledList() { //时间限制
-      return (value) => {
-        let timePickerOptions = {};
-        let disabledHoursList = [];
-        let disabledMinutesList = [];
-        if (this.type == 'datetime' && this.selectableRange && typeof this.selectableRange == 'function') {
-          let dateTimeList = this.selectableRange(); 
-          let startTime = dateTimeList[0] > 0 ? new Date(dateTimeList[0]) : 0;
-          let endTime = dateTimeList[1] > 0 ? new Date(dateTimeList[1]) : 0;
-          let startHours = 0;
-          let startMinutes = 0;
-          let endHours = 0;
-          let endMinutes = 0;
-          if (startTime > 0) {
-            startHours = startTime.getHours();
-            startMinutes = startTime.getMinutes();
-            if ((!value && this.$utils.getDateByFormat(startTime, 'yyyy-MM-dd') == this.$utils.getCurrenttime('yyyy-MM-dd')) || (value && this.$utils.getDateByFormat(value, 'yyyy-MM-dd') == this.$utils.getDateByFormat(startTime, 'yyyy-MM-dd'))) { //开始时间
-              let selectTime = -1;
-              if (value) {
-                selectTime = new Date(value).getHours();
-              }
-              for (let i = 0; i < startHours; i++) {
-                disabledHoursList.push(i);
-              }
-              if (selectTime <= startHours) {
-                for (let i = 0; i <= startMinutes; i++) {
-                  disabledMinutesList.push(i);
-                }
-              }
-            }
+    dateOptions() {
+      const options = this.options || {};
+      return {
+        ...options,
+        disabledDate: (date, isTime) => {
+          if (options.disabledDate?.(new Date(date), isTime)) return true;
+          // 单值时间滚轮按小时、分钟、秒的区间禁用，允许继续调整未完成的时刻。
+          if (isTime) return false;
+          const range = this.getDateRange();
+          if (this.type === 'datetime' || this.type === 'datetimerange') {
+            const start = new Date(date).setHours(0, 0, 0, 0);
+            const nextDay = new Date(date).setHours(24, 0, 0, 0);
+            return !overlapsRange(start, nextDay - 1, range);
           }
-          if (endTime > 0) {
-            endHours = endTime.getHours();
-            endMinutes = endTime.getMinutes();
-            if ((!value && this.$utils.getDateByFormat(endTime, 'yyyy-MM-dd') == this.$utils.getCurrenttime('yyyy-MM-dd')) || (value && this.$utils.getDateByFormat(value, 'yyyy-MM-dd') == this.$utils.getDateByFormat(endTime, 'yyyy-MM-dd'))) { //结束时间
-              for (let i = 0; i > endHours && i < 24; i++) {
-                !disabledHoursList.find(item => item == i) && disabledHoursList.push(i);
-              }
-              for (let i = 0; i > endMinutes && i < 60; i++) {
-                !disabledMinutesList.find(item => item == i) && disabledMinutesList.push(i);
-              }
-            }
-          }
-          timePickerOptions.disabledHours = disabledHoursList;
-          timePickerOptions.disabledMinutes = disabledMinutesList;
+          const time = selectionTime(date, this.type);
+          return !overlapsRange(time, time, range);
         }
-        return timePickerOptions;
       };
     }
   },
@@ -523,7 +585,7 @@ export default {
       }
     },
     format(newValue, oldValue) {
-      this.$emit('change', this.getFormatValue());
+      if (this.checkDateSelection()) this.$emit('change', this.getFormatValue());
     },
     readonly(newValue, oldValue) { //在只读模式切换的时候，因为iview的值可能为日期格式，导致只读模式的数据显示不正确，因此在切换模式的时候需要跟新一下currentValue的值
       if (newValue != oldValue) {
