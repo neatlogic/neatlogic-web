@@ -2171,6 +2171,8 @@
     "authsourceteamrolelabel": "role \"{roleName}\" from group \"{teamPath}\"",
     "authsourcepermissionlabel": "\"{sourceAuthName}\"",
     "authsourceunknown": "Incomplete source information",
+    "authsourcedirect": "Direct authorization",
+    "authsourcenotprovided": "Source information not provided",
     "authsourcedetailrole": "Role \"{roleName}\" directly grants this permission.",
     "authsourcedetailteamrole": "Role \"{roleName}\" from group \"{teamPath}\" directly grants this permission.",
     "authsourcedetailinclude": "The user's directly granted permission \"{sourceAuthName}\" includes this permission.",

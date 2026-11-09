@@ -2169,6 +2169,8 @@
     "authsourceteamrolelabel": "分组【{teamPath}】的角色【{roleName}】",
     "authsourcepermissionlabel": "【{sourceAuthName}】",
     "authsourceunknown": "来源信息不完整",
+    "authsourcedirect": "直接授权",
+    "authsourcenotprovided": "未提供来源信息",
     "authsourcedetailrole": "角色【{roleName}】直接授予当前权限。",
     "authsourcedetailteamrole": "分组【{teamPath}】的角色【{roleName}】直接授予当前权限。",
     "authsourcedetailinclude": "用户直接拥有的【{sourceAuthName}】包含当前权限。",
