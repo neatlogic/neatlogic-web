@@ -103,7 +103,8 @@ function tips(vm, index = 0) {
     summary: rows[0].textContent.trim(),
     details: rows.slice(1).map(row => ({
       text: row.textContent.trim().replace(/\s+/g, ' '),
-      nodes: [...row.querySelectorAll('.text-action')].map(node => ({
+      // 模板沿用图标类，测试按节点类型定位，不依赖已移除的可点击颜色类。
+      nodes: [...row.querySelectorAll('.tsfont-role, .tsfont-team-s, .tsfont-security')].map(node => ({
         name: node.textContent,
         icon: [...node.classList].find(name => name.startsWith('tsfont-'))
       }))
@@ -139,6 +140,65 @@ function pageContext(overrides = {}) {
 }
 
 for (const locale of ['zh', 'en']) {
+  // 代码权限优先；移除代码权限后恢复超级管理员单条身份，始终保持只读。
+  test(`${locale}：代码权限优先于超级管理员，移除后恢复身份提示且不能撤销`, async() => {
+    const t = translator(locale);
+    const vm = await mount({
+      authUserSelectList: {process: ['EDIT']},
+      authRoleAuthSourcePathList: [{authGroup: 'process', auth: 'SHARED', sourcePathList: [
+        source('其他来源'), {isSuperAdmin: true, teamPathNameList: []}
+      ]}]
+    }, locale);
+    try {
+      const expected = {
+        summary: t('term.framework.authsourcepathintro'),
+        details: [{text: `1. ${locale === 'zh' ? '超级管理员' : 'Super administrator'}`, nodes: []}]
+      };
+      assert.deepEqual(tips(vm), expected);
+      vm.authCodeSelectList = {process: ['SHARED']};
+      await settle();
+      assert.deepEqual(tips(vm), {summary: t('term.framework.codeauthreadonly'), details: []});
+      // 超级管理员来源仍存在，移除代码权限后无需重新加载即可恢复提示。
+      vm.authCodeSelectList = {};
+      await settle();
+      assert.deepEqual(tips(vm), expected);
+      assert.equal(vm.$el.querySelector('input[data-auth="SHARED"]').disabled, true);
+      assert.deepEqual(plain(vm.displayAuthSelectList.process), ['EDIT', 'SHARED']);
+      // 名称点击及组选择更新仍沿用只读拦截，保存集合仅保留原有直接授权。
+      vm.$el.querySelector('.auth-name-tooltip > span').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true}));
+      vm.updateAuthSelection('process', ['EDIT']);
+      await settle();
+      assert.deepEqual(plain(vm.authSelectList), {process: ['EDIT']});
+      vm.handleCheckAll(catalog[0]);
+      await settle();
+      assert.deepEqual(plain(vm.authSelectList), {});
+      assert.deepEqual(plain(vm.displayAuthSelectList.process), ['SHARED']);
+      assert.deepEqual(tips(vm), expected);
+    } finally { destroy(vm); }
+  });
+
+  // 仅布尔true表示超级管理员，普通来源的缺失、null和false均不改变提示优先级。
+  test(`${locale}：未标记超级管理员时保留角色路径和代码权限提示`, async() => {
+    const t = translator(locale);
+    const vm = await mount({}, locale);
+    try {
+      for (const flag of [undefined, null, false, 'true']) {
+        vm.authCodeSelectList = {};
+        vm.authRoleAuthSourcePathList = [{authGroup: 'process', auth: 'SHARED', sourcePathList: [
+          {...source('普通角色'), isSuperAdmin: flag}
+        ]}];
+        await settle();
+        assert.deepEqual(plain(vm.getReadonlyAuthTips(inherited, 'process')), {
+          summary: t('term.framework.authsourcepathintro'),
+          details: [{description: '', nodes: [{type: 'role', name: '普通角色'}, {type: 'permission', name: '继承权限'}]}]
+        });
+        vm.authCodeSelectList = {process: ['SHARED']};
+        await settle();
+        assert.deepEqual(tips(vm), {summary: t('term.framework.codeauthreadonly'), details: []});
+      }
+    } finally { destroy(vm); }
+  });
+
   test(`${locale}：全部来源按组和编码隔离，重复角色不合并，原名及 HTML 保持纯文本`, async() => {
     const t = translator(locale);
     const roleName = '<img src=x onerror=alert(1)>系统_管理员角色';
@@ -157,7 +217,7 @@ for (const locale of ['zh', 'en']) {
       // 宽度和原说明提示保持独立，路径节点只展示内容，没有点击事件。
       assert.equal(vm.$el.querySelector('.auth-checkbox-tooltip').getAttribute('max-width'), '600');
       assert.equal(vm.$el.querySelector('.auth-name-tooltip').getAttribute('max-width'), '300');
-      vm.$el.querySelector('.auth-checkbox-tooltip .text-action').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true}));
+      vm.$el.querySelector('.auth-checkbox-tooltip .tsfont-role').dispatchEvent(new dom.window.MouseEvent('click', {bubbles: true}));
       await settle();
       assert.deepEqual(plain(vm.authSelectList), {});
     } finally { destroy(vm); }

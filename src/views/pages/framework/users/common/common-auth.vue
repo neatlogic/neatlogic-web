@@ -124,12 +124,19 @@ export default {
   beforeMount() {},
   mounted() {},
   methods: {
-    //代码授权和空来源沿用原提示；其余来源使用固定说明及编号路径，不合并同名来源。
+    //代码权限优先于超级管理员来源；其他来源沿用现有提示及编号路径。
     getReadonlyAuthTips(row, groupName) {
       if (this.isCodeAuth(row, groupName)) {
         return {summary: this.$t('term.framework.codeauthreadonly'), details: []};
       }
       const sources = (this.roleAuthSourcePathMap[groupName] || {})[row.name] || [];
+      // 超级管理员直接提供全部权限，仅显示身份，不追加权限节点或箭头。
+      if (sources.some(source => source && source.isSuperAdmin === true)) {
+        return {
+          summary: this.$t('term.framework.authsourcepathintro'),
+          details: [{description: this.$t('term.framework.authsourcesuperadmin'), nodes: []}]
+        };
+      }
       if (!sources.length) {
         return {summary: this.$t('term.framework.notcancelauth'), details: []};
       }
