@@ -62,16 +62,20 @@ export default {
   destroyed() {},
   methods: {
     handleData() {
-      this.formData = {};
+      // TsSheet 会冻结传入的高亮标记。每次展开都重新组装字段值和标记，避免写入上次展开时已冻结的对象。
+      const formData = {};
+      const formHighlightData = {};
       let oldContent = JSON.parse(this.config.oldContent);
       if (!this.$utils.isEmpty(oldContent)) {
         oldContent.forEach((item) => {
           if (item.attributeUuid) {
-            this.formData[item.attributeUuid] = item.dataObj;
-            this.formHighlightData[item.attributeUuid] = !!item.modified;
+            formData[item.attributeUuid] = item.dataObj;
+            formHighlightData[item.attributeUuid] = !!item.modified;
           }
         });
       }
+      this.formData = formData;
+      this.formHighlightData = formHighlightData;
     },
     seeMore() {
       // 查看详情展开收起

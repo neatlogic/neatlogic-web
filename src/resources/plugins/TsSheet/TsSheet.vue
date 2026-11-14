@@ -2033,11 +2033,12 @@ export default {
       }
       return list;
     },
-    setFormSceneConfig(formSceneUuid, formConfig) {
-      let data = this.$utils.deepClone(formConfig); //主表单
-      let formItemList = [];
+    setFormSceneConfig(formSceneUuid, sourceConfig) {
+      // 多份历史表单可能使用同一场景。每个实例从自己的副本中选择场景并继承组件，避免初始化时改写其他实例的行和单元格标识。
+      const formConfig = this.$utils.deepClone(sourceConfig);
+      const formItemList = [];
       if (formSceneUuid != formConfig.uuid && !this.$utils.isEmpty(formConfig.sceneList)) {
-        let sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid) || formConfig.sceneList.find(item => item.uuid === formConfig.defaultSceneUuid);
+        const sceneConfig = formConfig.sceneList.find(item => item.uuid === formSceneUuid) || formConfig.sceneList.find(item => item.uuid === formConfig.defaultSceneUuid);
         if (sceneConfig) {
           //场景表单，继承组件替换
           if (formConfig.tableList) {
@@ -2063,10 +2064,10 @@ export default {
           });
           // 继承主表单的表单宽度（如果需要）
           sceneConfig.formWidth = formConfig.formWidth;
-          data = sceneConfig;
+          return sceneConfig;
         }
       }
-      return data;
+      return formConfig;
     },
     selectHideItem(item) {
       if (this.disabledHideComponent) {
@@ -2357,17 +2358,15 @@ export default {
       }
       return false;
     },
-    //经过排序的所有单元格列表
+    // 渲染时只对数组副本排序，避免原地 sort 触发 Vue 2 响应式更新，导致表单反复渲染。
     cellList() {
-      const tableList = this.config.tableList;
-      tableList.sort((a, b) => {
+      return this.config.tableList.slice().sort((a, b) => {
         if (a.row != b.row) {
           return a.row - b.row;
         } else {
           return a.col - b.col;
         }
       });
-      return tableList;
     },
     handlerRow() {
       //开始拖拽的行
