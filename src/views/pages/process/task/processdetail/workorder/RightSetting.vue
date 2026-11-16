@@ -41,17 +41,19 @@
               <OverflowTooltip class="infor-left text-grey" :content="$t('page.userteam')">
                 <span class="infor-label overflow">{{ $t('page.userteam') }}</span>
               </OverflowTooltip>
-              <div class="infor-right">
+              <div class="infor-right usergroup-list">
                 <template v-if="processTaskConfig.ownerVo.teamList && processTaskConfig.ownerVo.teamList.length > 0">
                   <Tooltip
                     v-for="item in processTaskConfig.ownerVo.teamList"
                     :key="item.id"
                     :max-width="600"
                     theme="light"
-                    placement="top"
+                    placement="top-end"
+                    transfer
+                    transfer-class-name="process-task-reporter-team-tooltip"
                     class="pb-sm usergroup-box"
                   >
-                    <div class="overflow usergroup-name">{{ item.name }}</div>
+                    <div class="usergroup-name">{{ (item.parentPathList || []).slice(-2).join('/') || '-' }}</div>
                     <div slot="content">
                       <p>{{ item.upwardNamePath }}</p>
                     </div>
@@ -620,11 +622,19 @@ export default {
       flex-shrink: 1;
       padding-left: 16px;
       word-break:break-all;
+      &.usergroup-list {
+        min-width: 0;
+      }
       .usergroup-box {
-        width: 95%;
+        display: block;
+        width: 100%;
         &:last-child {
-        padding-bottom: 0;
-       }
+          padding-bottom: 0;
+        }
+      }
+      .usergroup-name {
+        word-break: normal;
+        overflow-wrap: anywhere;
       }
       .usergroup-name,
       ::v-deep .ivu-tooltip,
@@ -664,5 +674,12 @@ export default {
       }
     }
   }
+}
+</style>
+
+<style>
+.process-task-reporter-team-tooltip {
+  width: max-content;
+  max-width: min(600px, calc(100vw - 24px));
 }
 </style>
