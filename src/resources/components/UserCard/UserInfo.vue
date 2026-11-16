@@ -50,11 +50,22 @@
         </li>
         <li>
           <span class="content-label text-grey">{{ $t('page.group') }}</span>
-          <span v-if="userInfo.teamNameList && userInfo.teamNameList.length > 0" class="content-text">
-            <Tag v-for="(team,index) in userInfo.teamNameList" :key="index">
-              {{ team }}
-            </Tag>
-          </span>
+          <div v-if="userInfo.teamList && userInfo.teamList.length" class="content-text team-list">
+            <Tooltip
+              v-for="team in userInfo.teamList"
+              :key="team.uuid"
+              :content="team.upwardNamePath"
+              :disabled="!team.upwardNamePath"
+              :max-width="600"
+              theme="light"
+              placement="top-end"
+              transfer
+              transfer-class-name="usercard-team-path-tooltip"
+              class="team-tooltip"
+            >
+              <Tag class="team-tag">{{ (team.parentPathList || []).slice(-2).join('/') || '-' }}</Tag>
+            </Tooltip>
+          </div>
           <span v-else class="content-text">-</span>
         </li>
       </ul>
@@ -105,6 +116,7 @@ export default {
 .@{user-prev}-body {
   box-sizing: border-box;
   width: 400px;
+  max-width: calc(100vw - 24px);
   max-height: 221px;
   overflow-x: hidden;
   .userinfo-wrap {
@@ -189,6 +201,25 @@ export default {
       width: 317px;
       white-space: normal;
     }
+    .team-list {
+      display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .team-tooltip {
+      max-width: 100%;
+    }
+    .team-tag {
+      height: auto;
+      overflow-wrap: anywhere;
+    }
   }
+}
+</style>
+
+<style>
+.usercard-team-path-tooltip {
+  width: max-content;
+  max-width: min(600px, calc(100vw - 24px));
 }
 </style>
