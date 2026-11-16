@@ -80,7 +80,7 @@
                         <div class="stepBtn" @click.stop>
                           <!-- 阶段的增删：只能在应用层; 阶段的修改：应用层可以修改名称，模块层不能修改阶段;环境层只能修改执行目标且阶段必须重载 -->
                           <i v-if="canEdit && !appModuleId && !envId" class="tsfont-plus text-tip-active" @click="editStep('add', step, sindex)"></i>
-                          <i v-if="canEdit && ((envId && step.hasOwnProperty('override') && step.override) || (appSystemId && !appModuleId && !envId))" class="tsfont-edit text-tip-active pl-md" @click="editStep('edit', step, sindex)"></i>
+                          <i v-if="canEdit && ((envId && step.hasOwnProperty('override') && step.override) || isDraftApplication || (appSystemId && !appModuleId && !envId))" class="tsfont-edit text-tip-active pl-md" @click="editStep('edit', step, sindex)"></i>
                           <i v-if="canEdit && !appModuleId && !envId" class="tsfont-trash-o text-tip-active pl-md" @click="delStep(step,sindex)"></i>
                           <i class="text-tip-active pl-md" :class="step.isShow? 'tsfont-up' : 'tsfont-down'" @click="showStep(step)"></i>
                         </div>
@@ -165,6 +165,9 @@ export default {
   filters: {
   },
   props: {
+    // 新建应用在审批前还没有正式系统 ID。
+    isDraftApplication: Boolean,
+    draftParent: Object,
     canEdit: {
       type: Boolean,
       default: true
@@ -474,9 +477,9 @@ export default {
           if (this.envId) {
             this.$set(data, 'appModuleId', this.appModuleId);
           }
-          let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
-          if (res.Status == 'OK') {
-            this.initStepList = res.Return.config.combopPhaseList || [];
+          const config = this.draftParent || (await this.$api.deploy.apppipeline.getAppPipeline(data)).Return?.config;
+          if (config) {
+            this.initStepList = config.combopPhaseList || [];
           }
         }
         const findItem = this.initStepList.find(s => s.uuid == step.uuid);
