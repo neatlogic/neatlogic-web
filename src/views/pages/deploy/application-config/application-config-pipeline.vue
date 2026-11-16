@@ -195,7 +195,7 @@ export default {
         {
           type: 'select',
           name: 'actionId',
-          label: this.$t('term.autoexec.combinationtool'),
+          label: this.$t('term.deploy.pipelinetemplate'),
           dynamicUrl: '/api/rest/autoexec/combop/list',
           params: {isActive: 1},
           rootName: 'tbodyList',

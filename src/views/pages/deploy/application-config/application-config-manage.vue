@@ -4,11 +4,11 @@
       <template v-slot:topLeft>
         <div class="action-group">
           <component :is="toolbar.left" v-if="toolbar.left"></component>
+          <component :is="toolbar.right" v-if="toolbar.right"></component>
         </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <component :is="toolbar.right" v-if="toolbar.right"></component>
           <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.application') }}</span>
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
