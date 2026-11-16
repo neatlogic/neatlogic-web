@@ -55,7 +55,7 @@
               v-for="team in userInfo.teamList"
               :key="team.uuid"
               :content="team.upwardNamePath"
-              :disabled="!team.upwardNamePath"
+              :disabled="!team.upwardNamePath || team.upwardNamePath === getTeamLabel(team)"
               :max-width="600"
               theme="light"
               placement="top-end"
@@ -63,7 +63,7 @@
               transfer-class-name="usercard-team-path-tooltip"
               class="team-tooltip"
             >
-              <Tag class="team-tag">{{ (team.parentPathList || []).slice(-2).join('/') || '-' }}</Tag>
+              <Tag class="team-tag">{{ getTeamLabel(team) }}</Tag>
             </Tooltip>
           </div>
           <span v-else class="content-text">-</span>
@@ -83,6 +83,9 @@ export default {
     userInfo: { type: Object }
   },
   methods: {
+    getTeamLabel(team) {
+      return (team.parentPathList || []).slice(-2).join('/') || '-';
+    },
     getName(list, isBool = true) {
       // 获取名称，list 数组，isBool true 表示角色，false表示分组
       let name = '';
