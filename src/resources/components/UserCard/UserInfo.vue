@@ -27,6 +27,10 @@
       <!-- 分割线 -->
       <div class="divide-line border-color"></div>
       <ul class="content-wrap">
+        <li v-if="jobTitle">
+          <span class="content-label text-grey">{{ $t('page.jobTitle') }}</span>
+          <span class="content-text">{{ jobTitle }}</span>
+        </li>
         <li>
           <span class="content-label text-grey">{{ $t('page.phone') }}</span>
           <span class="content-text">
@@ -108,6 +112,10 @@ export default {
     }
   },
   computed: {
+    jobTitle() {
+      const position = this.userInfo?.userInfoObj?.position;
+      return typeof position === 'string' ? position.trim() : '';
+    },
     vipIcon() {
       return this.$store.getters.getVipIconByLevel(this.userInfo.vipLevel);
     }
