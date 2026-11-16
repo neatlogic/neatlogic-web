@@ -27,6 +27,26 @@
       <!-- 分割线 -->
       <div class="divide-line border-color"></div>
       <ul class="content-wrap">
+        <li>
+          <span class="content-label text-grey">{{ $t('page.group') }}</span>
+          <div v-if="userInfo.teamList && userInfo.teamList.length" class="content-text team-list">
+            <Tooltip
+              v-for="team in userInfo.teamList"
+              :key="team.uuid"
+              :content="team.upwardNamePath"
+              :disabled="!team.upwardNamePath || team.upwardNamePath === getTeamLabel(team)"
+              :max-width="600"
+              theme="light"
+              placement="top-end"
+              transfer
+              transfer-class-name="usercard-team-path-tooltip"
+              class="team-tooltip"
+            >
+              <Tag class="team-tag">{{ getTeamLabel(team) }}</Tag>
+            </Tooltip>
+          </div>
+          <span v-else class="content-text">-</span>
+        </li>
         <li v-if="jobTitle">
           <span class="content-label text-grey">{{ $t('page.jobTitle') }}</span>
           <span class="content-text">{{ jobTitle }}</span>
@@ -50,26 +70,6 @@
               {{ role.description }}
             </Tag>
           </span>
-          <span v-else class="content-text">-</span>
-        </li>
-        <li>
-          <span class="content-label text-grey">{{ $t('page.group') }}</span>
-          <div v-if="userInfo.teamList && userInfo.teamList.length" class="content-text team-list">
-            <Tooltip
-              v-for="team in userInfo.teamList"
-              :key="team.uuid"
-              :content="team.upwardNamePath"
-              :disabled="!team.upwardNamePath || team.upwardNamePath === getTeamLabel(team)"
-              :max-width="600"
-              theme="light"
-              placement="top-end"
-              transfer
-              transfer-class-name="usercard-team-path-tooltip"
-              class="team-tooltip"
-            >
-              <Tag class="team-tag">{{ getTeamLabel(team) }}</Tag>
-            </Tooltip>
-          </div>
           <span v-else class="content-text">-</span>
         </li>
       </ul>

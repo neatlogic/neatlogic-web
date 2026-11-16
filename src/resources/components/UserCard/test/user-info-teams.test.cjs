@@ -33,13 +33,13 @@ function mountCard(t, userInfo) {
   return { card, window };
 }
 
-test('头像卡仅在岗位有值时在电话正上方显示岗位', async t => {
+test('头像卡首先显示分组，岗位有值时显示在分组与电话之间', async t => {
   const { card } = mountCard(t, { userInfoObj: { position: '应用开发岗' } });
   const list = card.$el.querySelector('.content-wrap');
-  const jobRow = list.firstElementChild;
-  assert.equal(jobRow.querySelector('.content-label').textContent, 'page.jobTitle');
+  const rowLabels = () => Array.from(list.querySelectorAll('.content-label'), label => label.textContent);
+  assert.deepEqual(rowLabels(), ['page.group', 'page.jobTitle', 'page.phone', 'page.email', 'page.role']);
+  const jobRow = list.children[1];
   assert.equal(jobRow.querySelector('.content-text').textContent, '应用开发岗');
-  assert.equal(jobRow.nextElementSibling.querySelector('.content-label').textContent, 'page.phone');
 
   const usersWithoutPosition = [
     {},
@@ -52,14 +52,15 @@ test('头像卡仅在岗位有值时在电话正上方显示岗位', async t => 
   for (const userInfo of usersWithoutPosition) {
     card.userInfo = userInfo;
     await card.$nextTick();
-    assert.equal(list.firstElementChild.querySelector('.content-label').textContent, 'page.phone');
+    assert.deepEqual(rowLabels(), ['page.group', 'page.phone', 'page.email', 'page.role']);
     assert.doesNotMatch(list.textContent, /page\.jobTitle|应用开发岗/);
   }
 });
 
 test('头像卡按分组显示末两级，仅在完整路径有额外信息时弹出提示', async t => {
   const { card, window } = mountCard(t, { teamList: [], teamNameList: ['旧组名'] });
-  const groupRow = card.$el.querySelector('.content-wrap li:last-child');
+  const groupRow = Array.from(card.$el.querySelectorAll('.content-wrap li'))
+    .find(row => row.querySelector('.content-label').textContent === 'page.group');
   assert.equal(groupRow.querySelector('.content-text').textContent.trim(), '-');
 
   const label = '信息科技部/研发中心';
