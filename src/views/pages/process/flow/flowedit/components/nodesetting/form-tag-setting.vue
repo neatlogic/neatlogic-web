@@ -22,6 +22,7 @@ export default {
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect')
   },
+  inject: {flowObj: {default: null}},
   props: {
     labelPosition: {
       type: String,

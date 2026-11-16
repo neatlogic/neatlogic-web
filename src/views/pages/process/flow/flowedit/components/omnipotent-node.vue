@@ -1,5 +1,12 @@
 <template>
   <div class="omnipotentNode">
+    <component
+      :is="$options.nodeSettings"
+      v-if="$options.nodeSettings && configData.stepConfig"
+      :value="configData.stepConfig[$options.nodeSettingsKey]"
+      :formConfig="previewFormContent"
+      @input="$set(configData.stepConfig, $options.nodeSettingsKey, $event)"
+    ></component>
     <!-- 表单场景 -->
     <FormsceneSetting
       :value="configData.stepConfig"

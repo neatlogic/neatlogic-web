@@ -80,12 +80,22 @@
                   :defaultProcessTaskStepId="processTaskStepId"
                   :replaceableTextConfig="replaceableTextConfig"
                   :priorityList="priorityList"
-                  :defaultTabValue="$utils.isEmpty(formConfig)? 'step' : 'report'"
+                  :slotList="$options.taskPanel ? [{name: 'extra', label: $t($options.tabLabel)}] : []"
+                  :defaultTabValue="$options.taskPanel ? 'extra' : ($utils.isEmpty(formConfig) ? 'step' : 'report')"
                   @update="update"
                   @changeDisableCommet="(val)=>{
                     isDisableCommet = val
                   }"
                 >
+                  <template v-if="$options.taskPanel" v-slot:extra>
+                    <component
+                      :is="$options.taskPanel"
+                      :key="processTaskStepId"
+                      :taskId="processTaskId"
+                      :stepId="processTaskStepId"
+                      :editable="!!actionConfig.save"
+                    ></component>
+                  </template>
                   <div slot="replyBtn">
                     <!-- 回退/流转按钮 -->
                     <FooterOperationBtn

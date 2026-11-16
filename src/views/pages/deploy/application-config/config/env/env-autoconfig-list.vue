@@ -1,97 +1,74 @@
 <template>
   <div class="env-autoconfig-box bg-op env-autoconfig-radius">
-    <div class="text-right">
-      <ul class="pt-nm pr-nm action-group">
-        <li v-if="hasEditConfigAuth" class="action-item tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
-        <template v-else>
+    <Loading :loadingShow="loading" type="fix"></Loading>
+    <div class="text-left">
+      <ul class="pt-nm pl-nm action-group">
+        <template v-if="hasAutoConfig">
+          <li v-if="hasEditConfigAuth" class="action-item tsfont-edit text-href" @click="isShowEnvEdit = true">{{ $t('page.edit') }}</li>
           <Tooltip
+            v-else
             max-width="400"
             placement="right"
             transfer
+            :content="$t('term.deploy.noconfigauthtip')"
           >
             <span class="tsfont-edit text-disabled action-item">{{ $t('page.edit') }}</span>
-            <ul slot="content">
-              <li>{{ $t('term.deploy.noconfigauthtip') }}</li>
-            </ul>
           </Tooltip>
         </template>
-        <li v-if="hasEditConfigAuth" class="action-item tsfont-formtextarea text-href" @click="editAutoConfigForTextarea">{{ $t('term.deploy.textedit') }}</li>
-        <li class="action-item tsfont-task text-href" @click="showEnvAutoConfigAudit">{{ $t('page.audit') }}</li>
+        <li class="action-item tsfont-task text-href" @click="isShowEnvAutoConfigAudit = true">{{ $t('page.audit') }}</li>
       </ul>
     </div>
-    <div v-if="hasAutoConfig" :class="hasAutoConfig ? 'padding': ''">
-      <TsTable
-        v-bind="tableConfig"
-        :theadList="envTheadList"
-        :fixedHeader="false"
-        @changeCurrent="changeCurrentAutoConfig"
-        @changePageSize="changePageSizeAutoConfig"
-      >
+    <div v-if="hasAutoConfig" class="padding">
+      <TsTable :theadList="envTheadList" :tbodyList="defaults" :fixedHeader="false">
         <template slot="value" slot-scope="{row}">
-          <span v-if="row.isEmpty==1">{{ $t('page.settonull') }}</span>
-          <span v-else-if="row.type==='password' && row.value">******</span>
-          <span v-else>{{ row.value }}</span>
-          <!-- <span v-if="row.type==='password' && row.value">******</span>
-          <span v-else-if="row.type==='password' && !row.value">{{ $t('page.settonull') }}</span>
-          <span v-else>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') :(row.value || '-') }}</span> -->
+          <span>{{ displayValue(row) }}</span>
         </template>
       </TsTable>
     </div>
-    <ul v-else class="autocfg-box flex-center">
-      <li v-show="hasEditConfigAuth" class="text-grey">
+    <div v-else class="autocfg-box flex-center text-grey">
+      <template v-if="hasEditConfigAuth">
         <span>{{ $t('term.deploy.notconfigfiletip') }}</span>
-        <span class="tsfont-plus text-href" @click="openEnvEdit">{{ $t('page.config') }}</span></li>
-    </ul>
+        <span class="tsfont-plus text-href ml-xs" @click="isShowEnvEdit = true">{{ $t('page.config') }}</span>
+      </template>
+      <NoData v-else></NoData>
+    </div>
     <div class="border-bottom border-color"></div>
     <div class="padding">
-      <div v-show="hasEditConfigAuth" class="pb-xs">
+      <div v-if="hasInstance" class="pb-xs">
         <span class="pr-nm">{{ $t('term.deploy.configfilecasedifference') }}</span>
-        <span class="tsfont-plus text-href" @click="openEnvDifferenceEdit">{{ $t('page.add') }}</span>
+        <span v-if="hasEditConfigAuth" class="tsfont-plus text-href" @click="openEnvDifferenceEdit()">{{ $t('page.add') }}</span>
       </div>
-      <ul v-if="!hasInstance && hasEditConfigAuth" class="flex-center" style="height: 128px;">
-        <li class="text-grey">
+      <div v-else class="flex-center diff-empty text-grey">
+        <template v-if="hasEditConfigAuth">
           <span>{{ $t('term.deploy.notconfigdifftip') }}</span>
-          <span class="text-href pl-xs" @click="openEnvDifferenceEdit">{{ $t('page.add') }}</span></li>
-      </ul>
-      <div v-for="(item, index) in instanceAutoConfigList" :key="index" class="pb-nm">
+          <span class="text-href pl-xs" @click="openEnvDifferenceEdit()">{{ $t('page.add') }}</span>
+        </template>
+        <NoData v-else></NoData>
+      </div>
+      <div v-for="item in instanceAutoConfigList" :key="item.instanceId" class="pb-nm">
         <div class="operation-box pb-xs">
           <span>{{ getIPPortName(item) }}</span>
-          <div v-show="hasEditConfigAuth" class="action-group">
-            <span class="action-item tsfont-edit text-action text-href" @click="openEnvDifferenceEdit(item)">{{ $t('page.edit') }}</span>
-            <span class="action-item tsfont-formtextarea text-action text-href" @click="openEnvDifferenceEditForTextarea(item)">{{ $t('term.deploy.textedit') }}</span>
-            <span class="action-item tsfont-task text-action text-href" @click="openEnvDifferenceAudit(item)">{{ $t('page.audit') }}</span>
-            <span class="tsfont-trash-o text-action text-href" @click="delEnvDifference(item, index)">{{ $t('page.delete') }}</span>
+          <div v-if="hasEditConfigAuth" class="action-group">
+            <span class="action-item tsfont-edit text-action" @click="openEnvDifferenceEdit(item)">{{ $t('page.edit') }}</span>
+            <span class="action-item tsfont-task text-action" @click="openEnvDifferenceAudit(item)">{{ $t('page.audit') }}</span>
+            <span class="tsfont-trash-o text-action" @click="delEnvDifference(item)">{{ $t('page.delete') }}</span>
           </div>
         </div>
-        <TsTable
-          v-bind="tableConfig"
-          :theadList="envTheadList"
-          :tbodyList="item.keyValueList"
-          :fixedHeader="false"
-        >
-          <template slot="value" slot-scope="{row}">
-            <span>{{ row.hasOwnProperty('value') && !row.value ? $t('page.settonull') : (row.value || '-') }}</span>
-          </template>
+        <TsTable :theadList="envTheadList" :tbodyList="item.keyValueList" :fixedHeader="false">
+          <template slot="value" slot-scope="{row}"><span>{{ displayValue(row) }}</span></template>
         </TsTable>
       </div>
     </div>
     <EnvAutoconfigEdit
       v-if="isShowEnvEdit"
       :isEdit="hasAutoConfig"
-      :tableData="tableData"
+      :busy="saving"
+      allowUnsetText
+      :tableData="{tbodyList:defaults}"
       :params="params"
-      @close="closeAutoConfigEdit"
+      @close="isShowEnvEdit = false"
       @save="saveAutoConfig"
     ></EnvAutoconfigEdit>
-    <EnvAutoconfigEditTextarea
-      v-if="isShowEnvEditForTextarea"
-      :isEdit="hasAutoConfig"
-      :instanceId="0"
-      :tableData="tableData"
-      :params="params"
-      @close="closeAutoConfigEdit"
-      @save="saveAutoConfig"
-    ></EnvAutoconfigEditTextarea>
     <EnvAutoconfigAudit
       v-if="isShowEnvAutoConfigAudit"
       :instanceId="0"
@@ -101,328 +78,129 @@
     <EnvAutoconfigInstanceDifferenceEdit
       v-if="isShowEnvDifferenceEdit"
       :instanceId="instanceId"
-      :params="instanceParams"
-      @close="closeEnvDifferenceEdit"
+      :params="params"
+      @close="closeDifference"
     ></EnvAutoconfigInstanceDifferenceEdit>
-    <EnvAutoconfigEditTextarea
-      v-if="isShowEnvDifferenceEditForTextarea"
-      :isEdit="true"
-      :instanceId="instanceId"
-      :tableData="instanceTableData"
-      :params="instanceParams"
-      @close="closeEnvDifferenceEditForTextarea"
-      @save="saveEnvDifferenceEditForTextarea"
-    ></EnvAutoconfigEditTextarea>
     <EnvAutoconfigAudit
       v-if="isShowEnvDifferenceAudit"
       :instanceId="instanceId"
-      :params="instanceParams"
+      :params="params"
       @close="closeEnvDifferenceAudit"
     ></EnvAutoconfigAudit>
   </div>
 </template>
 <script>
 export default {
-  name: '', // 配置文件适配列表
   components: {
     EnvAutoconfigEdit: () => import('./env-autoconfig-edit'),
-    EnvAutoconfigEditTextarea: () => import('./env-autoconfig-edit-textarea'),
     EnvAutoconfigAudit: () => import('./env-autoconfig-audit'),
-    EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'), // 添加实例差异
+    EnvAutoconfigInstanceDifferenceEdit: () => import('./env-autoconfig-instance-difference-edit'),
     TsTable: () => import('@/resources/components/TsTable/TsTable.vue')
   },
-  props: {
-    params: {
-      type: Object,
-      default: function() {
-        return {};
+  props: {params: {type: Object, default: () => ({})}, hasEditConfigAuth: Boolean},
+  data() {
+    return {loading: false, saving: false, defaults: [], instanceAutoConfigList: [], instanceId: null,
+      isShowEnvEdit: false, isShowEnvAutoConfigAudit: false, isShowEnvDifferenceEdit: false, isShowEnvDifferenceAudit: false};
+  },
+  methods: {
+    // 环境参数变化后清空旧视图，仅接收当前环境的响应。
+    async getEnvInfo() {
+      const scope = JSON.stringify(this.params);
+      this.loading = true;
+      this.defaults = [];
+      this.instanceAutoConfigList = [];
+      try {
+        const res = await this.$api.deploy.applicationConfig.getEnvInfo({...this.params});
+        if (scope !== JSON.stringify(this.params) || res.Status !== 'OK') return;
+        this.defaults = res.Return?.envAutoConfigList || [];
+        this.instanceAutoConfigList = (res.Return?.instanceAutoConfigList || []).filter(item => item.keyValueList?.length);
+      } finally {
+        if (scope === JSON.stringify(this.params)) this.loading = false;
       }
     },
-    hasEditConfigAuth: {
-      // 是否有编辑配置权限
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      isShowEnvEdit: false,
-      isShowEnvEditForTextarea: false,
-      isShowEnvAutoConfigAudit: false,
-      isShowEnvDifferenceEdit: false,
-      isShowEnvDifferenceEditForTextarea: false,
-      isShowEnvDifferenceAudit: false,
-      hasInstance: false, // 是否存在实例差异
-      hasAutoConfig: false,
-      instanceId: null,
-      instanceParams: {},
-      tableConfig: {},
-      instanceAutoConfigList: [],
-      envTheadList: [
-        {
-          title: this.$t('page.variablename'),
-          key: 'key'
-        },
-        {
-          title: this.$t('page.type'),
-          key: 'typeText'
-        },
-        {
-          title: this.$t('page.variablevalue'),
-          key: 'value'
-        }
-      ],
-      tableData: {
-        hideAction: false,
-        tbodyList: []
-      },
-      instanceTableData: {
-        hideAction: false,
-        tbodyList: []
-      }
-    };
-  },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {
-    this.getEnvInfo();
-  },
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
-  methods: {
-    openEnvEdit() {
-      this.isShowEnvEdit = true;
+    displayValue(row) {
+      if (row.isEmpty || (!row.value && !row.filledFields?.includes('value'))) return this.$t('page.settonull');
+      return row.type === 'password' ? '••••••••' : row.value;
     },
     openEnvDifferenceEdit(item) {
-      if (item) {
-        let {instanceId, keyValueList} = item;
-        this.instanceId = instanceId;
-        this.instanceParams = {
-          ...this.params,
-          keyValueList
-        };
-      } else {
-        this.instanceParams = {
-          ...this.params
-        };
-      }
+      this.instanceId = item?.instanceId || null;
       this.isShowEnvDifferenceEdit = true;
     },
-    openEnvDifferenceEditForTextarea(item) {
-      if (item) {
-        let {instanceId, keyValueList} = item;
-        this.instanceId = instanceId;
-        this.instanceParams = {
-          ...this.params,
-          keyValueList
-        };
-      } else {
-        this.instanceParams = {
-          ...this.params
-        };
-      }
-      let {appSystemId, appModuleId, envId} = this.params;
-      let params = {
-        appSystemId: appSystemId,
-        appModuleId: appModuleId,
-        envId: envId
-      };
-      this.$api.deploy.applicationConfig.getEnvInfo(params).then((res) => {
-        if (res && res.Status == 'OK') {
-          let returnData = res.Return;
-          this.currentEnvKeyList = [];
-          if (!this.instanceId) {
-            // 新增
-            this.tableData.tbodyList = [];
-            this.isShowEnvDifferenceEditForTextarea = true;
-          } else {
-            // 编辑
-            returnData.instanceAutoConfigList && returnData.instanceAutoConfigList.forEach((item) => {
-              if (item.instanceId == this.instanceId) {
-                item.keyValueList && item.keyValueList.forEach((v) => {
-                  this.instanceTableData.tbodyList.push({
-                    key: v.key,
-                    value: v.hasOwnProperty('value') ? v.value : '',
-                    isEmpty: v.isEmpty,
-                    type: v.type,
-                    delOperation: '',
-                    componentType: v.type
-                  });
-                });
-              }
-            });
-            this.isShowEnvDifferenceEditForTextarea = true;
-          }
-        }
-      });
-    },
-    closeEnvDifferenceEditForTextarea(needRefresh) {
-      this.isShowEnvDifferenceEditForTextarea = false;
-      this.instanceTableData.tbodyList = [];
-      if (needRefresh) {
-        this.getEnvInfo();
-      }
-    },
-    saveEnvDifferenceEditForTextarea(params) {
-      this.$api.deploy.applicationConfig.saveEnvAutoConfig(params).then((res) => {
-        if (res && res.Status == 'OK') {
-          this.$Message.success(this.$t('message.savesuccess'));
-          this.closeEnvDifferenceEditForTextarea(true);
-        }
-      });
-    },
     openEnvDifferenceAudit(item) {
-      if (item) {
-        let {instanceId, keyValueList} = item;
-        this.instanceId = instanceId;
-        this.instanceParams = {
-          ...this.params,
-          keyValueList
-        };
-      } else {
-        this.instanceParams = {
-          ...this.params
-        };
-      }
+      this.instanceId = item.instanceId;
       this.isShowEnvDifferenceAudit = true;
     },
-    closeEnvDifferenceAudit(needRefresh) {
+    // 审计回滚成功后重新读取正式值，避免后续编辑沿用回滚前的数据。
+    async closeAutoConfigAudit(needRefresh = false) {
+      this.isShowEnvAutoConfigAudit = false;
+      if (needRefresh) await this.getEnvInfo();
+    },
+    // 实例差异与环境默认变量共用刷新入口，取消审计时保留当前列表。
+    async closeEnvDifferenceAudit(needRefresh = false) {
       this.isShowEnvDifferenceAudit = false;
-      if (needRefresh) {
-        this.getEnvInfo();
-      }
+      if (needRefresh) await this.getEnvInfo();
     },
-    editAutoConfig() {
-      this.isShowEnvEdit = true;
-    },
-    editAutoConfigForTextarea() {
-      this.isShowEnvEditForTextarea = true;
-    },
-    closeAutoConfigEdit(needRefresh) {
-      this.isShowEnvEdit = false;
-      this.isShowEnvEditForTextarea = false;
-      if (needRefresh) {
-        this.getEnvInfo();
-      }
-    },
-    closeEnvDifferenceEdit(needRefresh) {
+    closeDifference(refresh) {
       this.isShowEnvDifferenceEdit = false;
-      this.instanceParams = {};
-      if (needRefresh) {
-        this.getEnvInfo();
-      }
-    },
-    getEnvInfo() {
-      this.$api.deploy.applicationConfig.getEnvInfo(this.params).then((res) => {
-        if (res && res.Status == 'OK') {
-          let returnData = res.Return;
-          if (returnData && returnData.envAutoConfigList) {
-            this.hasAutoConfig = !!(returnData.envAutoConfigList && returnData.envAutoConfigList.length > 0);
-            this.$set(this.tableConfig, 'tbodyList', returnData.envAutoConfigList);
-            this.instanceAutoConfigList = returnData.instanceAutoConfigList;
-            this.hasInstance = !!(returnData.instanceAutoConfigList && returnData.instanceAutoConfigList.length > 0);
-          } else {
-            this.hasAutoConfig = false;
-          }
-          this.tableData.tbodyList = [];
-          returnData.envAutoConfigList && returnData.envAutoConfigList.forEach((v) => {
-            this.tableData.tbodyList.push({
-              key: v.key,
-              type: v.type,
-              value: v.hasOwnProperty('value') ? v.value : '',
-              isEmpty: v.isEmpty,
-              // isEmpty: (!v.hasOwnProperty('value') || (v.value == '')) ? 1 : 0, // 没有value的属性，或者为空字符串，设为空打开
-              delOperation: ''
-            });
-          });
-        }
-      });
-    },
-    delEnvDifference(item, index) {
-      if (item) {
-        let params = {
-          appSystemId: item.appSystemId,
-          appModuleId: item.appModuleId,
-          envId: item.envId,
-          instanceId: item.instanceId
-        };
-        this.$createDialog({
-          title: this.$t('dialog.title.deleteconfirm'),
-          content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.casedifference')}),
-          btnType: 'error',
-          'on-ok': vnode => {
-            vnode.isShow = false;
-            this.$nextTick(() => {
-              this.$api.deploy.applicationConfig.delEnvExample(params).then((res) => {
-                if (res && res.Status == 'OK') {
-                  this.instanceAutoConfigList.splice(index, 1);
-                  this.$Message.success(this.$t('message.deletesuccess'));
-                }
-              });
-            });
-          }
-        });
-      }
-    },
-    changeCurrentAutoConfig() {
-
-    },
-    changePageSizeAutoConfig() {
-
+      if (refresh) this.getEnvInfo();
     },
     getIPPortName(item) {
-      // 获取instanceIp/instancePort/instanceName
-      if (item) {
-        return item.instanceIp ? (item.instancePort ? (item.instanceName ? `${item.instanceIp}:${item.instancePort}[${item.instanceName}]` : `${item.instanceIp}:${item.instancePort}`) : item.instanceIp) : '';
-      }
+      return item.instanceIp ? item.instanceIp + (item.instancePort ? ':' + item.instancePort : '') + (item.instanceName ? '[' + item.instanceName + ']' : '') : '';
     },
-    saveAutoConfig(params) {
-      this.$api.deploy.applicationConfig.saveEnvAutoConfig(params).then((res) => {
-        if (res && res.Status == 'OK') {
+    // 正式配置保存期间阻止重复提交，失败后保留编辑副本。
+    async saveAutoConfig(params) {
+      if (this.saving) return;
+      this.saving = true;
+      try {
+        const res = await this.$api.deploy.applicationConfig.saveEnvAutoConfig({...params, instanceId: 0});
+        if (res.Status === 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
-          this.closeAutoConfigEdit(true);
+          this.isShowEnvEdit = false;
+          await this.getEnvInfo();
+        }
+      } finally { this.saving = false; }
+    },
+    delEnvDifference(item) {
+      this.$createDialog({
+        title: this.$t('dialog.title.deleteconfirm'),
+        content: this.$t('dialog.content.deleteconfirm', {target: this.$t('term.deploy.casedifference')}),
+        btnType: 'error',
+        'on-ok': async vnode => {
+          if (this.saving) return;
+          this.saving = true;
+          try {
+            const res = await this.$api.deploy.applicationConfig.delEnvExample({...this.params, instanceId: item.instanceId});
+            if (res.Status === 'OK') {
+              vnode.isShow = false;
+              this.instanceAutoConfigList = this.instanceAutoConfigList.filter(row => row.instanceId !== item.instanceId);
+              this.$Message.success(this.$t('message.deletesuccess'));
+            }
+          } finally { this.saving = false; }
         }
       });
-    },
-    showEnvAutoConfigAudit() {
-      this.isShowEnvAutoConfigAudit = true;
-    },
-    closeAutoConfigAudit(needRefresh) {
-      this.isShowEnvAutoConfigAudit = false;
-      if (needRefresh) {
-        this.getEnvInfo();
-      }
     }
   },
-  filter: {},
-  computed: {},
-  watch: {}
+  computed: {
+    hasAutoConfig() { return !!this.defaults.length; },
+    hasInstance() { return !!this.instanceAutoConfigList.length; },
+    envTheadList() {
+      return [{key: 'key', title: this.$t('page.variablename')}, {key: 'typeText', title: this.$t('page.type')},
+        {key: 'value', title: this.$t('page.variablevalue')}];
+    }
+  },
+  watch: {params: {deep: true, immediate: true, handler() {
+    this.isShowEnvEdit = false;
+    this.isShowEnvDifferenceEdit = false;
+    this.isShowEnvAutoConfigAudit = false;
+    this.isShowEnvDifferenceAudit = false;
+    this.getEnvInfo();
+  }}}
 };
 </script>
-<style lang="less" scoped>
-.env-autoconfig-box {
-  height: calc(100vh - 50px - 50px - 32px - 16px);
-  overflow-y: auto;
-  &.env-autoconfig-radius {
-  border-radius: 0 10px 10px;
-  }
-  .autocfg-box {
-    height: 148px;
-  }
-  .add-text-box {
-    padding-top: 20px;
-  }
-}
-.border-bottom {
-  border-bottom: 1px solid;
-}
-.operation-box {
-  display: flex;
-  justify-content: space-between;
-}
+<style scoped>
+.env-autoconfig-box {height:calc(100vh - 50px - 50px - 32px - 16px);overflow-y:auto;border-radius:0 10px 10px}
+.autocfg-box {height:148px}
+.diff-empty {height:128px}
+.border-bottom {border-bottom:1px solid}
+.operation-box {display:flex;justify-content:space-between}
 </style>

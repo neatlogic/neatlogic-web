@@ -27,6 +27,7 @@ export default {
     ExecuteuserSetting: () => import('@/views/pages/autoexec/detail/actionDetail/executeuser-setting.vue')
   },
   props: {
+    draftParent: Object,
     defaultExecuteConfig: Object,
     canEdit: {
       type: Boolean,
@@ -157,9 +158,9 @@ export default {
           if (this.envId) {
             this.$set(data, 'appModuleId', this.appModuleId);
           }
-          let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
-          if (res.Status == 'OK') {
-            this.initExecuteConfig = res.Return.config.executeConfig || {};
+          const config = this.draftParent || (await this.$api.deploy.apppipeline.getAppPipeline(data)).Return?.config;
+          if (config) {
+            this.initExecuteConfig = config.executeConfig || {};
           }
         }
         this.executeConfig.protocolId = this.initExecuteConfig.protocolId;
