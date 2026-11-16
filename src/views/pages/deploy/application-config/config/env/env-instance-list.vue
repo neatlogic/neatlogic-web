@@ -1,7 +1,7 @@
 <template>
   <div class="bg-op padding env-example-radius">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <div v-if="hasInstance" class="pb-nm">
+    <div class="pb-nm">
       <TsRow>
         <Col :span="12">
           <ul class="action-group">
@@ -201,14 +201,10 @@ export default {
         ...this.params
       };
       if (params) {
-        const scope = JSON.stringify(this.params);
         this.loadingShow = true;
         this.$api.deploy.applicationConfig.getEnvInfo(params).then((res) => {
-          if (scope !== JSON.stringify(this.params)) return;
           if (res && res.Status == 'OK') {
             let {instanceList} = res.Return;
-            this.hasInstance = !!instanceList?.length;
-            this.selectedInstanceIdList = [];
             this.tbodyList = [];
             this.defaultTbodyList = [];
             if (instanceList && instanceList.length > 0) {
@@ -218,14 +214,14 @@ export default {
             }
           }
         }).finally(() => {
-          if (scope === JSON.stringify(this.params)) this.loadingShow = false;
+          this.loadingShow = false;
         });
       }
     },
     searchData() {
       // 实例列表，IP/名称查询
       if (this.keyword) {
-        this.tbodyList = this.defaultTbodyList.filter((item) => {
+        this.tbodyList = this.tbodyList.filter((item) => {
           return (item.ip && item.ip.indexOf(this.keyword) != -1) || (item.name && item.name.indexOf(this.keyword) != -1);
         });
       } else {
@@ -305,14 +301,7 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {
-    // 切换环境后仅使用新范围的完整列表，不继承搜索与勾选。
-    params: {deep: true, handler() {
-      this.keyword = '';
-      this.selectedInstanceIdList = [];
-      this.searchEnvList();
-    }}
-  }
+  watch: {}
 };
 </script>
 <style lang="less" scoped>

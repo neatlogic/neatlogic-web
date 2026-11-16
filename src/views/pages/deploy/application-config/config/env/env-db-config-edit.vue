@@ -2,8 +2,6 @@
   <div>
     <TsDialog
       v-bind="dialogSetting"
-      :loading="saving"
-      :okBtnDisable="isLoading"
       @on-ok="okDialog"
       @on-close="closeDialog"
     >
@@ -26,7 +24,6 @@
                     ref="formSelect"
                     v-model="formValue.dbResourceId"
                     v-bind="dbResourceSetting"
-                    :historyValue="dbResourceHistory"
                     style="flex: 1;"
                     @first="addDbResource"
                   >
@@ -91,7 +88,6 @@
   </div>
 </template>
 <script>
-import {databaseOptions, schemaField} from './database-form-fields';
 export default {
   name: '',
   components: {
@@ -114,10 +110,8 @@ export default {
     }
   },
   data() {
-    const options = databaseOptions.call(this);
     return {
       isLoading: false,
-      saving: false,
       dialogSetting: {
         isShow: true,
         type: 'modal',
@@ -147,13 +141,39 @@ export default {
       databaseList: [],
       dbResourceId: null,
       formItemList: [
-        schemaField.call(this, {
-          name: 'searchUrl',
-          url: '/api/rest/deploy/app/config/env/db/config/save',
-          key: 'dbSchema',
-          message: this.$t('form.validate.repeat', {target: this.$t('term.deploy.databaseschema')}),
-          params: {id: this.id, ...this.params}
-        }),
+        {
+          name: 'dbSchema',
+          type: 'text',
+          label: this.$t('term.deploy.databaseschema'),
+          maxlength: 50,
+          validateList: [
+            'required',
+            'key-special',
+            {
+              name: 'regex',
+              message: this.$t('term.deploy.inputformatisnotstandardpleaseenter'),
+              pattern: /^[A-Za-z\d_-]+[.]+[A-Za-z\d_-]+$/
+            },
+            {
+              name: 'custom',
+              trigger: 'change',
+              message: this.$t('term.deploy.thereisoneandonlyonedot'),
+              validator: (rule, value) => {
+                // 验证有且只有一个点号
+                let potsNumber = value ? value.split('.').length : 0;
+                return !(potsNumber > 2);
+              }
+            },
+            {
+              name: 'searchUrl',
+              url: '/api/rest/deploy/app/config/env/db/config/save',
+              key: 'dbSchema',
+              message: this.$t('form.validate.repeat', {target: this.$t('term.deploy.databaseschema')}),
+              params: {id: this.id, ...this.params}
+            }
+          ],
+          desc: this.$t('term.deploy.schemaformatdesc')
+        },
         {
           name: 'dbResourceId',
           type: 'slot',
@@ -183,13 +203,103 @@ export default {
           }
         }
       ],
-      configFormList: options.common,
-      oracleList: options.oracle,
-      db2List: options.db2,
+      configFormList: [
+        {
+          name: 'custom',
+          type: 'text',
+          label: this.$t('term.deploy.customparameter'),
+          maxlength: 256
+        },
+        {
+          name: 'logonTimeout',
+          type: 'text',
+          label: this.$t('term.deploy.connectiontimeout'),
+          maxlength: 256
+        },
+        {
+          name: 'locale',
+          type: 'text',
+          label: 'DBLocale',
+          maxlength: 256,
+          validateList: ['key-special']
+        },
+        {
+          name: 'fileCharset',
+          type: 'text',
+          label: this.$t('page.filecoding'),
+          maxlength: 256
+        },
+        {
+          name: 'autocommit',
+          type: 'select',
+          label: this.$t('term.deploy.autocommit'),
+          transfer: true,
+          dataList: [
+            {
+              text: this.$t('page.yes'),
+              value: 1
+            },
+            {
+              text: this.$t('page.no'),
+              value: 0
+            }
+          ]
+        },
+        {
+          name: 'dbVersion',
+          type: 'text',
+          label: this.$t('term.deploy.dbversion'),
+          maxlength: 256
+        },
+        {
+          name: 'ignoreErrors',
+          type: 'text',
+          label: this.$t('term.deploy.ignoreerrors'),
+          maxlength: 256
+        },
+        {
+          name: 'dbaRole',
+          type: 'text',
+          label: this.$t('term.deploy.dbarole'),
+          maxlength: 256
+        }
+      ],
+      oracleList: [
+        {
+          name: 'oraWallet',
+          type: 'select',
+          label: 'oraWallet',
+          transfer: true,
+          dataList: [
+            {
+              text: this.$t('page.yes'),
+              value: 1
+            },
+            {
+              text: this.$t('page.no'),
+              value: 0
+            }
+          ]
+        }
+      ],
+      db2List: [
+        {
+          name: 'db2SqlTerminator',
+          type: 'text',
+          label: 'db2SqlTerminator',
+          maxlength: 256
+        },
+        {
+          name: 'db2ProcTerminator',
+          type: 'text',
+          label: 'db2ProcTerminator',
+          maxlength: 256
+        }
+      ],
       dbResourceSetting: {
         validateList: ['required'],
         dynamicUrl: '/api/rest/deploy/app/config/env/database/search',
-        params: {...this.params, onlySelectable: true},
+        params: {...this.params},
         rootName: 'tbodyList',
         firstSelect: false,
         firstLi: true,
@@ -267,11 +377,9 @@ export default {
       }
       return textName;
     },
-    // 数据库详情用于历史回显和类型参数，不作为下拉候选查询。
     async getDBList(dbResourceId = null) {
       let params = {
-        ...this.params,
-        onlySelectable: false
+        ...this.params
       };
       if (dbResourceId) {
         params.defaultValue = [dbResourceId];
@@ -279,15 +387,10 @@ export default {
       await this.$api.deploy.applicationConfig.getDbList(params).then((res) => {
         if (res && res.Status == 'OK') {
           this.databaseList = res.Return.tbodyList || [];
-          if (dbResourceId) {
-            this.dbResourceData = this.databaseList.find(item => item.id == dbResourceId) || null;
-          }
         }
       });
     },
-    // 保存期间防止重复提交，失败保留输入并可靠释放按钮加载状态。
-    async okDialog() {
-      if (this.saving || this.isLoading) return;
+    okDialog() {
       let form = this.$refs.form;
       if ((form && !form.valid()) || (this.formValue && !this.formValue.accountId)) {
         if (this.formValue && !this.formValue.accountId) {
@@ -306,22 +409,17 @@ export default {
       if (this.formValue && this.formValue.accountId) {
         this.$set(this.accountSetting, 'errorMessage', '');
       }
-      this.saving = true;
-      try {
-        const res = await this.$api.deploy.env.saveEnvDbConfig(params);
+      this.$api.deploy.env.saveEnvDbConfig(params).then((res) => {
         if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.closeDialog(true);
         }
-      } finally {
-        this.saving = false;
-      }
+      });
     },
-    // 先加载原数据库详情，再展示编辑表单，避免候选过滤影响历史名称回显。
     searchDbConfig() {
       if (this.id) {
         this.isLoading = true;
-        this.$api.deploy.env.getEnvDbConfig({id: this.id}).then(async(res) => {
+        this.$api.deploy.env.getEnvDbConfig({id: this.id}).then((res) => {
           if (res && res.Status == 'OK') {
             let {dbSchema, dbResourceId, accountId, config} = res.Return;
             this.formValue = {
@@ -331,10 +429,11 @@ export default {
               config: config ? 1 : 0
             };
             this.dbResourceId = dbResourceId;
-            await this.getDBList(dbResourceId);
-            this.handleSpecialFields(dbResourceId);
-            this.config = config;
-            this.hasConfig = !!config;
+            this.getDBList(dbResourceId).then(() => {
+              this.handleSpecialFields(dbResourceId);
+              this.config = config;
+              this.hasConfig = !!config;
+            });
             this.$set(this.accountSetting.params, 'resourceId', dbResourceId);
             this.getAccountList();
           }
@@ -446,11 +545,6 @@ export default {
   },
   filter: {},
   computed: {
-    // 历史值只用于展示已选数据库，候选列表仍由后端独立过滤。
-    dbResourceHistory() {
-      const item = this.dbResourceData;
-      return item && item.id == this.formValue.dbResourceId ? [{value: item.id, text: this.getText(item)}] : [];
-    },
     getDisabledClassName() {
       return this.accountSetting.disabled ? 'text-disabled' : '';
     },

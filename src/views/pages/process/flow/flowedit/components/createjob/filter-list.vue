@@ -111,7 +111,7 @@
             <TsFormSelect
               ref="formValid"
               v-model="f.rightValue"
-              v-bind="taskFields ? {dataList: taskFields, validateList, transfer: true} : processTaskParamConfig"
+              v-bind="processTaskParamConfig"
             ></TsFormSelect>
           </template>
           <template v-else>
@@ -142,8 +142,6 @@ export default {
   inject: ['flowObj'],
   props: {
     value: String,
-    // 调用方可限制可用工单字段；默认保留自动化节点的动态字段列表。
-    taskFields: Array,
     filterList: Array,
     allFormitemList: Array,
     showStatus: {

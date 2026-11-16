@@ -98,7 +98,6 @@
     </div>
     <TsDialog
       :isShow.sync="ruleModel"
-      :okBtnDisable="isShowRule && loadingFields"
       type="modal"
       width="692px"
       height="400px"
@@ -295,8 +294,6 @@ export default {
       formUuid: _this.formConfig && _this.formConfig.uuid ? _this.formConfig.uuid : '', //表单id
       newChildrenNode: _this.nodeChildren || [], //条件节点
       formAttrList: [],
-      loadingFields: false,
-      fieldRequest: 0,
       ruleFormData: [
         {
           type: 'select',
@@ -570,33 +567,93 @@ export default {
         }
       });
     },
-    // 条件和目标均有效后，才写回本节点的流转规则列表。
     saveRule() {
-      if (!this.$refs.mainRule.valid()) return;
-      const {targetStepList, type} = this.$refs.mainRule.getFormValue();
-      if (type === 'optional' && !this.validConditions()) {
-        this.$Notice.error({title: this.$t('form.placeholder.pleaseselect', {target: this.$t('page.condition')})});
-        return;
+      //条件节点：保存规则
+      let rule = this.$refs.mainRule;
+      let isValue = false;
+      if (rule.valid()) {
+        let data = rule.getFormValue();
+        this.editRuleConfig.targetStepList = data.targetStepList;
+        let type = data.type;
+        this.editRuleConfig.type = type;
+        let conditionGroupList = this.editRuleConfig.conditionGroupList || [];
+        if (type != 'optional') {
+          this.editRuleConfig.conditionGroupList = [];
+          if (this.ruleIndex != null) {
+            this.moveonConfigList[this.ruleIndex] = this.editRuleConfig;
+          } else {
+            this.moveonConfigList.push(this.editRuleConfig);
+          }
+        }
+        if (type == 'optional') {
+          for (let i = 0; i < conditionGroupList.length; i++) {
+            for (var j = 0; j < conditionGroupList[i].conditionList.length; j++) {
+              let row = conditionGroupList[i].conditionList[j];
+              if (typeof row === 'object') {
+                for (let key in row) {
+                  if (row.hasOwnProperty(key)) {
+                    let val = row[key];
+                    if (row.isShowConditionValue === 1) {
+                      if (key == 'valueList' && Array.isArray(val)) {
+                        if (val.length == 0) {
+                          this.$Notice.error({
+                            title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.condition') }),
+                            duration: 1.5
+                          });
+                          isValue = false;
+                          return false;
+                        } else {
+                          if (val[0] == '') {
+                            this.$Notice.error({
+                              title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.condition') }),
+                              duration: 1.5
+                            });
+                            isValue = false;
+                            return false;
+                          }
+                        }
+                      } else if (!val) {
+                        this.$Notice.error({
+                          title: this.$t('form.placeholder.pleaseselect', { target: this.$t('page.condition') }),
+                          duration: 1.5
+                        });
+                        isValue = false;
+                        return false;
+                      } else {
+                        isValue = true;
+                      }
+                    } else {
+                      row.valueList = '';
+                      if (row.type !== 'custom') {
+                        isValue = true;
+                      } else {
+                        if (!row.expression) {
+                          this.$Notice.error({
+                            title: this.$t('form.placeholder.pleaseinput', { target: this.$t('term.process.customexpression') }),
+                            duration: 1.5
+                          });
+                          isValue = false;
+                          return false;
+                        } else {
+                          isValue = true;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        if (isValue) {
+          if (this.ruleIndex != null) {
+            this.moveonConfigList[this.ruleIndex] = this.editRuleConfig;
+          } else {
+            this.moveonConfigList.push(this.editRuleConfig);
+          }
+        }
+        this.ruleModel = false;
       }
-      const rule = {...this.editRuleConfig, type, targetStepList};
-      if (type !== 'optional') Object.assign(rule, {conditionGroupList: [], conditionGroupRelList: []});
-      if (this.ruleIndex == null) this.moveonConfigList.push(rule);
-      else this.$set(this.moveonConfigList, this.ruleIndex, rule);
-      this.ruleModel = false;
-    },
-    // 按本节点当前表单定义校验，零值和布尔值可以作为有效比较值。
-    validConditions() {
-      if (this.loadingFields) return false;
-      const groups = this.editRuleConfig.conditionGroupList || [];
-      return groups.length > 0 && groups.every(group => group.conditionList?.length && group.conditionList.every(row => {
-        if (row.type === 'custom') return !!row.expression?.trim();
-        const field = this.ruleConditionConfig[row.name];
-        const operator = field?.expressionList?.find(op => op.expression === row.expression);
-        if (!field?.conditionable || field.type !== row.type || !operator) return false;
-        if (!operator.isShowConditionValue) return true;
-        const values = Array.isArray(row.valueList) ? row.valueList : [row.valueList];
-        return values.length > 0 && values.every(value => value != null && String(value).trim() !== '');
-      }));
     },
     getConditionJoinType(relList, index) {
       //页面条件展示
@@ -647,19 +704,21 @@ export default {
         }
       });
     },
-    // 字段定义由当前表单和标签读取，切换标签后只采用最后一次请求。
-    async getNewConditionList(formUuid) {
-      const request = ++this.fieldRequest;
-      this.formAttrList = [];
-      this.loadingFields = true;
-      const params = {formUuid, tag: this.formTag || 'common', isAll: 1};
-      if (this.flowObj?.processTaskId) params.processTaskId = this.flowObj.processTaskId;
-      try {
-        const res = await this.$api.process.process.conditionList(params);
-        if (request === this.fieldRequest && res.Status === 'OK') this.formAttrList = res.Return || [];
-      } finally {
-        if (request === this.fieldRequest) this.loadingFields = false;
+    getNewConditionList(formUuid) {
+      //新的条件选择
+      let data = {
+        formUuid: formUuid,
+        tag: this.formTag || 'common',
+        isAll: 1
+      };
+      if (this.flowObj && this.flowObj.processTaskId) {
+        data.processTaskId = this.flowObj.processTaskId;
       }
+      this.$api.process.process.conditionList(data).then(res => {
+        if (res.Status == 'OK') {
+          this.formAttrList = res.Return;
+        }
+      });
     },
     conditionShow(val, type) {
       let text = '';
@@ -675,7 +734,7 @@ export default {
       let selectConfig = this.ruleConditionList.find(d => d.name == val);
       if (selectConfig) {
         expressionList = selectConfig.expressionList;
-        expressionText = selectConfig.expressionList.find(e => e.expression == expression)?.expressionName || expression;
+        expressionText = selectConfig.expressionList.find(e => e.expression == expression).expressionName;
       }
       return expressionText;
     },

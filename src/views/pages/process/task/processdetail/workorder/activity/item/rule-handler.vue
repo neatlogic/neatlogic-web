@@ -15,7 +15,50 @@
                 <div class="text-tip condition-tip">
                   <span>{{ $t('term.process.meetcondition') }}</span>
                 </div>
-                <ConditionExpression v-if="!item.type || item.type == 'optional'" :item="item"></ConditionExpression>
+                <div v-if="!item.type || item.type == 'optional'" class="text-overflow">
+                  <div v-if="item.conditionGroupList">
+                    <Tooltip max-width="800" transfer theme="light">
+                      <span v-for="(groupitem, groupindex) in item.conditionGroupList" :key="groupindex">
+                        <span>(</span>
+                        <span
+                          v-for="(conitem, conindex) in groupitem.conditionList"
+                          :key="conindex"
+                          :class="!item.result && !conitem.result ? 'text-danger' : ''"
+                          style="display: inline-block"
+                        >
+                          <span v-if="conitem.type != 'custom'">{{ conitem.name }}</span>
+                          <span v-if="conitem.type != 'custom'" style="padding: 0 8px">{{ conitem.expression }}</span>
+                          <span v-if="conitem.type != 'custom'">{{ conitem.valueList || '-' }}</span>
+                          <span v-if="conitem.type == 'custom'"><TsCodemirror
+                                                                  :value="conitem.expression"
+                                                                  codeMode="javascript"
+                                                                  :isReadOnly="true"
+                                                                  height="100px"
+                                                                ></TsCodemirror>
+                            <div v-if="conitem.type == 'custom' && conitem.error" class="text-error">{{ conitem.error }}</div>
+                          </span>
+                          <span v-if="groupitem.conditionRelList && groupitem.conditionRelList[conindex]" class="text-primary" style="margin: 0 6px">{{ groupitem.conditionRelList[conindex].joinType === 'or' ? $t('term.framework.or') : $t('term.framework.and') }}</span>
+                        </span>
+                        <span style="margin-left: 0px">)</span>
+                        <span v-if="item.conditionGroupRelList && item.conditionGroupRelList[groupindex]" class="text-primary" style="margin: 0 6px">{{ item.conditionGroupRelList[groupindex].joinType === 'or' ? $t('term.framework.or') : $t('term.framework.and') }}</span>
+                      </span>
+                      <div slot="content">
+                        <span v-for="(groupitem, groupindex) in item.conditionGroupList" :key="groupindex">
+                          <span>(</span>
+                          <span v-for="(conitem, conindex) in groupitem.conditionList" :key="conindex" :class="!item.result && !conitem.result ? 'text-danger' : ''">
+                            <span v-if="conitem.type != 'custom'">{{ conitem.name }}</span>
+                            <span v-if="conitem.type != 'custom'" style="padding: 0 8px">{{ conitem.expression }}</span>
+                            <span v-if="conitem.type != 'custom'">{{ conitem.valueList || '-' }}</span>
+                            <span v-if="conitem.type == 'custom'">{{ conitem.expression }}</span>
+                            <span v-if="groupitem.conditionRelList && groupitem.conditionRelList[conindex]" class="text-primary" style="margin: 0 6px">{{ groupitem.conditionRelList[conindex].joinType === 'or' ? $t('term.framework.or') : $t('term.framework.and') }}</span>
+                          </span>
+                          <span style="margin-left: 0px">)</span>
+                          <span v-if="item.conditionGroupRelList && item.conditionGroupRelList[groupindex]" class="text-primary" style="margin: 0 6px">{{ item.conditionGroupRelList[groupindex].joinType === 'or' ? $t('term.framework.or') : $t('term.framework.and') }}</span>
+                        </span>
+                      </div>
+                    </Tooltip>
+                  </div>
+                </div>
                 <div v-if="item.type == 'always'" class="text-overflow">
                   <span>{{ $t('term.process.alwaystransfer') }}</span>
                 </div>
@@ -49,7 +92,7 @@
 export default {
   name: '',
   components: {
-    ConditionExpression: () => import('./condition-expression.vue')
+    TsCodemirror: () => import('@/resources/plugins/TsCodemirror/TsCodemirror')
   },
   filters: {},
   props: {

@@ -38,10 +38,10 @@
           ></TsFormSelect>
         </TsFormItem>
         <TsFormItem :label="$t('term.autoexec.settodefaultscenario')" labelPosition="left" :labelWidth="100">
-          <TsFormSwitch ref="defaultSwitch" v-model="isActive"></TsFormSwitch>
+          <TsFormSwitch v-model="isActive"></TsFormSwitch>
         </TsFormItem>
         <div>
-          <ul v-if="stepList && stepList.length>0" ref="phaseChoices" class="stepList">
+          <ul v-if="stepList && stepList.length>0" class="stepList">
             <template v-for="(ary, sindex) in stepList">
               <li
                 v-if="ary && ary.length"

@@ -3,13 +3,11 @@
     <TsContain :siderWidth="220">
       <template v-slot:topLeft>
         <div class="action-group">
-          <component :is="toolbar.left" v-if="toolbar.left"></component>
+          <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.application') }}</span>
         </div>
       </template>
       <template v-slot:topRight>
         <div class="action-group">
-          <component :is="toolbar.right" v-if="toolbar.right"></component>
-          <span class="action-item tsfont-plus" @click="addAppTree">{{ $t('page.application') }}</span>
           <!-- 应用层 -->
           <template v-if="configType == 'app' && canEdit">
             <span class="action-item tsfont-plus" @click="addModuleTree">{{ $t('page.module') }}</span>
@@ -139,7 +137,6 @@
   </div>
 </template>
 <script>
-import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   name: '',
   components: {
@@ -510,9 +507,6 @@ export default {
   },
   filter: {},
   computed: {
-    toolbar() {
-      return ComponentManager.getComponent('deployApplicationToolbar') || {};
-    },
     canEdit() {
       // 是否有“编辑配置”权限，isHasAllAuthority 表示自动发布管理员权限
       if (this.authList.includes('operation#all') || this.authList.includes('operation#edit') || (this.selectedApp && this.selectedApp.isHasAllAuthority)) {

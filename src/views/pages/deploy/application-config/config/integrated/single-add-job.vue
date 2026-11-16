@@ -17,11 +17,16 @@
       </template>
       <template v-slot:scenes>
         <div class="pt-sm li-box">
-          <Row :type="draftContext ? 'flex' : undefined" :gutter="draftContext ? 0 : 16" :class="{'draft-scenes': draftContext}">
+          <Row :gutter="16">
             <Col
               v-for="(item,index) in scenarioList"
               :key="index"
-              v-bind="draftContext ? {} : {xs: 12, sm: 8, md: 6, lg: 4, xl: 3, xxl: 2}"
+              :xs="12"
+              :sm="8"
+              :md="6"
+              :lg="4"
+              :xl="3"
+              :xxl="2"
             >
               <div
                 v-if="hasScenarioAuth(item.scenarioId)"
@@ -133,7 +138,6 @@ export default {
     SetParam: () => import('@/views/pages/autoexec/detail/runnerDetail/param.vue')
   },
   props: {
-    draftContext: {type: Object, default: null},
     appSystemId: {
       // 应用id，做为查找场景和环境列表的条件
       type: Number,
@@ -288,33 +292,6 @@ export default {
   },
   beforeCreate() {},
   created() {
-    if (this.draftContext) {
-      this.setFormValue();
-      const {module, pipeline} = this.draftContext;
-      this.envList = module.environments.map(e => ({envId: e.envId, envName: e.name}));
-      this.scenarioList = pipeline.scenarioList || [];
-      if (this.draftContext.pipelineOnly) {
-        // 环境和实例已在环境步骤选定，本步只编辑流水线相关设置。
-        this.formList = this.formList.filter(field => !['env', 'instanceFilter', 'instanceFilterList'].includes(field.name));
-      }
-      if (!this.draftContext.pipelineOnly) this.envId = this.envId || this.envList[0]?.envId;
-      if (!this.draftContext.pipelineOnly) this.scenarioId = this.scenarioId || pipeline.defaultScenarioId;
-      this.runtimeParamList = this.$utils.deepClone(pipeline.runtimeParamList || []);
-      this.runtimeParamList.forEach(p => {
-        const saved = this.value.config?.param;
-        if (saved && Object.hasOwn(saved, p.key)) p.defaultValue = saved[p.key];
-        if (p.type === 'password' && saved?.filledFields?.includes(p.key)) {
-          // 服务端已有凭据时，只有重新填写才替换原值。
-          p.defaultValue = null;
-          p.isRequired = 0;
-          if (p.config?.validateList) p.config.validateList = p.config.validateList.filter(rule => rule !== 'required');
-        }
-      });
-      this.combopPhaseList = pipeline.combopPhaseList || [];
-      this.isHiddenScenesEnvByAppModuleId(true);
-      this.getInstanceList();
-      return;
-    }
     if (!this.value || !this.$utils.isEmptyObj(this.value)) {
       this.setFormValue();
     } else {
@@ -398,20 +375,13 @@ export default {
       if (this.envId) {
         this.$set(formValue.config, 'envId', this.envId);
       }
-      if (this.scenarioId) {
+      if (this.envId) {
         this.$set(formValue.config, 'scenarioId', this.scenarioId);
       }
       for (let key in formValue) {
         if (deleteFields.includes(key)) {
           delete formValue[key];
         }
-      }
-      // 运行参数重新组装时沿用后端凭据标记，仅传输用户实际填写的新值。
-      const saved = this.draftContext && this.value.config?.param;
-      if (saved?.filledFields?.length) {
-        const param = formValue.config.param || {};
-        saved.filledFields.forEach(key => { if (param[key] == null || param[key] === '') delete param[key]; });
-        formValue.config.param = {...param, filledFields: saved.filledFields};
       }
       return formValue;
     },
@@ -440,13 +410,6 @@ export default {
       }
     },
     async getInstanceList() {
-      if (this.draftContext) {
-        const env = this.draftContext.module.environments.find(e => e.envId === this.envId);
-        this.instanceList = (env?.instances || []).map(i => ({id: i.resourceId || i.ref, ip: i.ip, port: i.port, name: i.name}));
-        this.defaultInstanceList = this.instanceList;
-        this.defaultInstanceIdList = this.instanceList.map(i => i.id);
-        return;
-      }
       if (this.appSystemId && this.appModuleId && this.envId) {
         this.loadingShow = true;
         this.defaultInstanceList = [];
@@ -580,8 +543,7 @@ export default {
   filter: {},
   computed: {
     hasScenarioAuth() {
-      // 草稿只能选当前流水线中的场景；正式配置继续按服务端授权判断。
-      if (this.draftContext) return id => this.draftContext.pipeline.scenarioList?.some(s => s.scenarioId === id) === true;
+      // 场景权限
       return (scenarioId) => {
         if ((this.authInfo && this.authInfo.isHasAllAuthority) || (scenarioId && this.authList.includes(`scenario#${scenarioId}`)) || this.authList.includes('scenario#all')) {
           return true;
@@ -590,8 +552,7 @@ export default {
       };
     },
     hasEnvAuth() {
-      // 草稿只能选目标模块已关联的环境，不向共享表单注入管理员权限。
-      if (this.draftContext) return id => this.draftContext.module.environments.some(e => e.envId === id);
+      // 环境权限
       return (envId) => {
         if ((this.authInfo && this.authInfo.isHasAllAuthority) || (envId && this.authList.includes(`env#${envId}`)) || this.authList.includes('env#all')) {
           return true;
@@ -602,8 +563,6 @@ export default {
   },
   watch: {
     appModuleId(val) {
-      // 草稿目标由父组件提供，正式页切换模块才重新查询权限及候选。
-      if (this.draftContext) return;
       if (val) {
         this.getScenarioAndEnvList();
         this.getPipilineJobParams();
@@ -613,8 +572,6 @@ export default {
     },
     value: {
       handler() {
-        // 向导切换发布目标时会重新挂载编辑器；修改同一规则的实例不应重置已填作业参数。
-        if (this.draftContext?.pipelineOnly) return;
         this.setFormValue();
       },
       deep: true
@@ -623,17 +580,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-/* 侧栏内按名称宽度排列场景，空间不足时整项换行。 */
-.draft-scenes {
-  column-gap: 8px;
-  > .ivu-col {
-    max-width: 100%;
-  }
-  .li-item {
-    padding: 0 12px;
-    overflow-wrap: anywhere;
-  }
-}
 .li-box {
       margin-bottom: -10px;
       .li-item {

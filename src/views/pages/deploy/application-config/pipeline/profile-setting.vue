@@ -15,7 +15,7 @@
       <div class="top">
         <div class="overflow text-tip">{{ item.profileName }}</div>
         <div class="btn-list">
-          <i v-if="canEdit && allowEditDefinition" class="tsfont-edit text-tip-active pr-xs" @click="editProfile(item)"></i>
+          <i v-if="canEdit" class="tsfont-edit text-tip-active pr-xs" @click="editProfile(item)"></i>
           <i class="text-tip-active" :class="item.isHide ? 'tsfont-down' : 'tsfont-up'" @click="toggleshow(item)"></i>
         </div>
       </div>
@@ -148,12 +148,10 @@ export default {
     ...Items
   },
   props: {
-    draftParent: Object,
     appSystemId: Number, //应用id
     appModuleId: Number, //模块id
     envId: Number, //环境id
     referenceList: Array,
-    allowEditDefinition: {type: Boolean, default: true},
     defaultProfileList: Array,
     canEdit: {
       type: Boolean,
@@ -316,12 +314,6 @@ export default {
       }
       if (!this.$utils.isEmpty(this.profileMap[id])) {
         this.updatedParam(this.profileMap[id]);
-        return;
-      }
-      if (this.draftParent) {
-        const profile = (this.draftParent.overrideProfileList || []).find(item => item.profileId === id);
-        if (profile) this.updatedParam(profile);
-        else this.getProfileDetailById(id);
         return;
       }
       this.$api.deploy.apppipeline.getAppProfileList(data).then((res) => {

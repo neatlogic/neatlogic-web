@@ -3284,30 +3284,6 @@
     "frontend": "前景色"
   },
   "deploy": {
-    "parametereditor": {
-      "empty": "普通格式的空值表示显式置空，换行、回车和反斜杠分别使用 \\n、\\r 和 \\\\。",
-      "error": "第 {line} 行：{reason}",
-      "errors": {
-        "duplicate": "参数名“{key}”重复。",
-        "format": "请使用“类型: 参数名 = 值”的格式。",
-        "key": "请填写参数名。",
-        "password": "密码占位无法匹配原参数，请重新填写密码。",
-        "reference": "参数“{key}”的名称或类型与环境定义不一致。",
-        "type": "仅支持 text、password、textarea 类型。",
-        "value": "请填写参数值，或显式设为空。"
-      },
-      "example": "示例：",
-      "form": "表单编辑",
-      "format": "每行一个参数，普通格式：类型: 参数名 = 值。特殊名称和值使用 JSON 双引号，例如 text: \" app=value \" = \"8080\"。",
-      "mode": "编辑方式",
-      "password": "密码",
-      "retained": "切换模式会保留当前输入",
-      "text": "文本",
-      "textarea": "多行文本",
-      "textmode": "文本编辑",
-      "types": "支持 text、password、textarea。JSON 引号内按 JSON 规则转义，显式置空可使用 text: \"name\" = null。",
-      "unset": "普通格式仅将 \\n 解释为换行，反斜杠和 \\r 保持原值；空值保留为未赋值状态。"
-    },
     "resourcelockui": {
       "app": "应用",
       "cancel": "取消等待",

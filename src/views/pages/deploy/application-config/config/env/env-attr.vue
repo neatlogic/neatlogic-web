@@ -1,6 +1,6 @@
 <template>
   <div class="env-autoconfig-box bg-op env-autoconfig-radius">
-    <ul v-if="tableData.tbodyList.length" class="pt-nm pl-nm">
+    <ul class="pt-nm pl-nm">
       <li v-if="tableData && tableData.tbodyList.length > 0 && hasEditConfigAuth" class="tsfont-edit text-href" @click="editAutoConfig">{{ $t('page.edit') }}</li>
       <template v-if="!hasEditConfigAuth">
         <Tooltip
@@ -38,7 +38,6 @@
       v-if="isShowEnvEdit"
       :isEdit="tableData && tableData.tbodyList.length > 0"
       :params="params"
-      :busy="saving"
       :tableData="tableData"
       @close="closeAutoConfigEdit"
       @save="saveEnvAttr"
@@ -68,7 +67,6 @@ export default {
   data() {
     return {
       isShowEnvEdit: false,
-      saving: false,
       tableConfig: {},
       envTheadList: [
         {
@@ -138,17 +136,13 @@ export default {
         }
       });
     },
-    // 保存失败时保留编辑窗口，所有请求分支均释放等待状态。
-    async saveEnvAttr(params) {
-      if (this.saving) return;
-      this.saving = true;
-      try {
-        const res = await this.$api.deploy.applicationConfig.saveEnvAttr(params);
-        if (res.Status === 'OK') {
+    saveEnvAttr(params) {
+      this.$api.deploy.applicationConfig.saveEnvAttr(params).then((res) => {
+        if (res && res.Status == 'OK') {
           this.$Message.success(this.$t('message.savesuccess'));
           this.closeAutoConfigEdit(true);
         }
-      } finally { this.saving = false; }
+      });
     }
   },
   filter: {},
