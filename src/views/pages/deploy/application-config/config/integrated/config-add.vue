@@ -1,7 +1,7 @@
 <template>
   <div>
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <TsContain>
+    <component :is="draftContext ? 'DraftBody' : 'TsContain'">
       <template v-slot:navigation>
         <span
           v-if="$hasBack()"
@@ -25,7 +25,7 @@
               :item-list="basicFormList"
             ></TsForm>
           </li>
-          <li>
+          <li v-if="!draftContext">
             <Divider orientation="start">{{ $t('page.module') }}</Divider>
             <TsForm
               ref="moduleForm"
@@ -64,8 +64,9 @@
               </template>
             </TsForm>
           </li>
-          <li v-if="!loadingShow" class="pt-nm">
+          <li v-if="!loadingShow && !draftContext?.repositoryOnly" class="pt-nm">
             <BatchAddJob
+              v-if="!draftContext"
               v-show="formValue.action == 'create_batch_job'"
               ref="batchAddJob"
               :appSystemId="appSystemId"
@@ -74,6 +75,7 @@
             <SingleAddJob
               v-show="formValue.action == 'create_job'"
               ref="singleAddJob"
+              :draftContext="draftContext"
               :appSystemId="appSystemId"
               :appModuleId="formValue.appModuleId"
               :value="actionFormValue"
@@ -81,21 +83,23 @@
           </li>
         </ul>
       </template>
-    </TsContain>
+    </component>
     <ConfigAddHelpDialog v-if="isShowConfigAddHelpDialog" @close="closeConfigAddHelpDialog"></ConfigAddHelpDialog>
   </div>
 </template>
 <script>
+import DraftBody from '../../draft-body.js';
 export default {
   name: '',
   components: {
+    DraftBody,
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     BatchAddJob: () => import('./batch-add-job'), // 批量作业作业
     SingleAddJob: () => import('./single-add-job'), // 单个创建作业
     PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
     ConfigAddHelpDialog: () => import('./config-add-help-dialog') // 帮助
   },
-  props: {},
+  props: {draftContext: {type: Object, default: null}},
   data() {
     return {
       isInit: true, // 用于获取初始化数据，获取对比数据
@@ -269,6 +273,23 @@ export default {
   },
   beforeMount() {},
   async mounted() {
+    if (this.draftContext) {
+      const initial = this.draftContext.value;
+      this.formValue = {...this.formValue, ...this.$utils.deepClone(initial), action: 'create_job'};
+      this.actionFormValue = this.$utils.deepClone(initial);
+      this.actionFormList = this.actionFormList.filter(field => field.name !== 'action');
+      this.basicFormList.find(f => f.name === 'name').validateList = ['required', 'name-special'];
+      this.loadingShow = true;
+      try {
+        await this.getEventList();
+        this.handleRepoType(this.formValue.repoType, initial);
+        this.isHiddenTriggerTime(this.formValue.triggerType);
+        this.$emit('ready');
+      } finally {
+        this.loadingShow = false;
+      }
+      return;
+    }
     await this.getEventList();
     let query = this.$route.query || {};
     if (query && !this.$utils.isEmptyObj(query)) {
@@ -312,9 +333,10 @@ export default {
   destroyed() {},
   methods: {
     valid() {
-      let formList = ['basicForm', 'moduleForm', 'storehouseForm', 'actionForm', 'triggerType'];
+      let formList = ['basicForm', 'storehouseForm', 'actionForm', 'triggerType'];
+      if (!this.draftContext) formList.push('moduleForm');
       if (this.formValue) {
-        if (this.formValue.action == 'create_job') {
+        if (this.formValue.action == 'create_job' && !this.draftContext?.repositoryOnly) {
           formList.push('singleAddJob');
         } else if (this.formValue.action == 'create_batch_job') {
           formList.push('batchAddJob');
@@ -369,6 +391,24 @@ export default {
           params['config'].gitlabPassword = formValue.gitlabPassword;
         }
       }
+      // 草稿回显仅有凭据标记；密码保持原值时交由服务端从同一条记录恢复。
+      const saved = this.draftContext?.value?.config;
+      if (this.draftContext && formValue.repoType === 'gitlab' && saved?.filledFields?.includes('gitlabPassword') && !formValue.gitlabPassword) {
+        params.config = {...params.config, gitlabUsername: formValue.gitlabUsername, filledFields: ['gitlabPassword']};
+        delete params.config.gitlabPassword;
+      }
+      // 分步草稿允许分别保存用户名和密码，仓库编辑只负责仓库凭据。
+      if (this.draftContext?.repositoryOnly) {
+        params.config = {...params.config};
+        delete params.config.gitlabPassword;
+        delete params.config.gitlabUsername;
+        delete params.config.filledFields;
+        if (formValue.repoType === 'gitlab') {
+          params.config.gitlabUsername = formValue.gitlabUsername;
+          if (formValue.gitlabPassword) params.config.gitlabPassword = formValue.gitlabPassword;
+          else if (saved?.filledFields?.includes('gitlabPassword')) params.config.filledFields = ['gitlabPassword'];
+        }
+      }
       let gitLabList = ['gitlabUsername', 'gitlabPassword']; // 删除后端不需要的数据
       for (let key in params) {
         if (gitLabList.includes(key)) {
@@ -378,7 +418,8 @@ export default {
       return params;
     },
     saveConfig() {
-      if (!this.valid()) {
+      // 向导由父组件读取表单写入草稿，只有正式页可以调用持续集成保存接口。
+      if (this.draftContext || !this.valid()) {
         return false;
       }
       this.$api.deploy.integrated.saveConfig(this.getConfigData()).then(res => {
@@ -428,6 +469,9 @@ export default {
           if (item.name == 'gitlabUsername' || item.name == 'gitlabPassword') {
             // 仓库类型为 gitlab时，用户名和密码显示，事件默认为post-receive
             this.$set(item, 'isHidden', false);
+            if (this.draftContext && item.name === 'gitlabPassword' && repoTypeConfig?.config?.filledFields?.includes('gitlabPassword')) {
+              this.$set(item, 'validateList', []);
+            }
           } else if (item.name == 'event') {
             this.$set(this.formValue, 'event', 'post-receive');
             this.$set(item, 'dataList', this.dataList.filter((item) => item.value == 'post-receive'));

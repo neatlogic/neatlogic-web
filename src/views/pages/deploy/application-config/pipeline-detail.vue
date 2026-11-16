@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div :class="{'embedded-pipeline': !!draftContext}">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <TsContain>
+    <component :is="draftContext ? 'DraftBody' : 'TsContain'">
       <template v-slot:navigation>
         <span v-if="$hasBack()" class="tsfont-left text-action" @click="$back()">{{ $getFromPage() }}</span>
       </template>
@@ -57,11 +57,16 @@
         </div>
       </template>
       <template v-slot:content>
-        <div class="pipeline-edit">
-          <div class="pipeline-main">
-            <div class="step-config pr-nm">
-              <div v-if="stepList.length > 0" class="step-top action-group pb-sm">
-                <div class="action-item">
+        <div class="pipeline-edit" :class="{'draft-editor': draftContext}">
+          <Split
+            v-model="pipelineRatio"
+            class="pipeline-main"
+            :min="0.25"
+            :max="0.25"
+          >
+            <div slot="left" class="step-config pr-nm">
+              <div v-if="stepList.length > 0" class="step-top action-group pb-sm" :class="{'bg-grey': draftContext}">
+                <div v-if="!draftContext" class="action-item">
                   <AppConfigStatus :appSystemId="appSystemId"></AppConfigStatus>
                 </div>
                 <div class="action-item tsfont-topo">
@@ -85,6 +90,8 @@
                 <StepList
                   id="stepList"
                   ref="stepList"
+                  :isDraftApplication="!!draftContext && !appModuleId && !envId"
+                  :draftParent="draftContext && draftContext.parentConfig"
                   :appSystemId="appSystemId"
                   :appModuleId="appModuleId"
                   :envId="envId"
@@ -100,11 +107,13 @@
                 ></StepList>
               </div>
             </div>
-            <div class="base-config">
+            <TsResizeHandle slot="trigger" />
+            <div slot="right" class="base-config">
               <Tabs
                 v-model="tabValue"
                 class="block-tabs"
                 :animated="false"
+                @on-click="draftContext && $emit('layout-change', {tab: $event})"
               >
                 <TabPane
                   v-if="profileList.length > 0"
@@ -113,6 +122,8 @@
                 >
                   <div class="setting-main">
                     <ProfileSetting
+                      :allowEditDefinition="!draftContext"
+                      :draftParent="draftContext && draftContext.parentConfig"
                       :appSystemId="appSystemId"
                       :appModuleId="appModuleId"
                       :envId="envId"
@@ -131,6 +142,7 @@
                 >
                   <div class="setting-main">
                     <ScenarioSetting
+                      ref="scenarios"
                       :currentScenarioList="scenarioList"
                       :defaultScenarioId="defaultScenarioId"
                       :sortList="stepList"
@@ -147,6 +159,7 @@
                   <div class="setting-main padding">
                     <ExecuteSetting
                       ref="executeSetting"
+                      :draftParent="draftContext && draftContext.parentConfig"
                       :appSystemId="appSystemId"
                       :appModuleId="appModuleId"
                       :envId="envId"
@@ -164,6 +177,7 @@
                 >
                   <div class="setting-main padding">
                     <StepGroup
+                      :draftParent="draftContext && draftContext.parentConfig"
                       :appSystemId="appSystemId"
                       :appModuleId="appModuleId"
                       :envId="envId"
@@ -174,14 +188,24 @@
                     ></StepGroup>
                   </div>
                 </TabPane>
+                <TabPane v-if="draftContext" :label="$t('term.autoexec.jobparam')" name="runtime">
+                  <RuntimeParamsSetting
+                    ref="draftParams"
+                    class="draft-runtime-params"
+                    inline
+                    :canEdit="canEditParams(canEdit)"
+                    :runtimeParamList="runtimeParamList"
+                    @saveParamList="saveParamsList"
+                  ></RuntimeParamsSetting>
+                </TabPane>
               </Tabs>
             </div>
-          </div>
+          </Split>
           <!--校验 -->
           <PipelineValid v-model="isShowValid" :validList="validList" @jumpToItem="jumpToItem"></PipelineValid>
         </div>
       </template>
-    </TsContain>
+    </component>
     <TsDialog
       :title="$t('dialog.title.edittarget', {target: $t('term.autoexec.pipeline')})"
       type="modal"
@@ -231,6 +255,7 @@
   </div>
 </template>
 <script>
+import DraftBody from './draft-body.js';
 import download from '@/resources/directives/download.js';
 export default {
   name: '',
@@ -243,6 +268,9 @@ export default {
   },
   directives: { download },
   components: {
+    // 草稿容器只渲染编辑主体，保存、导入导出等页面操作由外层管理。
+    DraftBody,
+    TsResizeHandle: () => import('@/resources/components/TsResizeHandle/TsResizeHandle.vue'),
     StepList: () => import('./pipeline/step/step-list'),
     StepGroup: () => import('./pipeline/step-group'),
     ProfileSetting: () => import('./pipeline/profile-setting'),
@@ -255,7 +283,11 @@ export default {
     AppConfigStatus: () => import('./config/app/app-config-status'),
     ImportPipelineConfigDialog: () => import('pages/deploy/application-config/import-pipeline-config-dialog') // 导入流水线配置
   },
-  props: {},
+  props: {
+    draftContext: {type: Object, default: null},
+    stageRatio: {type: Number, default: 0.6},
+    initialTab: {type: String, default: null}
+  },
   data() {
     return {
       appSystemId: null, //应用id
@@ -264,7 +296,8 @@ export default {
       pathName: this.$t('term.deploy.applicationsystem'),
       loadingShow: true,
       initPipelineData: {}, //初始化数据
-      tabValue: 'profile',
+      detailStageRatio: this.stageRatio,
+      tabValue: this.initialTab || 'profile',
       combopGroupList: [],
       combopPhaseList: [],
       runtimeParamList: [],
@@ -301,6 +334,18 @@ export default {
   },
   beforeCreate() {},
   async created() {
+    if (this.draftContext) {
+      const {appSystemId, appModuleId, envId, config} = this.draftContext;
+      this.appSystemId = appSystemId || null;
+      this.appModuleId = appModuleId || null;
+      this.envId = envId || null;
+      // 接入预览使用快照，只开放查看操作；编辑草稿继续使用原编辑能力。
+      this.canEdit = !this.draftContext.readonly;
+      this.combopConfig.isEditRuntimeParam = this.canEdit && !appModuleId && !envId;
+      this.initData({config});
+      this.loadingShow = false;
+      return;
+    }
     if (this.$route.query.appSystemId) {
       this.appSystemId = parseInt(this.$route.query.appSystemId);
       this.combopConfig.isEditRuntimeParam = true;
@@ -328,6 +373,27 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
+    // 保留编辑器所需的工具元数据，正式入库仍由领域模型筛选字段。
+    readDraft(validate) {
+      const params = this.$refs.draftParams;
+      if (params && this.canEditParams(true)) {
+        if (validate && params.validName().length) {
+          this.tabValue = 'runtime';
+          return null;
+        }
+        this.saveParamsList(this.$utils.deepClone(params.updateParamList()));
+      }
+      if (validate) {
+        this.validList = this.getValidList();
+        if (this.validList.length) {
+          this.isShowValid = true;
+          return null;
+        }
+      }
+      const config = this.$utils.deepClone(this.getSaveData().config);
+      config.combopPhaseList = this.$utils.deepClone(this.stepList);
+      return config;
+    },
     initData(data) {
       data.path && (this.pathName = data.path);
       if (!this.$utils.isEmpty(data.config)) {
@@ -349,6 +415,9 @@ export default {
           this.currentGroupConfig = this.combopGroupList[0];
         }
         this.profileIdList = this.getProfileIdList();
+        if (this.draftContext && !this.draftContext.readonly && this.profileIdList.length) {
+          this.getProfileList(this.profileIdList);
+        }
         if (this.tabValue == 'profile' && !this.profileList.length) {
           this.tabValue = 'scenario';
         }
@@ -359,8 +428,18 @@ export default {
         this.defaultPelineData = this.getSaveData();
       });
     },
-    getProfileList(profileIdList) { //预置参数
+    async getProfileList(profileIdList) { //预置参数
       if (this.$utils.isEmpty(profileIdList)) {
+        return;
+      }
+      if (this.draftContext) {
+        const missing = [...new Set(profileIdList)].filter(id => !this.profileList.some(p => p.profileId === id));
+        const profiles = await Promise.all(missing.map(async id => {
+          const response = await this.$api.autoexec.profile.getProfileDetailById(id);
+          const detail = response.Return;
+          return {profileId: id, profileName: detail.name, paramList: (detail.profileParamVoList || []).map(p => ({...p, inherit: 1}))};
+        }));
+        this.profileList.push(...profiles.filter(p => this.profileIdList.includes(p.profileId) && !this.profileList.some(v => v.profileId === p.profileId)));
         return;
       }
       let data = {
@@ -851,6 +930,10 @@ export default {
       this.$utils.jumpTo(obj.id, '', '', 'start');
     },
     showRuntimeParamList() { //展示作业参数
+      if (this.draftContext) {
+        this.tabValue = 'runtime';
+        return;
+      }
       this.isShowParamList = true;
     },
     saveParamsList(list) { //保存作业参数
@@ -1128,6 +1211,14 @@ export default {
   },
   filter: {},
   computed: {
+    // 详情页自己保存栏宽；向导在父页保存，切换节点时可恢复。
+    pipelineRatio: {
+      get() { return this.draftContext ? this.stageRatio : this.detailStageRatio; },
+      set(value) {
+        if (this.draftContext) this.$emit('layout-change', {stageRatio: value});
+        else this.detailStageRatio = value;
+      }
+    },
     canEditParams() {
       return (canEdit) => {
         let isEdit = canEdit;
@@ -1183,15 +1274,44 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.embedded-pipeline {
+  position: relative;
+  height: 100%;
+}
+// 向导提供可用高度，阶段列表和页签沿用正式页分栏，在各自区域内滚动。
+.pipeline-edit.draft-editor {
+  position: absolute;
+  inset: 0;
+  .pipeline-main {
+    height: 100%;
+    .draft-runtime-params { min-width: 680px; }
+    .base-config ::v-deep .ivu-tabs-tabpane { overflow-x: auto; }
+    .step-top { z-index: 1; }
+    .base-config .block-tabs {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      ::v-deep > .ivu-tabs-bar { flex: none; }
+      ::v-deep > .ivu-tabs-content {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+      }
+    }
+    .base-config .setting-main { height: 100%; }
+  }
+}
 .pipeline-edit {
   position: relative;
   .pipeline-main {
-    display: flex;
+    // 仅启用编辑器自身的分隔手柄，避开 TsContain 对其他分隔线的隐藏样式。
+    ::v-deep > .ivu-split-horizontal > .ivu-split-trigger-con { display: block; width: 10px; }
+    ::v-deep > .ivu-split-horizontal > .right-pane { padding-left: 6px; }
+    .step-config, .base-config { width: 100%; min-width: 0; }
     width: 100%;
     height: calc(100vh - 100px - 16px);
     .step-config {
       position: relative;
-      width: 60%;
       height: 100%;
       overflow: hidden;
       .step-list {
@@ -1208,7 +1328,6 @@ export default {
       }
     }
     .base-config {
-      width: 40%;
       height: 100%;
       .setting-main{
         width: 100%;

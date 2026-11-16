@@ -1,303 +1,38 @@
 <template>
-  <div>
-    <TsDialog
-      v-bind="dialogConfig"
-      @on-ok="okDialog"
-      @on-close="closeDialog"
-    >
-      <template v-slot>
-        <div>
-          <TsTable
-            :theadList="theadList"
-            :fixedHeader="false"
-            v-bind="currentTableData"
-          >
-            <template slot="key" slot-scope="{row}">
-              <TsFormInput
-                v-model="row.key"
-                :errorMessage="row.errorMessage"
-                clearable
-                border="border"
-                @on-change="inputChange"
-              ></TsFormInput>
-            </template>
-            <template slot="isEmpty" slot-scope="{row, index}">
-              <div class="flex-center" style="width: 150px;">
-                <span class="pr-xs">{{ $t('page.settonull') }}</span>
-                <TsFormSwitch
-                  v-model="row.isEmpty"
-                  :falseValue="0"
-                  :trueValue="1"
-                  @on-change="(value) => switchChange(row, value, index)"
-                ></TsFormSwitch>
-              </div>
-            </template>
-            <template slot="type" slot-scope="{row, index}">
-              <PoptipSelect
-                v-model="row.type"
-                :list="paramsTypeList"
-                isIcon
-                @change="(value) => typeChange(row, value, index)"
-              ></PoptipSelect>
-            </template>
-            <template slot="value" slot-scope="{row, index}">
-              <Items
-                :is="handlerType(row.type)"
-                ref="itemInput"
-                v-model="row.value"
-                :defaultValue="row.value"
-                :config="{...getselectConfig(row.type), errorMessage: row.valueErrorMessage}"
-                :disabled="(row.isEmpty ? true : false)"
-                :isRequired="row.isEmpty ? false : row.key ? true : false"
-                @getConfig="(config)=>{getParamConfig(index,config)}"
-              ></Items>
-            </template>
-            <template slot="delOperation" slot-scope="{row, index}">
-              <div class="action-group">
-                <span class="tsfont-trash-o text-action" @click="delVariable(row, index)"></span>
-              </div>
-            </template>
-          </TsTable>
-          <span class="variable-text tsfont-plus text-href pt-nm" @click.stop="addVariable">{{ $t('page.variable') }}</span>
-        </div>
-      </template>
-    </TsDialog>
-  </div>
+  <TsDialog
+    type="modal"
+    width="medium"
+    :isShow="true"
+    :title="$t(isEdit ? 'dialog.title.edittarget' : 'dialog.title.addtarget', {target:$t('page.param')})"
+    :okText="$t('page.save')"
+    :loading="busy"
+    :okBtnDisable="busy"
+    @on-ok="save"
+    @on-close="$emit('close',false)"
+  >
+    <ParameterEditor
+      ref="editor"
+      :initialRows="tableData.tbodyList || []"
+      :allowUnsetText="allowUnsetText"
+    ></ParameterEditor>
+  </TsDialog>
 </template>
 <script>
-import Items from '@/views/pages/autoexec/components/param/edit';
+import ParameterEditor from './parameter-editor.vue';
 export default {
-  name: '', // 适配文件适配
-  components: {
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    TsFormSwitch: () => import('@/resources/plugins/TsForm/TsFormSwitch'),
-    PoptipSelect: () => import('@/resources/components/PoptipSelect/PoptipSelect.vue'),
-    ...Items
-  },
+  components: {ParameterEditor},
   props: {
-    isEdit: {
-      type: Boolean,
-      default: false
-    },
-    params: {
-      type: Object,
-      default: function() {
-        return {};
-      }
-    },
-    tableData: {
-      type: Object,
-      default: function() {
-        return {
-          hideAction: false,
-          tbodyList: []
-        }; //配置文件适配的变量
-      }
-    }
+    isEdit: Boolean, busy: Boolean, allowUnsetText: Boolean,
+    params: {type: Object, default: () => ({})},
+    tableData: {type: Object, default: () => ({tbodyList: []})}
   },
-  data() {
-    return {
-      currentTableData: {},
-      dialogConfig: {
-        type: 'modal',
-        isShow: true,
-        okText: this.$t('page.save'),
-        width: 'medium',
-        title: this.isEdit ? this.$t('dialog.title.edittarget', {'target': this.$t('page.param')}) : this.$t('dialog.title.addtarget', {'target': this.$t('page.param')})
-      },
-      paramsTypeList: [],
-      typeList: [
-        'text',
-        'password',
-        'textarea'
-      ],
-      formValue: {},
-      theadList: [
-        {
-          title: this.$t('page.variablename'),
-          key: 'key',
-          headerIcon: 'require-label'
-        },
-        {
-          title: '',
-          key: 'isEmpty'
-        },
-        {
-          title: this.$t('page.type'),
-          key: 'type'
-        },
-        {
-          title: this.$t('page.variablevalue'),
-          key: 'value'
-        },
-        {
-          title: '',
-          key: 'delOperation'
-        }
-      ]
-    };
-  },
-  beforeCreate() {},
-  created() {
-    this.initData();
-  },
-  beforeMount() {},
-  async mounted() {
-    await this.getParamsTypeLit();
-  },
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
-    initData() {
-      this.currentTableData = this.$utils.deepClone(this.tableData);
-    },
-    getParamConfig(index, config) {
-      if (config) {
-        this.$set(this.currentTableData.tbodyList[index], 'config', config);
-      }
-    },
-    getParamsTypeLit() {
-      //选择组件类型
-      let data = { enumClass: 'neatlogic.framework.autoexec.constvalue.ParamType' };
-      return this.$api.autoexec.action.getParamsTypeLit(data).then(res => {
-        if (res.Status == 'OK') {
-          this.paramsTypeList = res.Return.filter(item => { return this.typeList.includes(item.value); });
-        }
-      });
-    },
-    getselectConfig(type) {
-      if (this.paramsTypeList.find(item => item.value == type) && !this.$utils.isEmpty(this.paramsTypeList.find(item => item.value == type).config)) {
-        return this.paramsTypeList.find(item => item.value == type).config;
-      }
-      return this.paramsTypeList.find(item => item.value == type);
-    },
-    addVariable() {
-      this.currentTableData.tbodyList.push({
-        name: '',
-        key: '',
-        type: 'text',
-        value: '',
-        isEmpty: 0,
-        delOperation: '',
-        errorMessage: '',
-        valueErrorMessage: ''
-      });
-    },
-    delVariable(row, index) {
-      if (this.currentTableData && this.currentTableData.tbodyList.length > 0) {
-        this.currentTableData.tbodyList.splice(index, 1);
-      }
-    },
-    okDialog() {
-      if (!this.validKeyRepeat() || !this.validValueIsEmpty()) {
-        this.$Notice.warning({
-          title: this.$t('page.tip'),
-          desc: this.$t('page.requiredparameterhasnullvalue')
-        });
-        return false;
-      }
-      let keyValueList = [];
-      let tbodyList = this.$utils.deepClone(this.currentTableData.tbodyList);
-      tbodyList = tbodyList && tbodyList.filter((item) => {
-        return item.key;
-      });
-      tbodyList && tbodyList.forEach((item) => {
-        keyValueList.push({
-          key: item.key,
-          type: item.type === '' ? null : item.type,
-          value: item.value,
-          isEmpty: item.isEmpty
-        });
-      });
-      let params = {
-        ...this.params,
-        keyValueList: keyValueList
-      };
-      this.$emit('save', params);
-    },
-    closeDialog(needRefresh = false) {
-      this.$emit('close', needRefresh);
-    },
-    switchChange(row, value, index) {
-      if (value) {
-        let currentValue = this.$utils.deepClone(row);
-        currentValue.value = '';
-        this.$set(this.currentTableData.tbodyList, index, currentValue);
-      }
-    },
-    validKeyRepeat() {
-      const keysSet = new Set();
-      for (let i = 0; i < this.currentTableData.tbodyList.length; i++) {
-        if (this.$utils.isEmpty(this.currentTableData.tbodyList[i].key)) {
-          this.currentTableData.tbodyList[i]['errorMessage'] = this.$t('form.validate.pleaseenterthecontent');
-          return false;
-        } else if (keysSet.has(this.currentTableData.tbodyList[i].key)) {
-          return false; // 存在重复
-        }
-        keysSet.add(this.currentTableData.tbodyList[i].key);
-      }
-      return true;
-    },
-    inputChange(currentKey) {
-      let otherList = this.currentTableData.tbodyList.filter(item => !this.$utils.isEmpty(currentKey) && item.key == currentKey);
-      if (otherList.length > 1) {
-        for (let index = 0; index < otherList.length; index++) {
-          otherList[index].errorMessage = this.$t('form.validate.repeat', {target: currentKey});
-        }
-      } else {
-        for (let index = 0; index < this.currentTableData.tbodyList.length; index++) {
-          this.currentTableData.tbodyList[index].errorMessage = '';
-        }
-      }
-    },
-    validValueIsEmpty() {
-      // 验证变量值是否为空，变量名有值+不是设为空+变量值为空，才需要验证必填
-      let isValid = true;
-      for (let index = 0; index < this.currentTableData.tbodyList.length; index++) {
-        if (this.currentTableData.tbodyList[index].key && this.currentTableData.tbodyList[index].isEmpty == 0 && !this.currentTableData.tbodyList[index].value) {
-          this.$set(this.currentTableData.tbodyList, index, {...this.currentTableData.tbodyList[index], valueErrorMessage: this.$t('form.validate.pleaseenterthecontent')});
-          isValid = false;
-        }
-      }
-      return isValid;
-    },
-    typeChange(row, value, index) {
-      if (value) {
-        let currentValue = this.$utils.deepClone(row);
-        currentValue.value = '';
-        this.$set(this.currentTableData.tbodyList, index, currentValue);
-      }
+    // 表单和文本模式只返回统一的参数数组，保存时机由所属页面决定。
+    save() {
+      if (this.busy) return;
+      const keyValueList = this.$refs.editor.read();
+      if (keyValueList) this.$emit('save', {...this.params, keyValueList});
     }
-  },
-  filter: {},
-  computed: {
-    handlerType() {
-      let _this = this;
-      return value => {
-        let type = 'defaultInput';
-        let findConfig = _this.paramsTypeList.find(item => item.value == value);
-        if (findConfig) {
-          type = findConfig.value + 'Handler';
-        }
-        return type;
-      };
-    }
-  },
-  watch: {}
+  }
 };
 </script>
-<style lang="less" scoped>
-.del-button {
-  display: inline-block;
-  height: 32px;
-  line-height: 32px;
-}
-.variable-text {
-  display: inline-block;
-}
-</style>

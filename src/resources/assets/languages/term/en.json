@@ -3286,6 +3286,30 @@
     "frontend": "Foreground Color"
   },
   "deploy": {
+    "parametereditor": {
+      "empty": "A blank value in plain format explicitly sets the parameter to null. Use \\n, \\r, and \\\\ for line breaks, carriage returns, and backslashes.",
+      "error": "Line {line}: {reason}",
+      "errors": {
+        "duplicate": "Parameter name “{key}” is duplicated.",
+        "format": "Use the format “type: parameter_name = value”.",
+        "key": "Enter a parameter name.",
+        "password": "The masked password does not match the original parameter. Enter the password again.",
+        "reference": "The name or type of parameter “{key}” does not match the environment definition.",
+        "type": "Only text, password, and textarea types are supported.",
+        "value": "Enter a parameter value or explicitly set it to null."
+      },
+      "example": "Example:",
+      "form": "Form Edit",
+      "format": "One parameter per line: type: parameter_name = value. Use JSON double quotes for special names and values, for example text: \" app=value \" = \"8080\".",
+      "mode": "Edit Mode",
+      "password": "Password",
+      "retained": "Switching modes preserves your current input.",
+      "text": "Text",
+      "textarea": "Multiline Text",
+      "textmode": "Text Edit",
+      "types": "Supported types: text, password, textarea. Quoted values use JSON escaping. Use text: \"name\" = null to explicitly set it to null.",
+      "unset": "Plain values interpret only \\n as a line break, preserving backslashes and \\r. A blank value remains unset."
+    },
     "resourcelockui": {
       "app": "Application",
       "cancel": "Cancel Waiting",

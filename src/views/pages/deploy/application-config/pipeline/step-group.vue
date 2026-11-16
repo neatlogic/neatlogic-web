@@ -245,6 +245,7 @@ export default {
   filters: {
   },
   props: {
+    draftParent: Object,
     appSystemId: Number,
     appModuleId: Number,
     envId: Number,
@@ -359,9 +360,9 @@ export default {
         if (this.envId) {
           this.$set(data, 'appModuleId', this.appModuleId);
         }
-        let res = await this.$api.deploy.apppipeline.getAppPipeline(data);
-        if (res.Status == 'OK') {
-          let combopGroupList = res.Return.config.combopGroupList;
+        const config = this.draftParent || (await this.$api.deploy.apppipeline.getAppPipeline(data)).Return?.config;
+        if (config) {
+          let combopGroupList = config.combopGroupList;
           let findGroup = combopGroupList.find(c => c.uuid == this.currentGroupConfig.uuid);
           if (findGroup && this.groupPolicy != findGroup.policy) {
             this.groupPolicy = findGroup.policy;
