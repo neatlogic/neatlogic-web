@@ -496,9 +496,15 @@ export default {
         });
       }, 1000);
     },
-    // 跳转到关联版本，旧数据的激活版本由服务端解析。
+    // 跳转到关联版本的普通或审批详情，保留来源版本 0 以识别新增文档。
     knowledgeUrl(doc) {
-      return HOME + '/knowledge.html#/knowledge-detail?knowledgeDocumentId=' + doc.documentId + '&knowledgeDocumentVersionId=' + doc.versionId + '&status=' + encodeURIComponent(doc.status);
+      const path = ['submitted', 'rejected'].includes(doc.status) ? 'review-detail' : 'knowledge-detail';
+      const query = new URLSearchParams();
+      const params = {knowledgeDocumentId: doc.documentId, knowledgeDocumentVersionId: doc.versionId, status: doc.status, fromVersion: doc.fromVersion, knowledgeDocumentTypeUuid: doc.knowledgeDocumentTypeUuid};
+      Object.keys(params).forEach(key => {
+        if (params[key] != null) query.set(key, params[key]);
+      });
+      return HOME + '/knowledge.html#/' + path + '?' + query.toString();
     },
     initRightHeight() {
       this.rightHeight = window.innerHeight - (this.$refs.rightMain ? this.$refs.rightMain.getBoundingClientRect().top : 0) - 18;
