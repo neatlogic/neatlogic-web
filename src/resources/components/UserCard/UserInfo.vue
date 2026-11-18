@@ -28,6 +28,30 @@
       <div class="divide-line border-color"></div>
       <ul class="content-wrap">
         <li>
+          <span class="content-label text-grey">{{ $t('page.group') }}</span>
+          <div v-if="userInfo.teamList && userInfo.teamList.length" class="content-text team-list">
+            <Tooltip
+              v-for="team in userInfo.teamList"
+              :key="team.uuid"
+              :content="team.upwardNamePath"
+              :disabled="!team.upwardNamePath || team.upwardNamePath === getTeamLabel(team)"
+              :max-width="600"
+              theme="light"
+              placement="top-end"
+              transfer
+              transfer-class-name="usercard-team-path-tooltip"
+              class="team-tooltip"
+            >
+              <Tag class="team-tag">{{ getTeamLabel(team) }}</Tag>
+            </Tooltip>
+          </div>
+          <span v-else class="content-text">-</span>
+        </li>
+        <li v-if="jobTitle">
+          <span class="content-label text-grey">{{ $t('page.jobTitle') }}</span>
+          <span class="content-text">{{ jobTitle }}</span>
+        </li>
+        <li>
           <span class="content-label text-grey">{{ $t('page.phone') }}</span>
           <span class="content-text">
             {{ userInfo.phone || '-' }}
@@ -48,15 +72,6 @@
           </span>
           <span v-else class="content-text">-</span>
         </li>
-        <li>
-          <span class="content-label text-grey">{{ $t('page.group') }}</span>
-          <span v-if="userInfo.teamNameList && userInfo.teamNameList.length > 0" class="content-text">
-            <Tag v-for="(team,index) in userInfo.teamNameList" :key="index">
-              {{ team }}
-            </Tag>
-          </span>
-          <span v-else class="content-text">-</span>
-        </li>
       </ul>
     </div>
   </div>
@@ -72,6 +87,9 @@ export default {
     userInfo: { type: Object }
   },
   methods: {
+    getTeamLabel(team) {
+      return (team.parentPathList || []).slice(-2).join('/') || '-';
+    },
     getName(list, isBool = true) {
       // 获取名称，list 数组，isBool true 表示角色，false表示分组
       let name = '';
@@ -94,6 +112,10 @@ export default {
     }
   },
   computed: {
+    jobTitle() {
+      const position = this.userInfo?.userInfoObj?.position;
+      return typeof position === 'string' ? position.trim() : '';
+    },
     vipIcon() {
       return this.$store.getters.getVipIconByLevel(this.userInfo.vipLevel);
     }
@@ -105,6 +127,7 @@ export default {
 .@{user-prev}-body {
   box-sizing: border-box;
   width: 400px;
+  max-width: calc(100vw - 24px);
   max-height: 221px;
   overflow-x: hidden;
   .userinfo-wrap {
@@ -189,6 +212,25 @@ export default {
       width: 317px;
       white-space: normal;
     }
+    .team-list {
+      display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .team-tooltip {
+      max-width: 100%;
+    }
+    .team-tag {
+      height: auto;
+      overflow-wrap: anywhere;
+    }
   }
+}
+</style>
+
+<style>
+.usercard-team-path-tooltip {
+  width: max-content;
+  max-width: min(600px, calc(100vw - 24px));
 }
 </style>
