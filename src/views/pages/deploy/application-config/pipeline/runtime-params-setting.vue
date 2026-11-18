@@ -1,135 +1,139 @@
 <template>
   <div>
-    <TsDialog
+    <component
+      :is="inline ? 'div' : 'TsDialog'"
       v-bind="dialogConfig"
       @on-ok="okSetting"
       @on-close="closeSetting"
     >
-      <template v-slot>
-        <div class="params-main input-border">
-          <div class="simple-mode">
-            <div class="param-detail">
-              <div v-if="paramList.length > 0" class="param-list text-title">
+      <div class="params-main input-border">
+        <div class="simple-mode">
+          <div class="param-detail">
+            <div v-if="paramList.length > 0" class="param-list text-title">
+              <TsRow :gutter="8">
+                <Col span="3">
+                  <div>{{ $t('term.autoexec.parameterenglishname') }}</div>
+                </Col>
+                <Col span="3">
+                  <div>{{ $t('term.autoexec.parameterchinesename') }}</div>
+                </Col>
+                <Col span="3">
+                  <div>{{ $t('term.autoexec.controltype') }}</div>
+                </Col>
+                <Col span="8">
+                  <div>{{ $t('page.validate') }}/{{ $t('page.defaultvalue') }}</div>
+                </Col>
+                <Col span="7">
+                  <div>{{ $t('page.description') }}</div>
+                </Col>
+              </TsRow>
+              <div class="btn-item" style="top: 10px;">
+                <div>{{ $t('page.require') }}</div>
+                <div>{{ $t('term.autoexec.editable') }}</div>
+              </div>
+            </div>
+            <vuedraggable
+              tag="div"
+              :list="paramList"
+              :disabled="!canEdit"
+              handle=".move"
+            >
+              <div v-for="(item,index) in paramList" :key="index" class="param-list">
+                <div v-if="canEdit" class="move tsfont-bar"></div>
                 <TsRow :gutter="8">
                   <Col span="3">
-                    <div>{{ $t('term.autoexec.parameterenglishname') }}</div>
+                    <TsFormInput
+                      ref="keyInput"
+                      v-model="item.key"
+                      data-param-field="key"
+                      :disabled="!canEdit"
+                      maxlength="50"
+                      :validateList="item.name?validateConfig.keyRequired:validateConfig.key"
+                      :errorMessage="item.keyErrorMessage"
+                      :placeholder="$t('term.autoexec.parameterenglishname')"
+                      @on-change="changeName(item, index,'key')"
+                    ></TsFormInput>
                   </Col>
                   <Col span="3">
-                    <div>{{ $t('term.autoexec.parameterchinesename') }}</div>
+                    <TsFormInput
+                      ref="nameInput"
+                      v-model="item.name"
+                      data-param-field="name"
+                      :disabled="!canEdit"
+                      maxlength="50"
+                      :validateList="item.key?validateConfig.nameRequired:[]"
+                      :errorMessage="item.nameErrorMessage"
+                      :placeholder="$t('term.autoexec.parameterchinesename')"
+                      @on-change="changeName(item, index,'name')"
+                    ></TsFormInput>
                   </Col>
                   <Col span="3">
-                    <div>{{ $t('term.autoexec.controltype') }}</div>
+                    <PoptipSelect
+                      v-model="item.type"
+                      data-param-field="type"
+                      :list="paramsTypeList"
+                      :disabled="!canEdit"
+                      isIcon
+                      @change="(val)=>{changeType(val,item)}"
+                    ></PoptipSelect>
                   </Col>
                   <Col span="8">
-                    <div>{{ $t('page.validate') }}/{{ $t('page.defaultvalue') }}</div>
+                    <div v-if="excludeTyptList.indexOf(item.type) > -1">-</div>
+                    <Items
+                      :is="handlerType(item.type)"
+                      v-else
+                      ref="itemInput"
+                      v-model="item.defaultValue"
+                      data-param-field="defaultValue"
+                      :defaultValue="item.defaultValue"
+                      :config="getselectConfig(item)"
+                      :disabled="!canEdit"
+                      :setValidComponentsList="setValidComponentsList"
+                      @getConfig="(config)=>{getParamConfig(index,config)}"
+                    ></Items>
                   </Col>
                   <Col span="7">
-                    <div>{{ $t('page.description') }}</div>
+                    <TsFormInput
+                      v-model="item.description"
+                      :disabled="!canEdit"
+                      maxlength="500"
+                      :placeholder="$t('page.description')"
+                    ></TsFormInput>
                   </Col>
                 </TsRow>
-                <div class="btn-item" style="top: 10px;">
-                  <div>{{ $t('page.require') }}</div>
-                  <div>{{ $t('term.autoexec.editable') }}</div>
-                </div>
-              </div>
-              <vuedraggable
-                tag="div"
-                :list="paramList"
-                handle=".move"
-              >
-                <div v-for="(item,index) in paramList" :key="index" class="param-list">
-                  <div class="move tsfont-bar"></div>
-                  <TsRow :gutter="8">
-                    <Col span="3">
-                      <TsFormInput
-                        ref="keyInput"
-                        v-model="item.key"
-                        :disabled="!canEdit"
-                        maxlength="50"
-                        :validateList="item.name?validateConfig.keyRequired:validateConfig.key"
-                        :errorMessage="item.keyErrorMessage"
-                        :placeholder="$t('term.autoexec.parameterenglishname')"
-                        @on-change="changeName(item, index,'key')"
-                      ></TsFormInput>
-                    </Col>
-                    <Col span="3">
-                      <TsFormInput
-                        ref="nameInput"
-                        v-model="item.name"
-                        :disabled="!canEdit"
-                        maxlength="50"
-                        :validateList="item.key?validateConfig.nameRequired:[]"
-                        :errorMessage="item.nameErrorMessage"
-                        :placeholder="$t('term.autoexec.parameterchinesename')"
-                        @on-change="changeName(item, index,'name')"
-                      ></TsFormInput>
-                    </Col>
-                    <Col span="3">
-                      <PoptipSelect
-                        v-model="item.type"
-                        :list="paramsTypeList"
-                        :disabled="!canEdit"
-                        isIcon
-                        @change="(val)=>{changeType(val,item)}"
-                      ></PoptipSelect>
-                    </Col>
-                    <Col span="8">
-                      <div v-if="excludeTyptList.indexOf(item.type) > -1">-</div>
-                      <Items
-                        :is="handlerType(item.type)"
-                        v-else
-                        ref="itemInput"
-                        v-model="item.defaultValue"
-                        :defaultValue="item.defaultValue"
-                        :config="getselectConfig(item)"
-                        :disabled="!canEdit"
-                        :setValidComponentsList="setValidComponentsList"
-                        @getConfig="(config)=>{getParamConfig(index,config)}"
-                      ></Items>
-                    </Col>
-                    <Col span="7">
-                      <TsFormInput
-                        v-model="item.description"
-                        :disabled="!canEdit"
-                        maxlength="500"
-                        :placeholder="$t('page.description')"
-                      ></TsFormInput>
-                    </Col>
-                  </TsRow>
-                  <div class="btn-item">
-                    <div>
-                      <TsFormSwitch
-                        v-model="item.isRequired"
-                        :true-value="1"
-                        :false-value="0"
-                        :disabled="!canEdit"
-                      ></TsFormSwitch>
-                    </div>
-                    <div>
-                      <TsFormSwitch
-                        v-model="item.editable"
-                        :true-value="1"
-                        :false-value="0"
-                        :disabled="!canEdit"
-                      ></TsFormSwitch>
-                    </div>
-                    <div v-if="canEdit" class="del-btn tsfont-trash-o text-tip-active" @click="delParam(index)"></div>
+                <div class="btn-item">
+                  <div>
+                    <TsFormSwitch
+                      v-model="item.isRequired"
+                      :true-value="1"
+                      :false-value="0"
+                      :disabled="!canEdit"
+                    ></TsFormSwitch>
                   </div>
+                  <div>
+                    <TsFormSwitch
+                      v-model="item.editable"
+                      :true-value="1"
+                      :false-value="0"
+                      :disabled="!canEdit"
+                    ></TsFormSwitch>
+                  </div>
+                  <div v-if="canEdit" class="del-btn tsfont-trash-o text-tip-active" @click="delParam(index)"></div>
                 </div>
-              </vuedraggable>
-              <div class="add-text">
-                <Button
-                  v-if="canEdit"
-                  type="primary"
-                  ghost
-                  @click="addParam"
-                ><span class="tsfont-plus">{{ $t('page.param') }}</span></Button>
               </div>
+            </vuedraggable>
+            <div class="add-text">
+              <Button
+                v-if="canEdit"
+                type="primary"
+                ghost
+                @click="addParam"
+              ><span class="tsfont-plus">{{ $t('page.param') }}</span></Button>
             </div>
           </div>
         </div>
-      </template>
-    </TsDialog>
+      </div>
+    </component>
   </div>
 </template>
 <script>
@@ -146,6 +150,7 @@ export default {
   },
   filters: {},
   props: {
+    inline: Boolean,
     canEdit: Boolean,
     appSystemId: Number, //应用id
     appModuleId: Number, //模块id
@@ -184,11 +189,17 @@ export default {
     };
   },
   beforeCreate() {},
-  created() {},
+  created() {
+    if (this.inline) {
+      this.paramList = this.$utils.deepClone(this.runtimeParamList || []);
+    }
+  },
   beforeMount() {},
   async mounted() {
     await this.getParamsTypeLit();
-    this.getParamList();
+    if (!this.inline) {
+      this.getParamList();
+    }
   },
   beforeUpdate() {},
   updated() {},

@@ -343,7 +343,6 @@ export default {
       ranferreportModel: false, // 转报弹框
       redoModel: false, //评分工单回退
       knowledgeModel: false,
-      knowledgeConfig: null,
       transferStepList: [], //转交步骤列表
       transferId: null,
       taskAlertHeight: 0 // taskAlert高度
@@ -354,7 +353,6 @@ export default {
   },
   mounted() {
     this.getAllData();
-    this.getKnowledgeDetail(); //转知识权限
   },
   beforeDestroy() {
     clearInterval(this.timer);
@@ -479,24 +477,6 @@ export default {
     createKnowledge() {
       //创建知识
       this.knowledgeModel = true;
-    },
-    getKnowledgeDetail() {
-      //获取工单知识信息
-      let moduleList = JSON.parse(localStorage.getItem('moduleList'));
-      let find = moduleList.find(d => d.moduleId == 'knowledge');
-      if (find && (this.processTask.status == 'succeed' || this.processTask.status == 'scored')) {
-        //工单：完成或者评分状态时，都需要调知识接口
-        let data = {
-          invokeId: this.processTaskId,
-          source: 'processtask'
-        };
-        this.$api.process.processtask.knowledgeDetail(data).then(res => {
-          if (res.Status == 'OK') {
-            let obj = res.Return;
-            this.knowledgeConfig = obj;
-          }
-        });
-      }
     }
   },
   computed: {

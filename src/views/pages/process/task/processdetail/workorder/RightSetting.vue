@@ -174,26 +174,15 @@
                 />
               </div>
             </div>
-            <div v-if="knowledgeConfig && knowledgeConfig.knowledgeDocumentVersion" class="information-list knowledge-box">
+            <div v-if="relatedKnowledge.length" class="information-list knowledge-box">
               <OverflowTooltip class="infor-left text-grey" :content="$t('term.process.relatedknowledge')">
                 <span class="infor-label overflow">{{ $t('term.process.relatedknowledge') }}</span>
               </OverflowTooltip>
               <div class="infor-right">
-                <div :class="knowledgeConfig.knowledgeDocumentVersion.status == 'passed' ? 'text-href' : ''" class="time-height" @click="gotoKnowledge(knowledgeConfig.knowledgeDocumentVersion.status)">
-                  <span>{{ knowledgeConfig.knowledgeDocumentVersion.title }}</span>
-                  <span v-if="knowledgeConfig.knowledgeDocumentVersion.status != 'passed'" class="knowledge-style">
-                    <CommonStatus
-                      :statusValue="knowledgeConfig.knowledgeDocumentVersion.statusVo.value"
-                      :statusName="knowledgeConfig.knowledgeDocumentVersion.statusVo.text"
-                    ></CommonStatus>
-                  </span>
-                </div>
-                <div v-if="knowledgeConfig.knowledgeDocumentVersion.status == 'submitted'" class="text-tip fz10">
-                  <UserCard v-bind="knowledgeConfig.knowledgeDocumentVersion.lcuVo" :iconSize="16" style="vertical-align: bottom;"></UserCard>
-                  {{ knowledgeConfig.knowledgeDocumentVersion.lcd | formatDate }} {{ $t('page.submit') }}
-                </div>
-                <div v-else class="text-tip fz10 overflow" :title="getpath(knowledgeConfig.knowledgeDocumentVersion.path)">
-                  {{ getpath(knowledgeConfig.knowledgeDocumentVersion.path) }}
+                <div v-for="doc in relatedKnowledge" :key="doc.source + ':' + doc.invokeId + ':' + (doc.versionId || doc.documentId)" class="time-height">
+                  <a v-if="doc.versionId" :href="knowledgeUrl(doc)">{{ doc.title }}</a>
+                  <span v-else>{{ doc.title || doc.documentId }}</span>
+                  <span v-if="doc.status" class="text-tip ml-sm">{{ $t('page.' + doc.status) }}</span>
                 </div>
               </div>
             </div>
@@ -236,6 +225,7 @@ export default {
     clipboard
   },
   filters: {},
+  inject: {taskKnowledge: {default: null}},
   props: {
     processTaskConfig: Object, //工单基本信息
     actionConfig: Object, //权限按钮
@@ -506,18 +496,25 @@ export default {
         });
       }, 1000);
     },
-    gotoKnowledge(status) {
-      //查看工单知识
-      if (status == 'passed') {
-        let query = 'knowledgeDocumentId=' + this.knowledgeConfig.knowledgeDocumentVersion.knowledgeDocumentId + '&knowledgeDocumentTypeUuid=' + this.knowledgeConfig.knowledgeDocumentVersion.knowledgeDocumentTypeUuid + '&status=passed';
-        window.open(HOME + '/knowledge.html#/knowledge-detail?' + query, '_self');
-      }
+    // 跳转到关联版本的普通或审批详情，保留来源版本 0 以识别新增文档。
+    knowledgeUrl(doc) {
+      const path = ['submitted', 'rejected'].includes(doc.status) ? 'review-detail' : 'knowledge-detail';
+      const query = new URLSearchParams();
+      const params = {knowledgeDocumentId: doc.documentId, knowledgeDocumentVersionId: doc.versionId, status: doc.status, fromVersion: doc.fromVersion, knowledgeDocumentTypeUuid: doc.knowledgeDocumentTypeUuid};
+      Object.keys(params).forEach(key => {
+        if (params[key] != null) query.set(key, params[key]);
+      });
+      return HOME + '/knowledge.html#/' + path + '?' + query.toString();
     },
     initRightHeight() {
       this.rightHeight = window.innerHeight - (this.$refs.rightMain ? this.$refs.rightMain.getBoundingClientRect().top : 0) - 18;
     }
   },
   computed: {
+    // 所有工单详情复用同一份列表，兼容单独传入配置的调用方。
+    relatedKnowledge() {
+      return (this.knowledgeConfig || this.taskKnowledge?.knowledgeConfig)?.versionList || [];
+    },
     timeShow() {
       //时间类型展示
       return function(value) {

@@ -14,6 +14,9 @@ export default {
     initProcessTaskStepId: [String, Number],
     replaceableTextConfig: Object //文案替换
   },
+  provide() {
+    return {taskKnowledge: this};
+  },
   data() {
     return {
       prevPath: {
@@ -25,6 +28,7 @@ export default {
       medium: 'medium', // 弹窗的宽度
       taskLoading: true,
       pocesstaskview: false, //查看权限
+      knowledgeConfig: null,
       processTaskId: null, //工单id
       processTaskStepId: null, //步骤id
       processTaskConfig: {}, //所有基本信息
@@ -260,6 +264,14 @@ export default {
     sessionStorage.removeItem('taskdetailPrev');
   },
   methods: {
+    // 各类节点共用工单知识汇总，节点切换时忽略旧工单的异步响应。
+    async getKnowledgeDetail() {
+      const taskId = this.processTaskId;
+      const modules = JSON.parse(localStorage.getItem('moduleList') || '[]');
+      if (!taskId || !modules.some(module => module.moduleId === 'knowledge') || !this.$AuthUtils.hasRole('KNOWLEDGE_BASE')) return;
+      const response = await this.$api.process.processtask.knowledgeDetail({invokeId: taskId, source: 'processtask'});
+      if (response.Status === 'OK' && this.processTaskId === taskId) this.knowledgeConfig = response.Return;
+    },
     //button-bar调用本地函数
     doAction(actionName, ...args) {
       if (typeof this[actionName] === 'function') {
@@ -1215,6 +1227,10 @@ export default {
     // },
   },
   watch: {
+    processTaskId() {
+      this.knowledgeConfig = null;
+      this.getKnowledgeDetail();
+    },
     assistModal(val) {
       if (val == false) {
         this.assistList.forEach(item => {

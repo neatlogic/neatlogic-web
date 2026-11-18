@@ -479,8 +479,12 @@ export default {
       return this.hasAuth && !this.$utils.isEmpty(this.moduleList) && this.moduleList.some(v => v.moduleId == 'process');
     },
     userAuthList() {
-      // 复用模块菜单列表的用户权限数据（保证数据来源统一）
-      return this.$store.state.userInfo?.userAuthList || [];
+      // 复制同源权限用于展示，名称缺失时回退编码，保留来源且不修改全局鉴权数据。
+      const authList = this.$store.state.userInfo?.userAuthList;
+      return (Array.isArray(authList) ? authList : []).filter(item => item && typeof item === 'object').map(item => ({
+        ...item,
+        authName: typeof item.authName === 'string' && item.authName.trim() ? item.authName : String(item.auth || '')
+      }));
     }
   },
   watch: {

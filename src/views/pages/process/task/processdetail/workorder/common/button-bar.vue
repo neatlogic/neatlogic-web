@@ -123,7 +123,7 @@
             </DropdownItem>
           </template>
           <!-- 转为知识 -->
-          <DropdownItem v-if="knowledgeConfig && knowledgeConfig.isTransferKnowledge == 1" @click.native="doBtnBarAction('createKnowledge')">
+          <DropdownItem v-if="canTransferKnowledge" @click.native="doBtnBarAction('createKnowledge')">
             {{ $t('term.process.converttoknowdoc') }}
           </DropdownItem>
           <DropdownItem v-if="actionConfig.transfereoastep" @click.native="transfereoastep()">
@@ -270,12 +270,16 @@ export default {
     isDetailReady() {
       return processStore.isDetailReady;
     },
+    // 完成或已评分的工单允许手动转换，节点生成的知识不占用此入口。
+    canTransferKnowledge() {
+      return ['succeed', 'scored'].includes(this.processTaskConfig?.status) && this.knowledgeConfig?.isTransferKnowledge === 1;
+    },
     isMoreAction() {
       //更多操作按钮
       let actionConfig = this.actionConfig;
       let moreAction = false;
       if ((this.processTaskConfig && this.processTaskConfig.formConfig && this.$AuthUtils.hasRole('PROCESSTASK_MODIFY')) || 
-      (this.knowledgeConfig && this.knowledgeConfig.isTransferKnowledge == 1) ||
+      this.canTransferKnowledge ||
       actionConfig.retreat || actionConfig.abortprocessTask || actionConfig.recoverprocessTask || actionConfig.urge || actionConfig.tranferreport || actionConfig.copyprocesstask || actionConfig.transfereoastep) {
         moreAction = true;
       }
