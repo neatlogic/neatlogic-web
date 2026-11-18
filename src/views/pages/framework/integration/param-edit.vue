@@ -31,7 +31,7 @@
         <template slot="header">
           <!-- 三个内容区固定为 9em，其余列分配剩余宽度，长文本和控件不再挤出操作列。 -->
           <colgroup>
-            <col style="width: 48px">
+            <col v-if="hasDraggableParam" style="width: 48px">
             <col style="width: calc(9em + 12px)">
             <col>
             <col>
@@ -43,7 +43,7 @@
           </colgroup>
           <thead>
             <tr>
-              <th :style="mainCellStyle">{{ $t('page.dragrow') }}</th>
+              <th v-if="hasDraggableParam" :style="mainCellStyle"></th>
               <th :style="mainCellStyle">{{ $t('page.name') }}</th>
               <th :style="mainCellStyle">{{ $t('term.framework.paramtype') }}</th>
               <th :style="mainCellStyle">{{ $t('term.report.datatype.name') }}</th>
@@ -59,7 +59,7 @@
           <!-- 仅展示顶层固定参数且保持只读，子节点保留在定义中供其它页面使用。 -->
           <tbody v-for="item in fixedParamList" :key="fixedKey(item)" class="tbody-main">
             <tr data-fixed-param>
-              <td :style="mainCellStyle"></td>
+              <td v-if="hasDraggableParam" :style="mainCellStyle"></td>
               <td :style="mainCellStyle"><ParamText :value="item.name"></ParamText></td>
               <td :style="mainCellStyle">{{ getModeText(item.mode) }}</td>
               <td :style="mainCellStyle">{{ defaultTypeName(item.type, item.typeName || item.type) }}</td>
@@ -79,8 +79,8 @@
               <td v-if="canAddParam" :style="mainCellStyle"></td>
             </tr>
             <tr v-if="isComplex(item) && !isArray(item)" data-default-row>
-              <td></td>
-              <td :colspan="columnCount - 1">
+              <td v-if="hasDraggableParam"></td>
+              <td :colspan="columnCount - (hasDraggableParam ? 1 : 0)">
                 <div v-if="isComplex(item) && !isArray(item)" class="flex-start mb-xs">
                   <span class="mr-sm">{{ $t('term.framework.integrationdefault.defaultSummary', { summary: summarizeDefault(getFixedDefault(item)) }) }}</span>
                   <span
@@ -112,8 +112,13 @@
           data-custom-param-group
         >
           <tr data-custom-param>
-            <td :style="mainCellStyle">
-              <span v-if="canEditParam(item)" class="tsfont-drag cursor-pointer" data-param-drag></span>
+            <td v-if="hasDraggableParam" :style="mainCellStyle">
+              <span
+                v-if="canEditParam(item)"
+                class="tsfont-drag"
+                style="cursor: move"
+                data-param-drag
+              ></span>
             </td>
             <td :style="mainCellStyle">
               <!-- 输入框只约束布局宽度，保留原编辑方式、长度校验和完整保存值。 -->
@@ -191,8 +196,8 @@
             </td>
           </tr>
           <tr v-if="isComplex(item) && !isArray(item)" data-default-row>
-            <td></td>
-            <td :colspan="columnCount - 1">
+            <td v-if="hasDraggableParam"></td>
+            <td :colspan="columnCount - (hasDraggableParam ? 1 : 0)">
               <div v-if="isComplex(item) && !isArray(item)" class="flex-start mb-xs">
                 <span class="mr-sm">{{ $t('term.framework.integrationdefault.defaultSummary', { summary: summarizeDefault(item.defaultConfig) }) }}</span>
                 <span
@@ -511,7 +516,11 @@ export default {
       return this.getSchemaDialogStamp(this.schemaDialogParam);
     },
     columnCount() {
-      return this.canAddParam ? 9 : 8;
+      return 7 + (this.hasDraggableParam ? 1 : 0) + (this.canAddParam ? 1 : 0);
+    },
+    // 固定参数及只读参数不可拖动，仅存在可拖动自定义参数时保留拖拽列。
+    hasDraggableParam() {
+      return this.paramList.some(item => this.canEditParam(item));
     },
     orphanDefaults() {
       return this.builtinDefaultList.filter(entry => entry.handler === (this.integration && this.integration.handler) && isDefaultEnabled(entry.defaultConfig) && !this.handlerPattern.some(item => item.mode === entry.mode && item.name === entry.name));
