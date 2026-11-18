@@ -114,7 +114,8 @@ export default {
           name: this.$t('term.cmdb.layerlayout'),
           ranker: 'network-simplex',
           rankdir: 'TB', //从上到下布局
-          nodeSize: [40, 40],
+          // G6 5.1 会将布局尺寸写回节点，保持关系节点与配置项原有的不同尺寸。
+          nodeSize: d => d.data && d.data.type === 'rel' ? 25 : 40,
           nodesep: 20,
           ranksep: 20,
           sortByCombo: true,
@@ -598,7 +599,8 @@ export default {
           type: 'antv-dagre',
           ranker: 'network-simplex',
           rankdir: 'TB', //从上到下布局
-          nodeSize: [40, 40],
+          // G6 5.1 会将布局尺寸写回节点，保持关系节点与配置项原有的不同尺寸。
+          nodeSize: d => d.data && d.data.type === 'rel' ? 25 : 40,
           nodesep: 20,
           ranksep: 20,
           sortByCombo: true,
