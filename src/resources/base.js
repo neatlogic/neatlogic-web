@@ -67,6 +67,15 @@ Vue.use(HistoryUtil);
 Vue.use(Particles);
 Vue.use(VueDomPurifyHtml, {
   //防止xss攻击，用法v-dompurify-html替代v-html
+  // 搜索标题仅保留表示命中词的 em 标签，移除所有属性。
+  namedConfigurations: {
+    'search-title': {
+      ALLOWED_TAGS: ['em'],
+      ALLOWED_ATTR: [],
+      ALLOW_DATA_ATTR: false,
+      ALLOW_ARIA_ATTR: false
+    }
+  },
   hooks: {
     afterSanitizeAttributes: currentNode => {
       if ('target' in currentNode) {
