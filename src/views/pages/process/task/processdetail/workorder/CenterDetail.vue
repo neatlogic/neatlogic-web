@@ -561,8 +561,22 @@
         :isShowProcessTaskStepCommentEditorToolbar="!!processTaskConfig.isShowProcessTaskStepCommentEditorToolbar"
       ></ReplyContent>
       <slot name="replyBtn"></slot>
+      <component
+        :is="taskKnowledge.taskKnowledgeComponents.links"
+        v-if="taskKnowledge && taskKnowledge.taskKnowledgeComponents && (actionConfig.complete || actionConfig.comment)"
+        :stepId="defaultProcessTaskStepId"
+      />
       <!-- 回复end -->
     </div>
+    <component
+      :is="taskKnowledge.taskKnowledgeComponents.host"
+      v-if="taskKnowledge && taskKnowledge.taskKnowledgeComponents"
+      ref="knowledgeHost"
+      :taskId="processTaskConfig.id"
+      :stepId="defaultProcessTaskStepId"
+      @bound="$refs.replyContent.appendKnowledgeLinks($event)"
+      @changed="getActivityList"
+    />
     <!-- 底部内容end -->
   </div>
 </template>
@@ -598,6 +612,7 @@ const loadTabComponent = loader => () => ({
 
 export default {
   name: 'CenterDetail',
+  inject: {taskKnowledge: {default: null}},
   components: {
     FormPreview,
     FormPreviewHtml,
@@ -2006,6 +2021,9 @@ export default {
     }
   },
   computed: {
+    isKnowledgeProcessing() {
+      return this.slotList.length ? this.slotList.some(slot => slot.name === this.tabValue) : this.tabValue === 'report';
+    },
     formLoading() {
       if (this.$utils.isEmpty(this.formConfig)) {
         return false;
@@ -2168,6 +2186,13 @@ export default {
     }
   },
   watch: {
+    // 普通节点在上报内容页处理，专有节点在对应节点页处理。日志、时间线均为只读视图。
+    isKnowledgeProcessing: {
+      immediate: true,
+      handler(value) {
+        if (this.taskKnowledge) this.taskKnowledge.knowledgeProcessing = value;
+      }
+    },
     processTaskConfig: {
       handler(val, oldval) {
         if (val && ((oldval && val.id != oldval.id) || !oldval) && val.formAttributeDataMap) {

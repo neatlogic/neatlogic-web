@@ -32,7 +32,6 @@
               :backStepList="backStepList"
               :nextStepList="nextStepList"
               :pocesstaskview="pocesstaskview"
-              :knowledgeConfig="knowledgeConfig"
               @doAction="doAction"
             ></ButtonBar>
           </div>
@@ -53,6 +52,7 @@
           </template>
           <TsContain
             :rightWidth="290"
+            rightResizable
             :hasContentPadding="false"
             hideHeader
             :isRightSiderHide="!isOrderRight"
@@ -111,7 +111,6 @@
                 :actionConfig="actionConfig"
                 :addAssist="addAssist"
                 :processTaskConfig="processTaskConfig"
-                :knowledgeConfig="knowledgeConfig"
                 :isOrderRight="isOrderRight"
                 :replaceableTextConfig="replaceableTextConfig"
                 :priorityList="priorityList"
@@ -301,7 +300,6 @@
     <!-- 转报 -->
     <RanferreportDialog v-if="actionConfig.tranferreport" :isShow.sync="ranferreportModel" :processTaskConfig="processTaskConfig"></RanferreportDialog>
     <RedoDialog :isShow.sync="redoModel" :processTaskConfig="processTaskConfig"></RedoDialog>
-    <KnowledgeDialog :isShow.sync="knowledgeModel" :processTaskConfig="processTaskConfig"></KnowledgeDialog>
   </div>
 </template>
 
@@ -342,7 +340,6 @@ export default {
     return {
       ranferreportModel: false, // 转报弹框
       redoModel: false, //评分工单回退
-      knowledgeModel: false,
       transferStepList: [], //转交步骤列表
       transferId: null,
       taskAlertHeight: 0 // taskAlert高度
@@ -473,10 +470,6 @@ export default {
     //评分前回退
     redoTask() {
       this.redoModel = true;
-    },
-    createKnowledge() {
-      //创建知识
-      this.knowledgeModel = true;
     }
   },
   computed: {

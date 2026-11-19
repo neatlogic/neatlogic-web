@@ -159,6 +159,7 @@ export default {
   data() {
     return {
       cherry: null,
+      pendingUploads: 0,
       editorId: `ts-markdown-editor-${this.$utils.setUuid()}`,
       lastEmittedMarkdown: null,
       currentModel: this.model,
@@ -178,6 +179,8 @@ export default {
     this.initEditor();
   },
   beforeDestroy() {
+    // 编辑器在上传期间被切换时，立即释放父页面的等待状态。
+    if (this.pendingUploads) this.$emit('uploading', false);
     this.destroyEditor();
   },
   methods: {
@@ -464,27 +467,50 @@ export default {
       }
       return trigger.closest('.cherry-toolbar-button, .cherry-dropdown-item') || trigger;
     },
-    handleFileUpload(file, callback) {
-      this.uploadFileToBackend(file)
-        .then(({ url, params }) => {
-          callback(url, Object.assign({ name: file.name }, params));
-        })
-        .catch(error => {
-          this.$emit('upload-error', error, file);
-          this.$Notice.error({ title: this.$t('message.uploadfailed') });
-        });
+    // 插入链接后才结束本次上传，供使用方控制保存时机。
+    async handleFileUpload(file, callback) {
+      this.changePendingUploads(1);
+      try {
+        const { url, params } = await this.uploadFileToBackend(file);
+        if (!this._isDestroyed) callback(url, Object.assign({ name: file.name }, params));
+      } catch (error) {
+        this.notifyUploadError(error, file);
+      } finally {
+        this.changePendingUploads(-1);
+      }
     },
-    handleFileUploadMulti(files, callback) {
-      Promise.all(files.map(file => this.uploadFileToBackend(file)))
-        .then(resultList => {
-          resultList.forEach(({ url, params }, index) => {
-            callback(url, Object.assign({ name: files[index].name }, params));
-          });
-        })
-        .catch(error => {
-          this.$emit('upload-error', error, files);
-          this.$Notice.error({ title: this.$t('message.uploadfailed') });
-        });
+    // 文件选择器可能返回 FileList；Cherry 的批量回调接收按选择顺序排列的结果数组。
+    async handleFileUploadMulti(files, callback) {
+      this.changePendingUploads(1);
+      try {
+        const results = await Promise.allSettled(Array.from(files, async file => {
+          const result = await this.uploadFileToBackend(file);
+          return {file, ...result};
+        }));
+        if (this._isDestroyed) return;
+        const failure = results.find(result => result.status === 'rejected');
+        if (failure) {
+          this.notifyUploadError(failure.reason, files);
+          callback([]);
+        } else {
+          callback(results.map(result => result.value));
+        }
+      } catch (error) {
+        this.notifyUploadError(error, files);
+      } finally {
+        this.changePendingUploads(-1);
+      }
+    },
+    // 同时粘贴、选择多次文件时，最后一批结束才允许提交。
+    changePendingUploads(delta) {
+      this.pendingUploads += delta;
+      this.$emit('uploading', this.pendingUploads > 0);
+    },
+    // 记录失败原因，并沿用现有事件和用户提示。
+    notifyUploadError(error, files) {
+      console.error(error);
+      this.$emit('upload-error', error, files);
+      this.$Notice.error({ title: this.$t('message.uploadfailed') });
     },
     uploadFileToBackend(file) {
       const uploadConfig = this.getUploadConfig();

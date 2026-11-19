@@ -289,10 +289,6 @@ const processtask = {
     //工单保存为知识审核
     return axios.post('api/rest/knowledge/document/draft/review', data);
   },
-  knowledgeAudit(data) {
-    //工单保存为知识生成活动
-    return axios.post('api/rest/processtask/transfer/knowledge/audit', data);
-  },
   knowledgeDetail(data) {
     //工单详情获取知识信息
     return axios.post('api/rest/knowledge/document/invoke/get', data);

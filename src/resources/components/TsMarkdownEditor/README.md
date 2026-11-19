@@ -64,6 +64,7 @@ export default {
 | `ready` | `editor, markdown, html` | 编辑器完成初始化，并在下一次 DOM 更新中绑定相关交互后触发；`editor` 是 Cherry 实例。 |
 | `upload-success` | `res, file, result` | 单个文件上传请求成功后触发。`res` 为请求返回值，`file` 为原始文件，`result` 为 `{ url, params }`。 |
 | `upload-error` | `error, fileOrFiles` | 上传流程失败时触发；单文件上传传入文件，多文件上传传入文件数组。组件同时显示上传失败通知。 |
+| `uploading` | `boolean` | 上传期间为 `true`，上传结束或编辑器销毁时解除等待状态。 |
 
 修改 `readonly` 或 `toolbar` 会保留当前 Markdown 并重建编辑器，因此 `ready` 可能多次触发。重建后应使用新的 Cherry 实例。
 
@@ -122,7 +123,7 @@ export default {
 - `uploadConfig` 的所有非 `null`、非 `undefined` 字段也会直接追加到 FormData，包括 `param` 本身。例如上述配置会提交文件字段 `file`，以及文本字段 `param=file` 和 `type=example`。附加参数名和值需按实际接口要求填写。
 - 请求返回值应提供 `Return.url` 和可选的 `Return.name`。未提供名称时使用原始文件名；组件将 URL 和文件参数交给 Cherry 插入内容。
 - `upload-success` 中的 `result.params` 包含 `name`；上传视频时还会按 `videoDefaultWidth` 附加 `width`。视频通过文件的 MIME 类型识别。
-- 多文件上传并发发起请求，全部完成后按原文件顺序调用插入回调。每个成功请求都会触发 `upload-success`；任一请求失败会触发一次 `upload-error`，并跳过该批次的插入回调。
+- 多文件上传并发发起请求，全部成功后按选择顺序将结果数组一次性交给 Cherry 插入。每个成功请求都会触发 `upload-success`；任一请求失败会触发一次 `upload-error`，并向 Cherry 返回空数组以结束该批次。
 
 返回结构示例：
 

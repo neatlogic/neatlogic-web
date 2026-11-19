@@ -47,6 +47,7 @@
           </template>
           <TsContain
             :rightWidth="290"
+            rightResizable
             :hasContentPadding="false"
             hideHeader
             :isRightSiderHide="!isOrderRight"

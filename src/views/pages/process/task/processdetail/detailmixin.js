@@ -1,3 +1,4 @@
+import ComponentManager from '@/resources/import/component-manager.js';
 import dealFormMix from '@/views/pages/process/task/taskcommon/dealNewFormData.js';
 import { store as processStore, mutations as processMutations } from '@/views/pages/process/task/processdetail/processStore.js';
 export default {
@@ -28,7 +29,8 @@ export default {
       medium: 'medium', // 弹窗的宽度
       taskLoading: true,
       pocesstaskview: false, //查看权限
-      knowledgeConfig: null,
+      knowledgeDocuments: [],
+      knowledgeProcessing: false,
       processTaskId: null, //工单id
       processTaskStepId: null, //步骤id
       processTaskConfig: {}, //所有基本信息
@@ -264,13 +266,19 @@ export default {
     sessionStorage.removeItem('taskdetailPrev');
   },
   methods: {
-    // 各类节点共用工单知识汇总，节点切换时忽略旧工单的异步响应。
-    async getKnowledgeDetail() {
-      const taskId = this.processTaskId;
-      const modules = JSON.parse(localStorage.getItem('moduleList') || '[]');
-      if (!taskId || !modules.some(module => module.moduleId === 'knowledge') || !this.$AuthUtils.hasRole('KNOWLEDGE_BASE')) return;
-      const response = await this.$api.process.processtask.knowledgeDetail({invokeId: taskId, source: 'processtask'});
-      if (response.Status === 'OK' && this.processTaskId === taskId) this.knowledgeConfig = response.Return;
+    // 商业组件注册后才开放入口，步骤实例和未提交回复由当前详情页取得。
+    openTaskKnowledge(entry, taskLevel = false) {
+      const center = this.$refs.TaskCenterDetail;
+      const reply = center?.$refs.replyContent;
+      center?.$refs.knowledgeHost?.open(entry, taskLevel ? 0 : this.processTaskStepId, reply?.$refs.taskStepContent?.currentValue ?? reply?.commentContent?.content);
+    },
+    // 可解来源已由服务端逐条计算，普通处理人还须位于相应的处理页签。
+    canUnbindKnowledge(source) {
+      return !!source.canUnbind && (this.$AuthUtils.hasRole('PROCESSTASK_MODIFY') ||
+        (this.knowledgeProcessing && !!this.actionConfig.save && String(source.stepId) === String(this.processTaskStepId)));
+    },
+    unlinkKnowledge(doc) {
+      this.$refs.TaskCenterDetail?.$refs.knowledgeHost?.unlink(doc);
     },
     //button-bar调用本地函数
     doAction(actionName, ...args) {
@@ -1209,6 +1217,11 @@ export default {
     }
   },
   computed: {
+    taskKnowledgeComponents() {
+      const modules = this.$store.state.topMenu?.moduleList || [];
+      const parts = ComponentManager.getComponent('taskKnowledge');
+      return parts?.drawer && parts.host && modules.some(module => module.moduleId === 'knowledge') && this.$AuthUtils.hasRole('KNOWLEDGE_BASE') ? parts : null;
+    },
     isDetailReady() {
       return processStore.isDetailReady;
     },
@@ -1227,10 +1240,7 @@ export default {
     // },
   },
   watch: {
-    processTaskId() {
-      this.knowledgeConfig = null;
-      this.getKnowledgeDetail();
-    },
+
     assistModal(val) {
       if (val == false) {
         this.assistList.forEach(item => {

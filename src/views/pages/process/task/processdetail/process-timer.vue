@@ -46,6 +46,7 @@
           <TimterAlert :processTaskStepConfig="processTaskStepConfig" @updateTask="toTask(processTaskId, nestStepId)"></TimterAlert>
           <TsContain
             :rightWidth="290"
+            rightResizable
             :hasContentPadding="false"
             hideHeader
             :isRightSiderHide="!isOrderRight"

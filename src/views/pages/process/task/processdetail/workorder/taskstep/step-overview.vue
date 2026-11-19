@@ -89,6 +89,11 @@
                   ></stepitems>
                 </div>
               </div>
+              <component
+                :is="taskKnowledge.taskKnowledgeComponents.links"
+                v-if="!item.isShow && taskKnowledge && taskKnowledge.taskKnowledgeComponents"
+                :stepId="item.id"
+              />
               <!-- 子任务策略节点 -->
               <div v-show="item.isShow == 1" class="sub-description border-color padding" :class="!isTabShow(item) ? 'mt-md' : '' ">
                 <div v-if="item.taskConfigList && getTaskConfigList(item.taskConfigList).length > 0">
@@ -213,6 +218,7 @@
 import download from '@/resources/directives/download.js';
 import stepitems from './item/index.js';
 export default {
+  inject: {taskKnowledge: {default: null}},
   name: 'StepOverview',
   components: {
     ...stepitems,
