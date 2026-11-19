@@ -1220,7 +1220,9 @@ export default {
     taskKnowledgeComponents() {
       const modules = this.$store.state.topMenu?.moduleList || [];
       const parts = ComponentManager.getComponent('taskKnowledge');
-      return parts?.drawer && parts.host && modules.some(module => module.moduleId === 'knowledge') && this.$AuthUtils.hasRole('KNOWLEDGE_BASE') ? parts : null;
+      // 工单与知识编辑能力由两个商业模块分别注册，单独安装时沿用社区入口。
+      const draftEditorMixin = ComponentManager.getComponent('knowledgeGeneration', 'draftEditorMixin');
+      return draftEditorMixin && parts?.drawer && parts.host && modules.some(module => module.moduleId === 'knowledge') && this.$AuthUtils.hasRole('KNOWLEDGE_BASE') ? parts : null;
     },
     isDetailReady() {
       return processStore.isDetailReady;
