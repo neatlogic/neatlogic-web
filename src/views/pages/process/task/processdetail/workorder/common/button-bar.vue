@@ -123,7 +123,7 @@
             </DropdownItem>
           </template>
           <!-- 转为知识 -->
-          <DropdownItem v-if="canTransferKnowledge" @click.native="doBtnBarAction('createKnowledge')">
+          <DropdownItem v-if="canTransferKnowledge" @click.native="taskKnowledge.openTaskKnowledge('generate', true)">
             {{ $t('term.process.converttoknowdoc') }}
           </DropdownItem>
           <DropdownItem v-if="actionConfig.transfereoastep" @click.native="transfereoastep()">
@@ -210,6 +210,7 @@ export default {
     ReactivateDialog: () => import('./reactivate-dialog.vue')
   },
   inject: {
+    taskKnowledge: {default: null},
     processTaskActionState: {
       default: () => ({ loading: false })
     }
@@ -221,8 +222,7 @@ export default {
     selectBackConfig: {type: Object},
     nextStepList: { type: Array },
     backStepList: { type: Array },
-    pocesstaskview: {type: Boolean},
-    knowledgeConfig: {type: Object}
+    pocesstaskview: {type: Boolean}
   },
   data() {
     return {
@@ -272,7 +272,7 @@ export default {
     },
     // 完成或已评分的工单允许手动转换，节点生成的知识不占用此入口。
     canTransferKnowledge() {
-      return ['succeed', 'scored'].includes(this.processTaskConfig?.status) && this.knowledgeConfig?.isTransferKnowledge === 1;
+      return !!this.taskKnowledge?.taskKnowledgeComponents && (['succeed', 'scored'].includes(this.processTaskConfig?.status) || this.$AuthUtils.hasRole('PROCESSTASK_MODIFY'));
     },
     isMoreAction() {
       //更多操作按钮

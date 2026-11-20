@@ -328,7 +328,6 @@ export default {
       this.$api.process.processtask.saveDraftDocument(data).then(res => {
         if (res.Status == 'OK') {
           this.$Message.success(this.$t('message.executesuccess'));
-          this.getKnowledgeAudit();
           let config = res.Return;
           this.knowledgeDocumentId = config.knowledgeDocumentId;
           this.knowledgeDocumentVersionId = config.knowledgeDocumentVersionId;
@@ -341,18 +340,6 @@ export default {
           this.isReviewShow = true;
           this.$parent.getKnowledgeDetail();
           this.$emit('update:isShow', false);
-        }
-      });
-    },
-    getKnowledgeAudit() {
-      //知识活动
-      let data = {
-        processTaskId: this.processTaskId,
-        title: this.formItemConfig.title.value
-      };
-      this.$api.process.processtask.knowledgeAudit(data).then(res => {
-        if (res.Status == 'OK') {
-          //
         }
       });
     },

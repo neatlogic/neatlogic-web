@@ -6,21 +6,6 @@
       id="content"
       class="reply-box-margin-bottom order-list comment-box"
     >
-      <div v-if="actionConfigs.complete || actionConfigs.comment" class="center-detail-upload-wrap">
-        <!-- 主回复附件使用当前节点处理器，并在已有工单时通过扩展参数携带工单 ID。 -->
-        <TsUpLoad
-          ref="uploadFileComment"
-          className="smallUpload"
-          styleType="text"
-          :dataType="attachmentFileType"
-          :params="attachmentUploadParams"
-          rowSpan="24"
-          :multiple="true"
-          :defaultList="commentContent.fileList && commentContent.fileList.length > 0?commentContent.fileList :[]"
-          @getFileList="getFileList"
-          @remove="removeCommentFile"
-        ></TsUpLoad>
-      </div>
       <div v-if="handler == 'event'" id="event" class="eventEdit mt-sm">
         <!-- 事件节点 -->
         <TsRow>
@@ -95,10 +80,31 @@
         </TsRow>
       </div>
 
-      <div v-if="actionConfigs.complete || actionConfigs.comment" class="reply-template-position-box">
-        <div class="reply-template-position" @click.stop>
-          <!--回复 关联知识库 -->
-          <div class="pr-sm">
+      <div class="reply-toolbar">
+        <div class="center-detail-upload-wrap">
+          <!-- 主回复附件使用当前节点处理器，并在已有工单时通过扩展参数携带工单 ID。 -->
+          <TsUpLoad
+            ref="uploadFileComment"
+            className="smallUpload"
+            styleType="text"
+            :dataType="attachmentFileType"
+            :params="attachmentUploadParams"
+            rowSpan="24"
+            :multiple="true"
+            :defaultList="commentContent.fileList && commentContent.fileList.length > 0?commentContent.fileList :[]"
+            @getFileList="getFileList"
+            @remove="removeCommentFile"
+          ></TsUpLoad>
+        </div>
+        <div class="reply-tools" @click.stop>
+          <div v-if="hasKnowledgeDrawer && actionConfigs.save" class="reply-knowledge-picker">
+            <span class="text-grey">{{ $t('term.process.relknowlege') }}</span>
+            <Button class="knowledge-action knowledge-select bg-op text-grey" aria-haspopup="dialog" @click="taskKnowledge.openTaskKnowledge('ref')">
+              {{ $t('form.placeholder.pleaseselect', { target: $t('page.knowledge') }) }}
+              <i class="tsfont-down" aria-hidden="true"></i>
+            </Button>
+          </div>
+          <div v-else-if="canQuoteKnowledge" class="reply-community-knowledge">
             <TsFormItem :label="$t('term.process.relknowlege')">
               <TsFormSelect
                 v-model="knowledgeId"
@@ -108,6 +114,13 @@
               ></TsFormSelect>
             </TsFormItem>
           </div>
+          <button
+            v-if="hasKnowledgeDrawer && actionConfigs.save"
+            type="button"
+            class="knowledge-action knowledge-generate text-href"
+            aria-haspopup="dialog"
+            @click="taskKnowledge.openTaskKnowledge('generate')"
+          >{{ $t('term.process.taskknowledge.generate') }}</button>
           <!-- 回复模板start -->
           <div v-if="handler != 'event'" class="content-template">
             <div class="comment-modules">
@@ -138,7 +151,7 @@
             :showIconToggle="!isShowProcessTaskStepCommentEditorToolbar"
             width="100%"
             :validateList="isRequiredContent? ['required'] : []"
-            :toolbar="$AuthUtils.hasRole('KNOWLEDGE_BASE') ? ['KnowledgeSelect'] : []"
+            :toolbar="!hasKnowledgeDrawer && $AuthUtils.hasRole('KNOWLEDGE_BASE') ? ['KnowledgeSelect'] : []"
             :params="{ uploadVideoConfig: { type: 'itsm'} }"
             @change="changeCommentContent"
           >
@@ -154,9 +167,10 @@ import { getFileTypeHandler } from '../../../taskcommon/file-type-handler.js';
 
 export default {
   name: '',
+  inject: {taskKnowledge: {default: null}},
   components: {
-    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
+    TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
     TsUpLoad: () => import('@/resources/components/UpLoad/UpLoad.vue'),
     TsCkeditor: () => import('@/resources/plugins/TsCkeditor/TsCkeditor.vue'),
     TsFormTree: () => import('@/resources/plugins/TsForm/TsFormTree'),
@@ -202,7 +216,6 @@ export default {
   data() {
     return {
       actionConfigs: null,
-      knowledgeId: null,
       replyVisible: false, //回复模板弹框
       commentContent: {
         content: null,
@@ -218,6 +231,7 @@ export default {
         eventTypeId: null
       },
       eventTypeId: null,
+      knowledgeId: null,
       knowledgeSelectConfig: {
         dynamicUrl: '/api/rest/knowledge/document/search',
         params: {
@@ -252,16 +266,23 @@ export default {
       this.commentContent.content = val.content;
       this.replyVisible = false;
     },
-    changeKnowledgeId(val, item) {
-      if (val) {
-        let path = HOME + '/knowledge.html#/knowledge-detail?knowledgeDocumentId=' + val;
-        let replaceStr = `<a href="${path}">${item.text}</a>`;
-        if (this.commentContent.content) {
-          this.commentContent.content += replaceStr;
-        } else {
-          this.commentContent.content = replaceStr;
-        }
-      }
+    // 社区版沿用原有的已发布知识引用，仅将链接写入回复草稿。
+    changeKnowledgeId(id, item) {
+      if (id) this.appendKnowledgeLinks([{documentId: id, title: item.text}]);
+    },
+    // 在提交关联成功后，按返回的新增文档追加链接，保留原回复及附件。
+    appendKnowledgeLinks(documents) {
+      if (!documents?.length) return;
+      const appended = document.createElement('div');
+      documents.forEach(doc => {
+        const link = document.createElement('a');
+        link.href = HOME + '/knowledge.html#/knowledge-detail?knowledgeDocumentId=' + encodeURIComponent(doc.documentId);
+        link.textContent = doc.title;
+        appended.append(document.createElement('br'), link);
+      });
+      const current = this.$refs.taskStepContent?.currentValue ?? this.commentContent.content ?? '';
+      if (!current) appended.firstElementChild.remove();
+      this.changeCommentContent(current + appended.innerHTML);
     },
     getFileList(val) {
       //获取上传文件列表
@@ -418,6 +439,14 @@ export default {
   },
   filter: {},
   computed: {
+    // 商业工单在批量引用抽屉中同时关联文档和插入链接。
+    canQuoteKnowledge() {
+      return !this.hasKnowledgeDrawer && this.$AuthUtils.hasRole('KNOWLEDGE_BASE') &&
+        this.$store.state.topMenu?.moduleList?.some(module => module.moduleId === 'knowledge');
+    },
+    hasKnowledgeDrawer() {
+      return !!this.taskKnowledge?.taskKnowledgeComponents;
+    },
     attachmentUploadParams() {
       // multipart 表单以 JSON 字符串提交扩展对象；无工单 ID 时完全省略该字段。
       return this.processTaskId ? { extendParam: JSON.stringify({ processTaskId: this.processTaskId }) } : {};
@@ -454,27 +483,61 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.center-detail-upload-wrap {
-  position: relative;
-  display: inline-block;
-  margin-top: 10px;
+.reply-toolbar {
+  --reply-control-height: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 4px 12px;
+  margin: 8px 0;
 }
-.reply-template-position-box {
-  position: relative;
-  width: 100%;
-  height: 10px;
-  .reply-template-position {
-    // 回复模板
-    position: absolute;
-    top: -28px;
-    right: 5px;
+.center-detail-upload-wrap {
+  flex: 1 1 128px;
+  min-width: 0;
+  max-width: 100%;
+  ::v-deep .text-btn { line-height: var(--reply-control-height); }
+}
+.reply-tools, .reply-knowledge-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: 100%;
+  gap: 4px 8px;
+}
+.reply-tools {
+  justify-content: flex-end;
+  margin-left: auto;
+  min-height: var(--reply-control-height);
+}
+.reply-knowledge-picker > .text-grey, .content-template { white-space: nowrap; }
+.reply-community-knowledge { min-width: 0; max-width: 100%; }
+.knowledge-select {
+  display: flex;
+  align-items: center;
+  width: 126px;
+  max-width: 100%;
+  padding: 0 10px;
+  border-color: transparent;
+  ::v-deep > span {
     display: flex;
+    flex: 1;
+    justify-content: space-between;
     align-items: center;
+    gap: 4px;
+    line-height: var(--reply-control-height);
   }
+}
+.knowledge-generate { padding: 0; background: transparent; border: 0; font: inherit; }
+.knowledge-generate, .reply-knowledge-picker > .text-grey, .content-template .text-href {
+  line-height: var(--reply-control-height);
 }
 .comment-box {
   .content-template {
     position: relative;
+    // 浮层触发器用块布局，避免多层行内元素逐层偏移回复模板的文字基线。
+    ::v-deep .ivu-poptip, ::v-deep .ivu-poptip-rel, .text-href {
+      display: block;
+    }
     ::v-deep .template-pop {
       position: absolute;
       right: 120px;

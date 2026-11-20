@@ -67,10 +67,19 @@
         <Content>
           <slot name="content"></slot>
         </Content>
+        <div
+          v-if="rightResizable && $slots.right && !rightSiderHide"
+          class="right-resize-track"
+          @pointerdown.prevent="startRightResize"
+          @pointermove="moveRightResize"
+          @pointerup="endRightResize"
+          @lostpointercapture="endRightResize"
+        ><TsResizeHandle class="right-resize-handle" /></div>
         <Sider
           v-if="$slots.right"
           v-model="rightSiderHide"
-          :width="rightSiderHide ? 0 : $slots.right && rightWidth ? rightWidth : 0"
+          :class="{ 'right-sider-resizing': rightDragStart }"
+          :width="rightSiderHide ? 0 : resolvedRightWidth"
           collapsible
           :collapsed-width="0"
           hide-trigger
@@ -93,6 +102,7 @@
 import scrollHidden from '@/resources/directives/scroll-hidden.js';
 export default {
   name: 'TsContain',
+  components: {TsResizeHandle: () => import('@/resources/components/TsResizeHandle/TsResizeHandle.vue')},
   directives: { scrollHidden },
   props: {
     hasContentPadding: { type: Boolean, default: true }, //内容是否有左右间距，默认有
@@ -112,7 +122,8 @@ export default {
     siderPosition: { type: String, default: 'left' }, // left, right
     isBackgroung: { type: Boolean, default: true }, // 背景色默认为灰色，如果传的话就白色
     clearStyle: { type: Boolean, default: false }, //是否需要清除侧边栏的样式（背景色、圆角，不包含右侧固定高度）
-    rightWidth: { type: Number, default: 200 },
+    rightResizable: Boolean, // 默认关闭；启用后，有 right 插槽且右栏展开时才显示拖拽手柄。
+    rightWidth: { type: Number, default: 200 }, // 右栏的配置宽度（px），首次拖拽前用它计算实际宽度。
     mode: { type: String, default: 'window' }, //显示模式，有window和dialog两种，如果是dialog模式，高度强制变成100%
     rightBtn: { type: Boolean, default: false }, //右侧收起展开按钮
     topLeftWidth: { type: String, default: '' }, //左侧宽度
@@ -122,6 +133,8 @@ export default {
   data() {
     return {
       dragWidth: null,
+      rightDragWidth: null, // 拖拽得到的右栏宽度（px），初始为 null，表示沿用配置宽度。
+      rightDragStart: null, // 仅在本次拖拽期间保存起始指针横坐标和起始栏宽，用于计算宽度变化。
       siderHide: this.isSiderHide,
       rightSiderHide: !!this.isRightSiderHide,
       containHeight: '100%',
@@ -153,6 +166,22 @@ export default {
     window.removeEventListener('resize', this.updateContainerWidth);
   },
   methods: {
+    // 只调整右栏布局尺寸，拖动期间不重建左右插槽中的表单。
+    startRightResize(event) {
+      if (event.button !== 0) return;
+      this.rightDragStart = {x: event.clientX, width: this.resolvedRightWidth};
+      // 手柄捕获指针后，即使指针移出手柄，也能继续接收移动和松开事件。
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    // 手柄位于右栏左边缘，指针向左移动多少，右栏就从起始宽度增加多少。
+    moveRightResize(event) {
+      if (this.rightDragStart) this.rightDragWidth = this.rightDragStart.width + this.rightDragStart.x - event.clientX;
+    },
+    // 松开或失去指针捕获时，保存经过限幅的实际栏宽，避免容器变宽后右栏跳到越界的拖拽值。
+    endRightResize() {
+      if (this.rightDragStart) this.rightDragWidth = this.resolvedRightWidth;
+      this.rightDragStart = null;
+    },
     updateContainerWidth() {
       this.$nextTick(() => {
         this.containerWidth = this.$refs.contain ? this.$refs.contain.clientWidth : 0;
@@ -233,6 +262,14 @@ export default {
     }
   },
   computed: {
+    // 未启用拖拽或尚未测得容器宽度时，直接使用配置宽度。
+    resolvedRightWidth() {
+      if (!this.rightResizable || !this.containerWidth) return this.rightWidth;
+      // 右栏最多占容器的 65%，并尽量为主区保留 320px。
+      const max = Math.min(this.containerWidth * 0.65, Math.max(0, this.containerWidth - 320));
+      // 空间充足时右栏至少为 220px；若上限不足 220px，则以上限为准。
+      return Math.min(max, Math.max(220, this.rightDragWidth ?? this.rightWidth));
+    },
     resolvedSiderWidth() {
       if (this.siderWidthRatio > 0 && this.containerWidth > 0) {
         let width = Math.floor(this.containerWidth * this.siderWidthRatio);
@@ -381,6 +418,22 @@ export default {
 div {
   transition-property: all;
   transition-duration: 0.25s, 1s;
+}
+.right-resize-track {
+  position: relative;
+  flex: none;
+  width: 0;
+  cursor: col-resize;
+  touch-action: none;
+}
+// 热区从右栏左边缘向内展开，避开主区滚动条。
+.right-resize-track > .right-resize-handle {
+  right: auto;
+  width: 16px;
+}
+// 拖动时宽度直接跟随指针，松手后恢复侧栏的展开和收起动画。
+.right-sider-resizing {
+  transition: none;
 }
 .divider {
   margin-right: 16px;
