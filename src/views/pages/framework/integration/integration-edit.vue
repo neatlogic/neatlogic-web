@@ -28,6 +28,7 @@
             <Tabs v-model="activedTab" name="integrationEditTabs">
               <TabPane
                 :key="1"
+                :index="1"
                 :label="$t('page.authentication')"
                 name="authentication"
                 tab="integrationEditTabs"
@@ -36,6 +37,7 @@
               </TabPane>
               <TabPane
                 :key="2"
+                :index="2"
                 :label="$t('page.paramdesc')"
                 name="param"
                 tab="integrationEditTabs"
@@ -54,6 +56,7 @@
               <TabPane
                 v-if="!isMcp"
                 :key="3"
+                :index="3"
                 :label="$t('term.framework.head')"
                 name="head"
                 tab="integrationEditTabs"
@@ -63,6 +66,7 @@
               <TabPane
                 v-if="!isMcp"
                 :key="4"
+                :index="4"
                 :label="$t('term.framework.inputtrans')"
                 name="input"
                 tab="integrationEditTabs"
@@ -77,6 +81,7 @@
               <TabPane
                 v-if="!isMcp"
                 :key="5"
+                :index="5"
                 :label="$t('term.framework.outputtrans')"
                 name="output"
                 tab="integrationEditTabs"
@@ -89,7 +94,22 @@
                 ></OutputTransform>
               </TabPane>
               <TabPane
+                v-if="supportsStatusCodeTransform"
                 :key="6"
+                :index="6"
+                :label="$t('term.framework.integrationstatus.title')"
+                name="statusCodeTransform"
+                tab="integrationEditTabs"
+              >
+                <StatusCodeTransform
+                  :value="integrationData.config.statusCodeTransform"
+                  :disabled="!canEditIntegration || isSaving"
+                  @change="setStatusCodeTransform"
+                />
+              </TabPane>
+              <TabPane
+                :key="7"
+                :index="7"
                 :label="$t('page.othersetting')"
                 name="other"
                 tab="integrationEditTabs"
@@ -97,7 +117,8 @@
                 <Other :integration="integrationData" @setOtherSetting="setOtherSetting"></Other>
               </TabPane>
               <TabPane
-                :key="7"
+                :key="8"
+                :index="8"
                 :label="$t('page.test')"
                 name="test"
                 tab="integrationEditTabs"
@@ -114,7 +135,7 @@
           type="primary"
           ghost
           :loading="testing"
-          :disabled="defaultDialogProtected"
+          :disabled="defaultDialogProtected || !handlerPatternReady"
           @click="testIntegration()"
         >
           <span v-if="!testing">{{ $t('page.test') }}</span>
@@ -140,6 +161,7 @@ import Other from './other-edit.vue';
 import OutputTransform from './output-transform.vue';
 import InputTransform from './input-transform.vue';
 import Test from './integration-test.vue';
+import StatusCodeTransform from './status-code-transform.vue';
 import ParamEdit from './param-edit.vue';
 import {cloneParamConfig, getParamEditPermission, validateCustomParams, withPatternMode} from './integration-param-utils.js';
 import {cloneJson, validateIntegrationDefaults} from './integration-default-utils.js';
@@ -151,6 +173,7 @@ export default {
     TsFormInput,
     TsFormSelect,
     OutputTransform,
+    StatusCodeTransform,
     InputTransform,
     Authentication,
     HeaderEdit,
@@ -183,6 +206,7 @@ export default {
       allowEditOutputParam: 0,
       handlerPatternRequest: 0,
       handlerPatternReady: false,
+      supportsStatusCodeTransform: false,
       methodList: [
         { value: 'get', text: 'GET' },
         { value: 'post', text: 'POST' }
@@ -269,6 +293,7 @@ export default {
       this.allowEditInputParam = 0;
       this.allowEditOutputParam = 0;
       this.handlerPatternReady = false;
+      this.supportsStatusCodeTransform = false;
       if (handler) {
         return this.$api.framework.integration
           .getIntegrationHandlerByHandler({
@@ -284,6 +309,11 @@ export default {
               this.handlerOutputPattern = withPatternMode(res.Return.outputPattern, 'output');
               this.allowEditInputParam = getParamEditPermission(res.Return, 'input');
               this.allowEditOutputParam = getParamEditPermission(res.Return, 'output');
+              this.supportsStatusCodeTransform = res.Return.supportsStatusCodeTransform === true;
+              if (!this.supportsStatusCodeTransform) {
+                if (!initial) this.setStatusCodeTransform(null);
+                if (this.activedTab === 'statusCodeTransform') this.activedTab = 'authentication';
+              }
               this.setMethodList(res.Return.methodList);
               this.handlerPatternReady = true;
             }
@@ -320,6 +350,11 @@ export default {
     },
     setOutput: function(output) {
       this.$set(this.integrationData.config, 'output', output);
+    },
+    // 旧集成及已关闭转换的集成均不携带转换配置。
+    setStatusCodeTransform(config) {
+      if (config) this.$set(this.integrationData.config, 'statusCodeTransform', config);
+      else this.$delete(this.integrationData.config, 'statusCodeTransform');
     },
     setHead: function(head) {
       this.integrationData.config.head = head;
@@ -509,7 +544,7 @@ export default {
       this.integrationData = { config: {} };
     },
     testIntegration: function() {
-      if (this.defaultDialogProtected) return;
+      if (this.defaultDialogProtected || !this.handlerPatternReady) return;
       this.activedTab = 'test';
       let testComponent = this.$refs['testComponent'];
       this.testing = true;

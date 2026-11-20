@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div v-if="isRunned && rawStatusCode != null" class="mb-sm">
+      <span class="mr-md">{{ $t('term.framework.integrationstatus.rawCode') }} {{ rawStatusCode }}</span>
+      <span>{{ $t('term.framework.integrationstatus.effectiveCode') }} {{ statusCode }}</span>
+      <div v-if="statusCodeTransformDetail" class="text-tip text-word-break">{{ statusCodeTransformDetail }}</div>
+    </div>
     <Tabs name="testTabs">
       <TabPane :label="$t('term.framework.requestparam')" tab="testTabs" :index="1">
         <TsCodemirror height="200px" :value.sync="content"></TsCodemirror>
@@ -56,6 +61,9 @@ export default {
     return {
       lastGeneratedContent: '',
       rawResult: '',
+      rawStatusCode: null,
+      statusCode: null,
+      statusCodeTransformDetail: '',
       content: '',
       isRunned: false,
       error: '',
@@ -77,10 +85,22 @@ export default {
     resetTestResult() {
       // 新一轮测试先移除上一轮诊断内容；解析或请求失败也不能继续展示旧成功结果。
       this.rawResult = '';
+      this.rawStatusCode = null;
+      this.statusCode = null;
+      this.statusCodeTransformDetail = '';
       this.transformedResult = '';
       this.transformedParam = '';
       this.error = '';
       this.isRunned = false;
+    },
+    // 只美化实际收到的 JSON 文本，空响应和未生成的转换结果保持为空。
+    formatResponse(value) {
+      if (!value) return value;
+      try {
+        return JSON.stringify(JSON.parse(value), null, 2);
+      } catch (e) {
+        return value;
+      }
     },
     test: function(callback) {
       this.resetTestResult();
@@ -92,18 +112,11 @@ export default {
             .testIntegration(this.integration)
             .then(res => {
               if (res.Status == 'OK') {
-                this.rawResult = res.Return.rawResult;
-                try {
-                  this.rawResult = JSON.stringify(JSON.parse(this.rawResult), null, 2);
-                } catch (e) {
-                  console.log(e);
-                }
-                this.transformedResult = res.Return.transformedResult;
-                try {
-                  this.transformedResult = JSON.stringify(JSON.parse(this.transformedResult), null, 2);
-                } catch (e) {
-                  console.log(e);
-                }
+                this.rawStatusCode = res.Return.rawStatusCode;
+                this.statusCode = res.Return.statusCode;
+                this.statusCodeTransformDetail = res.Return.statusCodeTransformDetail;
+                this.rawResult = this.formatResponse(res.Return.rawResult);
+                this.transformedResult = this.formatResponse(res.Return.transformedResult);
                 this.transformedParam = res.Return.transformedParam;
                 this.error = res.Return.error;
               }

@@ -1470,6 +1470,23 @@
     "tableimportfiltertitle": "部分导入值不符合联动/过滤条件",
     "tableimportfiltersummary": "已清除 {count} 个单元格中的无效值，其余数据已导入。请根据当前行的联动/过滤条件重新选择。",
     "tableimportfilterdetail": "Excel 第 {row} 行【{column}】：值“{value}”不在当前可选范围内，已清除。",
+    "integrationstatus": {
+      "title": "状态码转换",
+      "enable": "启用转换",
+      "path": "响应字段",
+      "pathHelp": "填写原始 JSON 响应的字段路径，例如 code 或 error.status。",
+      "mode": "转换方式",
+      "direct": "直接取值",
+      "mapping": "业务码映射",
+      "rule": "映射规则",
+      "businessCode": "业务码",
+      "fallback": "无法转换时",
+      "keep": "保留原 HTTP 状态码",
+      "returnError": "返回指定错误码",
+      "errorCode": "兜底错误码",
+      "rawCode": "原始 HTTP 状态码",
+      "effectiveCode": "生效状态码"
+    },
     "integrationdefault": {
       "string": "字符串",
       "boolean": "布尔",

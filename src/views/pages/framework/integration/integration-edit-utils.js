@@ -72,6 +72,7 @@ export function integrationEditSnapshot(integration, patterns = []) {
       head: cloneJson(config.head || []),
       input: {...cloneJson(config.input || {}), content: (config.input && config.input.content) || ''},
       output: {...cloneJson(config.output || {}), content: (config.output && config.output.content) || ''},
+      statusCodeTransform: cloneJson(config.statusCodeTransform),
       other
     }
   };

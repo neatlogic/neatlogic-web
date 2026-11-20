@@ -1472,6 +1472,23 @@
     "tableimportfiltertitle": "Some imported values do not meet the dependency or filter conditions",
     "tableimportfiltersummary": "Invalid values were removed from {count} cells. The remaining data was imported. Select replacements using the dependency or filter conditions for each row.",
     "tableimportfilterdetail": "Excel row {row} [{column}]: Value \"{value}\" is not among the currently available options and was removed.",
+    "integrationstatus": {
+      "title": "Status code conversion",
+      "enable": "Enable conversion",
+      "path": "Response field",
+      "pathHelp": "Enter a field path in the original JSON response, such as code or error.status.",
+      "mode": "Conversion mode",
+      "direct": "Use field value",
+      "mapping": "Map business codes",
+      "rule": "Mapping rule",
+      "businessCode": "Business code",
+      "fallback": "Conversion fallback",
+      "keep": "Keep original HTTP status",
+      "returnError": "Return an error status",
+      "errorCode": "Fallback error status",
+      "rawCode": "Original HTTP status",
+      "effectiveCode": "Effective status"
+    },
     "integrationdefault": {
       "string": "String",
       "boolean": "Boolean",
