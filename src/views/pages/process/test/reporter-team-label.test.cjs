@@ -79,7 +79,7 @@ function mountReporter(processTaskConfig) {
     computed: { ownerJobTitle },
     methods: {
       $t(key) {
-        return { 'page.jobTitle': '岗位', 'page.userteam': '用户组', 'page.informant': '上报人' }[key] || key;
+        return { 'page.jobTitle': '岗位', 'page.group': '分组', 'page.informant': '上报人' }[key] || key;
       }
     }
   }).$mount();

@@ -38,8 +38,8 @@
               </div>
             </div>
             <div v-if="processTaskConfig.ownerVo" class="information-list">
-              <OverflowTooltip class="infor-left text-grey" :content="$t('page.userteam')">
-                <span class="infor-label overflow">{{ $t('page.userteam') }}</span>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.group')">
+                <span class="infor-label overflow">{{ $t('page.group') }}</span>
               </OverflowTooltip>
               <div class="infor-right usergroup-list">
                 <template v-if="processTaskConfig.ownerVo.teamList && processTaskConfig.ownerVo.teamList.length > 0">
