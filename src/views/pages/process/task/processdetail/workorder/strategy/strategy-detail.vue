@@ -444,7 +444,9 @@ export default {
       }
       let data = {
         id: item.id,
-        content: item.CkeditorContent
+        content: item.CkeditorContent,
+        // 默认“回复”也记录实际按钮文案，自定义按钮在下方使用配置名称覆盖。
+        button: this.$t('page.reply')
       };
       let isValid = true;
       if (btn) {

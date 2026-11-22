@@ -1,6 +1,7 @@
 //时间线
 import defaultHandler from './default-handler';
 import titleHandler from './title-handler';
+import buttonHandler from './button-handler'; // 子任务完成时点击的按钮使用纯文本明细组件。
 import priorityHandler from './priority-handler';
 import contentHandler from './content-handler';
 import formHandler from './form-handler';
@@ -27,6 +28,7 @@ import ComponentManager from '@/resources/import/component-manager.js';
 export default {
   defaultHandler, //默认活动展示
   titleHandler,
+  buttonHandler, // 展示当次操作保存的按钮名称。
   priorityHandler, //优先级
   contentHandler, //描述/描述
   formHandler, //表单
