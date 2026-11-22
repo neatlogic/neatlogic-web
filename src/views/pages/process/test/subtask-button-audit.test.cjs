@@ -172,3 +172,127 @@ test('同一条时间线先显示原富文本内容，再按纯文本显示当�
     fixture.close();
   }
 });
+
+// 使用两个真实组件的数据装配和完整表格模板，表格替身只负责逐列调用 scoped slot。
+function createReplyTable(filename, rows, language = 'zh') {
+  const component = loadModule(`strategy/${filename}`).default;
+  const page = JSON.parse(readFileSync(resolve(__dirname, '../../../../resources/assets/languages/page', `${language}.json`), 'utf8'));
+  const dom = new JSDOM('', { runScripts: 'outside-only' });
+  const { window } = dom;
+  window.eval(readFileSync(require.resolve('vue/dist/vue.js'), 'utf8'));
+  const Vue = window.Vue;
+  Vue.config.productionTip = false;
+  Vue.config.devtools = false;
+  Vue.prototype.$t = key => key.startsWith('page.') ? page[key.slice(5)] : key;
+  Vue.prototype.$utils = {
+    deepClone: value => JSON.parse(JSON.stringify(value)),
+    removeHTMLTag: value => value.replace(/<[^>]*>/g, '')
+  };
+  const tableTemplate = component.template.slice(component.template.indexOf('<TsTable'), component.template.indexOf('</TsTable>') + '</TsTable>'.length);
+  const vm = new Vue({
+    data() {
+      return { ...component.data.call(this), readonly: true };
+    },
+    methods: component.methods,
+    filters: { formatDate: value => value || '-' },
+    components: {
+      TsTable: {
+        props: ['tbodyList', 'theadList'],
+        render(h) {
+          return h('table', [
+            h('thead', [h('tr', this.theadList.map(column => h('th', { attrs: { 'data-column': column.key } }, column.title)))]),
+            h('tbody', this.tbodyList.map(row => h('tr', { key: row.id }, this.theadList.map(column => h('td', {
+              attrs: { 'data-column': column.key }
+            }, this.$scopedSlots[column.key] ? this.$scopedSlots[column.key]({ row }) : String(row[column.key] || ''))))))
+          ]);
+        }
+      },
+      UserCard: { props: ['uuid'], template: '<span>{{ uuid }}</span>' },
+      Tooltip: { template: '<span><slot /></span>' }
+    },
+    template: `<div><div v-for="item in processTaskStepTaskList" :key="item.id">${tableTemplate}</div></div>`
+  });
+  function update(nextRows) {
+    vm.initData({
+      id: 1,
+      num: -1,
+      rangeList: [],
+      processTaskStepTaskList: [{ id: 101, stepTaskUserVoList: nextRows }]
+    });
+  }
+  update(rows);
+  vm.$mount();
+  window.document.body.appendChild(vm.$el);
+  return {
+    vm,
+    update,
+    cells: () => Array.from(vm.$el.querySelectorAll('tbody td[data-column="button"]')),
+    close() {
+      vm.$destroy();
+      window.close();
+    }
+  };
+}
+
+// 每行采用不同处理人与按钮值，避免表格错误地复用其他处理人的回复信息。
+function createReplyRows(buttons) {
+  return buttons.map((button, index) => ({
+    id: index + 1,
+    userUuid: `user-${index + 1}`,
+    userVo: { initType: 'user' },
+    content: `回复内容 ${index + 1}`,
+    endTime: '2026-11-22 17:37:52',
+    fileList: [],
+    ...(button === undefined ? {} : { button })
+  }));
+}
+
+for (const filename of ['strategy-detail.vue', 'strategy-detail-readonly.vue']) {
+  test(`${filename} 将各行按钮原值传入回复与附件之间的列，并使用公共翻译`, () => {
+    for (const [language, title] of [['zh', '按钮'], ['en', 'Button']]) {
+      const rows = createReplyRows(['同意', '驳回', '确认', '回复', 'Reply']);
+      const fixture = createReplyTable(filename, rows, language);
+      try {
+        // Vue 在浏览器上下文中观测数组，转为当前测试上下文的数组后比较业务值。
+        const columns = Array.from(fixture.vm.theadList).filter(column => column.key !== 'action');
+        assert.deepEqual(columns.map(column => column.key), ['userUuid', 'endTime', 'content', 'button', 'fileList']);
+        assert.equal(fixture.vm.$el.querySelector('th[data-column="button"]').textContent, title);
+        assert.deepEqual(Array.from(fixture.vm.processTaskStepTaskList[0].tbodyList, row => row.button), rows.map(row => row.button));
+        assert.deepEqual(fixture.cells().map(cell => cell.textContent), rows.map(row => row.button));
+      } finally {
+        fixture.close();
+      }
+    }
+  });
+
+  test(`${filename} 以纯文本显示按钮、兼容空值并沿用已删除行样式`, () => {
+    const text = '<b>同意 Agree</b> & "确认" \'回复\'';
+    const rows = createReplyRows([text, '  保留名称空格  ', undefined, null, '', ' \t\n ']);
+    rows[0].isDelete = 1;
+    const fixture = createReplyTable(filename, rows);
+    try {
+      const cells = fixture.cells();
+      assert.deepEqual(cells.map(cell => cell.textContent), [text, '  保留名称空格  ', '-', '-', '-', '-']);
+      assert.equal(cells[0].querySelector('b'), null, '按钮名称中的标签不能解析为 HTML');
+      assert.ok(cells[0].querySelector('.text-disabled'), '已删除行的按钮应与其他列一样置灰');
+      assert.equal(cells[1].querySelector('.text-disabled'), null, '有效回复不应误用删除态样式');
+    } finally {
+      fixture.close();
+    }
+  });
+
+  test(`${filename} 刷新回复数据后显示新按钮，按钮变空时清除旧值`, async() => {
+    const fixture = createReplyTable(filename, createReplyRows(['同意', '回复']));
+    try {
+      fixture.update(createReplyRows(['驳回', undefined]));
+      await fixture.vm.$nextTick();
+      assert.deepEqual(fixture.cells().map(cell => cell.textContent), ['驳回', '-']);
+      assert.ok(!fixture.vm.$el.textContent.includes('同意'));
+      fixture.update([]);
+      await fixture.vm.$nextTick();
+      assert.equal(fixture.cells().length, 0, '空回复列表不能留下旧行的按钮');
+    } finally {
+      fixture.close();
+    }
+  });
+}

@@ -56,6 +56,10 @@
                 </Tooltip>
               </div>
             </template>
+            <!-- 按钮按纯文本展示；旧记录或空白值使用占位符，并沿用已删除行样式。 -->
+            <template slot="button" slot-scope="{ row }">
+              <span :class="{'text-disabled':row.isDelete == 1}" v-text="row.button && row.button.trim() ? row.button : '-'"></span>
+            </template>
           </TsTable>
         </div>
       </div>
@@ -98,6 +102,10 @@ export default {
           type: 'html',
           maxLength: '50'
         }, {
+          // 与可编辑表格保持一致，按钮列位于回复与附件之间。
+          title: this.$t('page.button'),
+          key: 'button'
+        }, {
           title: this.$t('page.accessory'),
           key: 'fileList',
           type: 'file'
@@ -136,6 +144,8 @@ export default {
               originalUserUuid: r.originalUserUuid || null,
               endTime: r.endTime,
               content: r.content,
+              // 透传已保存的按钮原文，展示与当前回复一致的选择。
+              button: r.button,
               isDelete: r.isDelete,
               isDisabled: !!r.isDisabled || false,
               fileList: r.fileList
