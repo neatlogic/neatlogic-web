@@ -139,7 +139,9 @@ export default {
       }
       let data = {
         id: this.config.id,
-        content: this.content
+        content: this.content,
+        // 编辑回复时同样记录默认按钮文案，自定义按钮在下方使用配置名称覆盖。
+        button: this.$t('page.reply')
       };
       if (btn) {
         this.$set(data, 'button', btn.name);

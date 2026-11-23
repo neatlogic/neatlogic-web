@@ -66,6 +66,10 @@
                 </Tooltip>
               </div>
             </template>
+            <!-- 按钮按纯文本展示；旧记录或空白值使用占位符，并沿用已删除行样式。 -->
+            <template slot="button" slot-scope="{ row }">
+              <span :class="{'text-disabled':row.isDelete == 1}" v-text="row.button && row.button.trim() ? row.button : '-'"></span>
+            </template>
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
                 <ul v-if="!readonly && row.isReplyable && item.readonlyContent" class="tstable-action-ul" @click.stop>
@@ -199,6 +203,10 @@ export default {
           title: this.$t('page.reply'),
           key: 'content',
           type: 'html'
+        }, {
+          // 按钮紧接回复内容展示，使用已有公共翻译。
+          title: this.$t('page.button'),
+          key: 'button'
         }, {
           title: this.$t('page.accessory'),
           key: 'fileList',
@@ -365,8 +373,9 @@ export default {
           if (!r.isReplyable || r.isDelete) { //不能回复或者已删除的行不能选中
             this.$set(r, 'isDisabled', true);
           }
+          // 透传当前回复保存的按钮原文，避免根据现有按钮配置反推历史选择。
           newArr.push(
-            {id: r.id, userUuid: r.userUuid, userVo: r.userVo, originalUserUuid: r.originalUserUuid || null, endTime: r.endTime, content: r.content, isDelete: r.isDelete, isReplyable: !!r.isReplyable, isDisabled: !!r.isDisabled || false, fileList: r.fileList }
+            {id: r.id, userUuid: r.userUuid, userVo: r.userVo, originalUserUuid: r.originalUserUuid || null, endTime: r.endTime, content: r.content, button: r.button, isDelete: r.isDelete, isReplyable: !!r.isReplyable, isDisabled: !!r.isDisabled || false, fileList: r.fileList }
           );
         });
         return newArr;
@@ -444,7 +453,9 @@ export default {
       }
       let data = {
         id: item.id,
-        content: item.CkeditorContent
+        content: item.CkeditorContent,
+        // 默认“回复”也记录实际按钮文案，自定义按钮在下方使用配置名称覆盖。
+        button: this.$t('page.reply')
       };
       let isValid = true;
       if (btn) {
