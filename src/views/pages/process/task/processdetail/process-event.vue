@@ -53,6 +53,7 @@
             :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
+            @right-resize-end="onRightResizeEnd"
           >
             <template v-slot:content>
               <div
@@ -466,9 +467,9 @@ export default {
         });
       }
     },
-    updateActiveStep() {
-      //更新活动和步骤
-      return this.$refs.TaskCenterDetail.updateStepActive();
+    updateActiveStep(item) {
+      // 沿用事件节点的步骤刷新逻辑，并传递关注人更新标记以保留当前标签。
+      return this.$refs.TaskCenterDetail.updateStepActive(item);
     }
   },
   computed: {

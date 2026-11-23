@@ -16,7 +16,8 @@ const clipboard = {
           return;
         }
       } else {
-        copytxt = value.trim();//粘贴时自动去掉首尾空格符
+        // 日志按原始行复制，普通表单沿用去除首尾空白的行为。
+        copytxt = binding.modifiers?.preserveWhitespace ? value : value.trim();
       }
     
       //创建textarea标签（input的value兼容性较差）

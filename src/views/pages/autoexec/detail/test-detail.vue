@@ -55,15 +55,7 @@
           <div class="box-block">
             <Divider orientation="start">{{ $t('term.autoexec.executeaccount') }}</Divider>
             <div>
-              <TsForm
-                ref="executeForm"
-                v-model="executeConfig"
-                v-bind="executeForm"
-              >
-                <template v-slot:executeUser>
-                  <TsFormInput ref="executeUser" v-model="executeConfig.executeUser.value" :validateList="['required']"></TsFormInput>
-                </template>
-              </TsForm>
+              <ExecuteAccount ref="executeForm" v-model="executeConfig" requiredProtocol></ExecuteAccount>
             </div>
           </div>
           <div class="box-block">
@@ -136,7 +128,7 @@ export default {
     SetParam: () => import('./runnerDetail/param.vue'),
     TsForm: () => import('@/resources/plugins/TsForm/TsForm'),
     ArgumentParams: () => import('./runnerDetail/argument-params.vue'),
-    TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput'),
+    ExecuteAccount: () => import('./runnerDetail/execute-account.vue'),
     TsFormRadio: () => import('@/resources/plugins/TsForm/TsFormRadio'),
     TsFormItem: () => import('@/resources/plugins/TsForm/TsFormItem'),
     TsFormSelect: () => import('@/resources/plugins/TsForm/TsFormSelect'),
@@ -160,28 +152,6 @@ export default {
             type: 'text',
             label: this.$t('term.autoexec.jobname'),
             value: '',
-            validateList: ['required']
-          }
-        }
-      },
-      executeForm: {
-        labelWidth: 100,
-        labelPosition: 'left',
-        itemList: {
-          protocolId: {
-            type: 'select',
-            label: this.$t('page.protocol'),
-            value: '',
-            multiple: false,
-            placeholder: this.$t('page.pleaseselect'),
-            dynamicUrl: '/api/rest/resourcecenter/account/protocol/search',
-            rootName: 'tbodyList',
-            dealDataByUrl: this.$utils.getProtocolDataList,
-            validateList: ['required']
-          },
-          executeUser: {
-            type: 'slot',
-            label: this.$t('page.executeuser'),
             validateList: ['required']
           }
         }
@@ -334,7 +304,6 @@ export default {
       isValid = this.$refs.executeForm ? this.$refs.executeForm.valid() && isValid : isValid;
       isValid = this.$refs.nameForm ? this.$refs.nameForm.valid() && isValid : isValid;
       isValid = this.$refs.argumentConfig ? this.$refs.argumentConfig.valid() && isValid : isValid;
-      isValid = this.$refs.executeUser ? this.$refs.executeUser.valid() && isValid : isValid;
       if ((this.$refs.roundCountForm && !this.$refs.roundCountForm.valid()) || (this.$refs.parallelForm && !this.$refs.parallelForm.valid())) {
         isValid = false;
       }

@@ -55,6 +55,7 @@ export default {
     TsFormInput: () => import('@/resources/plugins/TsForm/TsFormInput')
   },
   props: {
+    initialValues: Array,
     config: Object
   },
   data() {
@@ -77,6 +78,15 @@ export default {
   destroyed() {},
   methods: {
     initArgument() {
+      // 复制时保留参数顺序，固定个数以当前版本为准。
+      if (this.initialValues) {
+        const count = this.config.argumentCount || Math.max(this.initialValues.length, this.config.isRequired ? 1 : 0);
+        this.argumentMappingList = Array.from({length: count}, (_, i) => {
+          const value = this.initialValues[i] ?? '';
+          return {mappingMode: 'constant', name: value, value};
+        });
+        return;
+      }
       let obj = {
         mappingMode: 'constant',
         value: this.$utils.deepClone(this.config ? this.config.defaultValue : ''),

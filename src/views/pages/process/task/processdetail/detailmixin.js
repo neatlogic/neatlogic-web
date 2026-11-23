@@ -1015,7 +1015,8 @@ export default {
         processTaskId: this.processTaskId
       };
       this.$api.process.processtask.getCurrentFocususerList(param).then(res => {
-        if (res && res.Status == 'OK') {
+        // 切换工单后忽略原工单的查询结果，避免关注状态串到当前工单。
+        if (res?.Status === 'OK' && !this._isDestroyed && String(this.processTaskConfig.id) === String(param.processTaskId)) {
           Object.assign(this.processTaskConfig, {
             focusUserUuidList: res.Return.focusUserUuidList || [],
             isFocus: res.Return.isFocus || false
@@ -1028,12 +1029,11 @@ export default {
       if (item && item.priority) {
         this.$set(this.processTaskConfig, 'priority', item.priority);
       }
-      if (item && item == 'updateFocusUser') {
-        //关注人
-        this.updateFocusUser();
+      if (item === 'updateFocusUser') {
+        // 单独同步关注状态，活动记录由下方的步骤刷新统一获取。
+        this.getCurrentFocususerList();
       }
-      //更新活动和步骤
-      this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.updateStepActive();
+      this.$refs.TaskCenterDetail && this.$refs.TaskCenterDetail.updateStepActive(item);
     },
     async reapprovalTask() {
       //重审
@@ -1061,6 +1061,10 @@ export default {
             });
         }
       }
+    },
+    // 右栏拖拽结束后，通知已挂载的工单表单按新的可用宽度重新布局。
+    onRightResizeEnd() {
+      this.$refs.TaskCenterDetail?.refreshFormLayout();
     },
     rightSiderToggle() {
       this.isOrderRight = !this.isOrderRight;

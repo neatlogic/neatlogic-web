@@ -1575,13 +1575,16 @@ export default {
       this.selectedProcessTaskStepIdList = [...selectedList];
       this.getActivityList();
     },
-    updateStepActive() {
+    updateStepActive(item) {
       //更新活动和步骤
       this.getActivityList();
       this.getStepStatusList();
       //更新附件清单
       this.getAllFileList();
-      this.initTabList();
+      // 关注人变更不影响标签布局，重建布局会把当前标签切回默认项。
+      if (item !== 'updateFocusUser') {
+        this.initTabList();
+      }
     },
     setStepform() {
       //拼接接口返回当前步骤uuid跟流程的表单授权跟表单的最终结果
@@ -1964,6 +1967,7 @@ export default {
       }
     },
     clickTabValue(name) {
+      // 点击标签时调整滚动位置，并同步内容详情的表单数据。
       const commonMain = this.$refs.commonMain;
       if (commonMain) {
         const offset = commonMain.getBoundingClientRect().top - this.$el.getBoundingClientRect().top;
@@ -1971,30 +1975,22 @@ export default {
           this.$el.scrollTop += offset;
         }
       }
-      if (name === 'report') {
-        if (this.hasForm) {
-          //重现渲染表单组件（重新计算），避免表单宽度为0
-          this.$set(this.resizeStatusConfig, 'isReady', false);
-          if (this.processTaskConfig.formAttributeDataMap) {
-            //表单重新渲染时，获取表单最新数据
-            this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
-          }
-          this.$nextTick(() => {
-            this.$set(this.resizeStatusConfig, 'isReady', true);
-            // this.$nextTick(async() => {
-            //   if (this.$refs.formSheet) {
-            //     await this.formValid(this.processTaskConfig);
-            //   }
-            // });
-          });
+      if (name === 'report' && this.hasForm) {
+        this.refreshFormLayout();
+        if (this.processTaskConfig.formAttributeDataMap) {
+          this.formAttributeDataMap = this.$utils.deepClone(this.processTaskConfig.formAttributeDataMap);
         }
       } else if (name === 'collection') {
-        //工单集合，重新计算表单组件，避免表单宽度为0
-        this.$set(this.resizeStatusConfig, 'isReady', false);
-        this.$nextTick(() => {
-          this.$set(this.resizeStatusConfig, 'isReady', true);
-        });
+        this.refreshFormLayout();
       }
+    },
+    refreshFormLayout() {
+      // 等待标签面板显示后，通知表单按可见容器的宽度重新布局。
+      if (!this.resizeStatusConfig.isReady) return;
+      this.resizeStatusConfig.isReady = false;
+      this.$nextTick(() => {
+        this.resizeStatusConfig.isReady = true;
+      });
     },
     changeTabValue(val) {
       // 更新当前tabValue
@@ -2010,13 +2006,10 @@ export default {
             }
           }
         }
+        // 流转校验也可以定位到已选中或固定的内容详情页。
         if (val === 'report') {
-        //流转校验，更新表单布局
-          this.$set(this.resizeStatusConfig, 'isReady', false);
-          this.$nextTick(() => {
-            this.$set(this.resizeStatusConfig, 'isReady', true);
-          });
-        } 
+          this.refreshFormLayout();
+        }
       });
     }
   },
@@ -2186,6 +2179,12 @@ export default {
     }
   },
   watch: {
+    tabValue(name) {
+      // 程序自动选中内容详情时也要在面板显示后重新测宽。
+      if (name === 'report' && this.hasForm) {
+        this.refreshFormLayout();
+      }
+    },
     // 普通节点在上报内容页处理，专有节点在对应节点页处理。日志、时间线均为只读视图。
     isKnowledgeProcessing: {
       immediate: true,

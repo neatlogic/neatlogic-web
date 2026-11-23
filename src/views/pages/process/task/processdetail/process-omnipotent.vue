@@ -58,6 +58,7 @@
             :isRightSiderHide="!isOrderRight"
             :rightBtn="true"
             @rightSiderToggle="rightSiderToggle"
+            @right-resize-end="onRightResizeEnd"
           >
             <template v-slot:content>
               <div

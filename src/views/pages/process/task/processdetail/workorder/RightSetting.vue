@@ -479,18 +479,26 @@ export default {
         }
       });
     },
-    updateFocusUserList(list) { //工单关注人
+    updateFocusUserList(list) {
+      // 合并连续选择，保存成功后提示并同步工单关注状态。
       const data = {
         processTaskId: this.processTaskId,
         focusUserUuidList: list
       };
       // 去抖，防止每次修改工单关注人都调用接口
       clearTimeout(this.updatingFocusUser);
-      this.updatingFocusUser = setTimeout(() => {
-        this.$api.process.processtask.updateFocusUser(data).then(() => {
+      const timer = setTimeout(() => {
+        this.$api.process.processtask.updateFocusUser(data).then(res => {
+          // 请求始终保存原工单，只在对应的详情页处理成功回包。
+          if (res?.Status !== 'OK' || this._isDestroyed || this.processTaskConfig.id !== data.processTaskId) return;
+          // 连续编辑期间只提示最后一次选择的保存结果。
+          if (this.updatingFocusUser === timer) {
+            this.$Message.success(this.$t('page.saved', { target: this.$t('term.process.focususer') }));
+          }
           this.$emit('updateActiveStep', 'updateFocusUser');
         });
       }, 1000);
+      this.updatingFocusUser = timer;
     },
     initRightHeight() {
       this.rightHeight = window.innerHeight - (this.$refs.rightMain ? this.$refs.rightMain.getBoundingClientRect().top : 0) - 18;
