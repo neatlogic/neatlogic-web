@@ -229,10 +229,9 @@ export default {
           transfer: true,
           multiple: false,
           clearable: false,
-          dataList: [
-            {text: this.$t('term.process.replydisplayseparate'), value: 'separate'},
-            {text: this.$t('term.process.replydisplaycombined'), value: 'combined'}
-          ],
+          // 通过通用枚举接口加载 value/text，沿用选择组件的 POST 请求及 Return 解析。
+          url: '/api/rest/universal/enum/get',
+          params: {enumClass: 'TaskReplyDisplayMode'},
           validateList: ['required']
         }
 

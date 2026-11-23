@@ -51,7 +51,10 @@ test('策略显示方式位于自定义按钮之后，不可清空，新增及�
   assert.equal(vm.relationDialogForm.at(-1), mode());
   assert.equal(mode().clearable, false);
   assert.equal(mode().multiple, false);
-  assert.deepEqual(mode().dataList.map(item => item.value), ['separate', 'combined']);
+  assert.ok(!Object.hasOwn(mode(), 'dataList'));
+  assert.equal(mode().url, '/api/rest/universal/enum/get');
+  assert.deepEqual(mode().params, {enumClass: 'neatlogic.framework.process.constvalue.TaskReplyDisplayMode'});
+  assert.deepEqual(mode().validateList, ['required']);
   assert.equal(mode().value, 'separate');
   vm.editRelations({id: 1, name: '旧策略', config: {customButtonList: []}});
   assert.equal(mode().value, 'separate');
@@ -63,6 +66,59 @@ test('策略显示方式位于自定义按钮之后，不可清空，新增及�
   vm.addRelations();
   assert.equal(mode().value, 'separate');
   assert.deepEqual(vm.strategyConfig, {});
+});
+
+test('显示方式使用真实选择组件的 POST/Return 流程加载枚举，按接口文字回显并保存选中的值', async() => {
+  const {vm: form, mode, saved} = createConfig();
+  const select = loadModule(resolve(__dirname, '../../../../resources/plugins/TsForm/TsFormSelect.vue')).default;
+  // 仅替换网络和下拉框定位，使用共享组件原有请求、回显及单选逻辑。
+  const requests = [];
+  const response = [
+    {value: 'separate', text: '操作按钮与回复内容分开显示'},
+    {value: 'combined', text: '操作按钮与回复内容拼接显示（以句号分隔）'}
+  ];
+  const https = async request => {
+    requests.push(request);
+    return {Status: 'OK', Return: response};
+  };
+  https.CancelToken = {source: () => ({token: {}, cancel() {}})};
+  const vm = {
+    ...mode(),
+    $https: https,
+    $t: key => key,
+    $utils: {
+      deepClone: value => JSON.parse(JSON.stringify(value)),
+      isEmpty: value => value == null || value === '' || Array.isArray(value) && value.length === 0,
+      equalStr: (left, right) => String(left) === String(right)
+    },
+    $emit(event, value) { if (event === 'change') mode().value = value; },
+    filterValid: values => values,
+    isRequired: true,
+    valid: () => true
+  };
+  for (const name of ['ajaxType', 'valueName', 'textName', 'rootName', 'mode', 'search']) {
+    vm[name] = select.props[name].default;
+  }
+  Object.assign(vm, select.data.call(vm), select.methods, {hideOption() {}, scrollTop() {}});
+  vm.currentValue = mode().value;
+  vm.initDataListByUrl(false);
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(requests, [{method: 'post', url: mode().url, data: mode().params}]);
+  assert.deepEqual(vm.nodeList, response);
+  assert.deepEqual(vm.selectedList, [response[0]], '新增默认 separate 以接口 text 回显');
+
+  form.editRelations({id: 9, name: '会签', config: {replyDisplayMode: 'combined'}});
+  vm.currentValue = mode().value;
+  vm.initValueByNodeList();
+  assert.deepEqual(vm.selectedList, [response[1]], '编辑 combined 使用接口 text 回显');
+  vm.toggleSelect(response[1]);
+  assert.equal(vm.currentValue, 'combined', '必填单选再次点击当前值不能取消');
+  vm.toggleSelect(response[0]);
+  assert.equal(mode().value, 'separate');
+  assert.deepEqual(vm.selectedList, [response[0]]);
+  form.saveRelations();
+  assert.equal(saved[0].config.replyDisplayMode, 'separate');
+  assert.equal(requests.length, 1, '切换选项和编辑回显沿用已加载枚举');
 });
 
 test('保存两种显示方式时保留配置，删除全部自定义按钮不会复活旧按钮', () => {
