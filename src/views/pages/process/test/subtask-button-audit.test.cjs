@@ -9,7 +9,7 @@ const { JSDOM } = require('jsdom');
 const workorder = '../task/processdetail/workorder/';
 
 // 加载实际 SFC 的方法和模板，只替换本用例不需要的外部组件依赖。
-function loadModule(filename, imports = {}) {
+function loadModule(filename, imports = {}, testDocument) {
   const absolutePath = resolve(__dirname, workorder, filename);
   const source = readFileSync(absolutePath, 'utf8');
   const descriptor = filename.endsWith('.vue') ? parse({ source, filename: absolutePath }) : null;
@@ -19,7 +19,19 @@ function loadModule(filename, imports = {}) {
     plugins: ['@babel/plugin-transform-modules-commonjs']
   });
   const exports = {};
-  new Function('exports', 'require', code)(exports, name => imports[name] || {});
+  // 展示方式共用模块使用真实 DOM 拼接富文本，回归测试注入当前浏览器上下文。
+  new Function('exports', 'require', 'document', code)(exports, name => {
+    if (imports[name]) {
+      return imports[name];
+    }
+    if (name.endsWith('/subtask-reply-display.js')) {
+      return loadModule('subtask-reply-display.js', {}, testDocument);
+    }
+    if (name.endsWith('/long-html-content.js')) {
+      return loadModule('long-html-content.js', {}, testDocument);
+    }
+    return {};
+  }, testDocument);
   if (descriptor && descriptor.template) {
     exports.default.template = descriptor.template.content;
   }
@@ -108,7 +120,7 @@ test('增加按钮参数后仍阻止空回复和请求中的重复点击', async
 });
 
 // 复用实际类型注册和时间线明细循环，验证按钮组件继承的纯文本渲染生效。
-function createTimeline(details) {
+function createTimeline(details, audit = {}) {
   const dom = new JSDOM('', { runScripts: 'outside-only' });
   const { window } = dom;
   window.eval(readFileSync(require.resolve('vue/dist/vue.js'), 'utf8'));
@@ -121,23 +133,26 @@ function createTimeline(details) {
   const buttonHandler = loadModule('activity/item/button-handler.vue', { './title-handler.vue': titleHandler }).default;
   const contentHandler = loadModule('activity/item/content-handler.vue', {
     '../../long-html-content.js': loadModule('long-html-content.js')
-  }).default;
+  }, window.document).default;
+  const replyopinionHandler = loadModule('activity/item/replyopinion-handler.vue', { './content-handler.vue': contentHandler }).default;
   const item = loadModule('activity/item/index.js', {
     './title-handler': titleHandler,
     './button-handler': buttonHandler,
     './content-handler': contentHandler,
+    './replyopinion-handler': replyopinionHandler,
     '@/resources/import/component-manager.js': { getTimeLineComponent: () => ({}) }
   }).default;
-  const overview = loadModule('activity/activity-overview.vue', { './item': item }).default;
+  const overview = loadModule('activity/activity-overview.vue', { './item': item }, window.document).default;
   const [detailTemplate] = overview.template.match(/<div v-if="item.auditDetailList[\s\S]*?<\/div>/);
   const vm = new Vue({
     components: item,
     data: {
-      item: { id: 1, auditDetailList: details },
+      item: { id: 1, auditDetailList: details, ...audit },
       frozenFormConfig: {},
       processTaskId: 1
     },
     computed: overview.computed,
+    methods: overview.methods,
     template: detailTemplate
   }).$mount();
   window.document.body.appendChild(vm.$el);
@@ -178,12 +193,45 @@ test('同一条时间线保留富文本内容，以操作标签按纯文本显�
   }
 });
 
+// 回复意见直接渲染完成时保存的最终内容，配置变化不影响历史审计。
+test('新回复意见使用专用标签，拼接记录不重复前缀，分开记录显示操作明细', async() => {
+  const buttonName = '<b>同意 Agree</b> & "确认"';
+  for (const [language, title] of [['zh', '回复意见'], ['en', 'Reply Opinion']]) {
+    const messages = JSON.parse(readFileSync(resolve(__dirname, '../../../../../../neatlogic-itsm-base/src/main/resources/neatlogic/resources/itsm-base/i18n', `language_${language}.json`), 'utf8'));
+    const labels = messages.nfpc.processtaskauditdetailtype.text;
+    const opinion = {
+      auditId: 1, type: 'replyopinion', typeName: labels.replyopinion, changeType: 'new',
+      newContent: '<p>&lt;b&gt;同意 Agree&lt;/b&gt; &amp; "确认"。<strong>需按规定流程发起放款</strong></p>'
+    };
+    const button = { auditId: 1, type: 'button', typeName: labels.button, newContent: buttonName };
+    const fixture = createTimeline([opinion], { action: 'completetask' });
+    try {
+      assert.equal(fixture.vm.$el.children.length, 1);
+      assert.equal(fixture.vm.$el.querySelector('.left-label-text').textContent, title);
+      assert.equal(fixture.vm.$el.querySelector('.ck-content').textContent, buttonName + '。需按规定流程发起放款');
+      assert.equal(fixture.vm.$el.querySelector('strong').textContent, '需按规定流程发起放款');
+      assert.equal(fixture.vm.$el.querySelector('b'), null);
+
+      fixture.vm.item = { id: 2, action: 'completetask', replyDisplayMode: 'combined', auditDetailList: [opinion] };
+      await fixture.vm.$nextTick();
+      assert.equal(fixture.vm.$el.querySelector('.ck-content').textContent, buttonName + '。需按规定流程发起放款', '忽略旧模式属性，刷新不重复添加前缀');
+      fixture.vm.item = { id: 3, action: 'completetask', auditDetailList: [{ ...opinion, newContent: '<p><strong>需按规定流程发起放款</strong></p>' }, button] };
+      await fixture.vm.$nextTick();
+      assert.equal(fixture.vm.$el.children.length, 2);
+      assert.equal(fixture.vm.$el.querySelector('.ck-content').textContent, '需按规定流程发起放款');
+      assert.equal(fixture.vm.$el.children[1].lastElementChild.textContent, buttonName);
+    } finally {
+      fixture.close();
+    }
+  }
+});
+
 // 使用两个真实组件的数据装配和完整表格模板，表格替身只负责逐列调用 scoped slot。
 function createReplyTable(filename, rows, language = 'zh') {
-  const component = loadModule(`strategy/${filename}`).default;
   const page = JSON.parse(readFileSync(resolve(__dirname, '../../../../resources/assets/languages/page', `${language}.json`), 'utf8'));
   const dom = new JSDOM('', { runScripts: 'outside-only' });
   const { window } = dom;
+  const component = loadModule(`strategy/${filename}`, {}, window.document).default;
   window.eval(readFileSync(require.resolve('vue/dist/vue.js'), 'utf8'));
   const Vue = window.Vue;
   Vue.config.productionTip = false;
@@ -222,6 +270,8 @@ function createReplyTable(filename, rows, language = 'zh') {
       id: 1,
       num: -1,
       rangeList: [],
+      // 表格的默认分开方式由策略配置提供，回复行不再保存显示模式。
+      config: { replyDisplayMode: 'separate' },
       processTaskStepTaskList: [{ id: 101, stepTaskUserVoList: nextRows }]
     });
   }

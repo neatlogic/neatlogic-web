@@ -25,7 +25,7 @@
         <div class="mt-md">
           <TsTable
             :tbodyList="item.tbodyList"
-            :theadList="theadList"
+            :theadList="getReplyColumns(item.tbodyList)"
             :height="'280'"
             keyName="id"
           >
@@ -44,21 +44,24 @@
               <span :class="{'text-disabled':row.isDelete == 1}">{{ row.endTime | formatDate }}</span>
             </template>
             <template slot="content" slot-scope="{ row }">
-              <div v-if="row.content" :class="{'text-disabled':row.isDelete == 1}">
+              <!-- 只组合展示内容，保持接口返回的原始回复与操作名称。 -->
+              <div v-if="row.displayContent" :class="{'text-disabled':row.isDelete == 1}">
                 <Tooltip max-width="500" transfer>
-                  <span v-if="$utils.removeHTMLTag(row.content) && $utils.removeHTMLTag(row.content).length >30">
-                    {{ $utils.removeHTMLTag(row.content).substr(0, Number(30)) }}...
+                  <span v-if="row.displayText.length >30">
+                    {{ row.displayText.substr(0, Number(30)) }}...
                   </span>
-                  <span v-else>{{ $utils.removeHTMLTag(row.content) }}</span>
+                  <!-- 仅含图片的有效回复仍需提供可悬浮入口。 -->
+                  <span v-else>{{ row.displayText || $t('page.viewdetails') }}</span>
                   <div slot="content">
-                    <div v-html="row.content"></div>
+                    <div v-html="row.displayContent"></div>
                   </div>
                 </Tooltip>
               </div>
+              <span v-else :class="{'text-disabled':row.isDelete == 1}">-</span>
             </template>
-            <!-- 按钮按纯文本展示；旧记录或空白值使用占位符，并沿用已删除行样式。 -->
+            <!-- 拼接模式不重复显示操作名称；没有已回复记录时仍保留操作列占位。 -->
             <template slot="button" slot-scope="{ row }">
-              <span :class="{'text-disabled':row.isDelete == 1}" v-text="row.button && row.button.trim() ? row.button : '-'"></span>
+              <span :class="{'text-disabled':row.isDelete == 1}" v-text="row.replyDisplayMode !== 'combined' && row.button && row.button.trim() ? row.button : '-'"></span>
             </template>
           </TsTable>
         </div>
@@ -67,6 +70,7 @@
   </div>
 </template>
 <script>
+import {normalizeReplyDisplayMode, getReplyDisplayHtml, getReplyDisplayText, shouldShowReplyActionColumn} from '../subtask-reply-display.js';
 export default {
   name: 'StrategyDetailReadonly',
   components: {
@@ -135,6 +139,8 @@ export default {
     getTbodyList(item) {
       if (item.stepTaskUserVoList) {
         let newArr = [];
+        // 每次详情刷新都读取策略当前配置，不使用回复行上旧的显示方式快照。
+        const replyDisplayMode = normalizeReplyDisplayMode(this.stepConfig && this.stepConfig.config && this.stepConfig.config.replyDisplayMode);
         item.stepTaskUserVoList.forEach((r, i) => {
           newArr.push(
             {
@@ -143,9 +149,13 @@ export default {
               userVo: r.userVo,
               originalUserUuid: r.originalUserUuid || null,
               endTime: r.endTime,
+              status: r.status,
               content: r.content,
-              // 透传已保存的按钮原文，展示与当前回复一致的选择。
+              // 只生成当前策略的展示副本，不改写原始回复和操作名称。
               button: r.button,
+              replyDisplayMode: replyDisplayMode,
+              displayContent: getReplyDisplayHtml(r.content, r.button, replyDisplayMode),
+              displayText: getReplyDisplayText(r.content, r.button, replyDisplayMode),
               isDelete: r.isDelete,
               isDisabled: !!r.isDisabled || false,
               fileList: r.fileList
@@ -156,6 +166,10 @@ export default {
       } else {
         return [];
       }
+    },
+    getReplyColumns(rows) {
+      // 按回复状态排除待回复行，即使代办附件操作已更新 endTime 也不参与判断。
+      return shouldShowReplyActionColumn(rows) ? this.theadList : this.theadList.filter(column => column.key !== 'button');
     }
   },
   computed: {},
