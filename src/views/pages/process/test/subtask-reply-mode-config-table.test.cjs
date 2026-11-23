@@ -53,7 +53,7 @@ test('策略显示方式位于自定义按钮之后，不可清空，新增及�
   assert.equal(mode().multiple, false);
   assert.ok(!Object.hasOwn(mode(), 'dataList'));
   assert.equal(mode().url, '/api/rest/universal/enum/get');
-  assert.deepEqual(mode().params, {enumClass: 'neatlogic.framework.process.constvalue.TaskReplyDisplayMode'});
+  assert.deepEqual(mode().params, {enumClass: 'TaskReplyDisplayMode'});
   assert.deepEqual(mode().validateList, ['required']);
   assert.equal(mode().value, 'separate');
   vm.editRelations({id: 1, name: '旧策略', config: {customButtonList: []}});
@@ -245,26 +245,46 @@ for (const filename of ['strategy-detail.vue', 'strategy-detail-readonly.vue']) 
     } finally { fixture.close(); }
   });
 
-  test(`${filename} 当前拼接模式按回复状态判断列显隐，待回复有结束时间也不参与`, async() => {
-    const fixture = createTable(filename, [reply(1, 'separate'), reply(2, undefined, {endTime: null, content: null, button: null})], {replyDisplayMode: 'combined'});
+  test(`${filename} 操作列跟随当前策略，覆盖待回复、已回复、混合及空记录`, async() => {
+    const pending = reply(1, 'separate', {status: 'pending', endTime: null, content: null, button: null});
+    // 附件操作可能给待回复行写入 endTime，列显隐仍只取决于当前策略。
+    const pendingWithEndTime = reply(2, 'combined', {status: 'pending', content: null, button: null});
+    const completed = reply(3, 'separate', {status: 'succeed', endTime: null});
+    const fixture = createTable(filename, [pending], {replyDisplayMode: 'combined'});
     try {
-      assert.deepEqual(fixture.columns(), ['userUuid', 'endTime', 'content', 'fileList']);
-      assert.equal(fixture.cells('content')[1].textContent.trim(), '-');
-      // 代办上传附件可能提前设置 endTime，但 pending 行仍不能参与已回复模式判断。
-      fixture.update([reply(1, 'separate', {status: 'succeed'}), reply(2, 'separate', {status: 'pending', content: null, button: null})]);
-      await fixture.vm.$nextTick();
-      assert.deepEqual(fixture.columns(), ['userUuid', 'endTime', 'content', 'fileList']);
-      assert.equal(fixture.vm.processTaskStepTaskList[0].tbodyList[1].status, 'pending');
-      fixture.update([reply(2, 'combined', {status: 'pending', content: null, button: null})]);
-      await fixture.vm.$nextTick();
-      assert.ok(fixture.columns().includes('button'), '只有待回复行时即使 endTime 非空，也保留操作列');
-      fixture.update([reply(1, 'separate', {status: 'succeed', endTime: null})]);
+      for (const rows of [[pending], [pendingWithEndTime], [pending, pendingWithEndTime], [completed, pending], [completed], []]) {
+        for (const mode of ['separate', 'combined']) {
+          fixture.update(rows, {replyDisplayMode: mode});
+          await fixture.vm.$nextTick();
+          const columns = mode === 'combined' ? ['userUuid', 'endTime', 'content', 'fileList'] : ['userUuid', 'endTime', 'content', 'button', 'fileList'];
+          assert.deepEqual(fixture.columns(), columns, `${mode} 模式不受回复状态和记录数量影响`);
+          rows.forEach((row, index) => {
+            if (row.status === 'pending') assert.equal(fixture.cells('content')[index].textContent.trim(), '-');
+          });
+        }
+      }
+      fixture.update([completed], {replyDisplayMode: 'combined'});
       await fixture.vm.$nextTick();
       assert.equal(fixture.cells('content')[0].querySelector('[data-summary]').textContent.trim(), '同意。按流程办理');
       assert.ok(!fixture.vm.$el.textContent.includes('同意。同意'));
-      fixture.update([reply(1, 'combined', {endTime: null, content: null, button: null})]);
-      await fixture.vm.$nextTick();
-      assert.ok(fixture.columns().includes('button'), '没有已回复行时保持操作列');
+    } finally { fixture.close(); }
+  });
+
+  test(`${filename} 同一批待回复数据切换策略后刷新列，不需要先提交回复`, async() => {
+    const rows = [
+      reply(1, 'combined', {status: 'pending', endTime: null, content: null, button: null}),
+      reply(2, 'separate', {status: 'pending', content: null, button: null})
+    ];
+    const fixture = createTable(filename, rows, {replyDisplayMode: 'separate'});
+    try {
+      // 仅刷新策略配置，处理人状态与原始回复保持不变。
+      for (const mode of ['separate', 'combined', 'separate']) {
+        fixture.update(rows, {replyDisplayMode: mode});
+        await fixture.vm.$nextTick();
+        assert.equal(fixture.columns().includes('button'), mode === 'separate');
+        assert.deepEqual(fixture.cells('content').map(cell => cell.textContent.trim()), ['-', '-']);
+        assert.ok(fixture.vm.processTaskStepTaskList[0].tbodyList.every(row => row.status === 'pending' && row.content === null && row.button === null));
+      }
     } finally { fixture.close(); }
   });
 
@@ -278,6 +298,12 @@ for (const filename of ['strategy-detail.vue', 'strategy-detail-readonly.vue']) 
         assert.ok(fixture.columns().includes('button'));
         assert.equal(fixture.cells('content')[0].querySelector('[data-summary]').textContent.trim(), '按流程办理');
         assert.equal(fixture.cells('button')[0].textContent.trim(), '同意');
+        // 未回复和空列表同样沿用缺省分开模式，不能因记录状态隐藏操作列。
+        for (const values of [[reply(2, 'combined', {status: 'pending', endTime: null, content: null, button: null})], []]) {
+          fixture.update(values, config);
+          await fixture.vm.$nextTick();
+          assert.ok(fixture.columns().includes('button'));
+        }
       }
     } finally { fixture.close(); }
   });

@@ -67,12 +67,7 @@ export function getReplyDisplayText(content, button, mode) {
   return template.content.textContent || '';
 }
 
-// 待回复行不影响列显隐；调用方按当前策略填入模式，至少有已回复行时才隐藏操作列。
-export function shouldShowReplyActionColumn(rows) {
-  const repliedRows = (rows || []).filter(row => {
-    // 附件操作可能给待回复行写入 endTime，优先按明确状态判断；旧响应才兼容时间字段。
-    if (row.status !== null && row.status !== undefined && row.status !== '') return row.status === 'succeed';
-    return row.endTime !== null && row.endTime !== undefined && row.endTime !== '';
-  });
-  return !repliedRows.length || repliedRows.some(row => normalizeReplyDisplayMode(row.replyDisplayMode) !== 'combined');
+// 操作列直接跟随策略当前配置；尚未回复或没有记录时，拼接模式也隐藏操作列。
+export function shouldShowReplyActionColumn(mode) {
+  return normalizeReplyDisplayMode(mode) !== 'combined';
 }

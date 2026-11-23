@@ -34,7 +34,7 @@
         <div class="mt-md">
           <TsTable
             :tbodyList="item.tbodyList"
-            :theadList="getReplyColumns(item.tbodyList)"
+            :theadList="getReplyColumns()"
             :height="'280'"
             keyName="id"
           >
@@ -69,7 +69,7 @@
               </div>
               <span v-else :class="{'text-disabled':row.isDelete == 1}">-</span>
             </template>
-            <!-- 拼接模式不重复显示操作名称；没有已回复记录时仍保留操作列占位。 -->
+            <!-- 分开模式按原文显示操作名称，空值使用占位；拼接模式由表头配置隐藏该列。 -->
             <template slot="button" slot-scope="{ row }">
               <span :class="{'text-disabled':row.isDelete == 1}" v-text="row.replyDisplayMode !== 'combined' && row.button && row.button.trim() ? row.button : '-'"></span>
             </template>
@@ -389,9 +389,10 @@ export default {
         return [];
       }
     },
-    getReplyColumns(rows) {
-      // 按回复状态排除待回复行，即使代办附件操作已更新 endTime 也不参与判断。
-      return shouldShowReplyActionColumn(rows) ? this.theadList : this.theadList.filter(column => column.key !== 'button');
+    getReplyColumns() {
+      // 按策略控制列显隐，不依赖处理人是否已回复或回复时间是否存在。
+      const replyDisplayMode = this.stepConfig && this.stepConfig.config && this.stepConfig.config.replyDisplayMode;
+      return shouldShowReplyActionColumn(replyDisplayMode) ? this.theadList : this.theadList.filter(column => column.key !== 'button');
     },
     closeDialog() {
       this.isShow = false;
