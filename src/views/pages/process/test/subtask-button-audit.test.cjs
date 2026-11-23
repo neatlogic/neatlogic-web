@@ -150,26 +150,31 @@ function createTimeline(details) {
   };
 }
 
-test('同一条时间线先显示原富文本内容，再按纯文本显示当次按钮', async() => {
+test('同一条时间线保留富文本内容，以操作标签按纯文本显示当次按钮', async() => {
   const buttonName = '<b>同意 Agree</b> & "确认"';
-  const content = { auditId: 1, type: 'content', typeName: '内容', changeType: 'new', newContent: '<p><strong>原回复内容</strong></p>' };
-  const fixture = createTimeline([content, { auditId: 1, type: 'button', typeName: '按钮', newContent: buttonName }]);
-  try {
-    const rows = fixture.vm.$el.children;
-    assert.equal(rows.length, 2);
-    assert.equal(rows[0].querySelector('strong').textContent, '原回复内容');
-    assert.equal(rows[1].querySelector('.left-label-text').textContent, '按钮');
-    assert.equal(rows[1].lastElementChild.textContent, buttonName);
-    assert.equal(rows[1].querySelector('b'), null, '按钮名中的 HTML 标记必须作为文字显示');
+  for (const [language, title] of [['zh', '操作'], ['en', 'Action']]) {
+    // 时间线标签由后端专用翻译提供，读取实际语言资源验证显示文案且保留 button 类型。
+    const messages = JSON.parse(readFileSync(resolve(__dirname, '../../../../../../neatlogic-itsm-base/src/main/resources/neatlogic/resources/itsm-base/i18n', `language_${language}.json`), 'utf8'));
+    const labels = messages.nfpc.processtaskauditdetailtype.text;
+    const content = { auditId: 1, type: 'content', typeName: labels.content, changeType: 'new', newContent: '<p><strong>原回复内容</strong></p>' };
+    const fixture = createTimeline([content, { auditId: 1, type: 'button', typeName: labels.button, newContent: buttonName }]);
+    try {
+      const rows = fixture.vm.$el.children;
+      assert.equal(rows.length, 2);
+      assert.equal(rows[0].querySelector('strong').textContent, '原回复内容');
+      assert.equal(rows[1].querySelector('.left-label-text').textContent, title);
+      assert.equal(rows[1].lastElementChild.textContent, buttonName);
+      assert.equal(rows[1].querySelector('b'), null, '按钮名中的 HTML 标记必须作为文字显示');
 
-    // 刷新为旧时间线数据时，不保留上一条操作的按钮明细。
-    fixture.vm.item = { id: 2, auditDetailList: [{ ...content, auditId: 2 }] };
-    await fixture.vm.$nextTick();
-    assert.equal(fixture.vm.$el.children.length, 1);
-    assert.equal(fixture.vm.$el.querySelector('strong').textContent, '原回复内容');
-    assert.ok(!fixture.vm.$el.textContent.includes('按钮'));
-  } finally {
-    fixture.close();
+      // 刷新为旧时间线数据时，不保留上一条操作的明细。
+      fixture.vm.item = { id: 2, auditDetailList: [{ ...content, auditId: 2 }] };
+      await fixture.vm.$nextTick();
+      assert.equal(fixture.vm.$el.children.length, 1);
+      assert.equal(fixture.vm.$el.querySelector('strong').textContent, '原回复内容');
+      assert.ok(!fixture.vm.$el.textContent.includes(title));
+    } finally {
+      fixture.close();
+    }
   }
 });
 
@@ -248,8 +253,8 @@ function createReplyRows(buttons) {
 }
 
 for (const filename of ['strategy-detail.vue', 'strategy-detail-readonly.vue']) {
-  test(`${filename} 将各行按钮原值传入回复与附件之间的列，并使用公共翻译`, () => {
-    for (const [language, title] of [['zh', '按钮'], ['en', 'Button']]) {
+  test(`${filename} 将各行按钮原值传入回复与附件之间的操作列，并使用公共翻译`, () => {
+    for (const [language, title] of [['zh', '操作'], ['en', 'Action']]) {
       const rows = createReplyRows(['同意', '驳回', '确认', '回复', 'Reply']);
       const fixture = createReplyTable(filename, rows, language);
       try {

@@ -102,8 +102,8 @@ export default {
           type: 'html',
           maxLength: '50'
         }, {
-          // 与可编辑表格保持一致，按钮列位于回复与附件之间。
-          title: this.$t('page.button'),
+          // 与可编辑表格保持一致，操作列位于回复与附件之间，字段仍为 button。
+          title: this.$t('page.action'),
           key: 'button'
         }, {
           title: this.$t('page.accessory'),

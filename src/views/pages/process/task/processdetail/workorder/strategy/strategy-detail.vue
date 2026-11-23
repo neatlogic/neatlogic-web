@@ -204,8 +204,8 @@ export default {
           key: 'content',
           type: 'html'
         }, {
-          // 按钮紧接回复内容展示，使用已有公共翻译。
-          title: this.$t('page.button'),
+          // 操作列紧接回复内容展示，字段仍使用已保存的 button。
+          title: this.$t('page.action'),
           key: 'button'
         }, {
           title: this.$t('page.accessory'),
