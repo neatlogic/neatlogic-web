@@ -38,8 +38,8 @@
               </div>
             </div>
             <div v-if="processTaskConfig.ownerVo" class="information-list">
-              <OverflowTooltip class="infor-left text-grey" :content="$t('page.userteam')">
-                <span class="infor-label overflow">{{ $t('page.userteam') }}</span>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.group')">
+                <span class="infor-label overflow">{{ $t('page.group') }}</span>
               </OverflowTooltip>
               <div class="infor-right usergroup-list">
                 <template v-if="processTaskConfig.ownerVo.teamList && processTaskConfig.ownerVo.teamList.length > 0">
@@ -61,6 +61,12 @@
                 </template>
                 <template v-else>-</template>
               </div>
+            </div>
+            <div v-if="ownerJobTitle" class="information-list">
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.jobTitle')">
+                <span class="infor-label overflow">{{ $t('page.jobTitle') }}</span>
+              </OverflowTooltip>
+              <div class="infor-right owner-job-title">{{ ownerJobTitle }}</div>
             </div>
           </div>
         </div>
@@ -491,6 +497,10 @@ export default {
     }
   },
   computed: {
+    ownerJobTitle() {
+      const position = this.processTaskConfig?.ownerVo?.userInfoObj?.position;
+      return typeof position === 'string' ? position.trim() : '';
+    },
     timeShow() {
       //时间类型展示
       return function(value) {
@@ -593,7 +603,8 @@ export default {
       flex-shrink: 1;
       padding-left: 16px;
       word-break:break-all;
-      &.usergroup-list {
+      &.usergroup-list,
+      &.owner-job-title {
         min-width: 0;
       }
       .usergroup-box {
