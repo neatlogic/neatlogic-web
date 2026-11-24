@@ -103,6 +103,7 @@
 </template>
 <script>
 import UserCard from '@/resources/components/UserCard/UserCard.vue';
+import {normalizeReplyDisplayMode} from '../task/processdetail/workorder/subtask-reply-display.js';
 export default {
   name: '',
   components: {
@@ -218,10 +219,25 @@ export default {
           name: 'buttonList',
           type: 'slot',
           label: this.$t('term.process.custombtn')
+        },
+        {
+          // 默认分开显示；显示方式保存在策略 config 中，与自定义按钮一同回显。
+          name: 'replyDisplayMode',
+          type: 'select',
+          label: this.$t('term.process.replydisplaymode'),
+          value: 'separate',
+          transfer: true,
+          multiple: false,
+          clearable: false,
+          // 通过通用枚举接口加载 value/text，沿用选择组件的 POST 请求及 Return 解析。
+          url: '/api/rest/universal/enum/get',
+          params: {enumClass: 'TaskReplyDisplayMode'},
+          validateList: ['required']
         }
 
       ],
       saving: false,
+      strategyConfig: {}, // 保留策略已有配置，避免仅修改显示方式时丢失其他配置。
       customButtonList: [],
       btnFormConfig: [
         {
@@ -302,15 +318,19 @@ export default {
       this.relationDialogForm[0].validateList[2].params.id = '';
       this.relationDialog = true;
       this.customButtonList = [];
+      this.strategyConfig = {};
+      this.relationDialogForm.find(item => item.name === 'replyDisplayMode').value = 'separate';
     },
     editRelations(obj) {
       this.dialogTitle = this.$t('dialog.title.edittarget', {'target': this.$t('term.process.subtaskpolicy')});
       this.strategId = obj.id;
+      this.strategyConfig = this.$utils.deepClone(obj.config || {});
       this.relationDialogForm.forEach(e => {
-        e.value = obj[e.name];
+        // 旧策略没有显示方式时仍回显默认值，不从策略顶层读取该配置。
+        e.value = e.name === 'replyDisplayMode' ? normalizeReplyDisplayMode(this.strategyConfig.replyDisplayMode) : obj[e.name];
       });
       this.relationDialogForm[0].validateList[2].params.id = obj.id;
-      this.customButtonList = obj.config ? (obj.config.customButtonList || []) : [];
+      this.customButtonList = this.$utils.deepClone(this.strategyConfig.customButtonList || []);
       this.relationDialog = true;
     },
     remove(row) {
@@ -398,23 +418,24 @@ export default {
         if (this.strategId) {
           data.id = this.strategId;
         }
-        if (this.customButtonList.length > 0) {
-          this.$set(data, 'config', {});
-          let customButtonList = this.customButtonList.map(item => {
-            return {
-              name: item.name,
-              defaultContent: item.defaultContent
-            };
-          });
-          this.$set(data.config, 'customButtonList', customButtonList);
-        }
+        // 始终保存显示方式和当前按钮列表，空列表也覆盖旧值，其他配置保持原样。
+        this.$set(data, 'config', {
+          ...this.$utils.deepClone(this.strategyConfig),
+          replyDisplayMode: normalizeReplyDisplayMode(data.replyDisplayMode),
+          customButtonList: this.customButtonList.map(item => ({name: item.name, defaultContent: item.defaultContent}))
+        });
+        delete data.replyDisplayMode;
         this.seveData(data);
       }
     },
     cancleRelations() {
       this.relationId = null;
+      this.strategyConfig = {};
       this.relationDialogForm.forEach(e => {
-        if (e.name != 'isActive') {
+        // 取消后恢复默认显示方式，避免下一次新增继承上个策略的选择。
+        if (e.name === 'replyDisplayMode') {
+          e.value = 'separate';
+        } else if (e.name != 'isActive') {
           e.value = '';
         } else {
           e.value = 0;
