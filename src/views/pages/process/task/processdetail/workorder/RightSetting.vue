@@ -118,6 +118,29 @@
                     <span>{{ item.textConfig }}</span>
                   </div>
                 </template>
+                <template v-else-if="item.value == 'reportSource'">
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
+                  <div class="infor-right report-source">
+                    <span v-if="item.textConfig.sourceText" class="channel-type bg-selected text-primary">{{ item.textConfig.sourceText }}</span>
+                    <Tooltip
+                      v-if="!item.textConfig.sourceText || item.textConfig.targetType"
+                      :content="item.textConfig.name"
+                      :max-width="420"
+                      class="report-source-tooltip"
+                      :class="{ 'starts-with-bracket': item.textConfig.name && item.textConfig.name.startsWith('【') }"
+                      transfer
+                    >
+                      <a
+                        v-if="reportSourceHref"
+                        :href="reportSourceHref"
+                        class="text-href overflow"
+                        target="_blank"
+                        rel="noopener"
+                      >{{ item.textConfig.name }}</a>
+                      <span v-else class="overflow">{{ item.textConfig.name }}</span>
+                    </Tooltip>
+                  </div>
+                </template>
                 <template v-else-if="item.value == 'priority'">
                   <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
                   <div
@@ -209,6 +232,7 @@
   </div>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
 import clipboard from '@/resources/directives/clipboard.js';
 import StepCarousel from './step-carousel.vue';
 export default {
@@ -273,6 +297,11 @@ export default {
         {
           title: this.$t('term.process.sourcename'),
           value: 'sourceName',
+          textConfig: null
+        },
+        {
+          title: this.$t('page.reportingsource'),
+          value: 'reportSource',
           textConfig: null
         },
         {
@@ -505,6 +534,16 @@ export default {
     }
   },
   computed: {
+    // 目标页面的所属模块负责把定位参数转换成链接。
+    reportSourceHref() {
+      const source = this.processTaskConfig?.reportSource;
+      if (!source?.targetType || !source.targetParams) {
+        return '';
+      }
+      const routes = ComponentManager.getComponent('processTaskReportSourceRoute') || {};
+      const resolve = Object.prototype.hasOwnProperty.call(routes, source.targetType) ? routes[source.targetType] : null;
+      return resolve ? resolve(source.targetParams) : '';
+    },
     ownerJobTitle() {
       const position = this.processTaskConfig?.ownerVo?.userInfoObj?.position;
       return typeof position === 'string' ? position.trim() : '';
@@ -612,8 +651,35 @@ export default {
       padding-left: 16px;
       word-break:break-all;
       &.usergroup-list,
-      &.owner-job-title {
+      &.owner-job-title,
+      &.report-source {
         min-width: 0;
+      }
+      &.report-source {
+        display: flex;
+        align-items: center;
+
+        .channel-type {
+          flex-shrink: 0;
+          margin-right: 0;
+          white-space: nowrap;
+        }
+        .report-source-tooltip {
+          min-width: 0;
+
+          .overflow {
+            display: block;
+          }
+
+          // 标题开头的全角括号自带左侧留白，抵消一部分让它靠近标签。
+          &.starts-with-bracket .overflow {
+            text-indent: -0.3em;
+          }
+
+          ::v-deep .ivu-tooltip-rel {
+            display: block;
+          }
+        }
       }
       .usergroup-box {
         display: block;
