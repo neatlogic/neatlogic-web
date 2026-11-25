@@ -1,29 +1,26 @@
 <template>
-  <div v-if="appData && editors[appData.type + 'Editor']">
+  <div v-if="appEditor">
     <component
-      :is="appData.type + 'Editor'"
+      :is="appEditor"
       :key="appData.id"
       ref="editor"
-      :appData="appData"
+      v-bind="editorProps"
     ></component>
   </div>
   <div v-else class="padding-md"><Alert>{{ $t('term.rdm.noconfig') }}</Alert></div>
 </template>
 <script>
 import * as editor from './index.js';
+import ComponentManager from '@/resources/import/component-manager';
 
 export default {
   name: '',
-  components: {
-    ...editor
-  },
   props: {
     projectId: { type: Number },
     appId: { type: Number }
   },
   data() {
     return {
-      editors: editor,
       appData: null,
       requestSeq: 0
     };
@@ -51,7 +48,25 @@ export default {
     }
   },
   filter: {},
-  computed: {},
+  computed: {
+    builtInEditor() {
+      return this.appData && editor[this.appData.type + 'Editor'];
+    },
+    // 只有商业模块已启用且注册了配置组件的应用才使用扩展入口。
+    appEditor() {
+      if (this.builtInEditor) return this.builtInEditor;
+      if (this.appData && COMMERCIAL_MODULES.includes('rdm')) {
+        return ComponentManager.getComponent('rdmAppEditor', this.appData.type);
+      }
+      return null;
+    },
+    editorProps() {
+      if (this.builtInEditor) {
+        return { appData: this.appData };
+      }
+      return { scope: { projectId: this.projectId, appId: this.appData.id } };
+    }
+  },
   watch: { appId: 'getAppById' }
 };
 </script>
