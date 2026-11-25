@@ -34,7 +34,7 @@
         <div class="mt-md">
           <TsTable
             :tbodyList="item.tbodyList"
-            :theadList="theadList"
+            :theadList="getReplyColumns()"
             :height="'280'"
             keyName="id"
           >
@@ -53,18 +53,25 @@
               <span :class="{'text-disabled':row.isDelete == 1}">{{ row.endTime | formatDate }}</span>
             </template>
             <template slot="content" slot-scope="{ row }">
-              <div v-if="row.content" :class="{'text-disabled':row.isDelete == 1}">
+              <!-- 只组合展示内容，原始回复保留给编辑器和提交入口使用。 -->
+              <div v-if="row.displayContent" :class="{'text-disabled':row.isDelete == 1}">
                 <Tooltip max-width="500" transfer>
-                  <span v-if="$utils.removeHTMLTag(row.content) && $utils.removeHTMLTag(row.content).length >30">
-                    {{ $utils.removeHTMLTag(row.content).substr(0, Number(30)) }}...
+                  <span v-if="row.displayText.length >30">
+                    {{ row.displayText.substr(0, Number(30)) }}...
                   </span>
-                  <span v-else>{{ $utils.removeHTMLTag(row.content) }}</span>
+                  <!-- 仅含图片的有效回复仍需提供可悬浮入口。 -->
+                  <span v-else>{{ row.displayText || $t('page.viewdetails') }}</span>
 
                   <div slot="content">
-                    <div v-html="row.content"></div>
+                    <div v-html="row.displayContent"></div>
                   </div>
                 </Tooltip>
               </div>
+              <span v-else :class="{'text-disabled':row.isDelete == 1}">-</span>
+            </template>
+            <!-- 分开模式按原文显示操作名称，空值使用占位；拼接模式由表头配置隐藏该列。 -->
+            <template slot="button" slot-scope="{ row }">
+              <span :class="{'text-disabled':row.isDelete == 1}" v-text="row.replyDisplayMode !== 'combined' && row.button && row.button.trim() ? row.button : '-'"></span>
             </template>
             <template slot="action" slot-scope="{ row }">
               <div class="tstable-action">
@@ -154,6 +161,7 @@
   </div>
 </template>
 <script>
+import {normalizeReplyDisplayMode, getReplyDisplayHtml, getReplyDisplayText, shouldShowReplyActionColumn} from '../subtask-reply-display.js';
 export default {
   name: 'StrategyDetail',
   components: {
@@ -199,6 +207,10 @@ export default {
           title: this.$t('page.reply'),
           key: 'content',
           type: 'html'
+        }, {
+          // 操作列紧接回复内容展示，字段仍使用已保存的 button。
+          title: this.$t('page.action'),
+          key: 'button'
         }, {
           title: this.$t('page.accessory'),
           key: 'fileList',
@@ -361,18 +373,26 @@ export default {
     getTbodyList(item) {
       if (item.stepTaskUserVoList) {
         let newArr = [];
+        // 每次详情刷新都读取策略当前配置，不使用回复行上旧的显示方式快照。
+        const replyDisplayMode = normalizeReplyDisplayMode(this.stepConfig && this.stepConfig.config && this.stepConfig.config.replyDisplayMode);
         item.stepTaskUserVoList.forEach((r, i) => {
           if (!r.isReplyable || r.isDelete) { //不能回复或者已删除的行不能选中
             this.$set(r, 'isDisabled', true);
           }
+          // 模式仅放入展示副本，保留原始内容与按钮供再次编辑，避免重复拼接。
           newArr.push(
-            {id: r.id, userUuid: r.userUuid, userVo: r.userVo, originalUserUuid: r.originalUserUuid || null, endTime: r.endTime, content: r.content, isDelete: r.isDelete, isReplyable: !!r.isReplyable, isDisabled: !!r.isDisabled || false, fileList: r.fileList }
+            {id: r.id, userUuid: r.userUuid, userVo: r.userVo, originalUserUuid: r.originalUserUuid || null, endTime: r.endTime, status: r.status, content: r.content, button: r.button, replyDisplayMode: replyDisplayMode, displayContent: getReplyDisplayHtml(r.content, r.button, replyDisplayMode), displayText: getReplyDisplayText(r.content, r.button, replyDisplayMode), isDelete: r.isDelete, isReplyable: !!r.isReplyable, isDisabled: !!r.isDisabled || false, fileList: r.fileList }
           );
         });
         return newArr;
       } else {
         return [];
       }
+    },
+    getReplyColumns() {
+      // 按策略控制列显隐，不依赖处理人是否已回复或回复时间是否存在。
+      const replyDisplayMode = this.stepConfig && this.stepConfig.config && this.stepConfig.config.replyDisplayMode;
+      return shouldShowReplyActionColumn(replyDisplayMode) ? this.theadList : this.theadList.filter(column => column.key !== 'button');
     },
     closeDialog() {
       this.isShow = false;
@@ -444,7 +464,9 @@ export default {
       }
       let data = {
         id: item.id,
-        content: item.CkeditorContent
+        content: item.CkeditorContent,
+        // 默认“回复”也记录实际按钮文案，自定义按钮在下方使用配置名称覆盖。
+        button: this.$t('page.reply')
       };
       let isValid = true;
       if (btn) {

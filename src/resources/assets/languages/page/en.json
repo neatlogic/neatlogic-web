@@ -565,6 +565,7 @@
   "linewidth": "Line Width",
   "depth": "Depth",
   "informant": "Importer",
+  "reportingsource": "Reporting Source",
   "reportingtime": "Reporting Time",
   "directorydescription": "Directory Description",
   "workordernumber": "Work Order Number",

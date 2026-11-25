@@ -35,67 +35,7 @@
     </div>
     <div v-for="(item, index) in paramList" :key="index">
       <Divider v-if="(item.paramList && item.paramList.length > 0) || (!$utils.isEmptyObj(item.argument) && item.argument.valueList&& item.argument.valueList.length>0)" orientation="left">{{ item.name }}{{ item.letter?"_"+item.letter:"" }}</Divider>
-      <div v-if="item.paramList && item.paramList.length > 0" class="pb-nm">
-        <TsTable :fixedHeader="false" :theadList="paramTheadList" :tbodyList="item.paramList">
-          <template v-slot:value="{ row }">
-            <span v-if="row.value && (row.type == 'filepath' || row.type == 'file')" class="cursor">
-              <span v-if="row.isDownloadFileLoding" class="action-item disable" :title="$t('page.downloadloadingtip')">
-                <Icon type="ios-loading" size="18" class="loading"></Icon>
-                {{ $t('page.downloading') }}
-              </span>
-              <span v-if="row.value && Array.isArray(row.value)">
-                <span v-for="(file, findex) in row.value" :key="findex">
-                  <span v-if="!row.isDownloadFileLoding" v-download="downloadFile(row, file)" class="text-href">{{ file }}</span>
-                  <br />
-                </span>
-              </span>
-              <span v-else>
-                <span v-if="!row.isDownloadFileLoding" v-download="downloadFile(row, row.value)" class="text-href">{{ row.value }}</span>
-              </span>
-            </span>
-            <div v-else-if="row.value && row.type == 'userselect'">
-              <span v-for="(user,uindex) in row._userList" :key="uindex">
-                <UserCard v-bind="getConfig(user)"></UserCard>
-                <span v-if="row._userList.length - 1 > uindex">、</span>
-              </span>
-            </div>
-            <div v-else-if="row.value" style="max-width: 500px" class="overflow">
-              <Poptip
-                word-wrap
-                width="500"
-                trigger="hover"
-                transfer
-                :disabled="isDisabledPoptipContent(row)"
-              >
-                <div slot="content" style="max-height: 350px;overflow: auto;">
-                  <span v-if="!row._isJsonValue" :class="row.type === 'textarea'?'pre':''">{{ row.value }}</span>
-                  <JsonViewer
-                    v-else
-                    class="popTipContent"
-                    copyable
-                    :expand-depth="5"
-                    :value="row._jsonValue"
-                  ></JsonViewer>
-                </div>
-                <span :class="row.type === 'textarea'?'pre':''">{{ formattedValue(row.value) }}</span>
-              </Poptip>
-            </div>
-          </template>
-        </TsTable>
-      </div>
-
-      <div v-if="!$utils.isEmptyObj(item.argument) && item.argument.valueList&& item.argument.valueList.length>0" class="extrainfo-detail bg-op padding radius-lg">
-        <div class="pb-sm"><span style="font-weight:bold">{{ $t('term.autoexec.freeparameter') }}</span><span class="pl-sm text-grey">{{ item.argument.description }}</span></div>
-        <div class="content-grid">
-          <div class="item">
-            <div class="content">
-              <div v-for="(arg, idx) in item.argument.valueList" :key="idx" class="pb-sm">
-                <span>{{ arg }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <NodeParamTable :paramList="item.paramList" :argument="item.argument" :fileDownload="downloadFile"></NodeParamTable>
     </div>
     <Loading v-if="isLoading && paramList.length <= 0"></Loading>
     <NoData v-else-if="!isLoading && paramList.length <= 0"></NoData>
@@ -106,9 +46,7 @@ import download from '@/resources/directives/download.js';
 export default {
   name: '',
   components: {
-    TsTable: () => import('@/resources/components/TsTable/TsTable.vue'),
-    JsonViewer: () => import('vue-json-viewer'),
-    UserCard: () => import('@/resources/components/UserCard/UserCard.vue')
+    NodeParamTable: () => import('./node-param-table.vue')
   },
   directives: { download },
   filters: {},
@@ -126,24 +64,6 @@ export default {
     let _this = this;
     return {
       paramList: [],
-      paramTheadList: [
-        {
-          title: this.$t('term.autoexec.parameterchinesename'),
-          key: 'name'
-        },
-        {
-          title: this.$t('term.autoexec.parameterenglishname'),
-          key: 'key'
-        },
-        {
-          title: this.$t('page.param') + this.$t('page.value'),
-          key: 'value'
-        },
-        {
-          title: this.$t('page.description'),
-          key: 'description'
-        }
-      ],
       downurl: {
         url: '/api/binary/autoexec/job/phase/node/' + this.type + '/download',
         params: {
@@ -169,49 +89,18 @@ export default {
   beforeDestroy() {},
   destroyed() {},
   methods: {
-    getData() {
+    // 读取本节点当次作业的输入或输出，切换节点时忽略迟到的请求。
+    async getData() {
+      const nodeId = this.id;
+      const params = {nodeId, jobId: this.jobId, jobPhaseId: this.jobPhaseId, sqlName: this.sqlName || null, resourceId: this.resourceId || null};
       this.isLoading = true;
-      let param = {
-        nodeId: this.id,
-        jobId: this.jobId,
-        jobPhaseId: this.jobPhaseId,
-        sqlName: this.sqlName || null,
-        resourceId: this.resourceId || null
-      };
-      if (this.type === 'output') {
-        this.$api.autoexec.job.getOutputNodeParam(param).then(res => {
-          this.paramList = this.normalizeParamList(res.Return.operationOutputParamArray || []);
-          this.isLoading = false;
-        });
-      } else {
-        this.$api.autoexec.job.getInputNodeParam(param).then(res => {
-          this.paramList = this.normalizeParamList(res.Return.operationInputParamArray || []);
-          this.isLoading = false;
-        });
-      }
-    },
-    normalizeParamList(paramList) {
-      paramList.forEach(item => {
-        if (item.paramList && item.paramList.length > 0) {
-          item.paramList.forEach(row => this.normalizeParamRow(row));
-        }
-      });
-      return paramList;
-    },
-    normalizeParamRow(row) {
-      const jsonValue = this.parseJsonValue(row.value);
-      this.$set(row, '_isJsonValue', jsonValue.isJson);
-      this.$set(row, '_jsonValue', jsonValue.value);
-      this.$set(row, '_userList', row.type === 'userselect' && Array.isArray(jsonValue.value) ? jsonValue.value : []);
-    },
-    parseJsonValue(value) {
-      if (typeof value !== 'string') {
-        return { isJson: false, value: null };
-      }
       try {
-        return { isJson: true, value: JSON.parse(value) };
-      } catch (e) {
-        return { isJson: false, value: null };
+        const data = this.type === 'output'
+          ? (await this.$api.autoexec.job.getOutputNodeParam(params)).Return.operationOutputParamArray
+          : (await this.$api.autoexec.job.getInputNodeParam(params)).Return.operationInputParamArray;
+        if (nodeId === this.id) this.paramList = data || [];
+      } finally {
+        if (nodeId === this.id) this.isLoading = false;
       }
     },
     changeDownStatus(type, event) {
@@ -227,19 +116,6 @@ export default {
     }
   },
   computed: {
-    formattedValue() {
-      return (value) => {
-        let jsonString = value;
-        if (typeof value !== 'string') {
-          // 字符串不能直接转json字符串，否则换行符会失效
-          jsonString = JSON.stringify(value);
-        }
-        if (jsonString.length > 40) {
-          jsonString = jsonString.substring(0, 40) + '...';
-        }
-        return jsonString; 
-      };
-    },
     getDownurl() {
       let _this = this;
       return () => {
@@ -265,40 +141,6 @@ export default {
           }
         }};
       };
-    },
-    isDisabledPoptipContent() {
-      // 内容长度小于40，不显示poptip 上移提示内容
-      return function(row) {
-        let isDisabled = false;
-        let arrValue = '';
-        if (!row.value || (row.value && (typeof row.value == 'string' || typeof row.value == 'number') && row.value.length < 40)) {
-          isDisabled = true;
-        } else if (row.value && row.value.constructor == Array && row.value.length < 40) {
-          row.value.forEach((v) => {
-            if (v) {
-              arrValue += Object.values(v) + Object.keys(v);
-            }
-          });
-          if (arrValue && arrValue.length > 40) {
-            isDisabled = false;
-          } else {
-            isDisabled = true;
-          }
-        } else if (row.value && row.value instanceof Object && (Object.values(row.value).join('') + Object.keys(row.value).join('')).length < 40) {
-          isDisabled = true;
-        }
-        return isDisabled;
-      };
-    },
-    getConfig() {
-      return item => {
-        let list = item.split('#');
-        let data = {
-          initType: list[0],
-          uuid: list[1]
-        };
-        return data;
-      };
     }
   },
   watch: {
@@ -310,28 +152,3 @@ export default {
   }
 };
 </script>
-<style lang="less" scoped>
-::v-deep .tstable-container {
-  position: inherit;
-}
-.popTipContent {
-  max-height: 300px;
-  overflow-y: auto;
-}
-.content-grid {
-  display: grid;
-  grid-gap: 10px;
-  .item {
-    display: grid;
-    grid-gap: 10px;
-    .title {
-      text-align: right;
-      padding: 3px;
-    }
-    .content {
-      padding: 3px;
-      word-break: break-all;
-    }
-  }
-}
-</style>

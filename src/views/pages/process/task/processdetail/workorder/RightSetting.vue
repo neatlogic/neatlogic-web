@@ -38,8 +38,8 @@
               </div>
             </div>
             <div v-if="processTaskConfig.ownerVo" class="information-list">
-              <OverflowTooltip class="infor-left text-grey" :content="$t('page.userteam')">
-                <span class="infor-label overflow">{{ $t('page.userteam') }}</span>
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.group')">
+                <span class="infor-label overflow">{{ $t('page.group') }}</span>
               </OverflowTooltip>
               <div class="infor-right usergroup-list">
                 <template v-if="processTaskConfig.ownerVo.teamList && processTaskConfig.ownerVo.teamList.length > 0">
@@ -61,6 +61,12 @@
                 </template>
                 <template v-else>-</template>
               </div>
+            </div>
+            <div v-if="ownerJobTitle" class="information-list">
+              <OverflowTooltip class="infor-left text-grey" :content="$t('page.jobTitle')">
+                <span class="infor-label overflow">{{ $t('page.jobTitle') }}</span>
+              </OverflowTooltip>
+              <div class="infor-right owner-job-title">{{ ownerJobTitle }}</div>
             </div>
           </div>
         </div>
@@ -110,6 +116,29 @@
                   <div class="infor-right">
                     <span v-if="processTaskConfig.channelType" class="channel-type" :style="typeTip(processTaskConfig.channelType.color)">{{ processTaskConfig.channelType.name }}</span>
                     <span>{{ item.textConfig }}</span>
+                  </div>
+                </template>
+                <template v-else-if="item.value == 'reportSource'">
+                  <OverflowTooltip class="infor-left text-grey" :content="item.title"><span class="infor-label overflow">{{ item.title }}</span></OverflowTooltip>
+                  <div class="infor-right report-source">
+                    <span v-if="item.textConfig.sourceText" class="channel-type bg-selected text-primary">{{ item.textConfig.sourceText }}</span>
+                    <Tooltip
+                      v-if="!item.textConfig.sourceText || item.textConfig.targetType"
+                      :content="item.textConfig.name"
+                      :max-width="420"
+                      class="report-source-tooltip"
+                      :class="{ 'starts-with-bracket': item.textConfig.name && item.textConfig.name.startsWith('【') }"
+                      transfer
+                    >
+                      <a
+                        v-if="reportSourceHref"
+                        :href="reportSourceHref"
+                        class="text-href overflow"
+                        target="_blank"
+                        rel="noopener"
+                      >{{ item.textConfig.name }}</a>
+                      <span v-else class="overflow">{{ item.textConfig.name }}</span>
+                    </Tooltip>
                   </div>
                 </template>
                 <template v-else-if="item.value == 'priority'">
@@ -203,6 +232,7 @@
   </div>
 </template>
 <script>
+import ComponentManager from '@/resources/import/component-manager.js';
 import clipboard from '@/resources/directives/clipboard.js';
 import StepCarousel from './step-carousel.vue';
 export default {
@@ -267,6 +297,11 @@ export default {
         {
           title: this.$t('term.process.sourcename'),
           value: 'sourceName',
+          textConfig: null
+        },
+        {
+          title: this.$t('page.reportingsource'),
+          value: 'reportSource',
           textConfig: null
         },
         {
@@ -473,24 +508,46 @@ export default {
         }
       });
     },
-    updateFocusUserList(list) { //工单关注人
+    updateFocusUserList(list) {
+      // 合并连续选择，保存成功后提示并同步工单关注状态。
       const data = {
         processTaskId: this.processTaskId,
         focusUserUuidList: list
       };
       // 去抖，防止每次修改工单关注人都调用接口
       clearTimeout(this.updatingFocusUser);
-      this.updatingFocusUser = setTimeout(() => {
-        this.$api.process.processtask.updateFocusUser(data).then(() => {
+      const timer = setTimeout(() => {
+        this.$api.process.processtask.updateFocusUser(data).then(res => {
+          // 请求始终保存原工单，只在对应的详情页处理成功回包。
+          if (res?.Status !== 'OK' || this._isDestroyed || this.processTaskConfig.id !== data.processTaskId) return;
+          // 连续编辑期间只提示最后一次选择的保存结果。
+          if (this.updatingFocusUser === timer) {
+            this.$Message.success(this.$t('page.saved', { target: this.$t('term.process.focususer') }));
+          }
           this.$emit('updateActiveStep', 'updateFocusUser');
         });
       }, 1000);
+      this.updatingFocusUser = timer;
     },
     initRightHeight() {
       this.rightHeight = window.innerHeight - (this.$refs.rightMain ? this.$refs.rightMain.getBoundingClientRect().top : 0) - 18;
     }
   },
   computed: {
+    // 目标页面的所属模块负责把定位参数转换成链接。
+    reportSourceHref() {
+      const source = this.processTaskConfig?.reportSource;
+      if (!source?.targetType || !source.targetParams) {
+        return '';
+      }
+      const routes = ComponentManager.getComponent('processTaskReportSourceRoute') || {};
+      const resolve = Object.prototype.hasOwnProperty.call(routes, source.targetType) ? routes[source.targetType] : null;
+      return resolve ? resolve(source.targetParams) : '';
+    },
+    ownerJobTitle() {
+      const position = this.processTaskConfig?.ownerVo?.userInfoObj?.position;
+      return typeof position === 'string' ? position.trim() : '';
+    },
     timeShow() {
       //时间类型展示
       return function(value) {
@@ -593,8 +650,36 @@ export default {
       flex-shrink: 1;
       padding-left: 16px;
       word-break:break-all;
-      &.usergroup-list {
+      &.usergroup-list,
+      &.owner-job-title,
+      &.report-source {
         min-width: 0;
+      }
+      &.report-source {
+        display: flex;
+        align-items: center;
+
+        .channel-type {
+          flex-shrink: 0;
+          margin-right: 0;
+          white-space: nowrap;
+        }
+        .report-source-tooltip {
+          min-width: 0;
+
+          .overflow {
+            display: block;
+          }
+
+          // 标题开头的全角括号自带左侧留白，抵消一部分让它靠近标签。
+          &.starts-with-bracket .overflow {
+            text-indent: -0.3em;
+          }
+
+          ::v-deep .ivu-tooltip-rel {
+            display: block;
+          }
+        }
       }
       .usergroup-box {
         display: block;

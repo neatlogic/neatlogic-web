@@ -567,6 +567,7 @@
   "linewidth": "线宽",
   "depth": "深度",
   "informant": "上报人",
+  "reportingsource": "上报来源",
   "reportingtime": "上报时间",
   "directorydescription": "目录说明",
   "workordernumber": "工单号",

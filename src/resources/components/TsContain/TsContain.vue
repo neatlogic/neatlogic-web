@@ -177,10 +177,17 @@ export default {
     moveRightResize(event) {
       if (this.rightDragStart) this.rightDragWidth = this.rightDragStart.width + this.rightDragStart.x - event.clientX;
     },
-    // 松开或失去指针捕获时，保存经过限幅的实际栏宽，避免容器变宽后右栏跳到越界的拖拽值。
+    // 松手或失去捕获时保留限幅后的栏宽；仅在实际宽度变化并完成布局后通知内容区。
     endRightResize() {
-      if (this.rightDragStart) this.rightDragWidth = this.resolvedRightWidth;
+      if (!this.rightDragStart) return;
+      const startWidth = this.rightDragStart.width;
+      const finalWidth = this.resolvedRightWidth;
+      this.rightDragWidth = finalWidth;
+      // pointerup 之后还可能收到 lostpointercapture，同一轮拖拽只结算一次。
       this.rightDragStart = null;
+      if (finalWidth !== startWidth) {
+        this.$nextTick(() => this.$emit('right-resize-end'));
+      }
     },
     updateContainerWidth() {
       this.$nextTick(() => {
