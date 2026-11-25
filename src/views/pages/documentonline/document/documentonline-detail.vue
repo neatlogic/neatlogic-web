@@ -1,90 +1,129 @@
 <template>
-  <div ref="documentLayout" class="document-layout" :class="{'is-narrow-screen': isNarrowScreen}">
+  <div class="document-layout">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <div class="document-shell" :style="{height: layoutHeight}">
-      <div
-        class="tree-column"
-        :class="{'is-collapsed': isTreeCollapsed, 'is-hover-blocked': isTreeHoverBlocked}"
-        @mouseleave="isTreeHoverBlocked = false"
+    <div class="document-shell">
+      <button
+        v-if="isSmallScreen && !isTreeCollapsed"
+        type="button"
+        class="tree-backdrop"
+        :aria-label="$t('page.packup')"
+        @click="isTreeCollapsed = true"
+      ></button>
+      <aside
+        v-show="!isTreeCollapsed"
+        id="document-tree"
+        class="document-sidebar"
+        :aria-label="$t('page.catalogue')"
       >
-        <div v-if="isTreeCollapsed" class="tree-reopen">
-          <span
-            class="navigation-toggle tree-toggle tsfont-bar text-action"
-            @click="toggleTree"
-          ></span>
+        <div class="sidebar-header">
+          <span class="tsfont-document-directory text-primary" aria-hidden="true"></span>
+          <span>{{ $t('page.catalogue') }}</span>
+          <button
+            v-if="isSmallScreen"
+            type="button"
+            class="panel-toggle sidebar-close tsfont-close"
+            :aria-label="$t('page.packup')"
+            @click="isTreeCollapsed = true"
+          ></button>
         </div>
-        <aside id="document-tree" class="document-sidebar bg-grey border-color">
-          <div class="sidebar-header">
-            <Tooltip :content="isTreeCollapsed ? $t('page.expand') : $t('page.packup')" placement="top" transfer>
-              <span
-                class="navigation-toggle tree-toggle tsfont-bar text-action"
-                @click="toggleTree"
-              ></span>
-            </Tooltip>
-            <span class="sidebar-title">{{ $t('term.documentonline.helpcenter') }}</span>
-          </div>
-          <div class="document-tree-scroll">
-            <DocumentonlineTree :upwardNameList="upwardNameList" @selectTreeNode="selectTreeNode"></DocumentonlineTree>
-          </div>
-        </aside>
-      </div>
-      <main class="document-main bg-op">
-        <header class="document-header border-color">
-          <div v-if="isTreeCollapsed" class="sidebar-reopen"></div>
-          <div class="document-breadcrumb">
-            <DocumentonlineNav :upwardNameList="upwardNameList"></DocumentonlineNav>
-          </div>
+        <div class="document-tree-scroll">
+          <DocumentonlineTree :upwardNameList="upwardNameList" @selectTreeNode="selectTreeNode" />
+        </div>
+      </aside>
+      <main class="document-main">
+        <header class="document-header">
+          <Tooltip :content="$t('page.catalogue')" placement="bottom" transfer>
+            <button
+              type="button"
+              class="panel-toggle tsfont-bar"
+              :aria-label="$t('page.catalogue')"
+              :aria-expanded="!isTreeCollapsed"
+              aria-controls="document-tree"
+              @click="isTreeCollapsed = !isTreeCollapsed"
+            ></button>
+          </Tooltip>
+          <Tooltip
+            v-if="filePath"
+            :content="$t('term.documentonline.articleoutline')"
+            placement="bottom"
+            transfer
+          >
+            <button
+              type="button"
+              class="panel-toggle tsfont-list"
+              :aria-label="$t('term.documentonline.articleoutline')"
+              :aria-expanded="!isNavigationCollapsed"
+              aria-controls="document-navigation"
+              @click="toggleNavigation"
+            ></button>
+          </Tooltip>
+          <DocumentonlineNav class="document-breadcrumb" :upwardNameList="upwardNameList" />
+          <Tooltip
+            v-if="relatedDocumentList.length"
+            :content="$t('term.process.relateknowledge')"
+            placement="bottom"
+            transfer
+          >
+            <button
+              type="button"
+              class="panel-toggle tsfont-book"
+              :aria-label="$t('term.process.relateknowledge')"
+              :aria-expanded="String(!isRelatedCollapsed)"
+              aria-controls="document-related"
+              @click="toggleRelated"
+            ></button>
+          </Tooltip>
         </header>
-        <div class="document-columns" :class="{'is-navigation-collapsed': isNavigationCollapsed}">
-          <!-- 阅读区内的文章目录，可独立收起 -->
+        <div class="document-columns" :class="{'is-reading': filePath}">
           <aside
             v-if="filePath"
-            class="navigation-column"
-            :class="{'is-collapsed': isNavigationCollapsed, 'is-hover-blocked': isNavigationHoverBlocked}"
-            @mouseleave="isNavigationHoverBlocked = false"
+            v-show="!isNavigationCollapsed"
+            id="document-navigation"
+            class="article-panel outline-panel"
+            :aria-label="$t('term.documentonline.articleoutline')"
           >
-            <div class="navigation-surface bg-op">
-              <div class="navigation-toolbar">
-                <Tooltip :content="isNavigationCollapsed ? $t('page.expand') : $t('page.packup')" placement="top" transfer>
-                  <span
-                    class="navigation-toggle tree-toggle text-grey"
-                    :class="isNavigationCollapsed ? 'tsfont-document-directory' : 'tsfont-double-arrow-left'"
-                    @click="toggleNavigation"
-                  ></span>
-                </Tooltip>
-              </div>
-              <DocumentonlineNavigation
-                id="document-navigation"
-                class="navigation-panel"
-                :headings="headings"
-                :anchorPointId="anchorPointId"
-                :currentTab.sync="currentTab"
-                :list="list"
-                :tableData="tableData"
-                @select-heading="goAnchorPoint"
-                @select-document="getDetail"
-                @load-more="changePage"
-              />
-            </div>
+            <h2 class="article-panel-title">{{ $t('page.catalogue') }}</h2>
+            <DocumentonlineNavigation
+              :headings="headings"
+              :anchorPointId="anchorPointId"
+              @select-heading="goAnchorPoint"
+            />
           </aside>
-          <!-- 第三列：文档正文 -->
           <div class="reading-area">
             <div
               v-if="!loadingShow && filePath"
               ref="documentonlineContent"
               class="documentonline-content"
-              @scroll="handleScroll()"
+              @scroll="handleScroll"
             >
               <DocumentonlineContent
                 :content="content"
                 :filePath="filePath"
                 :anchorPoint="anchorPoint"
                 @getHeadings="getHeadings"
-              ></DocumentonlineContent>
+              />
             </div>
-            <DocumentonlineList v-else-if="!loadingShow" :upwardNameList="upwardNameList" @getDetail="getDetail">
-            </DocumentonlineList>
+            <DocumentonlineList v-else-if="!loadingShow" :upwardNameList="upwardNameList" @getDetail="getDetail" />
           </div>
+          <aside
+            v-if="relatedDocumentList.length"
+            v-show="!isRelatedCollapsed"
+            id="document-related"
+            class="article-panel related-panel"
+            :aria-label="$t('term.process.relateknowledge')"
+          >
+            <h2 class="article-panel-title">{{ $t('term.process.relateknowledge') }}</h2>
+            <ul>
+              <li v-for="item in relatedDocumentList" :key="item.filePath">
+                <button
+                  type="button"
+                  class="navigation-link"
+                  :title="item.fileName"
+                  @click="getDetail(item)"
+                >{{ item.fileName }}</button>
+              </li>
+            </ul>
+          </aside>
         </div>
       </main>
     </div>
@@ -104,29 +143,24 @@ export default {
   data() {
     return {
       loadingShow: true,
-      isNavigationCollapsed: window.innerWidth < 1200,
-      isNarrowScreen: window.innerWidth < 1200,
-      isTreeCollapsed: false,
-      isTreeHoverBlocked: false,
-      isNavigationHoverBlocked: false,
-      layoutHeight: 'calc(100vh - 50px)',
+      isNavigationCollapsed: window.innerWidth <= 1120,
+      isRelatedCollapsed: window.innerWidth <= 1120,
+      isNarrowScreen: window.innerWidth <= 1120,
+      isTreeCollapsed: window.innerWidth <= 760,
+      isSmallScreen: window.innerWidth <= 760,
       filePath: '',
       content: '',
       upwardNameList: [],
-      list: [],
-      tableData: {},
-      preUpwardNameList: [], //文档上层目录列表
+      relatedDocumentList: [],
       anchorPoint: '',
-      currentTab: 'headings',
       headings: [],
       anchorPointId: ''
     };
   },
   beforeCreate() {},
   created() {
-    this.$localStore.remove('searchKeyword', 'common');
     if (this.$route.query) {
-      this.isTreeCollapsed = this.$route.query.isSiderHide === 'true';
+      this.isTreeCollapsed = this.isSmallScreen || this.$route.query.isSiderHide === 'true';
       this.filePath = this.$route.query.filePath;
       this.anchorPoint = this.$route.query.anchorPoint || '';
       let upwardNameList = this.$route.query.upwardNameList;
@@ -138,116 +172,95 @@ export default {
   },
   beforeMount() {},
   mounted() {
-    this.updateLayoutHeight();
-    window.addEventListener('resize', this.updateLayoutHeight);
+    this.updateResponsivePanels();
+    window.addEventListener('resize', this.updateResponsivePanels);
   },
   beforeUpdate() {},
   updated() {},
   activated() {
-    this.updateLayoutHeight();
+    this.updateResponsivePanels();
   },
   deactivated() {},
   beforeDestroy() {
-    window.removeEventListener('resize', this.updateLayoutHeight);
+    window.removeEventListener('resize', this.updateResponsivePanels);
   },
   destroyed() {},
   methods: {
-    toggleTree() {
-      this.isTreeCollapsed = !this.isTreeCollapsed;
-      // 点击收起后，等鼠标移出再允许悬浮展开，避免目录立即覆盖回原位置。
-      this.isTreeHoverBlocked = this.isTreeCollapsed;
-    },
-    toggleNavigation() {
-      this.isNavigationCollapsed = !this.isNavigationCollapsed;
-      this.isNavigationHoverBlocked = this.isNavigationCollapsed;
-    },
-    updateLayoutHeight() {
-      const isNarrowScreen = window.innerWidth < 1200;
-      // 仅在跨越断点时自动切换，保留同一宽度区间内的手动展开/收起状态。
+    updateResponsivePanels() {
+      const isNarrowScreen = window.innerWidth <= 1120;
       if (this.isNarrowScreen !== isNarrowScreen) {
         this.isNarrowScreen = isNarrowScreen;
         this.isNavigationCollapsed = isNarrowScreen;
+        this.isRelatedCollapsed = isNarrowScreen;
       }
-      this.$nextTick(() => {
-        const layout = this.$refs.documentLayout;
-        if (layout) {
-          this.layoutHeight = Math.max(0, window.innerHeight - layout.getBoundingClientRect().top) + 'px';
-        }
-      });
+      const isSmallScreen = window.innerWidth <= 760;
+      if (this.isSmallScreen !== isSmallScreen) {
+        this.isSmallScreen = isSmallScreen;
+        this.isTreeCollapsed = isSmallScreen || this.$route.query.isSiderHide === 'true';
+      }
+    },
+    toggleNavigation() {
+      this.isNavigationCollapsed = !this.isNavigationCollapsed;
+      if (this.isNarrowScreen && !this.isNavigationCollapsed) {
+        this.isRelatedCollapsed = true;
+      }
+    },
+    toggleRelated() {
+      this.isRelatedCollapsed = !this.isRelatedCollapsed;
+      if (this.isNarrowScreen && !this.isRelatedCollapsed) {
+        this.isNavigationCollapsed = true;
+      }
     },
     async init() {
-      this.loadingShow = true;
-      if (this.filePath) {
-        await this.getDocumentDetail();
-        this.getDocumentonlineList();
-      } else {
+      const filePath = this.filePath;
+      if (!filePath) {
         this.loadingShow = false;
-      }
-    },
-    getDocumentDetail() {
-      if (!this.filePath) {
         return;
       }
-      let data = {
-        filePath: this.filePath
-      };
-      return this.$api.documentonline
-        .getDocumentDetail(data)
-        .then(res => {
-          if (res.Status === 'OK') {
-            this.content = res.Return.content;
-            this.upwardNameList = res.Return.upwardNameList || [];
-            this.preUpwardNameList = this.upwardNameList.slice(0, this.upwardNameList.length - 1);
-          }
-        })
-        .finally(() => {
-          this.loadingShow = false;
-        });
-    },
-    getDocumentonlineList(currentPage) {
-      //文档的相关的知识
-      let data = {
-        currentPage: currentPage || 1,
-        upwardNameList: this.preUpwardNameList
-      };
-      this.$api.documentonline.getDocumentList(data).then(res => {
-        if (res.Status === 'OK') {
-          this.tableData = res.Return || {};
-          if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
-            this.list.push(...this.tableData.tbodyList);
-          }
+      const relatedDocuments = this.relatedDocumentList;
+      this.loadingShow = true;
+      try {
+        const res = await this.$api.documentonline.getDocumentDetail({filePath});
+        // 切换文档时会替换列表，避免旧请求写回当前页面。
+        if (this.relatedDocumentList === relatedDocuments && res.Status === 'OK') {
+          this.content = res.Return.content;
+          this.upwardNameList = res.Return.upwardNameList || [];
+          relatedDocuments.push(...(res.Return.relatedDocumentList || []));
         }
-      });
-    },
-    changePage() {
-      let currentPage = this.tableData.currentPage + 1;
-      this.getDocumentonlineList(currentPage);
+      } finally {
+        if (this.relatedDocumentList === relatedDocuments) {
+          this.loadingShow = false;
+        }
+      }
     },
     getDetail(item) {
+      if (this.isNarrowScreen) {
+        this.isRelatedCollapsed = true;
+      }
       this.clearData();
       this.filePath = item.filePath;
+      this.anchorPoint = item.anchorPoint || '';
       this.init();
     },
     selectTreeNode(node) {
+      if (this.isSmallScreen) {
+        this.isTreeCollapsed = true;
+      }
       this.clearData();
       this.filePath = node.filePath || '';
-      if (node.isFile) {
-        this.init();
-      } else {
+      if (!node.isFile) {
         this.upwardNameList = node.upwardNameList;
       }
+      this.init();
     },
     clearData() {
       this.headings = [];
       this.anchorPointId = '';
-      this.tableData = {};
-      this.currentTab = 'headings';
       this.filePath = '';
       this.content = '';
       this.anchorPoint = '';
-      this.list = [];
+      this.relatedDocumentList = [];
       this.upwardNameList = [];
-      this.preUpwardNameList = [];
     },
     getHeadings(headings) {
       this.headings = headings || [];
@@ -262,6 +275,9 @@ export default {
           top: element.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 16,
           behavior: 'smooth'
         });
+        if (this.isNarrowScreen) {
+          this.isNavigationCollapsed = true;
+        }
       }
     },
     handleScroll() {
@@ -287,174 +303,147 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.document-layout {
-  width: 100%;
+.document-layout,
+.document-shell {
+  height: 100%;
+  min-height: 0;
 }
 .document-shell {
+  position: relative;
   display: flex;
-  min-height: 0;
   overflow: hidden;
 }
-.tree-column {
-  position: relative;
-  flex: 0 0 298px;
-  min-height: 0;
-}
-.tree-column.is-collapsed {
-  flex-basis: 0;
-  width: 0;
-  z-index: 3;
-  .document-sidebar {
-    display: none;
-    position: absolute;
-    inset: 0 auto 0 0;
-    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.12);
-  }
-  .document-layout.is-narrow-screen &:not(.is-hover-blocked):hover .document-sidebar {
-    display: flex;
-  }
-}
-.tree-reopen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 66px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .document-sidebar {
-  flex: 0 0 298px;
-  width: 298px;
-  height: 100%;
-  max-width: 100vw;
+  flex: 0 0 244px;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
-  border-right: 1px solid;
+  background: var(--help-background);
+  border-right: 1px solid var(--help-border);
 }
 .sidebar-header,
 .document-header {
+  flex: 0 0 52px;
   display: flex;
   align-items: center;
-  flex: 0 0 56px;
+  gap: 10px;
   min-width: 0;
   padding: 0 16px;
-  gap: 12px;
+  border-bottom: 1px solid var(--help-border);
 }
-.sidebar-title {
-  font-size: 16px;
+.sidebar-header {
+  font-size: 14px;
+  font-weight: 650;
+}
+.sidebar-close {
+  margin-left: auto;
 }
 .document-tree-scroll {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 20px 12px;
+  padding: 12px 10px;
 }
 .document-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1;
   min-width: 0;
   min-height: 0;
 }
 .document-header {
-  border-bottom: 1px solid;
+  background: var(--help-surface);
 }
-.sidebar-reopen {
-  flex: 0 0 34px;
+.panel-toggle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 7px;
+  color: var(--help-muted);
+  cursor: pointer;
+  &:hover,
+  &:focus-visible {
+    color: var(--help-accent);
+    background: var(--help-hover);
+  }
 }
 .document-breadcrumb {
+  flex: 1;
   min-width: 0;
-  overflow: auto;
 }
 .document-columns {
-  // 小屏收窄目录，为正文留出空间；大屏限制目录宽度。
-  --document-navigation-width: clamp(200px, 18vw, 300px);
-  --document-title-line-height: 36px;
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  min-width: 0;
-  padding-top: 19px;
-}
-.document-columns.is-navigation-collapsed {
-  --document-navigation-width: 48px;
-}
-.navigation-column {
   position: relative;
-  flex: 0 0 var(--document-navigation-width);
-  width: var(--document-navigation-width);
+  flex: 1;
+  display: flex;
   min-width: 0;
   min-height: 0;
-  padding-left: 12px;
 }
-.navigation-surface {
-  height: 100%;
-}
-.navigation-column.is-collapsed {
-  z-index: 2;
-  .navigation-surface {
-    height: var(--document-title-line-height);
-  }
-  .navigation-panel {
-    display: none;
-  }
-  .document-layout.is-narrow-screen &:not(.is-hover-blocked) .navigation-surface:hover {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    height: 100%;
-    width: min(300px, calc(100vw - 32px));
-    padding-left: 12px;
-    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.12);
-    .navigation-panel {
-      display: block;
-    }
-  }
-}
-.navigation-toolbar {
-  display: flex;
-  align-items: center;
-  height: var(--document-title-line-height);
-}
-.navigation-toolbar ::v-deep .ivu-tooltip-rel {
-  display: flex;
-}
-.navigation-toggle {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: 0 0 auto;
-}
-.tree-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.navigation-toggle:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: -2px;
-}
-.navigation-column .navigation-panel {
-  height: calc(100% - var(--document-title-line-height));
-  padding: 0 12px 16px 0;
+.document-columns.is-reading {
+  background: var(--help-surface);
 }
 .reading-area {
   flex: 1;
-  height: 100%;
   min-width: 0;
   overflow: auto;
+}
+.article-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 12px 16px;
+  background: var(--help-surface);
+  ::v-deep .navigation-link {
+    display: block;
+    width: 100%;
+    padding: 7px 8px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--help-muted);
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    &:hover {
+      color: var(--help-accent);
+      background: var(--help-hover);
+    }
+    &:focus-visible {
+      outline: 2px solid currentColor;
+      outline-offset: -2px;
+    }
+    &.is-current {
+      color: var(--help-accent);
+      background: var(--help-accent-soft);
+      font-weight: 600;
+    }
+  }
+}
+.article-panel-title {
+  margin: 4px 8px 10px;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--help-ink);
+}
+.outline-panel {
+  flex: 0 0 clamp(156px, 14vw, 208px);
+  border-right: 1px solid var(--help-border);
+}
+.related-panel {
+  flex: 0 0 236px;
+  border-left: 1px solid var(--help-border);
 }
 .documentonline-content {
   height: 100%;
   overflow: auto;
-  padding: 0 32px 32px;
+  padding: clamp(20px, 4vw, 44px) clamp(14px, 4vw, 48px);
 }
 .documentonline-content ::v-deep .ts-markdown-editor {
   padding-right: 0;
@@ -463,20 +452,55 @@ export default {
   box-shadow: none;
 }
 .documentonline-content ::v-deep .cherry .cherry-previewer {
-  max-width: 960px;
-  padding-top: 0 !important;  // 高于编辑器公共 padding !important 的优先级，避免异步加载后恢复顶部留白。
-  margin: 0 auto;  // 正文在第三列内居中，左右留白保持一致。
+  max-width: 820px;
+  padding: 0 !important; // 覆盖编辑器公共 padding，纵向间距由阅读区统一控制。
+  margin: 0 auto;
 }
-.documentonline-content ::v-deep .cherry-markdown > :first-child {
-  margin-top: 0;
-}
-.documentonline-content ::v-deep .cherry-markdown > h1:first-child {
-  line-height: var(--document-title-line-height);
-}
-@media (max-width: 1100px) {
-  .documentonline-content {
-    padding-right: 16px;
-    padding-left: 16px;
+.documentonline-content ::v-deep .cherry-markdown {
+  color: var(--help-ink);
+  font-size: 15px;
+  line-height: 1.8;
+  > :first-child {
+    margin-top: 0;
   }
+  > h1:first-child {
+    font-size: clamp(24px, 3vw, 34px);
+    line-height: 1.3;
+  }
+}
+@media (max-width: 1120px) {
+  .article-panel {
+    position: absolute;
+    z-index: 2;
+    width: min(264px, 100%);
+    box-shadow: var(--help-shadow);
+  }
+  .outline-panel {
+    inset: 0 auto 0 0;
+  }
+  .related-panel {
+    inset: 0 0 0 auto;
+  }
+}
+@media (max-width: 760px) {
+  .document-header {
+    padding: 0 8px;
+    gap: 6px;
+  }
+  .document-sidebar {
+    position: absolute;
+    z-index: 4;
+    inset: 0 auto 0 0;
+    width: min(270px, 86%);
+    box-shadow: var(--help-shadow);
+  }
+}
+.tree-backdrop {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: var(--help-overlay);
 }
 </style>

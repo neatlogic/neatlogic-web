@@ -2,7 +2,6 @@ const noAuthority = () => import('@/views/pages/common/no-authority.vue');
 const documentonline = () => import('./document/documentonline-help-center.vue');
 const documentonlineDetail = () => import('./document/documentonline-detail.vue');
 const documentonlineSearch = () => import('./document/documentonline-search.vue');
-const directoryManage = () => import('./directory/directory-manage.vue');
 
 import {$t} from '@/resources/init.js';
 export default [
@@ -44,11 +43,6 @@ export default [
   }, 
   {
     path: '/directory-manage',
-    name: 'directory-manage',
-    component: directoryManage,
-    meta: {
-      title: $t('router.documentonline.directorymanage'),
-      authority: 'DOCUMENTONLINE_CONFIG_MODIFY'
-    }
+    redirect: {name: 'documentonline', query: {}, hash: ''}
   }
 ];

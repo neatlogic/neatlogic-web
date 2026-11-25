@@ -1,10 +1,9 @@
 <template>
-  <div class="pr-nm">
+  <div class="help-directory">
     <Tree
       v-if="!loadingShow"
       :data="tbodyList"
       :render="renderContent"
-      class="ts-tree"
       @on-select-change="selectTreeNode"
     ></Tree>
     <NoData v-if="!loadingShow && !tbodyList.length" />
@@ -64,14 +63,12 @@ export default {
         });
       }
     },
-    renderContent(h, { root, node, data }) {
-      //渲染树的lable名称
-      return h('span', {
-        staticClass: '',
-        domProps: {
-          innerHTML: data.name
-        }
-      });
+    renderContent(h, {data}) {
+      const icon = data.isFile ? 'tsfont-file-single' : 'tsfont-folder-o';
+      return h('span', {class: 'directory-label', attrs: {title: data.name}}, [
+        h('i', {class: icon, attrs: {'aria-hidden': 'true'}}),
+        h('span', {class: 'overflow'}, [data.name])
+      ]);
     },
     selectTreeNode(list, node) {
       if (node) {
@@ -97,5 +94,48 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.help-directory {
+  ::v-deep .ivu-tree-children {
+    padding-left: 12px;
+  }
+  ::v-deep .ivu-tree > .ivu-tree-children {
+    padding-left: 0;
+  }
+  ::v-deep .ivu-tree-children > li {
+    margin: 2px 0;
+  }
+  ::v-deep .ivu-tree-arrow {
+    width: 18px;
+    transform: none;
+    vertical-align: middle;
+  }
+  ::v-deep .ivu-tree-title {
+    width: calc(100% - 18px);
+    padding: 6px 8px;
+    border-radius: 7px;
+    color: var(--help-ink);
+    vertical-align: middle;
+    &:hover {
+      background: var(--help-hover);
+    }
+  }
+  ::v-deep .ivu-tree-title-selected,
+  ::v-deep .ivu-tree-title-selected:hover {
+    color: var(--help-accent);
+    background: var(--help-accent-soft);
+  }
+  ::v-deep .directory-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.5;
+    i {
+      color: var(--help-muted);
+    }
+  }
+  ::v-deep .ivu-tree-title-selected .directory-label i {
+    color: inherit;
+  }
+}
 </style>

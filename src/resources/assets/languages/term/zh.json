@@ -4227,9 +4227,6 @@
     "properlyformattestring": "正确格式的字符串"
   },
   "documentonline": {
-    "relationmaintenance": "关系维护",
-    "removedocument": "移除文档",
-    "removefromcurrentcategoryconfirm": "确认从当前分类下移除文档？",
     "currentpagesearch": "当前页面相关帮助",
     "openhelp": "打开帮助中心",
     "openhelpdocument": "在新页面打开帮助",
@@ -4237,10 +4234,11 @@
     "helpcenter": "帮助中心",
     "whathelp": "请问有什么能帮到您？",
     "problemdes": "问题描述",
-    "relcurrclass": "关联当前分类",
-    "unlassifieddoc": "未分类文档",
-    "representmenupage": "表示菜单页面",
-    "representsubpages": "表示子页面"
+    "browsebycategory": "按分类浏览",
+    "searchresults": "“{keyword}” 的搜索结果",
+    "articleoutline": "文章提纲",
+    "uploaddocument": "上传文档",
+    "documentcount": "共 {count} 篇文档"
   },
   "license": {
     "isbanmodule": "到期禁用模块",

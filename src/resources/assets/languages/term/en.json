@@ -4229,9 +4229,6 @@
     "properlyformattestring": "Correctly formatted string"
   },
   "documentonline": {
-    "relationmaintenance": "Relation Maintenance",
-    "removedocument": "Remove Document",
-    "removefromcurrentcategoryconfirm": "Remove the document from the current category?",
     "currentpagesearch": "Help related to the current page",
     "openhelp": "Open Help Center",
     "openhelpdocument": "Open Help on a New Page",
@@ -4241,10 +4238,11 @@
     "problemdes": "Problem Description",
     "selectoneresource": "Please select at least one resource",
     "noaddauthresource": "There are currently no resources to add permissions to",
-    "relcurrclass": "Associate with current classification",
-    "unlassifieddoc": "Unclassified documents",
-    "representmenupage": "Represent menu page",
-    "representsubpages": "Represent Subpages"
+    "browsebycategory": "Browse by category",
+    "searchresults": "Search results for “{keyword}”",
+    "articleoutline": "Article outline",
+    "uploaddocument": "Upload documents",
+    "documentcount": "{count} document | {count} documents"
   },
   "license": {
     "isbanmodule": "Disable module upon expiration",

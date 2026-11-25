@@ -1,98 +1,107 @@
 <template>
-  <div class="documentonline-search">
-    <div class="search-main">
-      <Loading :loadingShow="loadingShow" type="fix"></Loading>
-      <div v-for="(item,index) in list" :key="index" class="list">
-        <span class="tsfont-file-single pr-xs text-primary"></span>
-        <div class="item border-color pb-nm mb-nm">
-          <div class="title overflow pb-xs text-action" @click="gotoPage(item)">{{ item.fileName }}</div>
-          <div class="text-tip line-2" v-html="item.content"></div>
-        </div>
+  <main class="help-results">
+    <Loading :loadingShow="loadingShow" type="fix"></Loading>
+    <div class="help-results-body">
+      <DocumentonlineNav :upwardNameList="[$t('router.documentonline.documentsearch')]" />
+      <h1 class="results-title">
+        {{ keyword ? $t('term.documentonline.searchresults', {keyword}) : $t('router.documentonline.documentsearch') }}
+      </h1>
+      <div class="result-entries">
+        <DocumentonlineEntry
+          v-for="item in list"
+          :key="item.filePath"
+          :item="item"
+          show-location
+          @select="gotoPage"
+        />
       </div>
-      <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
-      <NoData v-if="!loadingShow && !list.length" />
+      <Button
+        v-if="tableData.currentPage < tableData.pageCount"
+        class="mt-nm"
+        :loading="loadingShow"
+        @click="changePage"
+      >
+        {{ $t('page.viewmore') }}
+      </Button>
+      <NoData v-if="!loadingShow && !list.length" class="mt-lg" />
     </div>
-  </div>
+  </main>
 </template>
+
 <script>
 export default {
-  name: '',
-  components: {},
-  props: {},
+  components: {
+    DocumentonlineEntry: () => import('./documentonline-entry.vue'),
+    DocumentonlineNav: () => import('./documentonline-nav.vue')
+  },
   data() {
     return {
-      keyword: '',
-      loadingShow: true,
+      loadingShow: false,
       list: [],
       tableData: {}
     };
   },
-  beforeCreate() {},
-  created() {
-    if (this.$route.query) {
-      this.keyword = this.$route.query.searchKeyword || '';
-      this.$localStore.set('searchKeyword', this.keyword, 'common');
-    }
-    this.searchDocument();
-  },
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
-    searchDocument(currentPage) {
-      let data = {
-        currentPage: currentPage || 1,
-        keyword: this.keyword
-      };
-      this.$api.documentonline.searchDocument(data).then(res => {
-        if (res.Status === 'OK') {
+    searchDocument(currentPage = 1) {
+      const list = this.list;
+      this.loadingShow = true;
+      this.$api.documentonline.searchDocument({currentPage, keyword: this.keyword}).then(res => {
+        if (this.list === list && res.Status === 'OK') {
           this.tableData = res.Return || {};
-          if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
-            this.list.push(...this.tableData.tbodyList);
-          }
+          list.push(...(this.tableData.tbodyList || []));
         }
       }).finally(() => {
-        this.loadingShow = false;
+        if (this.list === list) {
+          this.loadingShow = false;
+        }
       });
     },
     changePage() {
-      let currentPage = this.tableData.currentPage + 1;
-      this.searchDocument(currentPage);
+      if (!this.loadingShow) {
+        this.searchDocument(this.tableData.currentPage + 1);
+      }
     },
     gotoPage(item) {
-      this.$router.push({
-        path: '/documentonline-detail',
-        query: {
-          filePath: item.filePath
-        }
-      });
+      this.$router.push({name: 'documentonline-detail', query: {filePath: item.filePath}});
     }
   },
-  filter: {},
-  computed: {},
-  watch: {}
-};
-</script>
-<style lang="less" scoped>
-.documentonline-search {
-  width: 100%;
-  padding-top: 30px;
-  .search-main {
-    padding: 16px 0;
-    .list {
-      position: relative;
-      display: flex;
-      .item {
-        flex: 1;
-        border-bottom: 1px solid;
-        overflow: hidden;
+  computed: {
+    keyword() {
+      return this.$route.query.searchKeyword || '';
+    }
+  },
+  watch: {
+    keyword: {
+      immediate: true,
+      handler(keyword) {
+        this.list = [];
+        this.tableData = {};
+        this.loadingShow = false;
+        if (keyword) {
+          this.searchDocument();
+        }
       }
     }
   }
+};
+</script>
+
+<style lang="less" scoped>
+.help-results-body {
+  width: min(100%, 968px);
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 40px) clamp(14px, 4vw, 36px);
+}
+.results-title {
+  margin: 16px 0;
+  color: var(--help-ink);
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 650;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.result-entries {
+  display: grid;
+  gap: 8px;
 }
 </style>

@@ -1,96 +1,122 @@
 <template>
-  <div class="document-main">
+  <section class="category-documents">
     <Loading :loadingShow="loadingShow" type="fix"></Loading>
-    <div v-for="(item,index) in list" :key="index" class="list bg-block">
-      <span class="tsfont-file-single pr-xs text-primary"></span>
-      <div class="item border-color">
-        <div class="title overflow pb-xs text-action" @click="getDetail(item)">{{ item.fileName }}</div>
-        <div class="text-tip line-2" v-html="item.content"></div>
-      </div>
+    <header v-if="title" class="category-heading">
+      <h1>{{ title }}</h1>
+      <span v-if="tableData.rowNum > 0" class="document-count">
+        {{ $tc('term.documentonline.documentcount', tableData.rowNum) }}
+      </span>
+    </header>
+    <div class="document-entries">
+      <DocumentonlineEntry
+        v-for="item in list"
+        :key="item.filePath"
+        :item="item"
+        paper
+        @select="$emit('getDetail', $event)"
+      />
     </div>
-    <div v-if="tableData.currentPage< tableData.pageCount" class="text-href pl-nm" @click="changePage()">{{ $t('page.viewmore') }}</div>
-    <NoData v-if="!loadingShow && !list.length" />
-  </div>
+    <div v-if="tableData.currentPage < tableData.pageCount" class="mt-nm text-center">
+      <Button :loading="loadingShow" @click="changePage">{{ $t('page.viewmore') }}</Button>
+    </div>
+    <NoData v-if="!loadingShow && !list.length" class="mt-lg" />
+  </section>
 </template>
+
 <script>
 export default {
-  name: '',
-  components: {},
+  components: {
+    DocumentonlineEntry: () => import('./documentonline-entry.vue')
+  },
   props: {
-    upwardNameList: Array
+    upwardNameList: {type: Array, default: () => []}
   },
   data() {
     return {
-      loadingShow: true,
+      loadingShow: false,
       tableData: {},
       list: []
     };
   },
-  beforeCreate() {},
-  created() {},
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
-    getDocumentList(currentPage) {
-      let data = {
-        currentPage: currentPage || 1,
-        upwardNameList: this.upwardNameList
-      };
+    getDocumentList(currentPage = 1) {
+      const list = this.list;
       this.loadingShow = true;
-      this.$api.documentonline.getDocumentList(data).then(res => {
-        if (res.Status === 'OK') {
+      this.$api.documentonline.getDocumentList({
+        currentPage,
+        upwardNameList: this.upwardNameList,
+        extendedSummary: true
+      }).then(res => {
+        if (this.list === list && res.Status === 'OK') {
           this.tableData = res.Return || {};
-          if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
-            this.list.push(...this.tableData.tbodyList);
-          }
+          list.push(...(this.tableData.tbodyList || []));
         }
       }).finally(() => {
-        this.loadingShow = false;
+        if (this.list === list) {
+          this.loadingShow = false;
+        }
       });
     },
     changePage() {
-      let currentPage = this.tableData.currentPage + 1;
-      this.getDocumentList(currentPage);
-    },
-    getDetail(item) {
-      this.$emit('getDetail', item);
+      if (!this.loadingShow) {
+        this.getDocumentList(this.tableData.currentPage + 1);
+      }
     }
   },
-  filter: {},
-  computed: {},
+  computed: {
+    title() {
+      return this.upwardNameList[this.upwardNameList.length - 1];
+    }
+  },
   watch: {
     upwardNameList: {
-      handler(val) {
-        if (!this.$utils.isEmpty(val)) {
-          this.list = [];
+      immediate: true,
+      handler(path) {
+        this.list = [];
+        this.tableData = {};
+        this.loadingShow = false;
+        if (path.length) {
           this.getDocumentList();
         }
-      },
-      deep: true,
-      immediate: true
+      }
     }
   }
 };
 </script>
+
 <style lang="less" scoped>
-.document-main {
-  padding: 16px 0;
-  .list {
-    position: relative;
-    display: flex;
-    margin-bottom: 16px;
-    padding: 16px;
-    border-radius: 6px;
-    .item {
-      flex: 1;
-      overflow: hidden;
-    }
+@import (reference) '~@/resources/assets/css/variable.less';
+
+.category-documents {
+  padding-block: clamp(20px, 4vw, 40px);
+  padding-inline: clamp(@space-normal, 2vw, @space-lg);
+}
+.category-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin-bottom: 18px;
+  h1 {
+    color: var(--help-ink);
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 650;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+}
+.document-count {
+  color: var(--help-muted);
+}
+.document-entries {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 152px), 1fr));
+  gap: @space-normal;
+}
+@media (max-width: 420px) {
+  .document-entries {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: @space-md;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="topnav-help">
     <div class="help-container">
-      <i class="tsfont-question-o" @click="openDrawerShowDocument()"></i>
+      <i class="tsfont-question-o" @click="openRouteHelp()"></i>
     </div>
     <Drawer
       v-model="isDrawerShow"
@@ -69,13 +69,13 @@ export default {
     return {
       loadingShow: true,
       isDrawerShow: false,
+      pendingHelpRoute: null,
       keyword: '',
       list: [],
       tableData: {},
       isShowDetail: false,
       filePath: '',
       anchorPoint: '',
-      blacklist: ['welcome'], //不需要搜索的路由名单
       isGlobalSearch: false
     };
   },
@@ -87,36 +87,65 @@ export default {
   updated() {},
   activated() {},
   deactivated() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.pendingHelpRoute = null;
+  },
   destroyed() {},
   methods: {
-    openDrawerShowDocument() {
+    async openRouteHelp() {
+      const route = this.$route;
+      if (!route.name) {
+        this.goToHelpCenter();
+        return;
+      }
+      if (this.pendingHelpRoute === route) {
+        return;
+      }
+      this.pendingHelpRoute = route;
+      let documents;
+      try {
+        const res = await this.$api.documentonline.getRouteDocumentList({
+          moduleGroup: MODULEID,
+          menu: route.name
+        });
+        if (res?.Status === 'OK') {
+          documents = res.Return;
+        }
+      } catch {
+        // 查询失败时仍可访问帮助中心。
+      }
+      if (this.pendingHelpRoute !== route) {
+        return;
+      }
+      this.pendingHelpRoute = null;
+      // 请求返回时，用户可能已离开发起查询的页面。
+      if (this.$route !== route) {
+        return;
+      }
+      if (documents?.primaryDocument?.filePath) {
+        this.goToHelpCenter(documents.primaryDocument);
+      } else if (documents?.tbodyList?.length) {
+        this.showRelatedDocuments(documents);
+      } else {
+        this.goToHelpCenter();
+      }
+    },
+    showRelatedDocuments(documents) {
       this.keyword = '';
-      this.list = [];
+      this.list = documents.tbodyList.slice();
+      this.tableData = documents;
       this.isShowDetail = false;
       this.isGlobalSearch = false;
+      this.loadingShow = false;
       this.isDrawerShow = true;
-      this.getDocumentonlineList();
     },
     getDocumentonlineList(currentPage) { //当前模块、路由相关文档列表
       let data = {
         currentPage: currentPage || 1,
-        moduleGroup: MODULEID
+        moduleGroup: MODULEID,
+        menu: this.$route.name
       };
-      if (this.$route && !this.blacklist.includes(this.$route.name)) {
-        this.$set(data, 'menu', this.$route.name);
-      }
-      this.loadingShow = true;
-      this.$api.documentonline.getDocumentList(data).then(res => {
-        if (res.Status === 'OK') {
-          this.tableData = res.Return || {};
-          if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
-            this.list.push(...this.tableData.tbodyList);
-          }
-        }
-      }).finally(() => {
-        this.loadingShow = false;
-      });
+      this.loadDrawerDocuments(this.$api.documentonline.getDocumentList(data));
     },
     globalSearch(currentPage) { //全局搜索文档
       if (!this.keyword) {
@@ -126,16 +155,25 @@ export default {
         currentPage: currentPage || 1,
         keyword: this.keyword
       };
+      this.loadDrawerDocuments(this.$api.documentonline.searchDocument(data));
+    },
+    loadDrawerDocuments(request) {
+      const route = this.$route;
+      const list = this.list;
+      // 切换路由或搜索条件会替换抽屉列表，旧请求不能追加到当前列表。
+      const isCurrent = () => this.isDrawerShow && this.$route === route && this.list === list;
       this.loadingShow = true;
-      this.$api.documentonline.searchDocument(data).then(res => {
-        if (res.Status === 'OK') {
+      request.then(res => {
+        if (isCurrent() && res.Status === 'OK') {
           this.tableData = res.Return || {};
           if (this.tableData.tbodyList && this.tableData.tbodyList.length > 0) {
             this.list.push(...this.tableData.tbodyList);
           }
         }
       }).finally(() => {
-        this.loadingShow = false;
+        if (isCurrent()) {
+          this.loadingShow = false;
+        }
       });
     },
     changePage() {
@@ -163,16 +201,27 @@ export default {
     },
     openHelpManage() {
       if (this.isShowDetail) {
-        //替换文档标题的特殊字符&
-        let filePath = this.filePath.replace(/\&/g, '%26');
-        let url = HOME + '/documentonline.html#/documentonline-detail?filePath=' + filePath;
-        if (this.anchorPoint) {
-          url += '&anchorPoint=' + this.anchorPoint;
-        }
-        window.open(url, '_blank');
+        window.open(this.getHelpUrl({filePath: this.filePath, anchorPoint: this.anchorPoint}), '_blank');
       } else {
-        window.open(HOME + '/documentonline.html#/documentonline', '_blank');
+        window.open(this.getHelpUrl(), '_blank');
       }
+    },
+    getHelpUrl(document) {
+      const baseUrl = HOME + '/documentonline.html#/documentonline';
+      if (!document?.filePath) {
+        return baseUrl;
+      }
+      let url = baseUrl + '-detail?filePath=' + encodeURIComponent(document.filePath);
+      if (document.anchorPoint) {
+        url += '&anchorPoint=' + encodeURIComponent(document.anchorPoint);
+      }
+      return url;
+    },
+    goToHelpCenter(document) {
+      // 共享布局中的 router-view 由 Vue Router 注册，离页确认需要当前页面实例。
+      const matched = this.$route.matched;
+      const moduleView = matched[matched.length - 1]?.instances.default;
+      this.$utils.gotoHref(this.getHelpUrl(document), moduleView);
     },
     goBack() {
       this.isShowDetail = false;
@@ -181,7 +230,11 @@ export default {
   },
   filter: {},
   computed: {},
-  watch: {}
+  watch: {
+    $route() {
+      this.isDrawerShow = false;
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

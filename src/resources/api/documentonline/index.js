@@ -14,20 +14,11 @@ const documentonline = {
   getDocumentList(data) { //查询在线帮助文档列表
     return axios.post('/api/rest/documentonline/list', data);
   },
+  getRouteDocumentList(data) { //问号跳转查询，失败时由调用方打开帮助中心首页
+    return axios.post('/api/rest/documentonline/list', data, {headers: {unConsole: 1}});
+  },
   searchDocument(data, config) { //全局搜索文档
     return axios.post('/api/rest/documentonline/search', data, config);
-  },
-  getUnclassifiedList(data) { //未分类文档列表
-    return axios.post('/api/rest/documentonline/unclassified/list', data);
-  },
-  addDocumentonlineConfig(data) { //添加在线帮助文档与当前模块菜单的映射关系
-    return axios.post('/api/rest/documentonline/config/add', data);
-  },
-  saveDocumentonlineConfig(data) { //保存在线帮助文档与模块菜单的映射关系
-    return axios.post('/api/rest/documentonline/config/save', data);
-  },
-  deleteFileConfig(data) { //删除在线帮助文档与模块菜单的映射关系
-    return axios.post('/api/rest/documentonline/config/delete', data);
   }
 };
 

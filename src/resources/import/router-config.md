@@ -4,7 +4,7 @@
 
 它主要处理两件事：
 
-- **全局查询**：按模块汇总路由和菜单分类，供顶部菜单、菜单权限配置、在线文档目录等使用。
+- **全局查询**：按模块汇总路由和菜单分类，供顶部菜单和菜单权限配置等使用。
 - **模块初始化**：将当前模块的路由、公共路由与业务注册的扩展路由组合起来，供模块入口设置 `MENULIST`；同时提供菜单分类合并方法，供设置 `MENUTYPE`。
 
 这些方法都是同步函数，只返回配置数据。创建 Vue Router 和校验用户权限由其他代码完成；根据业务接口生成动态菜单的用法见 [动态菜单模块接入说明](../store/modules/topMenu.md)。
@@ -53,7 +53,7 @@ const menuTypeList = geRouterMenuTypeList();
 
 结果包含原始路由对象及其 `meta`，未按当前用户权限过滤。顶部菜单 Store 会在取得这些数据后，再按 `ismenu`、`authority`、分类名称等条件生成可展示菜单。
 
-现有调用见 [topMenu.js](../store/modules/topMenu.js)、[菜单权限配置](../../views/pages/framework/users/base-menu-mixin.js) 和 [在线文档目录](../../views/pages/documentonline/directory/directory-tree.vue)。
+现有调用见 [topMenu.js](../store/modules/topMenu.js) 和 [菜单权限配置](../../views/pages/framework/users/base-menu-mixin.js)。
 
 ### 路由从哪里来
 

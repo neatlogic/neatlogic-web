@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <Breadcrumb separator=">">
+  <nav class="help-breadcrumb" :aria-label="$t('term.documentonline.helpcenter')">
+    <Breadcrumb separator="/">
       <BreadcrumbItem to="/documentonline">
         {{ $t('term.documentonline.helpcenter') }}
       </BreadcrumbItem>
@@ -8,40 +8,35 @@
         {{ item }}
       </BreadcrumbItem>
     </Breadcrumb>
-  </div>
+  </nav>
 </template>
 <script>
 export default {
-  name: '',
-  components: {},
   props: {
     upwardNameList: Array
   },
-  data() {
-    return {
-      labelConfig: {}
-    };
-  },
-  beforeCreate() {},
-  created() { },
-  beforeMount() {},
-  mounted() {},
-  beforeUpdate() {},
-  updated() {},
-  activated() {},
-  deactivated() {},
-  beforeDestroy() {},
-  destroyed() {},
   methods: {
     goto(index) {
-      let upwardNameList = this.upwardNameList.slice(0, index + 1);
-      return '/documentonline-detail?upwardNameList=' + upwardNameList.join('/') + '&isSiderHide=false&refresh=' + Date.now();
+      const upwardNameList = this.upwardNameList.slice(0, index + 1).join('/');
+      return '/documentonline-detail?upwardNameList=' + encodeURIComponent(upwardNameList) + '&isSiderHide=false&refresh=' + Date.now();
     }
-  },
-  filter: {},
-  computed: {},
-  watch: {}
+  }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
+.help-breadcrumb {
+  color: var(--help-muted);
+  ::v-deep .ivu-breadcrumb {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  ::v-deep a {
+    color: var(--help-muted);
+    &:hover,
+    &:focus-visible {
+      color: var(--help-accent);
+    }
+  }
+}
 </style>
