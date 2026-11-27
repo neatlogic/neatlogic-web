@@ -54,11 +54,13 @@
               v-model="row.needAudit"
               :true-value="1"
               :false-value="0"
+              :disabled="row.isPrivate === false"
               @on-change="handleSwitchChange(row)"
             ></i-switch>
           </template>
           <template v-slot:token="{ row }">
-            <span class="text-href" @click.stop="showApiForm(row)">{{ row.token }}</span>
+            <span v-if="row.isPrivate === false">{{ row.token }}</span>
+            <span v-else class="text-href" @click.stop="showApiForm(row)">{{ row.token }}</span>
           </template>
           <template v-slot:authTypeNameList="{ row }">
             <Tag v-for="(authTypeName, index) in row.authTypeNameList" :key="index">{{ authTypeName }}</Tag>
@@ -69,7 +71,7 @@
           <template v-slot:action="{ row }">
             <div class="tstable-action">
               <ul class="tstable-action-ul">
-                <li class="tsfont-test" @click="testApi(row)">{{ $t('page.test') }}</li>
+                <li v-if="row.isPrivate !== false" class="tsfont-test" @click="testApi(row)">{{ $t('page.test') }}</li>
                 <li class="tsfont-question-o" @click="showApiHelp(row)">{{ $t('page.help') }}</li>
                 <li v-if="row.needAudit" class="tsfont-putongjigui" @click="showCallRecord(row)">{{ $t('term.process.callrecord') }}</li>
               </ul>
@@ -316,6 +318,9 @@ export default {
     },
     // 处理保存记录按钮的切换
     handleSwitchChange(row) {
+      if (row.isPrivate === false) {
+        return;
+      }
       const params = {
         ...row
       };
@@ -331,6 +336,9 @@ export default {
         });
     },
     testApi(row) {
+      if (row.isPrivate === false) {
+        return;
+      }
       this.rowData = row;
       this.isTestShow = true;
     },
@@ -346,6 +354,9 @@ export default {
     },
     // 显示接口表单对话框
     showApiForm(row) {
+      if (row && row.isPrivate === false) {
+        return;
+      }
       this.currentToken = row && row.token ? row.token : '';
       this.isFormDialogShow = true;
     },
